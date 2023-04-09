@@ -9,6 +9,8 @@ namespace Molten.Graphics
     {
         protected delegate void FlushRangeCallback(uint firstRangeID, uint rangeCount, uint dataStartIndex, uint numDataInBuffer);
 
+        protected delegate HlslShader CheckerCallback(GraphicsQueue queue, ref SpriteRange range, ObjectRenderData data);
+
         protected struct SpriteRange
         {
             public uint VertexCount;        // 4-bytes
@@ -69,7 +71,7 @@ namespace Molten.Graphics
 
         GraphicsBuffer _buffer;
 
-        Func<GraphicsQueue, SpriteRange, ObjectRenderData, HlslShader>[] _checkers;
+        CheckerCallback[] _checkers;
         HlslShader _matDefault;
         HlslShader _matDefaultMS;
         HlslShader _matDefaultNoTexture;
@@ -111,7 +113,7 @@ namespace Molten.Graphics
             ShaderCompileResult resultSdf = renderer.Device.LoadEmbeddedShader("Molten.Assets", "sprite_sdf.mfx");
             _matMsdf = resultSdf["sprite-msdf"];
 
-            _checkers = new Func<GraphicsQueue, SpriteRange, ObjectRenderData, HlslShader>[7];
+            _checkers = new CheckerCallback[7];
             _checkers[(int)RangeType.None] = NoCheckRange;
             _checkers[(int)RangeType.Sprite] = CheckSpriteRange;
             _checkers[(int)RangeType.MSDF] = CheckMsdfRange;
@@ -554,7 +556,7 @@ namespace Molten.Graphics
                 if (range.Type == RangeType.None || range.VertexCount == 0)
                     continue;
 
-                HlslShader shader = range.Shader ?? _checkers[(int)range.Type](cmd, range, data);
+                HlslShader shader = range.Shader ?? _checkers[(int)range.Type](cmd, ref range, data);
 
                 shader["spriteData"].Value = _buffer;
                 shader["vertexOffset"].Value = bufferOffset;
@@ -584,7 +586,7 @@ namespace Molten.Graphics
             }
         }
 
-        private HlslShader CheckSpriteRange(GraphicsQueue cmd, SpriteRange range, ObjectRenderData data)
+        private HlslShader CheckSpriteRange(GraphicsQueue cmd, ref SpriteRange range, ObjectRenderData data)
         {
             if (range.Texture != null)
                 return range.Texture.IsMultisampled ? _matDefaultMS : _matDefault;
@@ -592,7 +594,7 @@ namespace Molten.Graphics
                 return _matDefaultNoTexture;
         }
 
-        private HlslShader CheckMsdfRange(GraphicsQueue cmd, SpriteRange range, ObjectRenderData data)
+        private HlslShader CheckMsdfRange(GraphicsQueue cmd, ref SpriteRange range, ObjectRenderData data)
         {
             if (range.Texture != null)
             {
@@ -607,22 +609,22 @@ namespace Molten.Graphics
             }
         }
 
-        private HlslShader CheckLineRange(GraphicsQueue cmd, SpriteRange range, ObjectRenderData data)
+        private HlslShader CheckLineRange(GraphicsQueue cmd, ref SpriteRange range, ObjectRenderData data)
         {
             return _matLine;
         }
 
-        private HlslShader CheckEllipseRange(GraphicsQueue cmd, SpriteRange range, ObjectRenderData data)
+        private HlslShader CheckEllipseRange(GraphicsQueue cmd, ref SpriteRange range, ObjectRenderData data)
         {
             return range.Texture != null ? _matCircle : _matCircleNoTexture;
         }
 
-        private HlslShader CheckGridRange(GraphicsQueue cmd, SpriteRange range, ObjectRenderData data)
+        private HlslShader CheckGridRange(GraphicsQueue cmd, ref SpriteRange range, ObjectRenderData data)
         {
             return _matGrid; // range.Texture != null ? _matCircle : _matCircleNoTexture;
         }
 
-        private HlslShader NoCheckRange(GraphicsQueue cmd, SpriteRange range, ObjectRenderData data)
+        private HlslShader NoCheckRange(GraphicsQueue cmd, ref SpriteRange range, ObjectRenderData data)
         {
             return null;
         }
