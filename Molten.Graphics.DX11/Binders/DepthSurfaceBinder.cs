@@ -11,7 +11,7 @@ namespace Molten.Graphics
 
         public override void Unbind(GraphicsSlot<IDepthStencilSurface> slot, IDepthStencilSurface value)
         {
-            CommandQueueDX11 cmd = slot.Cmd as CommandQueueDX11;
+            GraphicsQueueDX11 cmd = slot.Cmd as GraphicsQueueDX11;
 
             uint maxRTs = cmd.Device.Capabilities.PixelShader.MaxOutputTargets;
             cmd.DSV = null;

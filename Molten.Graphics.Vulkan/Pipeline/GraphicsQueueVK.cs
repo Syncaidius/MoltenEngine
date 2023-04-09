@@ -4,7 +4,7 @@ using Semaphore = Silk.NET.Vulkan.Semaphore;
 
 namespace Molten.Graphics
 {
-    internal class CommandQueueVK : GraphicsQueue
+    internal class GraphicsQueueVK : GraphicsQueue
     {
         DeviceVK _device;
         Vk _vk;
@@ -18,7 +18,7 @@ namespace Molten.Graphics
 
         CommandListVK _cmd;
 
-        internal CommandQueueVK(RendererVK renderer, DeviceVK device, uint familyIndex, Queue queue, uint queueIndex, SupportedCommandSet set) :
+        internal GraphicsQueueVK(RendererVK renderer, DeviceVK device, uint familyIndex, Queue queue, uint queueIndex, SupportedCommandSet set) :
             base(device)
         {
             _vk = renderer.VK;

@@ -4,7 +4,7 @@ namespace Molten.Graphics
 {
     internal class ShaderPSStage : ShaderStageDX11
     {
-        public ShaderPSStage(CommandQueueDX11 queue) : base(queue, ShaderType.Pixel)
+        public ShaderPSStage(GraphicsQueueDX11 queue) : base(queue, ShaderType.Pixel)
         {
         }
 

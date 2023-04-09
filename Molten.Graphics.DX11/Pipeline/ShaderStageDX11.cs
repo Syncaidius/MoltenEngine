@@ -4,7 +4,7 @@ namespace Molten.Graphics
 {
     internal unsafe abstract class ShaderStageDX11
     {
-        internal ShaderStageDX11(CommandQueueDX11 queue, ShaderType type)
+        internal ShaderStageDX11(GraphicsQueueDX11 queue, ShaderType type)
         {
             Cmd = queue;
             Type = type;
@@ -67,7 +67,7 @@ namespace Molten.Graphics
 
         internal abstract void SetShader(void* shader, ID3D11ClassInstance** classInstances, uint numClassInstances);
 
-        internal CommandQueueDX11 Cmd { get; }
+        internal GraphicsQueueDX11 Cmd { get; }
 
         internal ShaderType Type { get; }
 

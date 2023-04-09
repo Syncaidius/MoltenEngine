@@ -30,7 +30,7 @@ namespace Molten.Graphics
         public event WindowSurfaceHandler OnFocusLost;
         public event TextureHandler OnResize;
 
-        CommandQueueVK _presentQueue;
+        GraphicsQueueVK _presentQueue;
         WindowHandle* _window;
         PresentModeKHR _mode;
         SurfaceCapabilitiesKHR _cap;
@@ -127,7 +127,7 @@ namespace Molten.Graphics
             };
 
             // Detect swap-chain sharing mode.
-            (createInfo.ImageSharingMode, CommandQueueVK[] sharingWith) = Device.GetSharingMode(Device.Queue, _presentQueue);
+            (createInfo.ImageSharingMode, GraphicsQueueVK[] sharingWith) = Device.GetSharingMode(Device.Queue, _presentQueue);
             uint* familyIndices = stackalloc uint[sharingWith.Length];
 
             for (int i = 0; i < sharingWith.Length; i++)

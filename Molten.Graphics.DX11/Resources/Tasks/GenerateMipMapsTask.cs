@@ -7,7 +7,7 @@ namespace Molten.Graphics
         public unsafe bool Process(GraphicsQueue cmd, GraphicsResource resource)
         {
             if (resource.SRV != null)
-                (cmd as CommandQueueDX11).Native->GenerateMips((ID3D11ShaderResourceView*)resource.SRV);
+                (cmd as GraphicsQueueDX11).Native->GenerateMips((ID3D11ShaderResourceView*)resource.SRV);
 
             return true;
         }

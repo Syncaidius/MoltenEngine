@@ -10,15 +10,15 @@ using Message = Silk.NET.Direct3D11.Message;
 namespace Molten.Graphics
 {
     /// <summary>A Direct3D 11 graphics device.</summary>
-    /// <seealso cref="CommandQueueDX11" />
+    /// <seealso cref="GraphicsQueueDX11" />
     public unsafe class DeviceDX11 : DeviceDXGI
     {
         ID3D11Device5* _native;
         DeviceBuilderDX11 _builder;
         GraphicsManagerDXGI _displayManager;
 
-        CommandQueueDX11 _cmdQueue;
-        List<CommandQueueDX11> _deferredContexts;
+        GraphicsQueueDX11 _cmdQueue;
+        List<CommandListDX11> _cmdLists;
 
         ID3D11Debug* _debug;
         ID3D11InfoQueue* _debugInfo;
@@ -30,7 +30,7 @@ namespace Molten.Graphics
         {
             _builder = builder;
             _displayManager = manager;
-            _deferredContexts = new List<CommandQueueDX11>();
+            _cmdLists = new List<CommandListDX11>();
 
             VertexFormatCache = new VertexFormatCache<ShaderIOStructureDX11>(
                 (elementCount) => new ShaderIOStructureDX11(elementCount),
@@ -97,7 +97,7 @@ namespace Molten.Graphics
                 _debugInfo->PushEmptyStorageFilter();
             }
 
-            _cmdQueue = new CommandQueueDX11(this, deviceContext);
+            _cmdQueue = new GraphicsQueueDX11(this, deviceContext);
         }
 
         /// <summary>Queries the underlying texture's interface.</summary>
@@ -123,9 +123,9 @@ namespace Molten.Graphics
             return null;
         }
 
-        /// <summary>Gets a new deferred <see cref="CommandQueueDX11"/>.</summary>
+        /// <summary>Gets a new deferred <see cref="GraphicsQueueDX11"/>.</summary>
         /// <returns></returns>
-        internal CommandQueueDX11 GetDeferredContext()
+        internal GraphicsQueueDX11 GetDeferredContext()
         {
             ID3D11DeviceContext3* dc = null;
             Ptr->CreateDeferredContext3(0, &dc);
@@ -134,23 +134,23 @@ namespace Molten.Graphics
             void* ptr4 = null;
             dc->QueryInterface(&cxt4Guid, &ptr4);
 
-            CommandQueueDX11 context = new CommandQueueDX11(this, (ID3D11DeviceContext4*)ptr4);
-            _deferredContexts.Add(context);
+            GraphicsQueueDX11 context = new GraphicsQueueDX11(this, (ID3D11DeviceContext4*)ptr4);
+            _cmdLists.Add(context);
             return context;
         }
 
-        internal void RemoveDeferredContext(CommandQueueDX11 cmd)
+        internal void RemoveDeferredContext(CommandListDX11 cmd)
         {
-            if (cmd.DXDevice != this)
-                throw new GraphicsCommandQueueException(cmd, "Graphics pipe is owned by another device.");
+            if (cmd.Device != this)
+                throw new GraphicsCommandListException(cmd, "Command list is owned by another device.");
 
             if (!cmd.IsDisposed)
                 cmd.Dispose();
 
-            _deferredContexts.Remove(cmd);
+            _cmdLists.Remove(cmd);
         }
 
-        internal void SubmitContext(CommandQueueDX11 context)
+        internal void SubmitContext(GraphicsQueueDX11 context)
         {
             if (context.Type != CommandQueueType.Deferred)
                 throw new Exception("Cannot submit immediate graphics contexts, only deferred.");
@@ -162,8 +162,8 @@ namespace Molten.Graphics
         /// <summary>Disposes of the <see cref="DeviceDX11"/> and any deferred contexts and resources bound to it.</summary>
         protected override void OnDispose()
         {
-            for (int i = _deferredContexts.Count - 1; i >= 0; i--)
-                RemoveDeferredContext(_deferredContexts[i]);
+            for (int i = _cmdLists.Count - 1; i >= 0; i--)
+                RemoveDeferredContext(_cmdLists[i]);
 
             // TODO dispose of all bound IGraphicsResource
             VertexFormatCache.Dispose();
@@ -424,6 +424,6 @@ namespace Molten.Graphics
         internal VertexFormatCache<ShaderIOStructureDX11> VertexFormatCache { get; }
 
         /// <inheritdoc/>
-        public override CommandQueueDX11 Queue => _cmdQueue;
+        public override GraphicsQueueDX11 Queue => _cmdQueue;
     }
 }

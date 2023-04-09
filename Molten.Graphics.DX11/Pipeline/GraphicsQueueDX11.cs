@@ -7,8 +7,8 @@ namespace Molten.Graphics
     internal delegate void CmdQueueDrawCallback();
     internal delegate void CmdQueueDrawFailCallback(ShaderPassDX11 pass, uint passNumber, GraphicsBindResult result);
 
-    /// <summary>Manages the pipeline of a either an immediate or deferred <see cref="CommandQueueDX11"/>.</summary>
-    public unsafe partial class CommandQueueDX11 : GraphicsQueue
+    /// <summary>Manages the pipeline of a either an immediate or deferred <see cref="GraphicsQueueDX11"/>.</summary>
+    public unsafe partial class GraphicsQueueDX11 : GraphicsQueue
     {
         internal const uint D3D11_KEEP_UNORDERED_ACCESS_VIEWS = 0xffffffff;
 
@@ -17,16 +17,13 @@ namespace Molten.Graphics
         ///  this method does not modify the currently bound render-target views (RTVs) and also does not modify depth-stencil view (DSV).
         /// </summary>
         internal const uint D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL = 0xffffffff;
-
-        ID3D11DeviceContext4* _context;
-
+ 
         Rectangle[] _scissorRects;
         bool _scissorRectsDirty;
 
         ViewportF[] _viewports;
         bool _viewportsDirty;
         ViewportF[] _nullViewport;
-        ID3DUserDefinedAnnotation* _debugAnnotation;
 
         ShaderStageDX11[] _shaderStages;
         ShaderCSStage _cs;
@@ -46,23 +43,14 @@ namespace Molten.Graphics
         GraphicsSlot<DepthStateDX11> _stateDepth;
         GraphicsSlotGroup<GraphicsResource> _renderUAVs;
 
-        internal CommandQueueDX11(DeviceDX11 device, ID3D11DeviceContext4* context) :
+        CommandListDX11 _cmd;
+
+        internal GraphicsQueueDX11(DeviceDX11 device, ID3D11DeviceContext4* immediateContext) :
             base(device)
-        {
-            _context = context;
+        {      
             DXDevice = device;
-
-            if (_context->GetType() == DeviceContextType.Immediate)
-                Type = CommandQueueType.Immediate;
-            else
-                Type = CommandQueueType.Deferred;
-
+            _cmd = new CommandListDX11(this, immediateContext);
             _nullViewport = new ViewportF[1];
-
-            Guid debugGuid = ID3DUserDefinedAnnotation.Guid;
-            void* ptrDebug = null;
-            _context->QueryInterface(ref debugGuid, &ptrDebug);
-            _debugAnnotation = (ID3DUserDefinedAnnotation*)ptrDebug;
 
             uint maxRTs = Device.Capabilities.PixelShader.MaxOutputTargets;
             _scissorRects = new Rectangle[maxRTs];
@@ -99,11 +87,6 @@ namespace Molten.Graphics
 
             // Apply the surface of the graphics device's output initialally.
             SetRenderSurfaces(null);
-        }
-
-        internal void Clear()
-        {
-            Native->ClearState();
         }
 
         protected override unsafe ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, GraphicsMapType mapType)
@@ -164,13 +147,13 @@ namespace Molten.Graphics
             }
 
             MappedSubresource resMap = new MappedSubresource();
-            Native->Map((ID3D11Resource*)resource.Handle, subresource, map, 0, &resMap);
+            _cmd.Ptr->Map((ID3D11Resource*)resource.Handle, subresource, map, 0, &resMap);
             return new ResourceMap(resMap.PData, resMap.RowPitch, resMap.DepthPitch);
         }
 
         protected override void OnUnmapResource(GraphicsResource resource, uint subresource)
         {
-            Native->Unmap((ID3D11Resource*)resource.Handle, subresource);
+            _cmd.Ptr->Unmap((ID3D11Resource*)resource.Handle, subresource);
         }
 
         public override unsafe void CopyResourceRegion(
@@ -179,7 +162,7 @@ namespace Molten.Graphics
         {
             Box* box = (Box*)sourceRegion;
 
-            Native->CopySubresourceRegion((ID3D11Resource*)dest.Handle, destSubresource, destStart.X, destStart.Y, destStart.Z, (ID3D11Resource*)source.Handle, srcSubresource, box);
+            _cmd.Ptr->CopySubresourceRegion((ID3D11Resource*)dest.Handle, destSubresource, destStart.X, destStart.Y, destStart.Z, (ID3D11Resource*)source.Handle, srcSubresource, box);
             Profiler.Current.CopySubresourceCount++;
         }
 
@@ -193,7 +176,7 @@ namespace Molten.Graphics
                 destBox = (Box*)&value;
             }
 
-            Native->UpdateSubresource((ID3D11Resource*)resource.Handle, subresource, destBox, ptrData, rowPitch, slicePitch);
+            _cmd.Ptr->UpdateSubresource((ID3D11Resource*)resource.Handle, subresource, destBox, ptrData, rowPitch, slicePitch);
             Profiler.Current.UpdateSubresourceCount++;
         }
 
@@ -205,7 +188,7 @@ namespace Molten.Graphics
             if(dest is GraphicsBuffer buffer && buffer.BufferType == GraphicsBufferType.Staging)
                 dest.Apply(this);
 
-            Native->CopyResource((ID3D11Resource*)dest.Handle, (ID3D11Resource*)src.Handle);
+            _cmd.Ptr->CopyResource((ID3D11Resource*)dest.Handle, (ID3D11Resource*)src.Handle);
             Profiler.Current.CopyResourceCount++;
         }
 
@@ -219,7 +202,7 @@ namespace Molten.Graphics
             if (_boundTopology != pass.Topology)
             {
                 _boundTopology = pass.Topology;
-                Native->IASetPrimitiveTopology(_boundTopology);
+                _cmd.Ptr->IASetPrimitiveTopology(_boundTopology);
             }
 
             Span<bool> stageChanged = stackalloc bool[_shaderStages.Length];
@@ -266,7 +249,7 @@ namespace Molten.Graphics
             if (_scissorRectsDirty)
             {
                 fixed (Rectangle* ptrRect = _scissorRects)
-                    Native->RSSetScissorRects((uint)_scissorRects.Length, (Box2D<int>*)ptrRect);
+                    _cmd.Ptr->RSSetScissorRects((uint)_scissorRects.Length, (Box2D<int>*)ptrRect);
 
                 _scissorRectsDirty = false;
             }
@@ -276,7 +259,7 @@ namespace Molten.Graphics
             if (_viewportsDirty)
             {
                 fixed (ViewportF* ptrViewports = _viewports)
-                    Native->RSSetViewports((uint)_viewports.Length, (Silk.NET.Direct3D11.Viewport*)ptrViewports);
+                    _cmd.Ptr->RSSetViewports((uint)_viewports.Length, (Silk.NET.Direct3D11.Viewport*)ptrViewports);
 
                 _viewportsDirty = false;
             }
@@ -322,7 +305,7 @@ namespace Molten.Graphics
                     _boundDepthMode = depthWriteMode;
                 }
 
-                Native->OMSetRenderTargets(_numRTVs, (ID3D11RenderTargetView**)RTVs, DSV);
+                _cmd.Ptr->OMSetRenderTargets(_numRTVs, (ID3D11RenderTargetView**)RTVs, DSV);
                 Profiler.Current.SurfaceBindings++;
             }
 
@@ -352,18 +335,18 @@ namespace Molten.Graphics
         public override void BeginEvent(string label)
         {
             fixed(char* ptr = label)
-                _debugAnnotation->BeginEvent(ptr);
+                _cmd.Debug->BeginEvent(ptr);
         }
 
         public override void EndEvent()
         {
-            _debugAnnotation->EndEvent();
+            _cmd.Debug->EndEvent();
         }
 
         public override void SetMarker(string label)
         {
             fixed (char* ptr = label)
-                _debugAnnotation->SetMarker(ptr);
+                _cmd.Debug->SetMarker(ptr);
         }
 
         private GraphicsBindResult ApplyState(HlslShader shader, QueueValidationMode mode, CmdQueueDrawCallback drawCallback)
@@ -371,7 +354,7 @@ namespace Molten.Graphics
             GraphicsBindResult vResult = GraphicsBindResult.Successful;
 
             if (!DrawInfo.Began)
-                throw new GraphicsCommandQueueException(this, $"{nameof(CommandQueueDX11)}: BeginDraw() must be called before calling {nameof(Draw)}()");
+                throw new GraphicsCommandQueueException(this, $"{nameof(GraphicsQueueDX11)}: BeginDraw() must be called before calling {nameof(Draw)}()");
 
             Shader.Value = shader;
             bool shaderChanged = Shader.Bind();
@@ -402,7 +385,7 @@ namespace Molten.Graphics
                         for (int j = 0; j < pass.Iterations; j++)
                         {
                             BeginEvent($"Iteration {j}"); 
-                            Native->Dispatch(groups.X, groups.Y, groups.Z);
+                            _cmd.Ptr->Dispatch(groups.X, groups.Y, groups.Z);
                             Profiler.Current.DispatchCalls++;
                             EndEvent();
                         }
@@ -453,7 +436,7 @@ namespace Molten.Graphics
 
         public override GraphicsBindResult Draw(HlslShader shader, uint vertexCount, uint vertexStartIndex = 0)
         {
-            return ApplyState(shader, QueueValidationMode.Unindexed, () => _context->Draw(vertexCount, vertexStartIndex));
+            return ApplyState(shader, QueueValidationMode.Unindexed, () => _cmd.Ptr->Draw(vertexCount, vertexStartIndex));
         }
 
         /// <inheritdoc/>
@@ -463,8 +446,8 @@ namespace Molten.Graphics
             uint vertexStartIndex = 0,
             uint instanceStartIndex = 0)
         {
-            return ApplyState(shader, QueueValidationMode.Instanced, () => 
-            _context->DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex));
+            return ApplyState(shader, QueueValidationMode.Instanced, () =>
+            _cmd.Ptr->DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex));
         }
 
         /// <inheritdoc/>
@@ -473,7 +456,7 @@ namespace Molten.Graphics
             int vertexIndexOffset = 0,
             uint startIndex = 0)
         {
-            return ApplyState(shader, QueueValidationMode.Indexed, () => _context->DrawIndexed(indexCount, startIndex, vertexIndexOffset));
+            return ApplyState(shader, QueueValidationMode.Indexed, () => _cmd.Ptr->DrawIndexed(indexCount, startIndex, vertexIndexOffset));
         }
 
         /// <inheritdoc/>
@@ -485,7 +468,7 @@ namespace Molten.Graphics
             uint instanceStartIndex = 0)
         {
             return ApplyState(shader, QueueValidationMode.InstancedIndexed, () =>
-                _context->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndex, vertexIndexOffset, instanceStartIndex));
+                _cmd.Ptr->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndex, vertexIndexOffset, instanceStartIndex));
         }
 
         /// <inheritdoc/>
@@ -726,25 +709,14 @@ namespace Molten.Graphics
                 return GraphicsBindResult.NonInstancedVertexLayout;
         }
 
-        /// <summary>Dispoes of the current <see cref="Graphics.CommandQueueDX11"/> instance.</summary>
+        /// <summary>Dispoes of the current <see cref="Graphics.GraphicsQueueDX11"/> instance.</summary>
         protected override void OnDispose()
         {
             EngineUtil.FreePtrArray(ref RTVs);
-            SilkUtil.ReleasePtr(ref _debugAnnotation);
-
-            // Dispose context.
-            if (Type != CommandQueueType.Immediate)
-            {
-                SilkUtil.ReleasePtr(ref _context);
-                DXDevice.RemoveDeferredContext(this);
-            }
+            _cmd.Dispose();
         }
 
-        /// <summary>Gets the current <see cref="CommandQueueDX11"/> type. This value will not change during the context's life.</summary>
-        public CommandQueueType Type { get; private set; }
 
         internal DeviceDX11 DXDevice { get; private set; }
-
-        internal ID3D11DeviceContext4* Native => _context;
     }
 }

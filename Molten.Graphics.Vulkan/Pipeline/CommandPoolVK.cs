@@ -8,7 +8,7 @@ namespace Molten.Graphics
         List<CommandPoolAllocation> _allocations;
         uint _allocSize;
 
-        internal CommandPoolVK(CommandQueueVK queue, CommandPoolCreateFlags flags, uint allocationSize)
+        internal CommandPoolVK(GraphicsQueueVK queue, CommandPoolCreateFlags flags, uint allocationSize)
         {
             Queue = queue;
             _allocSize = allocationSize;
@@ -65,7 +65,7 @@ namespace Molten.Graphics
             Queue.VK.DestroyCommandPool(Queue.VKDevice, _pool, null);
         }
 
-        internal CommandQueueVK Queue { get; }
+        internal GraphicsQueueVK Queue { get; }
 
         internal CommandPool Native => _pool;
 

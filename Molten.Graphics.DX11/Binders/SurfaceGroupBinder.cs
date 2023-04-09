@@ -16,7 +16,7 @@ namespace Molten.Graphics
 
         public override void Unbind(GraphicsSlotGroup<IRenderSurface2D> grp, uint startIndex, uint endIndex, uint numChanged)
         {
-            CommandQueueDX11 cmd = grp.Cmd as CommandQueueDX11;
+            GraphicsQueueDX11 cmd = grp.Cmd as GraphicsQueueDX11;
 
             uint numRTs = endIndex + 1;
             var rtvs = cmd.RTVs;
@@ -28,7 +28,7 @@ namespace Molten.Graphics
 
         public override void Unbind(GraphicsSlot<IRenderSurface2D> slot, IRenderSurface2D value)
         {
-            CommandQueueDX11 cmd = slot.Cmd as CommandQueueDX11;
+            GraphicsQueueDX11 cmd = slot.Cmd as GraphicsQueueDX11;
 
             var rtvs = cmd.RTVs;
             rtvs[slot.SlotIndex] = null;

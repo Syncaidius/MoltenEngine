@@ -75,7 +75,7 @@ namespace Molten.Graphics
             Viewport = new ViewportF(_vp.X, _vp.Y, newWidth, newHeight);
         }
 
-        internal virtual void OnClear(CommandQueueDX11 cmd, Color color)
+        internal virtual void OnClear(GraphicsQueueDX11 cmd, Color color)
         {
             OnApply(cmd);
 

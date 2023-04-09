@@ -12,7 +12,7 @@
 
         public bool Process(GraphicsQueue cmd, GraphicsResource resource)
         {
-            Surface.OnClear(cmd as CommandQueueDX11, ref this);
+            Surface.OnClear(cmd as GraphicsQueueDX11, ref this);
             return false;
         }
     }

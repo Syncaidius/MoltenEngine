@@ -10,7 +10,7 @@ namespace Molten.Graphics
         ID3D12Device10* _native;
         IDXGIAdapter4* _adapter;
         DeviceBuilderDX12 _builder;
-        CommandQueueDX12 _cmdDirect;
+        GraphicsQueueDX12 _cmdDirect;
 
         public DeviceDX12(RenderService renderer, GraphicsManagerDXGI manager, IDXGIAdapter4* adapter, DeviceBuilderDX12 deviceBuilder) : 
             base(renderer, manager, adapter)
@@ -29,7 +29,7 @@ namespace Molten.Graphics
                 Type = CommandListType.Direct,
             };
 
-            _cmdDirect = new CommandQueueDX12(Log, this, _builder, ref cmdDesc);
+            _cmdDirect = new GraphicsQueueDX12(Log, this, _builder, ref cmdDesc);
         }
 
         protected override void OnDispose()
@@ -153,6 +153,6 @@ namespace Molten.Graphics
         /// </summary>
         protected ref ID3D12Device10* PtrRef => ref _native;
 
-        public override CommandQueueDX12 Queue => _cmdDirect;
+        public override GraphicsQueueDX12 Queue => _cmdDirect;
     }
 }

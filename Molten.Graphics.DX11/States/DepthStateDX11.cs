@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    /// <summary>Stores a depth-stencil state for use with a <see cref="CommandQueueDX11"/>.</summary>
+    /// <summary>Stores a depth-stencil state for use with a <see cref="GraphicsQueueDX11"/>.</summary>
     internal unsafe class DepthStateDX11 : GraphicsObject
     {
         internal StructKey<DepthStencilDesc> Desc { get; }

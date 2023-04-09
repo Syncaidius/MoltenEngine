@@ -4,7 +4,7 @@ namespace Molten.Graphics
 {
     internal class ShaderCSStage : ShaderStageDX11
     {
-        public ShaderCSStage(CommandQueueDX11 queue) : base(queue, ShaderType.Compute)
+        public ShaderCSStage(GraphicsQueueDX11 queue) : base(queue, ShaderType.Compute)
         {
             uint uavSlots = queue.Device.Capabilities.Compute.MaxUnorderedAccessSlots;
             UAVs = queue.RegisterSlotGroup(GraphicsBindTypeFlags.Output, "UAV", uavSlots, new UavGroupBinder(this));

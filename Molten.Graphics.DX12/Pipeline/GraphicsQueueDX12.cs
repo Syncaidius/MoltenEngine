@@ -3,12 +3,12 @@ using Silk.NET.Direct3D12;
 
 namespace Molten.Graphics
 {
-    internal unsafe class CommandQueueDX12 : GraphicsQueue
+    internal unsafe class GraphicsQueueDX12 : GraphicsQueue
     {
         CommandQueueDesc _desc;
         ID3D12CommandQueue* _ptr;
 
-        internal CommandQueueDX12(Logger log, DeviceDX12 device, DeviceBuilderDX12 builder, ref CommandQueueDesc desc) : 
+        internal GraphicsQueueDX12(Logger log, DeviceDX12 device, DeviceBuilderDX12 builder, ref CommandQueueDesc desc) : 
             base(device)
         {
             _desc = desc;

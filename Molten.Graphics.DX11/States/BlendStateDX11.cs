@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    /// <summary>Stores a blend state for use with a <see cref="CommandQueueDX11"/>.</summary>
+    /// <summary>Stores a blend state for use with a <see cref="GraphicsQueueDX11"/>.</summary>
     public unsafe class BlendStateDX11 : GraphicsObject
     {
         internal StructKey<BlendDesc1> Desc { get; }

@@ -161,7 +161,7 @@ namespace Molten.Graphics
             UpdateViewport();
         }
 
-        internal void OnClear(CommandQueueDX11 cmd, ref DepthClearTask task)
+        internal void OnClear(GraphicsQueueDX11 cmd, ref DepthClearTask task)
         {
             OnApply(cmd);
 

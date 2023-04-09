@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    /// <summary>Stores a rasterizer state for use with a <see cref="CommandQueueDX11"/>.</summary>
+    /// <summary>Stores a rasterizer state for use with a <see cref="GraphicsQueueDX11"/>.</summary>
     internal unsafe class RasterizerStateDX11 : GraphicsObject
     {
         internal StructKey<RasterizerDesc2> Desc { get; }

@@ -39,7 +39,9 @@ namespace Molten.Graphics
             if (_freeCount == 0)
                 return null;
 
-            return _free[--_freeCount];
+            CommandListVK list = _free[--_freeCount];
+            list.IsFree = false;
+            return list;
         }
 
         internal void Free(CommandListVK list)

@@ -21,8 +21,8 @@ namespace Molten.Graphics
                 sid++;
             }
 
-            (grp.Cmd as CommandQueueDX11).Native->OMGetRenderTargetsAndUnorderedAccessViews(
-                CommandQueueDX11.D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, null, null,
+            (grp.Cmd as GraphicsQueueDX11).Native->OMGetRenderTargetsAndUnorderedAccessViews(
+                GraphicsQueueDX11.D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, null, null,
                 startIndex, numChanged, pUavs);
         }
 
@@ -31,8 +31,8 @@ namespace Molten.Graphics
             ID3D11UnorderedAccessView** pUavs = stackalloc ID3D11UnorderedAccessView*[1];
             pUavs[0] = slot.BoundValue != null ? (ID3D11UnorderedAccessView*)slot.BoundValue.UAV : null;
 
-            (slot.Cmd as CommandQueueDX11).Native->OMGetRenderTargetsAndUnorderedAccessViews(
-                CommandQueueDX11.D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, null, null,
+            (slot.Cmd as GraphicsQueueDX11).Native->OMGetRenderTargetsAndUnorderedAccessViews(
+                GraphicsQueueDX11.D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, null, null,
                 slot.SlotIndex, 1, pUavs);
         }
 
@@ -47,8 +47,8 @@ namespace Molten.Graphics
                 pUavs[i] = null;
             }
 
-            (grp.Cmd as CommandQueueDX11).Native->OMGetRenderTargetsAndUnorderedAccessViews(
-                CommandQueueDX11.D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, null, null,
+            (grp.Cmd as GraphicsQueueDX11).Native->OMGetRenderTargetsAndUnorderedAccessViews(
+                GraphicsQueueDX11.D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, null, null,
                 startIndex, numChanged, pUavs);
         }
 
@@ -57,8 +57,8 @@ namespace Molten.Graphics
             ID3D11UnorderedAccessView** pUavs = stackalloc ID3D11UnorderedAccessView*[1];
             pUavs[0] = null; 
             
-            (slot.Cmd as CommandQueueDX11).Native->OMGetRenderTargetsAndUnorderedAccessViews(
-                CommandQueueDX11.D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, null, null,
+            (slot.Cmd as GraphicsQueueDX11).Native->OMGetRenderTargetsAndUnorderedAccessViews(
+                GraphicsQueueDX11.D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, null, null,
                 slot.SlotIndex, 1, pUavs);
         }
     }

@@ -102,7 +102,7 @@ namespace Molten.Graphics
             SilkUtil.ReleasePtr(ref _native);
         }
 
-        /// <summary>Generates mip maps for the texture via the provided <see cref="CommandQueueDX11"/>.</summary>
+        /// <summary>Generates mip maps for the texture via the provided <see cref="GraphicsQueueDX11"/>.</summary>
         public void GenerateMipMaps(GraphicsPriority priority)
         {
             if (!IsMipMapGenAllowed)

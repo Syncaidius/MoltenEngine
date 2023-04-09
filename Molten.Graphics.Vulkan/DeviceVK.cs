@@ -20,8 +20,8 @@ namespace Molten.Graphics
 
         Instance* _vkInstance;
         RendererVK _renderer;
-        List<CommandQueueVK> _queues;
-        CommandQueueVK _gfxQueue;
+        List<GraphicsQueueVK> _queues;
+        GraphicsQueueVK _gfxQueue;
         DeviceLoaderVK _loader;
         MemoryManagerVK _memory;
         Device* _native;
@@ -73,7 +73,7 @@ namespace Molten.Graphics
         internal void Initialize(CommandSetCapabilityFlags capFlags)
         {
             _native = EngineUtil.Alloc<Device>();
-            _queues = new List<CommandQueueVK>();
+            _queues = new List<GraphicsQueueVK>();
             _loader = new DeviceLoaderVK(_renderer, this, capFlags);
         }
 
@@ -178,7 +178,7 @@ namespace Molten.Graphics
                         Queue q = new Queue();
                         _renderer.VK.GetDeviceQueue(*Ptr, qi.QueueFamilyIndex, index, &q);
                         SupportedCommandSet set = Capabilities.CommandSets[(int)qi.QueueFamilyIndex];
-                        CommandQueueVK queue = new CommandQueueVK(_renderer, this, qi.QueueFamilyIndex, q, index, set);
+                        GraphicsQueueVK queue = new GraphicsQueueVK(_renderer, this, qi.QueueFamilyIndex, q, index, set);
                         _queues.Add(queue);
 
                         // TODO maybe find the best queue, rather than first match?
@@ -196,16 +196,16 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// Finds a <see cref="CommandQueueVK"/> that can present the provided <see cref="WindowSurfaceVK"/>.
+        /// Finds a <see cref="GraphicsQueueVK"/> that can present the provided <see cref="WindowSurfaceVK"/>.
         /// </summary>
         /// <param name="surface"></param>
         /// <returns></returns>
-        internal CommandQueueVK FindPresentQueue(WindowSurfaceVK surface)
+        internal GraphicsQueueVK FindPresentQueue(WindowSurfaceVK surface)
         {
             KhrSurface extSurface = _renderer.GetInstanceExtension<KhrSurface>();
             Bool32 presentSupported = false;
 
-            foreach (CommandQueueVK queue in _queues)
+            foreach (GraphicsQueueVK queue in _queues)
             {
                 Result r = extSurface.GetPhysicalDeviceSurfaceSupport(Adapter, queue.FamilyIndex, surface.Native, &presentSupported);
                 if (r.Check(_renderer) && presentSupported)
@@ -216,13 +216,13 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// Retrieves the <see cref="SharingMode"/> for a resource, based on <see cref="CommandQueueVK"/> queues that may potentionally access it.
+        /// Retrieves the <see cref="SharingMode"/> for a resource, based on <see cref="GraphicsQueueVK"/> queues that may potentionally access it.
         /// </summary>
-        /// <param name="expectedQueues">The <see cref="CommandQueueVK"/> queues that are expected to share.</param>
+        /// <param name="expectedQueues">The <see cref="GraphicsQueueVK"/> queues that are expected to share.</param>
         /// <returns></returns>
-        internal (SharingMode, CommandQueueVK[]) GetSharingMode(params CommandQueueVK[] expectedQueues)
+        internal (SharingMode, GraphicsQueueVK[]) GetSharingMode(params GraphicsQueueVK[] expectedQueues)
         {
-            HashSet<CommandQueueVK> set = new HashSet<CommandQueueVK>();
+            HashSet<GraphicsQueueVK> set = new HashSet<GraphicsQueueVK>();
             for (int i = 0; i < expectedQueues.Length; i++)
                 set.Add(expectedQueues[i]);
 
@@ -438,9 +438,9 @@ namespace Molten.Graphics
         protected ref Device* PtrRef => ref _native;
 
         /// <summary>
-        /// Gets the underlying <see cref="CommandQueueVK"/> that should execute graphics commands.
+        /// Gets the underlying <see cref="GraphicsQueueVK"/> that should execute graphics commands.
         /// </summary>
-        public override CommandQueueVK Queue => _gfxQueue;
+        public override GraphicsQueueVK Queue => _gfxQueue;
 
         internal Vk VK => _renderer.VK;
 
