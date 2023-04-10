@@ -25,6 +25,13 @@ jobs:
         with:
           fetch-depth: 0
           
+      - name: Prepare changelog file
+        run: |
+         VERSION=${{inputs.version}}
+         rm -f "Changelogs/CHANGELOG_${VERSION/./_}.md"
+         echo -e $"| Commit | Changes |" >> "Changelogs/CHANGELOG_${VERSION/./_}.md"
+         echo -e $"| ------ | ------- |" >> "Changelogs/CHANGELOG_${VERSION/./_}.md"
+         
       - name: Get Changes Since Date
         if: "${{github.event.inputs.origin-type == 'Date'}}"
         run: |
@@ -33,9 +40,6 @@ jobs:
          CHANGES=${CHANGES//$'___'/'<br>'}
          CHANGES=${CHANGES//$'\r\n'/$'<br>'}
          CHANGES=${CHANGES//$'<br> |'/$' |\r\n'}
-         rm -f "Changelogs/CHANGELOG_${VERSION/./_}.md"
-         echo -e $"| Commit | Changes |" >> "Changelogs/CHANGELOG_${VERSION/./_}.md"
-         echo -e $"| ------ | ------- |" >> "Changelogs/CHANGELOG_${VERSION/./_}.md"
          echo $CHANGES >> "Changelogs/CHANGELOG_${VERSION/./_}.md" 
         
       - name: Get Changes Since Commit
@@ -46,9 +50,6 @@ jobs:
          CHANGES=${CHANGES//$'___'/'<br>'}
          CHANGES=${CHANGES//$'\r\n'/$'<br>'}
          CHANGES=${CHANGES//$'<br> |'/$' |\r\n'}
-         rm -f "Changelogs/CHANGELOG_${VERSION/./_}.md"
-         echo -e $"| Commit | Changes |" >> "Changelogs/CHANGELOG_${VERSION/./_}.md"
-         echo -e $"| ------ | ------- |" >> "Changelogs/CHANGELOG_${VERSION/./_}.md"
          echo $CHANGES >> "Changelogs/CHANGELOG_${VERSION/./_}.md" 
          
       - name: Commit
