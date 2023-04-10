@@ -31,6 +31,7 @@ jobs:
          VERSION=${{inputs.version}}
          CHANGES=$(git log --no-merges --pretty="| [[%h](https://github.com/Syncaidius/MoltenEngine/commits/%H)] | %s___%b |" --after=${{inputs.origin}})
          CHANGES=${CHANGES//$'___'/'<br>'}
+         CHANGES=${CHANGES//$'\r\n'/$'<br>'}
          CHANGES=${CHANGES//$'<br> |'/$' |\r\n'}
          rm -f "Changelogs/CHANGELOG_${VERSION/./_}.md"
          echo -e $"| Commit | Changes |" >> "Changelogs/CHANGELOG_${VERSION/./_}.md"
