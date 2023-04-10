@@ -38,12 +38,19 @@ jobs:
          echo -e $"| ------ | ------- |" >> "Changelogs/CHANGELOG_${VERSION/./_}.md"
          echo $CHANGES >> "Changelogs/CHANGELOG_${VERSION/./_}.md" 
         
-        # CHANGES=${CHANGES//$'\x0A'/$'\x0D\x0A'}
-        
       - name: Get Changes Since Commit
         if: "${{github.event.inputs.origin-type == 'Commit'}}"
-        run: git log --pretty="[%h]%n%s%n%b" $(github.events.inputs.origin).. > Changelogs/CHANGELOG_0_2.md
-        
+        run: |
+         VERSION=${{inputs.version}}
+         CHANGES=$(git log --no-merges --pretty="| [[%h](https://github.com/Syncaidius/MoltenEngine/commits/%H)] | %s___%b |" ${{inputs.origin}}..HEAD)
+         CHANGES=${CHANGES//$'___'/'<br>'}
+         CHANGES=${CHANGES//$'\r\n'/$'<br>'}
+         CHANGES=${CHANGES//$'<br> |'/$' |\r\n'}
+         rm -f "Changelogs/CHANGELOG_${VERSION/./_}.md"
+         echo -e $"| Commit | Changes |" >> "Changelogs/CHANGELOG_${VERSION/./_}.md"
+         echo -e $"| ------ | ------- |" >> "Changelogs/CHANGELOG_${VERSION/./_}.md"
+         echo $CHANGES >> "Changelogs/CHANGELOG_${VERSION/./_}.md" 
+         
       - name: Commit
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
