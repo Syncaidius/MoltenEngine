@@ -14,6 +14,8 @@ namespace Molten.Graphics
         /// <param name="nsTimeout">A timeout, in nanoseconds. If set to 0, the call will immediately return the fence status as a bool without waiting.</param>
         /// <returns>True if the wait was succesful, or false if the timeout was reached.</returns>
         public abstract bool Wait(ulong nsTimeout = ulong.MaxValue);
+
+        public abstract void Reset();
     }
 
     /// <summary>
@@ -25,5 +27,7 @@ namespace Molten.Graphics
         {
             return true;
         }
+
+        public override void Reset() { }
     }
 }

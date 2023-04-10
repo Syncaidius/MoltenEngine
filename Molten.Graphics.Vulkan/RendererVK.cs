@@ -175,8 +175,7 @@ namespace Molten.Graphics
 
         protected override void OnPrePresent(Timing time)
         {
-            for (int i = 0; i < _devices.Count; i++)
-                _devices[i].ProcessFences();
+            throw new NotImplementedException();
         }
 
         protected override void OnPostPresent(Timing time)

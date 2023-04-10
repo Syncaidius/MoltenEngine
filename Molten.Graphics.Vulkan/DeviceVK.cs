@@ -249,32 +249,27 @@ namespace Molten.Graphics
             base.OnDispose();
         }
 
-        internal FenceVK GetFence(FenceCreateFlags flags = FenceCreateFlags.None)
+        internal FenceVK GetFence()
         {
-            if (_freeFences.Count > 0)
-                return _freeFences.Pop();
+            FenceVK fence = null;
 
-            FenceVK fence = new FenceVK(this, flags);
-            _fences.Add(fence);
+            if (_freeFences.Count > 0)
+            {
+                fence = _freeFences.Pop();
+                fence.Reset();
+            }
+            else
+            {
+                fence = new FenceVK(this, FenceCreateFlags.None);
+                _fences.Add(fence);
+            }
+
             return fence;
         }
 
-        // TODO scrap this and properly wait on fences where needed. Recycle once we know they're done.
-        internal void ProcessFences()
+        internal void FreeFence(FenceVK fence)
         {
-            Span<Fence> f = stackalloc Fence[1];
-
-            for (int i = _fences.Count -1; i >= 0; i--)
-            {
-                FenceVK fence = _fences[i];
-                if (fence.CheckStatus())
-                {
-                    f[0] = fence.Ptr;
-                    VK.ResetFences(*_native, f);
-                    _fences.RemoveAt(i);
-                    _freeFences.Push(fence);
-                }
-            }
+            _freeFences.Push(fence);
         }
 
         protected override HlslPass OnCreateShaderPass(HlslShader shader, string name)

@@ -51,9 +51,20 @@ namespace Molten.Graphics
             }
 
             if (flags.Has(GraphicsCommandListFlags.CpuSyncable))
-                result.Fence = Queue.VKDevice.GetFence();
+            {
+                if (result.Fence != null)
+                    result.Fence.Reset();
+                else
+                    result.Fence = Queue.VKDevice.GetFence();
+            }
             else
-                result.Fence = null;
+            {
+                if (result.Fence != null)
+                {
+                    Queue.VKDevice.FreeFence(result.Fence as FenceVK);
+                    result.Fence = null;
+                }
+            }
 
             result.Flags = flags;
             result.BranchIndex = branchIndex;
