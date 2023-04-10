@@ -1,4 +1,4 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics.DX11
 {
     /// <summary>A render target that is created from, and outputs to, a GUI control-based swap chain.</summary>
     public class RenderControlSurface : WinformsSurface<RenderControl>, INativeSurface

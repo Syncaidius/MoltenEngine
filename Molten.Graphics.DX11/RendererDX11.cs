@@ -4,7 +4,7 @@ using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.DX11
 {
     public class RendererDX11 : RenderService
     {

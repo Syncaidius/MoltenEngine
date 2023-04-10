@@ -2,7 +2,7 @@
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.DX11
 {
     public delegate void TextureEvent(TextureDX11 texture);
 

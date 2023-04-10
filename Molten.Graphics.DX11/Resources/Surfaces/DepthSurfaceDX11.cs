@@ -1,7 +1,7 @@
 ﻿using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.DX11
 {
     /// <summary>A special kind of render surface for use as a depth-stencil buffer.</summary>
     public unsafe class DepthSurfaceDX11 : Texture2DDX11, IDepthStencilSurface

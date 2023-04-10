@@ -1,6 +1,6 @@
 ﻿using Silk.NET.Direct3D11;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.DX11
 {
     /// <summary>A render task which resolves a multisampled texture into a non-multisampled one.</summary>
     internal unsafe class TextureResolve : RenderTask<TextureResolve>

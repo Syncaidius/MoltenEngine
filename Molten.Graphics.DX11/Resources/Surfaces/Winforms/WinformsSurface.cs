@@ -3,7 +3,7 @@ using Molten.Graphics.Dxgi;
 using Molten.Windows32;
 using Silk.NET.DXGI;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.DX11
 {
     public unsafe abstract class WinformsSurface<T> : SwapChainSurfaceDX11
         where T : Control

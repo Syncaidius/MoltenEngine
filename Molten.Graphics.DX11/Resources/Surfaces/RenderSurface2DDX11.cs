@@ -1,7 +1,7 @@
 ﻿using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.DX11
 {
     public unsafe class RenderSurface2DDX11 : Texture2DDX11, IRenderSurface2D
     {

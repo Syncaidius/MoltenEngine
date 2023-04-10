@@ -4,7 +4,7 @@ using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 using Feature = Silk.NET.Direct3D11.Feature;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.DX11
 {
 
     public unsafe class DeviceBuilderDX11

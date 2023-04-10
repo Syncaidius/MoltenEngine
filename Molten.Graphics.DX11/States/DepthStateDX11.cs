@@ -1,6 +1,6 @@
 ﻿using Silk.NET.Direct3D11;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.DX11
 {
     /// <summary>Stores a depth-stencil state for use with a <see cref="GraphicsQueueDX11"/>.</summary>
     internal unsafe class DepthStateDX11 : GraphicsObject

@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace Molten.Graphics
+namespace Molten.Graphics.DX11
 {
     /// <summary>
     /// A Renderable UserControl.

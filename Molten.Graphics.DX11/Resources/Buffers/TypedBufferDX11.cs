@@ -2,7 +2,7 @@
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.DX11
 {
     /// <summary>A typed, structured buffer. This is the application-equivilent of a typed Buffer and RWBuffer in HLSL. </summary>
     /// <typeparam name="T"></typeparam>

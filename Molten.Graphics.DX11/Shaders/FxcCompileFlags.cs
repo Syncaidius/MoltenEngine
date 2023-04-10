@@ -1,4 +1,4 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics.DX11
 {
     /// <summary>
     /// FXC Shader compiler flags.

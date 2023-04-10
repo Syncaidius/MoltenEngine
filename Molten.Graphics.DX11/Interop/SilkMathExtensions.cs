@@ -2,7 +2,7 @@
 using Silk.NET.Direct3D11;
 using Silk.NET.Maths;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.DX11
 {
     /// <summary>Interop between SharpDX DX11 and engine types.</summary>
     public static class SilkMathExtensions

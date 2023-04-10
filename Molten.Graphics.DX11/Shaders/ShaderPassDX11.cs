@@ -1,6 +1,6 @@
 ﻿using Silk.NET.Core.Native;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.DX11
 {
     public class ShaderPassDX11 : HlslPass
     {

@@ -46,7 +46,7 @@
 using System.ComponentModel;
 using Molten.Windows32;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.DX11
 {
     /// <summary>
     /// Default Rendering Form.

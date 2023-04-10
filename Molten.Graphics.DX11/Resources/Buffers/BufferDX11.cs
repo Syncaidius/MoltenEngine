@@ -2,7 +2,7 @@
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.DX11
 {
     /// <summary>
     /// The standard implementation of <see cref="GraphicsBuffer"/> for DirectX 11. Also acts as a base class for other buffer types.

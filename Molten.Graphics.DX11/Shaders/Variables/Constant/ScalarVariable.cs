@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.DX11
 {
     internal unsafe class ScalarVariable<T> : ShaderConstantVariable where T : unmanaged 
     {

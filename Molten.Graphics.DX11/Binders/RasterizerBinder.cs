@@ -1,4 +1,4 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics.DX11
 {
     internal unsafe class RasterizerBinder : GraphicsSlotBinder<RasterizerStateDX11>
     {

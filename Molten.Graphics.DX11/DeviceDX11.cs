@@ -7,7 +7,7 @@ using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 using Message = Silk.NET.Direct3D11.Message;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.DX11
 {
     /// <summary>A Direct3D 11 graphics device.</summary>
     /// <seealso cref="GraphicsQueueDX11" />

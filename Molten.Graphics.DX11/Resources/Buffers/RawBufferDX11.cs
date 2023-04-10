@@ -2,7 +2,7 @@
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.DX11
 {
     /// <summary>A raw byte-addressed buffer. In HLSL these are intended for use only with unsigned 32-bit integer elements (UInt32). 
     /// <para>If the values you want to store in the buffer, are not UInt32, you could use a HLSL function such as <see cref="asfloat"/>.</para></summary>

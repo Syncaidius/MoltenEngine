@@ -1,4 +1,4 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics.DX11
 {
     /// <summary>A shader matrix variable.</summary>
     internal unsafe class ScalarArray<T> : ShaderConstantVariable where T : unmanaged

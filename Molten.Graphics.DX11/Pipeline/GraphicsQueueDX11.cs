@@ -2,7 +2,7 @@
 using Silk.NET.Direct3D11;
 using Silk.NET.Maths;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.DX11
 {
     internal delegate void CmdQueueDrawCallback();
     internal delegate void CmdQueueDrawFailCallback(ShaderPassDX11 pass, uint passNumber, GraphicsBindResult result);
