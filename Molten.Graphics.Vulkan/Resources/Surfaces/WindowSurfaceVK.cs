@@ -52,7 +52,6 @@ namespace Molten.Graphics.Vulkan
             base(device, GraphicsBindTypeFlags.Input | GraphicsBindTypeFlags.Output)
         {
             _format = format.ToApi();
-            Device = device;
             RendererVK renderer = Device.Renderer as RendererVK;
             _title = title;
             _width = width;
@@ -65,7 +64,7 @@ namespace Molten.Graphics.Vulkan
                 return;
             }
 
-            _extSwapChain = Device.GetExtension<KhrSwapchain>();
+            _extSwapChain = device.GetExtension<KhrSwapchain>();
             if (_extSwapChain == null)
             {
                 renderer.Log.Error($"VK_KHR_swapchain extension is unsupported. Unable to initialize WindowSurfaceVK");
@@ -114,6 +113,7 @@ namespace Molten.Graphics.Vulkan
 
         private Result CreateSwapChain()
         {
+            DeviceVK device = Device as DeviceVK;
             SwapchainCreateInfoKHR createInfo = new SwapchainCreateInfoKHR()
             {
                 SType = StructureType.SwapchainCreateInfoKhr,
@@ -127,7 +127,7 @@ namespace Molten.Graphics.Vulkan
             };
 
             // Detect swap-chain sharing mode.
-            (createInfo.ImageSharingMode, GraphicsQueueVK[] sharingWith) = Device.GetSharingMode(Device.Queue, _presentQueue);
+            (createInfo.ImageSharingMode, GraphicsQueueVK[] sharingWith) = device.GetSharingMode(device.Queue, _presentQueue);
             uint* familyIndices = stackalloc uint[sharingWith.Length];
 
             for (int i = 0; i < sharingWith.Length; i++)
@@ -141,16 +141,17 @@ namespace Molten.Graphics.Vulkan
             createInfo.Clipped = true;
             createInfo.OldSwapchain = _swapChain;
 
-            return _extSwapChain.CreateSwapchain(Device, &createInfo, null, out _swapChain);
+            return _extSwapChain.CreateSwapchain(device, &createInfo, null, out _swapChain);
         }
 
         private BackBuffer[] GetBackBufferImages()
         {
+            DeviceVK device = Device as DeviceVK;
             RendererVK renderer = Device.Renderer as RendererVK;
 
             Image[] images = renderer.Enumerate<Image>((count, items) =>
             {
-                return _extSwapChain.GetSwapchainImages(Device, _swapChain, count, items);
+                return _extSwapChain.GetSwapchainImages(device, _swapChain, count, items);
             }, "Swapchain image");
 
             BackBuffer[] buffer = new BackBuffer[images.Length];
@@ -180,8 +181,8 @@ namespace Molten.Graphics.Vulkan
             {
                 buffer[i].Texture = images[i];
                 createInfo.Image = images[i];
-                Result r = renderer.VK.CreateImageView(Device, &createInfo, null, out buffer[i].View);
-                if (!r.Check(Device, () => $"Failed to create image view for back-buffer image {i}"))
+                Result r = renderer.VK.CreateImageView(device, &createInfo, null, out buffer[i].View);
+                if (!r.Check(device, () => $"Failed to create image view for back-buffer image {i}"))
                     break;
             }
 
@@ -190,9 +191,10 @@ namespace Molten.Graphics.Vulkan
 
         private bool IsFormatSupported(KhrSurface extSurface, GraphicsFormat format, ColorSpaceKHR colorSpace)
         {
+            DeviceVK device = Device as DeviceVK;
             SurfaceFormatKHR[] supportedFormats = (Device.Renderer as RendererVK).Enumerate<SurfaceFormatKHR>((count, items) =>
             {
-                return extSurface.GetPhysicalDeviceSurfaceFormats(Device.Adapter, Native, count, items);
+                return extSurface.GetPhysicalDeviceSurfaceFormats(device.Adapter, Native, count, items);
             }, "surface format");
 
             Format vkFormat = format.ToApi();
@@ -208,9 +210,10 @@ namespace Molten.Graphics.Vulkan
 
         private PresentModeKHR ValidatePresentMode(KhrSurface extSurface, PresentModeKHR requested)
         {
+            DeviceVK device = Device as DeviceVK;
             PresentModeKHR[] supportedModes = (Device.Renderer as RendererVK).Enumerate<PresentModeKHR>((count, items) =>
             {
-                return extSurface.GetPhysicalDeviceSurfacePresentModes(Device.Adapter, Native, count, items);
+                return extSurface.GetPhysicalDeviceSurfacePresentModes(device.Adapter, Native, count, items);
             }, "present mode");
 
             for (int i = 0; i < supportedModes.Length; i++)
@@ -244,14 +247,15 @@ namespace Molten.Graphics.Vulkan
 
         protected override void OnDispose()
         {
+            DeviceVK device = Device as DeviceVK;
             if (_swapChain.Handle != 0)
             {
                 // Clean up image view handles
                 for (int i = 0; i < _backBuffer.Length; i++)
-                    (Device.Renderer as RendererVK).VK.DestroyImageView(Device, _backBuffer[i].View, null);
+                    (Device.Renderer as RendererVK).VK.DestroyImageView(device, _backBuffer[i].View, null);
 
-                KhrSwapchain extSwapchain = Device.GetExtension<KhrSwapchain>();
-                extSwapchain?.DestroySwapchain(Device, _swapChain, null);
+                KhrSwapchain extSwapchain = device.GetExtension<KhrSwapchain>();
+                extSwapchain?.DestroySwapchain(device, _swapChain, null);
             }
 
             KhrSurface extSurface = (Device.Renderer as RendererVK).GetInstanceExtension<KhrSurface>();
@@ -358,11 +362,6 @@ namespace Molten.Graphics.Vulkan
         {
             throw new NotImplementedException();
         }
-
-        /// <summary>
-        /// Gets the <see cref="RendererVK"/> instance that the current <see cref="WindowSurfaceVK"/> is bound to.
-        /// </summary>
-        public DeviceVK Device { get; }
 
         public bool IsFocused => throw new NotImplementedException();
 
