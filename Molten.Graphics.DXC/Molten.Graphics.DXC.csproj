@@ -34,7 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Silk.NET.Direct3D.Compilers" Version="2.17.0" />
+    <PackageReference Include="Silk.NET.Direct3D.Compilers" Version="2.17.1" />
   </ItemGroup>
 
   <ItemGroup>
