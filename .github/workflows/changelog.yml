@@ -5,4 +5,4 @@ jobs:
   Get-Changelog:
     runs-on: ubuntu-latest
     steps:
-      - run: git log --pretty="[%h]
+      - run: git log --pretty="[%h]"
