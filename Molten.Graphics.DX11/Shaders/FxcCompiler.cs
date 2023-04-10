@@ -197,16 +197,15 @@ namespace Molten.Graphics
         public override bool CompileSource(string entryPoint, ShaderType type, 
             ShaderCompilerContext context, out ShaderCodeResult result)
         {
-            Encoding encoding = CodePagesEncodingProvider.Instance.GetEncoding(1252);
+            Encoding encoding = CodePagesEncodingProvider.Instance.GetEncoding(1252); // Ansi codepage
             NativeStringEncoding nativeEncoding = NativeStringEncoding.LPStr;
             
             // Since it's not possible to have two functions in the same file with the same name, we'll just check if
             // a shader with the same entry-point name is already loaded in the context.
             if (!context.Shaders.TryGetValue(entryPoint, out result))
             {
-                string shaderProfile = ShaderModel.Model5_0.ToProfile(type, ShaderLanguage.Hlsl);
-
                 ulong numBytes = 0;
+                string shaderProfile = ShaderModel.Model5_0.ToProfile(type, ShaderLanguage.Hlsl);
                 byte* pSourceName = EngineUtil.StringToPtr(context.Source.Filename, encoding);
                 byte* pEntryPoint = (byte*)SilkMarshal.StringToPtr(entryPoint, nativeEncoding);
                 byte* pTarget = (byte*)SilkMarshal.StringToPtr(shaderProfile, nativeEncoding);
@@ -216,8 +215,6 @@ namespace Molten.Graphics
                 ID3D10Blob* pByteCode = null;
                 ID3D10Blob* pErrors = null;
                 ID3D10Blob* pProcessedSrc = null;
-
-                //uint numBytes = (uint)encoding.GetMaxByteCount(context.Source.SourceCode.Length);
 
                 // Preprocess and check for errors
                 HResult hr = _d3dCompiler.Preprocess(pSrc, (nuint)numBytes, pSourceName, null, null, &pProcessedSrc, &pErrors);

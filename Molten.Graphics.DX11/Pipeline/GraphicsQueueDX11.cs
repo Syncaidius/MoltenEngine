@@ -105,7 +105,9 @@ namespace Molten.Graphics
         public override void Begin(GraphicsCommandListFlags flags = GraphicsCommandListFlags.None)
         {
             base.Begin(flags);
-            _cmd = null;
+
+            if (Type != CommandQueueType.Deferred)
+                _cmd = null;
         }
 
         public override GraphicsCommandList End()
@@ -121,6 +123,9 @@ namespace Molten.Graphics
                 Tracker.Track(_cmd);
             }
 
+            if(_cmd.Flags.Has(GraphicsCommandListFlags.CpuSyncable))
+                _cmd.Fence = new GraphicsOpenFence();
+
             return _cmd;
         }
 
@@ -130,7 +135,7 @@ namespace Molten.Graphics
                 throw new GraphicsCommandQueueException(this, "Cannot execute an immediate-mode command list. Use Submit() instead.");
 
             CommandListDX11 cmd = list as CommandListDX11;
-            _native->ExecuteCommandList(cmd.Ptr, false);
+            _native->ExecuteCommandList(cmd.Ptr, true);
         }
 
         public override void Submit(GraphicsCommandListFlags flags)
