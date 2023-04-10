@@ -1,7 +1,7 @@
 ﻿using Silk.NET.Core.Native;
 using Silk.NET.Direct3D.Compilers;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.DXC
 {
     /// <summary>
     /// See for argument details:

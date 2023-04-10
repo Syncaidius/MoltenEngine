@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <RootNamespace>Molten.Graphics</RootNamespace>
+    <RootNamespace>Molten.Graphics.DX11</RootNamespace>
     <PackageProjectUrl>https://github.com/Syncaidius/MoltenEngine</PackageProjectUrl>
 	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>Molten.Graphics.DX11</Title>

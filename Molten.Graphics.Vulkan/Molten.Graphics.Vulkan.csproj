@@ -20,7 +20,7 @@
     <PackageIcon>logo_128.png</PackageIcon>
     <Version>0.4.0</Version>
     <Authors>James Yarwood</Authors>
-    <RootNamespace>Molten.Graphics</RootNamespace>
+    <RootNamespace>Molten.Graphics.Vulkan</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

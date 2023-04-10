@@ -1,4 +1,4 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics.DXC
 {
     /// <summary>
     /// See for info: https://github.com/microsoft/DirectXShaderCompiler/blob/dc7789738c51994559424c67629acc90f4ba69ad/include/dxc/dxcapi.h#L135

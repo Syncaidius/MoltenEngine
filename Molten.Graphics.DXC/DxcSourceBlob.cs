@@ -1,7 +1,7 @@
 ﻿using Silk.NET.Direct3D.Compilers;
 using Buffer = Silk.NET.Direct3D.Compilers.Buffer;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.DXC
 {
     internal unsafe class DxcSourceBlob
     {
