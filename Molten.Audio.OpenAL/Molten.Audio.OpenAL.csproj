@@ -35,9 +35,9 @@
 
   <ItemGroup>
     <PackageReference Include="Silk.NET.OpenAL" Version="2.17.1" />
-    <PackageReference Include="Silk.NET.OpenAL.Extensions.Enumeration" Version="2.17.0" />
+    <PackageReference Include="Silk.NET.OpenAL.Extensions.Enumeration" Version="2.17.1" />
     <PackageReference Include="Silk.NET.OpenAL.Extensions.EXT" Version="2.17.1" />
-    <PackageReference Include="Silk.NET.OpenAL.Extensions.Soft" Version="2.17.0" />
+    <PackageReference Include="Silk.NET.OpenAL.Extensions.Soft" Version="2.17.1" />
     <PackageReference Include="Silk.NET.OpenAL.Soft.Native" Version="1.21.1.2" />
   </ItemGroup>
 
