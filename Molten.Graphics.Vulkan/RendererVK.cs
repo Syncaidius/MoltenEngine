@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
+using Molten.Graphics.Dxc;
 using Silk.NET.Core;
 using Silk.NET.Core.Native;
 using Silk.NET.GLFW;

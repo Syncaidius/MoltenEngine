@@ -1,4 +1,5 @@
-﻿using Molten.Graphics.Dxgi;
+﻿using Molten.Graphics.Dxc;
+using Molten.Graphics.Dxgi;
 using Silk.NET.Direct3D12;
 using Silk.NET.DXGI;
 

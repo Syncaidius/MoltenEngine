@@ -3,7 +3,7 @@ using Silk.NET.Core.Native;
 using Silk.NET.Direct3D.Compilers;
 using DxcBuffer = Silk.NET.Direct3D.Compilers.Buffer;
 
-namespace Molten.Graphics.DXC
+namespace Molten.Graphics.Dxc
 {
     public unsafe class DxcCompiler : ShaderCompiler
     {
