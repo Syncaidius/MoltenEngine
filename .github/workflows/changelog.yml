@@ -1,5 +1,5 @@
 name: Generate Changelog
-on: [workflow_run]
+on: [workflow_dispatch]
 
 jobs:
   Get-Changelog:
