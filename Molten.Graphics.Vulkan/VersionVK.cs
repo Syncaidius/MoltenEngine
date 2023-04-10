@@ -1,4 +1,4 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics.Vulkan
 {
     /// <summary>
     /// Matches the same memory layout as VK_MAKE_API_VERSION.

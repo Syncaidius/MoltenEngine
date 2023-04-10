@@ -2,7 +2,7 @@
 using Silk.NET.Core.Native;
 using Silk.NET.DXGI;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.DX12
 {
     public unsafe class SwapChainSurfaceDX12
     {

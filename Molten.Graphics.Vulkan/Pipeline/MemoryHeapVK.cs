@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Silk.NET.Vulkan;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.Vulkan
 {
     internal class MemoryHeapVK
     {

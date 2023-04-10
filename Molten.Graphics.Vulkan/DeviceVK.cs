@@ -5,7 +5,7 @@ using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
 using Queue = Silk.NET.Vulkan.Queue;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.Vulkan
 {
     internal unsafe class DeviceVK : GraphicsDevice
     {

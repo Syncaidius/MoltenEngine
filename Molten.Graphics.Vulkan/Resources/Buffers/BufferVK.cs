@@ -1,7 +1,7 @@
 ﻿using Silk.NET.Vulkan;
 using Buffer = Silk.NET.Vulkan.Buffer;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.Vulkan
 {
     internal unsafe class BufferVK : GraphicsBuffer
     {

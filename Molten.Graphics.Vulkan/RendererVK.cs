@@ -7,7 +7,7 @@ using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
 using Silk.NET.Vulkan.Extensions.KHR;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.Vulkan
 {
     public unsafe class RendererVK : RenderService
     {

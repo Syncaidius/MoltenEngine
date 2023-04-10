@@ -3,7 +3,7 @@ using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
 using Silk.NET.DXGI;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.DX12
 {
     internal unsafe class DeviceDX12 : DeviceDXGI
     {

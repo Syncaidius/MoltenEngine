@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Silk.NET.Vulkan;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.Vulkan
 {
     internal static class ResultExtensions
     {

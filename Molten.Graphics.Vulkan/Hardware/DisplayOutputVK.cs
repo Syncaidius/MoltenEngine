@@ -1,7 +1,7 @@
 ﻿using Silk.NET.GLFW;
 using Monitor = Silk.NET.GLFW.Monitor;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.Vulkan
 {
     public unsafe class DisplayOutputVK : IDisplayOutput
     {

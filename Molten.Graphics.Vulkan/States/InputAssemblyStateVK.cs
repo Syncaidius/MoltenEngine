@@ -1,6 +1,6 @@
 ﻿using Silk.NET.Vulkan;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.Vulkan
 {
     /// <summary>
     /// See for info: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPipelineInputAssemblyStateCreateInfo.html

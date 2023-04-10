@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Silk.NET.Direct3D.Compilers;
 using Silk.NET.Vulkan;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.Vulkan
 {
     internal class MemoryAllocationVK
     {

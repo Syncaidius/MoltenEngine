@@ -1,4 +1,4 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics.Vulkan
 {
     internal static class StateInterop
     {

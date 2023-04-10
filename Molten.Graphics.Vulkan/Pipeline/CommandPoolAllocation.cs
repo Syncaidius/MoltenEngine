@@ -1,6 +1,6 @@
 ﻿using Silk.NET.Vulkan;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.Vulkan
 {
     internal unsafe class CommandPoolAllocation : IDisposable
     {

@@ -3,7 +3,7 @@ using Silk.NET.Core.Attributes;
 using Silk.NET.Core.Native;
 using Silk.NET.Vulkan;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.Vulkan
 {
     internal unsafe abstract class ExtensionLoaderVK<D> : EngineObject
         where D : unmanaged

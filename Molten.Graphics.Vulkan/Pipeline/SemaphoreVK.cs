@@ -5,7 +5,7 @@ using System.Text;
 using Silk.NET.Vulkan;
 using Semaphore = Silk.NET.Vulkan.Semaphore;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.Vulkan
 {
     internal class SemaphoreVK : IDisposable
     {

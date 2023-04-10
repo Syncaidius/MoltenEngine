@@ -1,5 +1,6 @@
 ﻿using Molten.Audio.OpenAL;
 using Molten.Graphics;
+using Molten.Graphics.DX11;
 using Molten.Input;
 
 namespace Molten.Examples // Note: actual namespace depends on the project name.

@@ -1,4 +1,4 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics.Vulkan
 {
     public unsafe abstract class AllocatedObjectVK<T> : EngineObject
         where T : unmanaged

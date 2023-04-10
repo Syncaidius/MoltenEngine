@@ -4,7 +4,7 @@ using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
 using Image = Silk.NET.Vulkan.Image;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.Vulkan
 {
     internal unsafe class WindowSurfaceVK : GraphicsObject, INativeSurface
     {

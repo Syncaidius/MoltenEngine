@@ -1,7 +1,7 @@
 ﻿using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.DX12
 {
     internal unsafe class GraphicsQueueDX12 : GraphicsQueue
     {
