@@ -1,8 +1,13 @@
 name: Generate Changelog
-on: [push]
+on: [workflow_dispatch]
 
 jobs:
   Get-Changelog:
     runs-on: ubuntu-latest
     steps:
-      - run: git log --pretty="[%h]"
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Get Log
+        run: git log --pretty="[%h]"
