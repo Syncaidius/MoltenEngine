@@ -15,6 +15,8 @@ namespace Molten.Graphics
         /// </summary>
         public event TextureHandler OnResize;
 
+        TextureDimensions _dimensions;
+
         protected GraphicsTexture(GraphicsDevice device, GraphicsTextureType type, TextureDimensions dimensions, AntiAliasLevel aaLevel, 
             MSAAQuality sampleQuality, GraphicsFormat format, GraphicsResourceFlags flags, bool allowMipMapGen, string name) 
             : base(device, flags)
@@ -23,12 +25,8 @@ namespace Molten.Graphics
             ValidateFlagCombination();
 
             MSAASupport msaaSupport = MSAASupport.NotSupported; // TODO re-support. _renderer.Device.Features.GetMSAASupport(format, aaLevel);
+            _dimensions = dimensions;
             TextureType = type;
-            Width = dimensions.Width;
-            Height = dimensions.Height;
-            Depth = dimensions.Depth;
-            MipMapCount = dimensions.MipMapLevels;
-            ArraySize = dimensions.ArraySize;
             Name = string.IsNullOrWhiteSpace(name) ? $"{GetType().Name}_{Width}x{Height}" : name;
 
             MultiSampleLevel = aaLevel > AntiAliasLevel.Invalid ? aaLevel : AntiAliasLevel.None;
@@ -206,10 +204,10 @@ namespace Molten.Graphics
                 ResourceFormat == task.NewFormat)
                 return;
 
-            Width = Math.Max(1, task.NewWidth);
-            Height = Math.Max(1, task.NewHeight);
-            Depth = Math.Max(1, task.NewDepth);
-            MipMapCount = Math.Max(1, task.NewMipMapCount);
+            _dimensions.Width = Math.Max(1, task.NewWidth);
+            _dimensions.Height = Math.Max(1, task.NewHeight);
+            _dimensions.Depth = Math.Max(1, task.NewDepth);
+            _dimensions.MipMapLevels = Math.Max(1, task.NewMipMapCount);
             ResourceFormat = task.NewFormat;
 
             OnSetSize();
@@ -284,19 +282,24 @@ namespace Molten.Graphics
         public bool IsBlockCompressed { get; protected set; }
 
         /// <summary>Gets the width of the texture.</summary>
-        public uint Width { get; protected set; }
+        public uint Width => _dimensions.Width;
 
         /// <summary>Gets the height of the texture.</summary>
-        public uint Height { get; protected set; }
+        public uint Height => _dimensions.Height;
 
         /// <summary>Gets the depth of the texture. For a 3D texture this is the number of slices.</summary>
-        public uint Depth { get; protected set; }
+        public uint Depth => _dimensions.Depth;
 
         /// <summary>Gets the number of mip map levels in the texture.</summary>
-        public uint MipMapCount { get; protected set; }
+        public uint MipMapCount => _dimensions.MipMapLevels;
 
         /// <summary>Gets the number of array slices in the texture. For a cube-map, this value will a multiple of 6. For example, a cube map with 2 array elements will have 12 array slices.</summary>
-        public uint ArraySize { get; protected set; }
+        public uint ArraySize => _dimensions.ArraySize;
+
+        /// <summary>
+        /// Gets the dimensions of the texture.
+        /// </summary>
+        public TextureDimensions Dimensions => _dimensions;
 
         public override uint SizeInBytes { get; }
 
