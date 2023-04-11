@@ -5,11 +5,6 @@
     public interface ITexture1D : ITexture
     {
         /// <summary>
-        /// Occurs after the <see cref="ITexture"/> is done resizing. Executed by the renderer thread it is bound to.
-        /// </summary>
-        event TextureHandler OnResize;
-
-        /// <summary>
         /// Gets a new instance of the texture's <see cref="Texture1DProperties"/> properties.
         /// </summary>
         /// <returns></returns>

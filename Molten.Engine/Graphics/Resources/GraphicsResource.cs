@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    public abstract class GraphicsResource : GraphicsObject
+    public abstract class GraphicsResource : GraphicsObject, IGraphicsResource
     {
         ThreadedQueue<IGraphicsResourceTask> _applyTaskQueue;
 
