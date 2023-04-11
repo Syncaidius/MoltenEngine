@@ -8,7 +8,7 @@ namespace Molten.Graphics
     /// <param name="texture">The texture instance that triggered the event.</param>
     public delegate void TextureHandler(GraphicsTexture texture);
 
-    public abstract class GraphicsTexture : GraphicsResource
+    public abstract class GraphicsTexture : GraphicsResource, ITexture
     {            
         /// <summary>
         /// Invoked after resizing of the texture has completed.

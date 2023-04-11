@@ -112,9 +112,6 @@
         /// <summary>Gets the depth of the texture.</summary>
         uint Depth { get; }
 
-        /// <summary>Gets the format of the texture.</summary>
-        GraphicsFormat DataFormat { get; }
-
         /// <summary>Gets whether or not the texture is using a supported block-compressed format.</summary>
         bool IsBlockCompressed { get; }
 
@@ -133,10 +130,5 @@
         /// Gets whether or not the texture is multisampled. This is true if <see cref="SampleCount"/> is greater than 1.
         /// </summary>
         bool IsMultisampled { get; }
-
-        /// <summary>
-        /// Gets the <see cref="GraphicsDevice"/> that the texture is bound to.
-        /// </summary>
-        GraphicsDevice Device { get; }
     }
 }

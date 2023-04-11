@@ -8,5 +8,10 @@
         /// Gets the <see cref="GraphicsResourceFlags"/> that were provided when the current <see cref="IGraphicsResource"/> was created.
         /// </summary>
         GraphicsResourceFlags Flags { get; }
+
+        /// <summary>
+        /// Gets or [protected] sets the <see cref="GraphicsFormat"/> of the resource.
+        /// </summary>
+        GraphicsFormat ResourceFormat { get; }
     }
 }

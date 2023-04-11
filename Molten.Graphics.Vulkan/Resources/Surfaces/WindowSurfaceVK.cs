@@ -119,7 +119,7 @@ namespace Molten.Graphics.Vulkan
                 SType = StructureType.SwapchainCreateInfoKhr,
                 Surface = Native,
                 MinImageCount = _backBufferSize,
-                ImageFormat = DataFormat.ToApi(),
+                ImageFormat = ResourceFormat.ToApi(),
                 ImageColorSpace = _colorSpace,
                 ImageExtent = new Extent2D(_width, _height),
                 ImageArrayLayers = 1,
@@ -375,7 +375,7 @@ namespace Molten.Graphics.Vulkan
 
         public ViewportF Viewport => throw new NotImplementedException();
 
-        public GraphicsFormat DataFormat => _format.FromApi();
+        public GraphicsFormat ResourceFormat => _format.FromApi();
 
         public bool IsBlockCompressed => throw new NotImplementedException();
 
