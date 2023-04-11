@@ -34,7 +34,8 @@ namespace Molten.Graphics.DX11
             uint mipCount = 1,
             bool allowMipMapGen = false,
             string name = null)
-            : base(device, width, height, depth, mipCount, 1, AntiAliasLevel.None, MSAAQuality.Default, format, flags, allowMipMapGen, name)
+            : base(device, GraphicsTextureType.Texture3D, new TextureDimensions(width, height, depth, mipCount, 1), 
+                  AntiAliasLevel.None, MSAAQuality.Default, format, flags, allowMipMapGen, name)
         {
             _desc = new Texture3DDesc1()
             {

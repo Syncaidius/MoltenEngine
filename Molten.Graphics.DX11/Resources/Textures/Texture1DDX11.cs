@@ -18,7 +18,8 @@ namespace Molten.Graphics.DX11
             uint arraySize = 1,
             bool allowMipMapGen = false,
             string name = null)
-            : base(device, width, 1, 1, mipCount, arraySize, AntiAliasLevel.None, MSAAQuality.Default, format, flags, allowMipMapGen, name)
+            : base(device, GraphicsTextureType.Texture1D, new TextureDimensions(width, 1, 1, mipCount, arraySize), 
+                  AntiAliasLevel.None, MSAAQuality.Default, format, flags, allowMipMapGen, name)
         {
             if (IsBlockCompressed)
                 throw new NotSupportedException("1D textures do not supports block-compressed formats.");

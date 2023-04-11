@@ -15,14 +15,9 @@ namespace Molten.Graphics.Vulkan
         ResourceHandleVK* _handle;
         MemoryAllocationVK _memory;
 
-        public TextureVK(GraphicsDevice device, 
-            uint width, uint height, uint depth, 
-            uint mipCount, uint arraySize, 
-            AntiAliasLevel aaLevel,
-            MSAAQuality sampleQuality, 
-            GraphicsFormat format, 
-            GraphicsResourceFlags flags, bool allowMipMapGen, string name) : 
-            base(device, width, height, depth, mipCount, arraySize, aaLevel, sampleQuality, format, flags, allowMipMapGen, name)
+        public TextureVK(GraphicsDevice device, GraphicsTextureType type, TextureDimensions dimensions,
+            AntiAliasLevel aaLevel, MSAAQuality sampleQuality, GraphicsFormat format, GraphicsResourceFlags flags, bool allowMipMapGen, string name) : 
+            base(device, type, dimensions, aaLevel, sampleQuality, format, flags, allowMipMapGen, name)
         {
             _handle = EngineUtil.Alloc<ResourceHandleVK>();
             _handle->Ptr = EngineUtil.Alloc<Image>();

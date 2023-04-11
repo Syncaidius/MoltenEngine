@@ -21,9 +21,8 @@ namespace Molten.Graphics.DX11
         SRView _srv;
         UAView _uav;
 
-        internal TextureDX11(GraphicsDevice device, uint width, uint height, uint depth, uint mipCount, 
-            uint arraySize, AntiAliasLevel aaLevel, MSAAQuality sampleQuality, GraphicsFormat format, GraphicsResourceFlags flags, bool allowMipMapGen, string name) :
-            base(device, width, height, depth, mipCount, arraySize, aaLevel, sampleQuality, format, flags, allowMipMapGen, name)
+        internal TextureDX11(GraphicsDevice device, GraphicsTextureType type, TextureDimensions dimensions, AntiAliasLevel aaLevel, MSAAQuality sampleQuality, GraphicsFormat format, GraphicsResourceFlags flags, bool allowMipMapGen, string name) :
+            base(device, type, dimensions, aaLevel, sampleQuality, format, flags, allowMipMapGen, name)
         {
             _srv = new SRView(this);
             _uav = new UAView(this);

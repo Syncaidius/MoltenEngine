@@ -15,30 +15,31 @@ namespace Molten.Graphics
         /// </summary>
         public event TextureHandler OnResize;
 
-        protected GraphicsTexture(GraphicsDevice device, uint width, uint height, uint depth, uint mipCount,
-                uint arraySize, AntiAliasLevel aaLevel, MSAAQuality sampleQuality, GraphicsFormat format, GraphicsResourceFlags flags, bool allowMipMapGen, string name) 
+        protected GraphicsTexture(GraphicsDevice device, GraphicsTextureType type, TextureDimensions dimensions, AntiAliasLevel aaLevel, 
+            MSAAQuality sampleQuality, GraphicsFormat format, GraphicsResourceFlags flags, bool allowMipMapGen, string name) 
             : base(device, flags)
         {
-            Name = string.IsNullOrWhiteSpace(name) ? $"{GetType().Name}_{width}x{height}" : name;
             IsMipMapGenAllowed = allowMipMapGen;
             ValidateFlagCombination();
 
             MSAASupport msaaSupport = MSAASupport.NotSupported; // TODO re-support. _renderer.Device.Features.GetMSAASupport(format, aaLevel);
+            TextureType = type;
+            Width = dimensions.Width;
+            Height = dimensions.Height;
+            Depth = dimensions.Depth;
+            MipMapCount = dimensions.MipMapLevels;
+            ArraySize = dimensions.ArraySize;
+            Name = string.IsNullOrWhiteSpace(name) ? $"{GetType().Name}_{Width}x{Height}" : name;
 
-            Width = width;
-            Height = height;
-            Depth = depth;
-            MipMapCount = mipCount;
-            ArraySize = arraySize;
             MultiSampleLevel = aaLevel > AntiAliasLevel.Invalid ? aaLevel : AntiAliasLevel.None;
             SampleQuality = msaaSupport != MSAASupport.NotSupported ? sampleQuality : MSAAQuality.Default;
             ResourceFormat = format;
             IsBlockCompressed = BCHelper.GetBlockCompressed(format);
 
             if (IsBlockCompressed)
-                SizeInBytes = BCHelper.GetBCSize(format, width, height, mipCount) * arraySize;
+                SizeInBytes = BCHelper.GetBCSize(format, Width, Height, MipMapCount) * ArraySize;
             else
-                SizeInBytes = (ResourceFormat.BytesPerPixel() * (width * height)) * arraySize;
+                SizeInBytes = (ResourceFormat.BytesPerPixel() * (Width * Height)) * ArraySize;
         }
 
         protected void InvokeOnResize()
@@ -315,5 +316,7 @@ namespace Molten.Graphics
 
         /// <inheritdoc/>
         public override GraphicsFormat ResourceFormat { get; protected set; }
+
+        public GraphicsTextureType TextureType { get; }
     }
 }

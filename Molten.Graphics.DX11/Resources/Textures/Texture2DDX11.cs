@@ -39,7 +39,7 @@ namespace Molten.Graphics.DX11
             MSAAQuality msaa = MSAAQuality.Default,
             bool allowMipMapGen = false,
             string name = null)
-            : base(device, width, height, 1, mipCount, arraySize, aaLevel, msaa, format, flags, allowMipMapGen, name)
+            : base(device, GraphicsTextureType.Texture2D, new TextureDimensions(width, height, 1, mipCount, arraySize), aaLevel, msaa, format, flags, allowMipMapGen, name)
         {
             _desc = new Texture2DDesc1()
             {
