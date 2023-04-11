@@ -109,13 +109,6 @@ namespace Molten.Graphics.DX11
             }
         }
 
-        protected override void OnDisposeForRecreation()
-        {
-            // Avoid calling RenderFormSurface's OnPipelineDispose implementation by skipping it. Jump straight to base.
-            // This prevents any swapchain render loops from being aborted due to disposal flags being set.
-            base.GraphicsRelease();
-        }
-
         public void Dispatch(Action action)
         {
             _dispatchQueue.Enqueue(action);
