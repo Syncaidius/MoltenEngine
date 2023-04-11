@@ -92,7 +92,6 @@ namespace Molten.Graphics.DX11
 
             if (OnPresent() && NativeSwapChain != null)
             {
-
                 NativeSwapChain->Present(_vsync, 0U);
 
                 // TODO implement partial-present - Partial Presentation (using scroll or dirty rects)

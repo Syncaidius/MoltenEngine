@@ -83,12 +83,12 @@ namespace Molten.Graphics.DX12
             throw new NotImplementedException();
         }
 
-        public override void ResolveTexture(ITexture source, ITexture destination)
+        public override void ResolveTexture(GraphicsTexture source, GraphicsTexture destination)
         {
             throw new NotImplementedException();
         }
 
-        public override void ResolveTexture(ITexture source, ITexture destination, uint sourceMipLevel, uint sourceArraySlice, uint destMiplevel, uint destArraySlice)
+        public override void ResolveTexture(GraphicsTexture source, GraphicsTexture destination, uint sourceMipLevel, uint sourceArraySlice, uint destMiplevel, uint destArraySlice)
         {
             throw new NotImplementedException();
         }
@@ -103,12 +103,12 @@ namespace Molten.Graphics.DX12
             throw new NotImplementedException();
         }
 
-        public override ITexture CreateTexture1D(Texture1DProperties properties, bool allowMipMapGen = false, string name = null)
+        public override ITexture1D CreateTexture1D(Texture1DProperties properties, bool allowMipMapGen = false, string name = null)
         {
             throw new NotImplementedException();
         }
 
-        public override ITexture CreateTexture1D(TextureData data, bool allowMipMapGen = false, string name = null)
+        public override ITexture1D CreateTexture1D(TextureData data, bool allowMipMapGen = false, string name = null)
         {
             throw new NotImplementedException();
         }

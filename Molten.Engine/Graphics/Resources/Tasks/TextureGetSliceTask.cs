@@ -14,8 +14,8 @@
 
         public bool Process(GraphicsQueue cmd, GraphicsResource resource)
         {
-            ITexture texture = resource as ITexture;
-            ITexture texStaging = Staging as ITexture;
+            GraphicsTexture texture = resource as GraphicsTexture;
+            GraphicsTexture texStaging = Staging as GraphicsTexture;
 
             bool isStaging = texture.Flags.Has(GraphicsResourceFlags.AllReadWrite);
             bool stagingValid = Staging.Flags.Has(GraphicsResourceFlags.AllReadWrite);
@@ -45,7 +45,7 @@
                 Staging = null;
             }
 
-            TextureSlice slice = TextureSlice.FromTextureSlice(cmd, texture, Staging as ITexture, MipMapLevel, ArrayIndex, MapType);
+            TextureSlice slice = TextureSlice.FromTextureSlice(cmd, texture, texStaging, MipMapLevel, ArrayIndex, MapType);
 
             // Return resulting data
             CompleteCallback?.Invoke(slice);

@@ -13,7 +13,7 @@ namespace Molten.Examples
             base.OnLoadContent(loader);
 
             _hShader = loader.Load<HlslShader>("assets/BasicTexture1D.mfx");
-            _hTexture = loader.Load<ITexture>("assets/1d_1.png");
+            _hTexture = loader.Load<ITexture1D>("assets/1d_1.png");
             loader.OnCompleted += Loader_OnCompleted;
         }
 
@@ -26,7 +26,7 @@ namespace Molten.Examples
             }
 
             HlslShader shader = _hShader.Get<HlslShader>();
-            ITexture texture = _hTexture.Get<ITexture>();
+            ITexture1D texture = _hTexture.Get<ITexture1D>();
 
             shader.SetDefaultResource(texture, 0);
             TestMesh.Shader = shader;
@@ -34,7 +34,7 @@ namespace Molten.Examples
 
         protected override Mesh GetTestCubeMesh()
         {
-            return Engine.Renderer.Device.CreateMesh<CubeArrayVertex>(SampleVertexData.TextureArrayCubeVertices);
+            return Engine.Renderer.Device.CreateMesh(SampleVertexData.TextureArrayCubeVertices);
         }
     }
 }

@@ -4,11 +4,11 @@
     {
         /// <summary>Creates a new 1D texture and returns it.</summary>
         /// <param name="properties">A set of 1D texture properties.</param>
-        public abstract ITexture CreateTexture1D(Texture1DProperties properties, bool allowMipMapGen = false, string name = null);
+        public abstract ITexture1D CreateTexture1D(Texture1DProperties properties, bool allowMipMapGen = false, string name = null);
 
         /// <summary>Creates a new 1D texture and returns it.</summary>
         /// <param name="data">The data from which to create the texture.</param>
-        public abstract ITexture CreateTexture1D(TextureData data, bool allowMipMapGen = false, string name = null);
+        public abstract ITexture1D CreateTexture1D(TextureData data, bool allowMipMapGen = false, string name = null);
 
         /// <summary>Creates a new 2D texture and returns it.</summary>
         /// <param name="properties">A set of 2D texture properties.</param>
@@ -41,7 +41,7 @@
         /// </summary>
         /// <param name="source">The source texture.</param>
         /// <param name="destination">The destination texture.</param>
-        public abstract void ResolveTexture(ITexture source, ITexture destination);
+        public abstract void ResolveTexture(GraphicsTexture source, GraphicsTexture destination);
 
         /// <summary>Resources the specified sub-resource of a source texture into the sub-resource of a destination texture.</summary>
         /// <param name="source">The source texture.</param>
@@ -50,6 +50,6 @@
         /// <param name="sourceArraySlice">The source array slice.</param>
         /// <param name="destMiplevel">The destination mip-map level.</param>
         /// <param name="destArraySlice">The destination array slice.</param>
-        public abstract void ResolveTexture(ITexture source, ITexture destination, uint sourceMipLevel, uint sourceArraySlice, uint destMiplevel, uint destArraySlice);
+        public abstract void ResolveTexture(GraphicsTexture source, GraphicsTexture destination, uint sourceMipLevel, uint sourceArraySlice, uint destMiplevel, uint destArraySlice);
     }
 }

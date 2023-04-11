@@ -43,7 +43,7 @@ namespace Molten.Graphics
 
         public bool Process(GraphicsQueue cmd, GraphicsResource resource)
         {
-            ITexture2D texture = resource as ITexture2D;
+            GraphicsTexture texture = resource as GraphicsTexture;
 
             // Calculate size of a single array slice
             uint arraySliceBytes = 0;
@@ -56,7 +56,7 @@ namespace Molten.Graphics
                 if (Area != null)
                     throw new NotImplementedException("Area-based SetData on block-compressed texture is currently unsupported. Sorry!");
 
-                blockSize = BCHelper.GetBlockSize(texture.DataFormat);
+                blockSize = BCHelper.GetBlockSize(texture.ResourceFormat);
 
                 // Collect total level size.
                 for (uint i = 0; i < texture.MipMapCount; i++)

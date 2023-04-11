@@ -12,8 +12,8 @@ namespace Molten.Graphics
 
         public unsafe bool Process(GraphicsQueue cmd, GraphicsResource resource)
         {
-            ITexture texture = resource as ITexture;
-            ITexture texStaging = Staging as ITexture;
+            GraphicsTexture texture = resource as GraphicsTexture;
+            GraphicsTexture texStaging = Staging as GraphicsTexture;
 
             bool isStaging = texture.Flags.Has(GraphicsResourceFlags.AllReadWrite);
             bool stagingValid = Staging.Flags.Has(GraphicsResourceFlags.AllReadWrite);
@@ -40,12 +40,12 @@ namespace Molten.Graphics
             TextureData data = new TextureData(texture.Width, texture.Height, texture.MipMapCount, texture.ArraySize)
             {
                 Flags = texture.Flags,
-                Format = texture.DataFormat,
+                Format = texture.ResourceFormat,
                 HighestMipMap = 0,
                 IsCompressed = texture.IsBlockCompressed,
             };
 
-            uint blockSize = BCHelper.GetBlockSize(texture.DataFormat);
+            uint blockSize = BCHelper.GetBlockSize(texture.ResourceFormat);
             uint expectedRowPitch = 4 * texture.Width; // 4-bytes per pixel * Width.
             uint expectedSlicePitch = expectedRowPitch * texture.Height;
 

@@ -205,12 +205,12 @@ namespace Molten.Graphics.DX11
             return new RenderSurface2DDX11(this, width, height, flags, format, mipCount, arraySize, aaLevel, msaa, allowMipMapGen, name);
         }
 
-        public override ITexture CreateTexture1D(Texture1DProperties properties, bool allowMipMapGen = false, string name = null)
+        public override ITexture1D CreateTexture1D(Texture1DProperties properties, bool allowMipMapGen = false, string name = null)
         {
             return new Texture1DDX11(this, properties.Width, properties.Flags, properties.Format, properties.MipMapLevels, properties.ArraySize, allowMipMapGen, name);
         }
 
-        public override ITexture CreateTexture1D(TextureData data, bool allowMipMapGen = false, string name = null)
+        public override ITexture1D CreateTexture1D(TextureData data, bool allowMipMapGen = false, string name = null)
         {
             Texture1DDX11 tex = new Texture1DDX11(this, data.Width, data.Flags, data.Format, data.MipMapLevels, data.ArraySize, allowMipMapGen, name);
             tex.SetData(GraphicsPriority.Apply, data, 0, 0, data.MipMapLevels, data.ArraySize);
@@ -297,9 +297,9 @@ namespace Molten.Graphics.DX11
         /// </summary>
         /// <param name="source">The source texture.</param>
         /// <param name="destination">The destination texture.</param>
-        public override void ResolveTexture(ITexture source, ITexture destination)
+        public override void ResolveTexture(GraphicsTexture source, GraphicsTexture destination)
         {
-            if (source.DataFormat != destination.DataFormat)
+            if (source.ResourceFormat != destination.ResourceFormat)
                 throw new Exception("The source and destination texture must be the same format.");
 
             uint arrayLevels = Math.Min(source.ArraySize, destination.ArraySize);
@@ -328,13 +328,13 @@ namespace Molten.Graphics.DX11
         /// <param name="sourceArraySlice">The source array slice.</param>
         /// <param name="destMiplevel">The destination mip-map level.</param>
         /// <param name="destArraySlice">The destination array slice.</param>
-        public override void ResolveTexture(ITexture source, ITexture destination,
+        public override void ResolveTexture(GraphicsTexture source, GraphicsTexture destination,
             uint sourceMipLevel,
             uint sourceArraySlice,
             uint destMiplevel,
             uint destArraySlice)
         {
-            if (source.DataFormat != destination.DataFormat)
+            if (source.ResourceFormat != destination.ResourceFormat)
                 throw new Exception("The source and destination texture must be the same format.");
 
             TextureResolve task = TextureResolve.Get();

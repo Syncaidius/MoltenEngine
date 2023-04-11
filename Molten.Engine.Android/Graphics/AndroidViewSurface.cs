@@ -170,12 +170,12 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public void GetData(ITexture stagingTexture, Action<TextureData> callback)
+        public void GetData(GraphicsTexture stagingTexture, Action<TextureData> callback)
         {
             throw new NotImplementedException();
         }
 
-        public void GetData(ITexture stagingTexture, uint level, uint arrayIndex, Action<TextureSlice> callback)
+        public void GetData(GraphicsTexture stagingTexture, uint level, uint arrayIndex, Action<TextureSlice> callback)
         {
             throw new NotImplementedException();
         }
@@ -230,12 +230,12 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public void GetData(GraphicsPriority priority, ITexture stagingTexture, Action<TextureData> completeCallback = null)
+        public void GetData(GraphicsPriority priority, GraphicsTexture stagingTexture, Action<TextureData> completeCallback = null)
         {
             throw new NotImplementedException();
         }
 
-        public void GetData(GraphicsPriority priority, ITexture stagingTexture, uint level, uint arrayIndex, Action<TextureSlice> completeCallback = null)
+        public void GetData(GraphicsPriority priority, GraphicsTexture stagingTexture, uint level, uint arrayIndex, Action<TextureSlice> completeCallback = null)
         {
             throw new NotImplementedException();
         }
