@@ -295,7 +295,7 @@ namespace Molten.Graphics.Vulkan
             throw new NotImplementedException();
         }
 
-        public void GenerateMipMaps(GraphicsPriority priority)
+        public void GenerateMipMaps(GraphicsPriority priority, Action<GraphicsResource> completionCallback = null)
         {
             throw new NotImplementedException();
         }

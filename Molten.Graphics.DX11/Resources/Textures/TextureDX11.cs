@@ -101,21 +101,17 @@ namespace Molten.Graphics.DX11
             SilkUtil.ReleasePtr(ref _native);
         }
 
-        /// <summary>Generates mip maps for the texture via the provided <see cref="GraphicsQueueDX11"/>.</summary>
-        public void GenerateMipMaps(GraphicsPriority priority)
-        {
-            if (!IsMipMapGenAllowed)
-                throw new Exception("Cannot generate mip-maps for texture. Must have flag: TextureFlags.AllowMipMapGeneration.");
-
-            QueueTask(priority, new GenerateMipMapsTask());
-        }
-
         protected override void OnSetSize()
         {
             UpdateDescription(Width, Height, Depth, Math.Max(1, MipMapCount), Math.Max(1, ArraySize), DxgiFormat);
             CreateTexture(true);
         }
 
+        protected override void OnGenerateMipMaps(GraphicsQueue cmd)
+        {
+            if (_srv.Ptr != null)
+                (cmd as GraphicsQueueDX11).Ptr->GenerateMips(_srv);
+        }
 
         protected virtual void UpdateDescription(uint newWidth, uint newHeight, 
             uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat) { }

@@ -15,7 +15,7 @@
         /// Generates any missing mip-maps for a texture, so long as it's creation flags included <see cref="TextureFlags.AllowMipMapGeneration"/>.
         /// </summary>
         /// <param name="priority">The priority of the copy operation.</param>
-        void GenerateMipMaps(GraphicsPriority priority);
+        void GenerateMipMaps(GraphicsPriority priority, Action<GraphicsResource> completionCallback = null);
 
         /// <summary>
         /// Copies the current texture to the destination texture. Both textures must be of the same format and dimensions.

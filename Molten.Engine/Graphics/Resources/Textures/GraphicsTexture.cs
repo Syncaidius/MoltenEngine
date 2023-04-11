@@ -278,6 +278,20 @@ namespace Molten.Graphics
             });
         }
 
+        /// <summary>Generates mip maps for the texture via the provided <see cref="GraphicsTexture"/>.</summary>
+        public void GenerateMipMaps(GraphicsPriority priority, Action<GraphicsResource> completionCallback = null)
+        {
+            if (!IsMipMapGenAllowed)
+                throw new Exception("Cannot generate mip-maps for texture. Must have flag: TextureFlags.AllowMipMapGeneration.");
+
+            QueueTask(priority, new GenerateMipMapsTask()
+            {
+                OnCompleted = completionCallback
+            });
+        }
+
+        protected internal abstract void OnGenerateMipMaps(GraphicsQueue cmd);
+
         /// <summary>Gets whether or not the texture is using a supported block-compressed format.</summary>
         public bool IsBlockCompressed { get; protected set; }
 
