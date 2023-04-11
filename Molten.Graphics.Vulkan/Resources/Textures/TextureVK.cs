@@ -11,10 +11,9 @@ namespace Molten.Graphics.Vulkan
     public unsafe abstract class TextureVK : GraphicsTexture
     {
         ImageCreateInfo _desc;
-        Image* _native;
         ImageView* _view;
         ResourceHandleVK* _handle;
-        MemoryAllocationVK _allocation;
+        MemoryAllocationVK _memory;
 
         public TextureVK(GraphicsDevice device, 
             uint width, uint height, uint depth, 
@@ -25,7 +24,8 @@ namespace Molten.Graphics.Vulkan
             GraphicsResourceFlags flags, bool allowMipMapGen, string name) : 
             base(device, width, height, depth, mipCount, arraySize, aaLevel, sampleQuality, format, flags, allowMipMapGen, name)
         {
-            _native = EngineUtil.Alloc<Image>();
+            _handle = EngineUtil.Alloc<ResourceHandleVK>();
+            _handle->Ptr = EngineUtil.Alloc<Image>();
             _view = EngineUtil.Alloc<ImageView>();
 
             CreateImage();
@@ -34,6 +34,13 @@ namespace Molten.Graphics.Vulkan
         protected void CreateImage()
         {
             DeviceVK device = Device as DeviceVK;
+
+            // Does the memory need to be host-visible?
+            MemoryPropertyFlags memFlags = MemoryPropertyFlags.None;
+            if (Flags.Has(GraphicsResourceFlags.CpuRead) || Flags.Has(GraphicsResourceFlags.CpuWrite))
+                memFlags |= MemoryPropertyFlags.HostCoherentBit | MemoryPropertyFlags.HostVisibleBit;
+            else
+                memFlags |= MemoryPropertyFlags.DeviceLocalBit;
 
             ImageUsageFlags flags = ImageUsageFlags.None;
             if (Flags.Has(GraphicsResourceFlags.GpuRead))
@@ -87,7 +94,7 @@ namespace Molten.Graphics.Vulkan
                 //if (this is DepthSurfaceVK depthSurface)
                 //    throw new GraphicsResourceException(this, "A depth surface texture cannot use linear tiling mode");
 
-                if (_desc.ImageType != ImageType.ImageType2D)
+                if (_desc.ImageType != ImageType.Type2D)
                     throw new GraphicsResourceException(this, "A non-2D texture cannot use linear tiling mode");
 
                 if(_desc.MipLevels != 1)
@@ -99,8 +106,8 @@ namespace Molten.Graphics.Vulkan
                 if (_desc.Samples != SampleCountFlags.Count1Bit)
                     throw new GraphicsResourceException(this, "Texture linear-tiled texture must have a sample count of 1.");
 
-                if(_desc.Usage > (ImageUsageFlags.TransferSrcBit | ImageUsageFlags.TransferDstBit))
-                    throw new GraphicsResourceException(this, "A linear-tiled texture must have only source and/or destination transfer bits set. Any other usage flags are invalid.")
+                if (_desc.Usage > (ImageUsageFlags.TransferSrcBit | ImageUsageFlags.TransferDstBit))
+                    throw new GraphicsResourceException(this, "A linear-tiled texture must have only source and/or destination transfer bits set. Any other usage flags are invalid.");
             }
 
             if (_desc.ImageType == 0)
@@ -109,8 +116,23 @@ namespace Molten.Graphics.Vulkan
             if (viewInfo.ViewType == 0)
                 throw new GraphicsResourceException(this, "View type not set during image-view creation");
 
-            Result r = device.VK.CreateImage(device, _desc, null, _native);
+            Image img = new Image();
+            Result r = device.VK.CreateImage(device, _desc, null, &img);
             if (r.Check(device, () => "Failed to create image resource"))
+                return;
+
+            _handle->Set(img);
+
+            MemoryRequirements memRequirements;
+            device.VK.GetImageMemoryRequirements(device, *(Image*)_handle->Ptr, &memRequirements);
+            _memory = device.Memory.Allocate(ref memRequirements, memFlags);
+
+            if(_memory == null)
+                throw new GraphicsResourceException(this, "Failed to allocate memory for image resource");
+
+            _handle->Memory = _memory;
+            r = device.VK.BindImageMemory(device, *(Image*)_handle->Ptr, _memory.Handle, 0);
+            if (r.Check(device, () => "Failed to bind image memory"))
                 return;
 
             r = device.VK.CreateImageView(device, &viewInfo, null, _view);
@@ -125,15 +147,19 @@ namespace Molten.Graphics.Vulkan
             DeviceVK device = Device as DeviceVK;
             if (_view != null)
                 device.VK.DestroyImageView(device, *_view, null);
-            if (_native != null)
-                device.VK.DestroyImage(device, *_native, null);
+
+            if (_handle->Ptr != null)
+                device.VK.DestroyImage(device, *(Image*)_handle->Ptr, null);
+
+            _memory?.Free();
         }
 
         public override void GraphicsRelease()
         {
             DestroyResources();
             EngineUtil.Free(ref _view);
-            EngineUtil.Free(ref _native);
+            EngineUtil.Free(ref _handle->Ptr);
+            EngineUtil.Free(ref _handle);
         }
 
         protected override void OnSetSize()
@@ -141,7 +167,7 @@ namespace Molten.Graphics.Vulkan
             throw new NotImplementedException();
         }
 
-        public override unsafe void* Handle => _native;
+        public override unsafe void* Handle => _handle;
 
         public override unsafe void* SRV => _view;
 

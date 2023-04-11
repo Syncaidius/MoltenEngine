@@ -66,17 +66,12 @@ namespace Molten.Graphics.Vulkan
             device.VK.GetBufferMemoryRequirements(device, *(Buffer*)_handle->Ptr, &memRequirements);
            _memory = device.Memory.Allocate(ref memRequirements, memFlags);
             if (_memory != null)
-            {
-                _handle->Memory = _memory;
-                r = device.VK.BindBufferMemory(device, *(Buffer*)_handle->Ptr, _handle->Memory, 0);
-                if (!r.Check(device))
-                    return;
-            }
-            else
-            {
-                device.Log.Error($"Unable to allocate memory for buffer of size {_desc.Size} bytes.");
+                throw new GraphicsResourceException(this, "Unable to allocate memory for buffer.");
+
+            _handle->Memory = _memory;
+            r = device.VK.BindBufferMemory(device, *(Buffer*)_handle->Ptr, _handle->Memory, 0);
+            if (!r.Check(device))
                 return;
-            }
 
             // Write initial data to buffer
             if(initialData != null && initialBytes > 0)
