@@ -57,21 +57,6 @@ namespace Molten.Graphics.DX11
             };
         }
 
-        public Texture2DProperties Get2DProperties()
-        {
-            return new Texture2DProperties()
-            {
-                Width = Width,
-                Height = Height,
-                ArraySize = ArraySize,
-                Flags = Flags,
-                Format = DataFormat,
-                MipMapLevels = MipMapCount,
-                MultiSampleLevel = MultiSampleLevel,
-                Name = Name,
-            };
-        }
-
         protected override unsafe ID3D11Resource* CreateResource(bool resize)
         {
             SubresourceData* subData = null;

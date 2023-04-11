@@ -6,12 +6,6 @@
     public interface ITexture3D : ITexture
     {
         /// <summary>
-        /// Gets a new instance of the texture's 3D properties.
-        /// </summary>
-        /// <returns></returns>
-        Texture3DProperties Get3DProperties();
-
-        /// <summary>
         /// Changes the current texture's dimensions and format.
         /// </summary>
         /// <param name="newWidth">The new width.</param>

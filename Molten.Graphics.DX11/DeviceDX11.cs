@@ -205,9 +205,50 @@ namespace Molten.Graphics.DX11
             return new RenderSurface2DDX11(this, width, height, flags, format, mipCount, arraySize, aaLevel, msaa, allowMipMapGen, name);
         }
 
-        public override ITexture1D CreateTexture1D(Texture1DProperties properties, bool allowMipMapGen = false, string name = null)
+
+        public override GraphicsTexture CreateTexture(TextureProperties properties, bool allowMipMapGen = false)
         {
-            return new Texture1DDX11(this, properties.Width, properties.Flags, properties.Format, properties.MipMapLevels, properties.ArraySize, allowMipMapGen, name);
+            switch (properties.TextureType)
+            {
+                case GraphicsTextureType.Texture1D:
+                    return new Texture1DDX11(this,
+                        properties.Width,
+                        properties.Flags,
+                        properties.Format,
+                        properties.MipMapLevels,
+                        properties.ArraySize,
+                        allowMipMapGen,
+                        properties.Name);
+                case GraphicsTextureType.Texture2D:
+                    return new Texture2DDX11(this,
+                        properties.Width,
+                        properties.Height,
+                        properties.Flags,
+                        properties.Format,
+                        properties.MipMapLevels,
+                        properties.ArraySize,
+                        properties.MultiSampleLevel,
+                        properties.SampleQuality,
+                        false,
+                        properties.Name);
+                case GraphicsTextureType.Texture3D:
+                    return new Texture3DDX11(this,
+                        properties.Width,
+                        properties.Height,
+                        properties.Depth,
+                        properties.Flags,
+                        properties.Format,
+                        properties.MipMapLevels);
+                case GraphicsTextureType.TextureCube:
+                    uint cubeCount = Math.Max(properties.ArraySize / 6, 1);
+                    return new TextureCubeDX11(this,
+                        properties.Width,
+                        properties.Height,
+                        properties.Flags,
+                        properties.Format,
+                        properties.MipMapLevels, cubeCount);
+            }
+            throw new GraphicsResourceException(null, "Unsupported texture type");
         }
 
         public override ITexture1D CreateTexture1D(TextureData data, bool allowMipMapGen = false, string name = null)
@@ -215,21 +256,6 @@ namespace Molten.Graphics.DX11
             Texture1DDX11 tex = new Texture1DDX11(this, data.Width, data.Flags, data.Format, data.MipMapLevels, data.ArraySize, allowMipMapGen, name);
             tex.SetData(GraphicsPriority.Apply, data, 0, 0, data.MipMapLevels, data.ArraySize);
             return tex;
-        }
-
-        public override ITexture2D CreateTexture2D(Texture2DProperties properties, bool allowMipMapGen = false, string name = null)
-        {
-            return new Texture2DDX11(this,
-                properties.Width,
-                properties.Height,
-                properties.Flags,
-                properties.Format,
-                properties.MipMapLevels,
-                properties.ArraySize,
-                properties.MultiSampleLevel,
-                properties.SampleQuality,
-                false,
-                properties.Name);
         }
 
         public override ITexture2D CreateTexture2D(TextureData data, bool allowMipMapGen = false, string name = null)
@@ -246,18 +272,6 @@ namespace Molten.Graphics.DX11
             tex.SetData(GraphicsPriority.Apply, data, 0, 0, data.MipMapLevels, data.ArraySize);
             return tex;
         }
-
-        public override ITexture3D CreateTexture3D(Texture3DProperties properties, bool allowMipMapGen = false, string name = null)
-        {
-            return new Texture3DDX11(this,
-                properties.Width,
-                properties.Height,
-                properties.Depth,
-                properties.Flags,
-                properties.Format,
-                properties.MipMapLevels);
-        }
-
         public override ITexture3D CreateTexture3D(TextureData data, bool allowMipMapGen = false, string name = null)
         {
             throw new NotImplementedException();
@@ -274,12 +288,6 @@ namespace Molten.Graphics.DX11
 
             tex.SetData(data, 0, 0, data.MipMapLevels, data.ArraySize);
             return tex;*/
-        }
-
-        public override ITextureCube CreateTextureCube(Texture2DProperties properties, bool allowMipMapGen = false, string name = null)
-        {
-            uint cubeCount = Math.Max(properties.ArraySize / 6, 1);
-            return new TextureCubeDX11(this, properties.Width, properties.Height, properties.Flags, properties.Format, properties.MipMapLevels, cubeCount);
         }
 
         public override ITextureCube CreateTextureCube(TextureData data, bool allowMipMapGen = false, string name = null)

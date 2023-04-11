@@ -275,11 +275,6 @@ namespace Molten.Graphics.Vulkan
             throw new NotImplementedException();
         }
 
-        public Texture2DProperties Get2DProperties()
-        {
-            throw new NotImplementedException();
-        }
-
         public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight)
         {
             throw new NotImplementedException();
@@ -290,7 +285,7 @@ namespace Molten.Graphics.Vulkan
             throw new NotImplementedException();
         }
 
-        public Texture1DProperties Get1DProperties()
+        public TextureProperties Get1DProperties()
         {
             throw new NotImplementedException();
         }
@@ -359,6 +354,11 @@ namespace Molten.Graphics.Vulkan
         }
 
         public override void GraphicsRelease()
+        {
+            throw new NotImplementedException();
+        }
+
+        public TextureProperties GetProperties()
         {
             throw new NotImplementedException();
         }

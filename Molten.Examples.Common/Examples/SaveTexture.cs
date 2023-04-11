@@ -35,9 +35,9 @@ namespace Molten.Examples
             mat.SetDefaultResource(texture, 0);
             TestMesh.Shader = mat;
 
-            Texture2DProperties p = texture.Get2DProperties();
+            TextureProperties p = texture.GetProperties();
             p.Flags = GraphicsResourceFlags.AllReadWrite;
-            ITexture2D staging = Engine.Renderer.Device.CreateTexture2D(p);
+            ITexture2D staging = Engine.Renderer.Device.CreateTexture(p) as ITexture2D;
 
             TextureData loadedData = _hTexData.Get<TextureData>();
             loadedData.Decompress(Log);

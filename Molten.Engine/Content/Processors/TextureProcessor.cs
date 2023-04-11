@@ -222,7 +222,7 @@ namespace Molten.Content
                 switch (tex)
                 {
                     case ITextureCube texCube:
-                        staging = handle.Manager.Engine.Renderer.Device.CreateTextureCube(new Texture2DProperties()
+                        staging = handle.Manager.Engine.Renderer.Device.CreateTexture(new TextureProperties(GraphicsTextureType.TextureCube)
                         {
                             Flags = (GraphicsResourceFlags.AllReadWrite),
                             Format = texCube.ResourceFormat,
@@ -236,7 +236,7 @@ namespace Molten.Content
                         break;
 
                     case ITexture2D tex2D:
-                        staging = handle.Manager.Engine.Renderer.Device.CreateTexture2D(new Texture2DProperties()
+                        staging = handle.Manager.Engine.Renderer.Device.CreateTexture(new TextureProperties(GraphicsTextureType.Texture2D)
                         {
                             Flags = (GraphicsResourceFlags.AllReadWrite),
                             Format = tex2D.ResourceFormat,
@@ -250,7 +250,7 @@ namespace Molten.Content
                         break;
 
                     case ITexture tex1D:
-                        staging = handle.Manager.Engine.Renderer.Device.CreateTexture1D(new Texture1DProperties()
+                        staging = handle.Manager.Engine.Renderer.Device.CreateTexture(new TextureProperties(GraphicsTextureType.Texture1D)
                         {
                             Flags = (GraphicsResourceFlags.AllReadWrite),
                             Format = tex1D.ResourceFormat,

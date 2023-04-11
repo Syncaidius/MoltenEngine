@@ -2,18 +2,6 @@
 {
     public abstract partial class GraphicsDevice
     {
-        public IRenderSurface2D CreateSurface(Texture2DProperties properties, bool allowMipMapGen = false)
-        {
-            return CreateSurface(properties.Width,
-                properties.Height,
-                properties.Format,
-                GraphicsResourceFlags.GpuWrite,
-                properties.MipMapLevels,
-                properties.ArraySize,
-                properties.MultiSampleLevel,
-                allowMipMapGen);
-        }
-
         public abstract IRenderSurface2D CreateSurface(uint width, uint height, GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm, 
             GraphicsResourceFlags flags = GraphicsResourceFlags.GpuWrite,
             uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, bool allowMipMapGen = false, string name = null);

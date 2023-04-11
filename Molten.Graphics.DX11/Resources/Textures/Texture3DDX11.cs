@@ -51,19 +51,6 @@ namespace Molten.Graphics.DX11
             };
         }
 
-        public Texture3DProperties Get3DProperties()
-        {
-            return new Texture3DProperties()
-            {
-                Width = Width,
-                Height = Height,
-                ArraySize = ArraySize,
-                Flags = Flags,
-                Format = DataFormat,
-                MipMapLevels = MipMapCount
-            };
-        }
-
         protected override unsafe ID3D11Resource* CreateResource(bool resize)
         {
             SubresourceData* subData = null;

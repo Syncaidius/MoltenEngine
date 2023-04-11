@@ -103,7 +103,7 @@ namespace Molten.Graphics.DX12
             throw new NotImplementedException();
         }
 
-        public override ITexture1D CreateTexture1D(Texture1DProperties properties, bool allowMipMapGen = false, string name = null)
+        public override GraphicsTexture CreateTexture(TextureProperties properties, bool allowMipMapGen = false)
         {
             throw new NotImplementedException();
         }
@@ -113,27 +113,12 @@ namespace Molten.Graphics.DX12
             throw new NotImplementedException();
         }
 
-        public override ITexture2D CreateTexture2D(Texture2DProperties properties, bool allowMipMapGen = false, string name = null)
-        {
-            throw new NotImplementedException();
-        }
-
         public override ITexture2D CreateTexture2D(TextureData data, bool allowMipMapGen = false, string name = null)
         {
             throw new NotImplementedException();
         }
 
-        public override ITexture3D CreateTexture3D(Texture3DProperties properties, bool allowMipMapGen = false, string name = null)
-        {
-            throw new NotImplementedException();
-        }
-
         public override ITexture3D CreateTexture3D(TextureData data, bool allowMipMapGen = false, string name = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override ITextureCube CreateTextureCube(Texture2DProperties properties, bool allowMipMapGen = false, string name = null)
         {
             throw new NotImplementedException();
         }

@@ -11,6 +11,8 @@
         /// </summary>
         event TextureHandler OnResize;
 
+        TextureProperties GetProperties();
+
         /// <summary>
         /// Generates any missing mip-maps for a texture, so long as it's creation flags included <see cref="TextureFlags.AllowMipMapGeneration"/>.
         /// </summary>

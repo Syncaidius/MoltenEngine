@@ -5,12 +5,6 @@
     public interface ITexture1D : ITexture
     {
         /// <summary>
-        /// Gets a new instance of the texture's <see cref="Texture1DProperties"/> properties.
-        /// </summary>
-        /// <returns></returns>
-        Texture1DProperties Get1DProperties();
-
-        /// <summary>
         /// Resizes a texture to match the specified width, mip-map count and graphics format.
         /// </summary>
         /// <param name="priority">The priority of the copy operation.</param>

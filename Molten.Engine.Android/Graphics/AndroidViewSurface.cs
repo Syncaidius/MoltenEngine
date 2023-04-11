@@ -120,7 +120,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public Texture1DProperties Get1DProperties()
+        public TextureProperties Get1DProperties()
         {
             throw new NotImplementedException();
         }

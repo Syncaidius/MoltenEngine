@@ -5,8 +5,11 @@ namespace Molten.Graphics
     public unsafe class TextureData : ICloneable
     {
         public uint Width { get; private set; }
+
         public uint Height { get; private set; }
+
         public uint MipMapLevels { get; private set; }
+
         public uint ArraySize { get; private set; }
 
         public AntiAliasLevel MultiSampleLevel = AntiAliasLevel.None;

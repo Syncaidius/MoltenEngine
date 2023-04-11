@@ -37,18 +37,6 @@ namespace Molten.Graphics.DX11
             };
         }
 
-        public Texture1DProperties Get1DProperties()
-        {
-            return new Texture1DProperties()
-            {
-                Width = Width,
-                ArraySize = ArraySize,
-                Flags = Flags,
-                Format = DataFormat,
-                MipMapLevels = MipMapCount,
-            };
-        }
-
         protected override void SetSRVDescription(ref ShaderResourceViewDesc1 desc)
         {
             desc.Format = DxgiFormat;
