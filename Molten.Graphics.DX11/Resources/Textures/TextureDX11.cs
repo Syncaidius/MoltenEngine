@@ -57,7 +57,7 @@ namespace Molten.Graphics.DX11
             OnPreCreate?.Invoke(this);
 
             // Dispose of old resources
-            GraphicsRelease();
+            OnDisposeForRecreation();
             _native = CreateResource(resize);
             SetDebugName(Name);
 
@@ -87,6 +87,11 @@ namespace Molten.Graphics.DX11
         protected abstract void SetUAVDescription(ref ShaderResourceViewDesc1 srvDesc, ref UnorderedAccessViewDesc1 desc);
 
         protected abstract void SetSRVDescription(ref ShaderResourceViewDesc1 desc);
+
+        protected virtual void OnDisposeForRecreation()
+        {
+            GraphicsRelease();
+        }
 
         public override void GraphicsRelease()
         {
