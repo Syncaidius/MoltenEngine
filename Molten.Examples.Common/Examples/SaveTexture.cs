@@ -48,7 +48,7 @@ namespace Molten.Examples
             };
 
             Engine.Content.SaveToFile("assets/saved_recompressed_texture_raw.dds", loadedData, parameters: texParams);
-            texture.GetData(GraphicsPriority.EndOfFrame, staging, (data) =>
+            texture.GetData(GraphicsPriority.EndOfFrame, staging as GraphicsTexture, (data) =>
             {
                 ContentSaveHandle saveHandle = Engine.Content.SaveToFile("assets/saved_texture.dds", data, parameters: texParams);
             });

@@ -332,12 +332,12 @@ namespace Molten.Graphics.Vulkan
             throw new NotImplementedException();
         }
 
-        public void GetData(GraphicsPriority priority, ITexture stagingTexture, Action<TextureData> completeCallback = null)
+        public void GetData(GraphicsPriority priority, GraphicsTexture stagingTexture, Action<TextureData> completeCallback = null)
         {
             throw new NotImplementedException();
         }
 
-        public void GetData(GraphicsPriority priority, ITexture stagingTexture, uint level, uint arrayIndex, Action<TextureSlice> completeCallback = null)
+        public void GetData(GraphicsPriority priority, GraphicsTexture stagingTexture, uint level, uint arrayIndex, Action<TextureSlice> completeCallback = null)
         {
             throw new NotImplementedException();
         }

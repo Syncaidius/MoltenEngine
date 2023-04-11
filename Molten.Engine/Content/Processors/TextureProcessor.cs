@@ -265,7 +265,7 @@ namespace Molten.Content
                 if (staging != null)
                 {
                     TextureData tData = null;
-                    tex.GetData(GraphicsPriority.EndOfFrame, staging, (data) =>
+                    tex.GetData(GraphicsPriority.EndOfFrame, staging as GraphicsTexture, (data) =>
                     {
                         tData = data;
                     });

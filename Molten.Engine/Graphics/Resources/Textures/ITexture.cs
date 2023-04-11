@@ -93,7 +93,7 @@
         /// <param name="stagingTexture">A staging texture to use when retrieving data from the GPU. Only textures
         /// with the staging flag set will work.</param>
         /// <param name="completeCallback">The callback for when the data retrieval is completed.</param>
-        void GetData(GraphicsPriority priority, ITexture stagingTexture, Action<TextureData> completeCallback = null);
+        void GetData(GraphicsPriority priority, GraphicsTexture stagingTexture, Action<TextureData> completeCallback = null);
 
         /// <summary>Returns the data from a single mip-map level within a slice of the texture. For 2D, non-array textures, this will always be slice 0.</summary>
         /// <param name="priority">The priority of the operation.</param>
@@ -101,7 +101,7 @@
         /// <param name="level">The mip-map level to retrieve.</param>
         /// <param name="arrayIndex">The array slice/index to access.</param>
         /// <param name="completeCallback">The callback for when the data retrieval is completed.</param>
-        void GetData(GraphicsPriority priority, ITexture stagingTexture, uint level, uint arrayIndex, Action<TextureSlice> completeCallback = null);
+        void GetData(GraphicsPriority priority, GraphicsTexture stagingTexture, uint level, uint arrayIndex, Action<TextureSlice> completeCallback = null);
 
         /// <summary>Gets the width of the texture.</summary>
         uint Width { get; }
