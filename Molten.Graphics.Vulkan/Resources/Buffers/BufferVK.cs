@@ -101,11 +101,6 @@ namespace Molten.Graphics.Vulkan
             }
         }
 
-        internal bool HasFlags(BufferUsageFlags flags)
-        {
-            return (_desc.Usage & flags) == flags;
-        }
-
         protected override void OnApply(GraphicsQueue cmd) { }
 
         public override unsafe void* Handle => _handle;
