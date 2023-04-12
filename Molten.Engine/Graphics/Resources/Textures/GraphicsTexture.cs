@@ -87,6 +87,84 @@ namespace Molten.Graphics
             }
         }
 
+        public void Resize(GraphicsPriority priority, uint newWidth)
+        {
+            Resize(priority, newWidth, MipMapCount, ResourceFormat);
+        }
+
+        /// <summary>
+        /// Resizes the current <see cref="GraphicsTexture"/>.
+        /// </summary>
+        /// <param name="priority">The priority of the resize operation.</param>
+        /// <param name="newWidth">The new width.</param>      
+        /// <param name="newMipMapCount">The number of mip-map levels per array slice/layer. If set to 0, the current <see cref="MipMapCount"/> will be used.</param>
+        /// <param name="newFormat">The new format. If set to <see cref="GraphicsFormat.Unknown"/>, the existing format will be used.</param>
+        public void Resize(GraphicsPriority priority, uint newWidth, uint newMipMapCount = 0, GraphicsFormat newFormat = GraphicsFormat.Unknown)
+        {
+            QueueTask(priority, new TextureResizeTask()
+            {
+                NewWidth = newWidth,
+                NewHeight = Height,
+                NewMipMapCount = newMipMapCount,
+                NewArraySize = ArraySize,
+                NewFormat = newFormat,
+            });
+        }
+
+        /// <summary>
+        /// Resizes the current <see cref="GraphicsTexture"/>.
+        /// </summary>
+        /// <param name="priority">The priority of the resize operation.</param>
+        /// <param name="newWidth">The new width.</param>
+        /// <param name="newHeight">The new height. If the texture is 1D, height will be defaulted to 1.</param> 
+        public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight)
+        {
+            if( TextureType == GraphicsTextureType.Texture1D)
+                newHeight = 1;
+
+            QueueTask(priority, new TextureResizeTask()
+            {
+                NewWidth = newWidth,
+                NewHeight = newHeight,
+                NewDepth = Depth,
+                NewArraySize = ArraySize,
+                NewFormat = ResourceFormat,
+                NewMipMapCount = MipMapCount,
+            });
+        }
+
+        /// <summary>
+        /// Resizes the current <see cref="GraphicsTexture"/>.
+        /// </summary>
+        /// <param name="priority">The priority of the resize operation.</param>
+        /// <param name="newWidth">The new width.</param>
+        /// <param name="newHeight">The new height. If the texture is 1D, height will be defaulted to 1.</param>
+        /// <param name="newDepthOrArraySize">For 3D textures, this is the new depth dimension. 
+        /// For every other texture type, this is the number of array slices/layers, or the array size.
+        /// <para>If set to 0, the existing <see cref="Depth"/> or <see cref="ArraySize"/> will be used.</para></param>
+        /// <param name="newMipMapCount">The number of mip-map levels per array slice/layer. If set to 0, the current <see cref="MipMapCount"/> will be used.</param>
+        /// <param name="newFormat">The new format. If set to <see cref="GraphicsFormat.Unknown"/>, the existing format will be used.</param>
+        public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight, uint newDepthOrArraySize = 0, uint newMipMapCount = 0, GraphicsFormat newFormat = GraphicsFormat.Unknown)
+        {
+            if (TextureType == GraphicsTextureType.Texture1D)
+                newHeight = 1;
+
+            TextureResizeTask task = new TextureResizeTask()
+            {
+                NewWidth = newWidth,
+                NewHeight = newHeight,
+                NewMipMapCount = newMipMapCount == 0 ? MipMapCount : newMipMapCount,
+                NewFormat = newFormat == GraphicsFormat.Unknown ? ResourceFormat : newFormat
+            };
+
+            if (TextureType == GraphicsTextureType.Texture3D)
+                task.NewDepth = newDepthOrArraySize == 0 ? Depth : newDepthOrArraySize;
+            else
+                task.NewArraySize = newDepthOrArraySize == 0 ? ArraySize : newDepthOrArraySize;
+
+            QueueTask(priority, task);
+        }
+
         public unsafe void SetData<T>(GraphicsPriority priority, RectangleUI area, T* data, uint numElements, uint bytesPerPixel, uint level, uint arrayIndex = 0,
             Action<GraphicsResource> completeCallback = null)
             where T : unmanaged

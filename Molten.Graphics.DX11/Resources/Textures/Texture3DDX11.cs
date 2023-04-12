@@ -97,20 +97,5 @@ namespace Molten.Graphics.DX11
             _desc.MipLevels = newMipMapCount;
             _desc.Format = newFormat;
         }
-
-        public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight, uint newDepth, 
-            uint newMipMapCount = 0, 
-            GraphicsFormat newFormat = GraphicsFormat.Unknown)
-        {
-            QueueTask(priority, new TextureResizeTask()
-            {
-                NewWidth = newWidth,
-                NewHeight = newHeight,
-                NewDepth = newDepth,
-                NewMipMapCount = newMipMapCount == 0 ? MipMapCount : newMipMapCount,
-                NewArraySize = ArraySize,
-                NewFormat = newFormat == GraphicsFormat.Unknown ? DataFormat : newFormat
-            });
-        }
     }
 }

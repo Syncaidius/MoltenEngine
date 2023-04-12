@@ -121,32 +121,5 @@ namespace Molten.Graphics.DX11
             _desc.Format = newFormat;
             _desc.TextureLayout = TextureLayout.LayoutUndefined;
         }
-
-        public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight)
-        {
-            QueueTask(priority, new TextureResizeTask()
-            {
-                NewWidth = newWidth,
-                NewHeight = newHeight,
-                NewMipMapCount = MipMapCount,
-                NewArraySize = _desc.ArraySize,
-                NewFormat = DataFormat,
-            });
-        }
-
-        public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight, 
-            uint newMipMapCount, 
-            uint newArraySize, 
-            GraphicsFormat newFormat)
-        {
-            QueueTask(priority, new TextureResizeTask()
-            {
-                NewWidth = newWidth,
-                NewHeight = newHeight,
-                NewMipMapCount = newMipMapCount == 0 ? MipMapCount : newMipMapCount,
-                NewArraySize = newArraySize == 0 ? _desc.ArraySize : newArraySize,
-                NewFormat = newFormat,
-            });
-        }
     }
 }

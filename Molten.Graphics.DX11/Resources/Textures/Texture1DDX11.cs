@@ -71,23 +71,6 @@ namespace Molten.Graphics.DX11
             return (ID3D11Resource*)NativeTexture;
         }
 
-        public void Resize(GraphicsPriority priority, uint newWidth)
-        {
-            Resize(priority, newWidth, MipMapCount, ResourceFormat);
-        }
-
-        public void Resize(GraphicsPriority priority, uint newWidth, uint newMipMapCount, GraphicsFormat newFormat)
-        {
-            QueueTask(priority, new TextureResizeTask()
-            {
-                NewWidth = newWidth,
-                NewHeight = Height,
-                NewMipMapCount = newMipMapCount,
-                NewArraySize = ArraySize,
-                NewFormat = newFormat,
-            });
-        }
-
         protected override void UpdateDescription(uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat)
         {
             _desc.Width = newWidth;
