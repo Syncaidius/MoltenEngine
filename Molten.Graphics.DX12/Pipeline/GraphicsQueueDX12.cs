@@ -179,6 +179,6 @@ namespace Molten.Graphics.DX12
         internal DeviceDX12 Device { get; }
 
         internal Logger Log { get; }
-        protected override GraphicsCommandList Cmd { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override GraphicsCommandList Cmd { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }
 }

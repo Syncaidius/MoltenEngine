@@ -136,7 +136,7 @@ namespace Molten.Graphics.Vulkan
                 return;
         }
 
-        private void TransitionImageLayout(GraphicsQueueVK cmd, ImageLayout oldLayout, ImageLayout newLayout, GraphicsFormat newFormat, uint newMipMapCount, uint newArraySize)
+        private void Transition(GraphicsQueueVK cmd, ImageLayout oldLayout, ImageLayout newLayout, GraphicsFormat newFormat, uint newMipMapCount, uint newArraySize)
         {
             ImageMemoryBarrier barrier = new ImageMemoryBarrier(StructureType.ImageMemoryBarrier)
             {

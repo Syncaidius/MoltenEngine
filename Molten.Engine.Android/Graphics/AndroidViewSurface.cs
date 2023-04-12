@@ -105,11 +105,6 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public Texture2DProperties Get2DProperties()
-        {
-            throw new NotImplementedException();
-        }
-
         public void Resize(uint newWidth, uint newHeight, uint newMipMapCount, uint newArraySize, GraphicsFormat newFormat)
         {
             throw new NotImplementedException();
@@ -245,6 +240,16 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
+        public TextureProperties GetProperties()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GenerateMipMaps(GraphicsPriority priority, Action<GraphicsResource> completionCallback = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public string Title
         {
             get => TargetActivity.UnderlyingActivity.Title;
@@ -318,5 +323,7 @@ namespace Molten.Graphics
         public uint LastUsedFrameID => throw new NotImplementedException();
 
         public GraphicsResourceFlags Flags => throw new NotImplementedException();
+
+        public GraphicsFormat ResourceFormat => throw new NotImplementedException();
     }
 }
