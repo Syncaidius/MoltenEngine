@@ -16,14 +16,9 @@ namespace Molten.Graphics.Vulkan
         {
         }
 
-        protected override void OnGenerateMipMaps(GraphicsQueue cmd)
-        {
-            throw new NotImplementedException();
-        }
-
         protected override void SetCreateInfo(ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo)
         {
-            throw new NotImplementedException();
+            imgInfo.ImageType = ImageType.Type2D;
         }
     }
 }

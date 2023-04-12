@@ -135,6 +135,11 @@ namespace Molten.Graphics.Vulkan
                 return;
         }
 
+        protected override void OnGenerateMipMaps(GraphicsQueue cmd)
+        {
+            throw new NotImplementedException();
+        }
+
         protected abstract void SetCreateInfo(ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo);
 
         private void DestroyResources()
