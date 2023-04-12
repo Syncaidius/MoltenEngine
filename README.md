@@ -13,9 +13,7 @@ While parts of this project will inevitably be a classic case of re-inventing th
 | MacOS      |        |         |
 | iOS        |        |         |
 
-[ ![GitHub](https://img.shields.io/github/license/Syncaidius/MoltenEngine)](LICENSE)  [![GitHub last commit](https://img.shields.io/github/last-commit/Syncaidius/MoltenEngine)](https://github.com/Syncaidius/MoltenEngine/commits/)
-
-Alpha versions of each Molten library can be found on [Nuget.org](https://www.nuget.org/packages?q=molten+Syncaidius)
+[ ![GitHub](https://img.shields.io/github/license/Syncaidius/MoltenEngine)](LICENSE)  [![GitHub last commit](https://img.shields.io/github/last-commit/Syncaidius/MoltenEngine)](https://github.com/Syncaidius/MoltenEngine/commits/) ![Nuget](https://img.shields.io/nuget/v/Molten.Engine?color=%2322AAFF&label=NuGet)
 
 # Core Feature Status
 See the following table for the per-platform support and status of each feature.
