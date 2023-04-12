@@ -5,13 +5,13 @@ While parts of this project will inevitably be a classic case of re-inventing th
 
 [Documentation on GitHub Pages](https://syncaidius.github.io/MoltenEngine/)
 # Build Status
-| Platform  | Github | Azure  |
-| :------------ | :----  | :----  |
-| Windows       | [![Build Windows](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build-windows.yml/badge.svg)](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build-windows.yml) | [![Build Status](https://dev.azure.com/jyarwood/MoltenEngine/_apis/build/status/MoltenEngine-.NET%20Desktop-CI)](https://dev.azure.com/jyarwood/MoltenEngine/_build/latest?definitionId=2)   |
-| Android       | [![Build Android](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build-android.yml/badge.svg)](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build-android.yml) |  |
-| Linux         |  |  |
-| MacOS         |  |  |
-| iOS           |  |  |
+| Platform  | Latest | Release  |
+| :--------- | :----  | :----   |
+| Windows    | [![Build Windows](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build-windows.yml/badge.svg)](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build-windows.yml) <br> [![Build Status](https://dev.azure.com/jyarwood/MoltenEngine/_apis/build/status/MoltenEngine-.NET%20Desktop-CI)](https://dev.azure.com/jyarwood/MoltenEngine/_build/latest?definitionId=2)   | |
+| Android    | [![Build Android](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build-android.yml/badge.svg)](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build-android.yml) |  |
+| Linux      |        |         |
+| MacOS      |        |         |
+| iOS        |        |         |
 
 [ ![GitHub](https://img.shields.io/github/license/Syncaidius/MoltenEngine)](LICENSE)  [![GitHub last commit](https://img.shields.io/github/last-commit/Syncaidius/MoltenEngine)](https://github.com/Syncaidius/MoltenEngine/commits/)
 
