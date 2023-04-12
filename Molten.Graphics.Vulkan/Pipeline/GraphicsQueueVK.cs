@@ -119,6 +119,42 @@ namespace Molten.Graphics.Vulkan
             }
         }
 
+        /// <summary>
+        /// Queues a texture memory barrier.
+        /// </summary>
+        /// <param name="srcFlags">The source stage flags.</param>
+        /// <param name="destFlags">The destination stage flags.</param>
+        /// <param name="barrier">A pointer to one or more image memory barriers.</param>
+        /// <param name="barrierCount">The number of memory barriers in the <paramref name="barrier"/> parameter.</param>
+        internal unsafe void MemoryBarrier(PipelineStageFlags srcFlags, PipelineStageFlags destFlags, ImageMemoryBarrier* barrier, uint barrierCount = 1)
+        {
+            _vk.CmdPipelineBarrier(_cmd, srcFlags, destFlags, DependencyFlags.None, 0, null, 0, null, barrierCount, barrier);
+        }
+
+        /// <summary>
+        /// Queues a buffer memory barrier.
+        /// </summary>
+        /// <param name="srcFlags">The source stage flags.</param>
+        /// <param name="destFlags">The destination stage flags.</param>
+        /// <param name="barrier">A pointer to one or more buffer memory barriers.</param>
+        /// <param name="barrierCount">The number of memory barriers in the <paramref name="barrier"/> parameter.</param>
+        internal unsafe void MemoryBarrier(PipelineStageFlags srcFlags, PipelineStageFlags destFlags, BufferMemoryBarrier* barrier, uint barrierCount = 1)
+        {
+            _vk.CmdPipelineBarrier(_cmd, srcFlags, destFlags, DependencyFlags.None, 0, null, barrierCount, barrier, 0, null);
+        }
+
+        /// <summary>
+        /// Queues a global memory barrier command.
+        /// </summary>
+        /// <param name="srcFlags">The source stage flags.</param>
+        /// <param name="destFlags">The destination stage flags.</param>
+        /// <param name="barrier">A pointer to one or more global memory barriers.</param>
+        /// <param name="barrierCount">The number of memory barriers in the <paramref name="barrier"/> parameter.</param>
+        internal unsafe void MemoryBarrier(PipelineStageFlags srcFlags, PipelineStageFlags destFlags, MemoryBarrier* barrier, uint barrierCount = 1)
+        {
+            _vk.CmdPipelineBarrier(_cmd, srcFlags, destFlags, DependencyFlags.None, barrierCount, barrier, 0, null, 0, null);
+        }
+
         internal bool HasFlags(CommandSetCapabilityFlags flags)
         {
             return (Flags & flags) == flags;
@@ -317,7 +353,7 @@ namespace Molten.Graphics.Vulkan
         /// <summary>
         /// The current command list, if any.
         /// </summary>
-        public override GraphicsCommandList Cmd
+        protected override GraphicsCommandList Cmd
         {
             get => _cmd;
             set => _cmd = value as CommandListVK;

@@ -151,29 +151,29 @@ namespace Molten.Graphics.Vulkan
             barrier.SubresourceRange.LevelCount = newMipMapCount;
             barrier.SubresourceRange.LayerCount = newArraySize;
 
-            PipelineStageFlags sourceStage;
-            PipelineStageFlags destStage;
+            PipelineStageFlags srcFlags;
+            PipelineStageFlags destFlags;
 
             if (oldLayout == ImageLayout.Undefined && newLayout == ImageLayout.TransferDstOptimal)
             {
                 barrier.SrcAccessMask = AccessFlags.None;
                 barrier.DstAccessMask = AccessFlags.TransferWriteBit;
-                sourceStage = PipelineStageFlags.TopOfPipeBit;
-                destStage = PipelineStageFlags.TransferBit;
+                srcFlags = PipelineStageFlags.TopOfPipeBit;
+                destFlags = PipelineStageFlags.TransferBit;
             }
             else if (oldLayout == ImageLayout.TransferDstOptimal && newLayout == ImageLayout.ReadOnlyOptimal)
             {
                 barrier.SrcAccessMask = AccessFlags.TransferWriteBit;
                 barrier.DstAccessMask = AccessFlags.ShaderReadBit;
-                sourceStage = PipelineStageFlags.TransferBit;
-                destStage = PipelineStageFlags.FragmentShaderBit;
+                srcFlags = PipelineStageFlags.TransferBit;
+                destFlags = PipelineStageFlags.FragmentShaderBit;
             }
             else
             {
                 throw new GraphicsResourceException(this, "Unsupported image layout transition.");
             }
 
-            (Device as DeviceVK).VK.CmdPipelineBarrier(cmd.Cmd as CommandListVK, sourceStage, destStage, 0, 0, null, null, 1, &barrier);
+            cmd.MemoryBarrier(srcFlags, destFlags, &barrier);
         }
 
         protected override void OnGenerateMipMaps(GraphicsQueue cmd)

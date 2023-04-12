@@ -782,7 +782,7 @@ namespace Molten.Graphics.DX11
 
         internal DeviceDX11 DXDevice { get; private set; }
 
-        public override GraphicsCommandList Cmd
+        protected override GraphicsCommandList Cmd
         {
             get => _cmd;
             set => _cmd = value as CommandListDX11;

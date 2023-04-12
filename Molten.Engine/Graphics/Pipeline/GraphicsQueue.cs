@@ -349,6 +349,6 @@ where B : GraphicsSlotBinder<T>, new()
 
         protected GraphicsFrameTracker Tracker => _tracker;
 
-        public abstract GraphicsCommandList Cmd { get; set; }
+        protected abstract GraphicsCommandList Cmd { get; set; }
     }
 }
