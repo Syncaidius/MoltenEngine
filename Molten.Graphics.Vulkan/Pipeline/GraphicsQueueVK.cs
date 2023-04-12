@@ -314,7 +314,10 @@ namespace Molten.Graphics.Vulkan
 
         internal Queue Native { get; private set; }
 
-        protected override GraphicsCommandList Cmd
+        /// <summary>
+        /// The current command list, if any.
+        /// </summary>
+        public override GraphicsCommandList Cmd
         {
             get => _cmd;
             set => _cmd = value as CommandListVK;

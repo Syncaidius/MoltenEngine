@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Silk.NET.Direct3D.Compilers;
 using Silk.NET.Vulkan;
 
 namespace Molten.Graphics.Vulkan
@@ -11,6 +10,8 @@ namespace Molten.Graphics.Vulkan
     public unsafe abstract class TextureVK : GraphicsTexture
     {
         ImageCreateInfo _desc;
+        ImageViewCreateInfo _viewDesc;
+
         ImageView* _view;
         ResourceHandleVK* _handle;
         MemoryAllocationVK _memory;
@@ -72,16 +73,16 @@ namespace Molten.Graphics.Vulkan
                 _desc.QueueFamilyIndexCount = 1;
             }
 
-            ImageViewCreateInfo viewInfo = new ImageViewCreateInfo(StructureType.ImageViewCreateInfo);
-            viewInfo.Format = _desc.Format;
-            viewInfo.SubresourceRange.AspectMask = ImageAspectFlags.ColorBit;
-            viewInfo.SubresourceRange.BaseMipLevel = 0;
-            viewInfo.SubresourceRange.LevelCount = MipMapCount;
-            viewInfo.SubresourceRange.BaseArrayLayer = 0;
-            viewInfo.SubresourceRange.LayerCount = ArraySize;
-            viewInfo.Flags = ImageViewCreateFlags.None;
+            _viewDesc = new ImageViewCreateInfo(StructureType.ImageViewCreateInfo);
+            _viewDesc.Format = _desc.Format;
+            _viewDesc.SubresourceRange.AspectMask = ImageAspectFlags.ColorBit;
+            _viewDesc.SubresourceRange.BaseMipLevel = 0;
+            _viewDesc.SubresourceRange.LevelCount = MipMapCount;
+            _viewDesc.SubresourceRange.BaseArrayLayer = 0;
+            _viewDesc.SubresourceRange.LayerCount = ArraySize;
+            _viewDesc.Flags = ImageViewCreateFlags.None;
 
-            SetCreateInfo(ref _desc, ref viewInfo);
+            SetCreateInfo(ref _desc, ref _viewDesc);
 
             // Creation of images with tiling VK_IMAGE_TILING_LINEAR may not be supported unless other parameters meet all of the constraints
             if (_desc.Tiling == ImageTiling.Linear)
@@ -108,7 +109,7 @@ namespace Molten.Graphics.Vulkan
             if (_desc.ImageType == 0)
                 throw new GraphicsResourceException(this, "Image type not set during image creation");
 
-            if (viewInfo.ViewType == 0)
+            if (_viewDesc.ViewType == 0)
                 throw new GraphicsResourceException(this, "View type not set during image-view creation");
 
             Image img = new Image();
@@ -130,9 +131,49 @@ namespace Molten.Graphics.Vulkan
             if (r.Check(device, () => "Failed to bind image memory"))
                 return;
 
-            r = device.VK.CreateImageView(device, &viewInfo, null, _view);
+            r = device.VK.CreateImageView(device, _viewDesc, null, _view);
             if (r.Check(device, () => "Failed to create image view"))
                 return;
+        }
+
+        private void TransitionImageLayout(GraphicsQueueVK cmd, ImageLayout oldLayout, ImageLayout newLayout, GraphicsFormat newFormat, uint newMipMapCount, uint newArraySize)
+        {
+            ImageMemoryBarrier barrier = new ImageMemoryBarrier(StructureType.ImageMemoryBarrier)
+            {
+                OldLayout = oldLayout,
+                NewLayout = newLayout,
+                SrcQueueFamilyIndex = Vk.QueueFamilyIgnored,
+                DstQueueFamilyIndex = Vk.QueueFamilyIgnored,
+                Image = *(Image*)_handle->Ptr,
+                SubresourceRange = _viewDesc.SubresourceRange,
+            };
+
+            barrier.SubresourceRange.LevelCount = newMipMapCount;
+            barrier.SubresourceRange.LayerCount = newArraySize;
+
+            PipelineStageFlags sourceStage;
+            PipelineStageFlags destStage;
+
+            if (oldLayout == ImageLayout.Undefined && newLayout == ImageLayout.TransferDstOptimal)
+            {
+                barrier.SrcAccessMask = AccessFlags.None;
+                barrier.DstAccessMask = AccessFlags.TransferWriteBit;
+                sourceStage = PipelineStageFlags.TopOfPipeBit;
+                destStage = PipelineStageFlags.TransferBit;
+            }
+            else if (oldLayout == ImageLayout.TransferDstOptimal && newLayout == ImageLayout.ReadOnlyOptimal)
+            {
+                barrier.SrcAccessMask = AccessFlags.TransferWriteBit;
+                barrier.DstAccessMask = AccessFlags.ShaderReadBit;
+                sourceStage = PipelineStageFlags.TransferBit;
+                destStage = PipelineStageFlags.FragmentShaderBit;
+            }
+            else
+            {
+                throw new GraphicsResourceException(this, "Unsupported image layout transition.");
+            }
+
+            (Device as DeviceVK).VK.CmdPipelineBarrier(cmd.Cmd as CommandListVK, sourceStage, destStage, 0, 0, null, null, 1, &barrier);
         }
 
         protected override void OnGenerateMipMaps(GraphicsQueue cmd)
