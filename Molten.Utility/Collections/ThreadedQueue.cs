@@ -127,6 +127,49 @@ namespace Molten.Collections
             });
         }
 
+        /// <summary>
+        /// Gets the next item in the queue without dequeing it.
+        /// </summary>
+        /// <param name="item">The item output.</param>
+        /// <returns>True if an item was successfully found in the queue.</returns>
+        public bool TryPeek(out T item)
+        {
+            bool result = false;
+            T temp = default;
+            _interlocker.Lock(() =>
+            {
+                if (!_isEmpty)
+                {
+                    temp = _items[_queueStart];
+                    result = true;
+                }
+                else
+                {
+                    temp = default;
+                }
+            });
+
+            item = temp;
+            return result;
+        }
+
+        /// <summary>
+        /// Gets whether or not the next item in the queue is, or derived from, the given type.
+        /// </summary>
+        /// <typeparam name="N">The type.</typeparam>
+        /// <returns></returns>
+        public bool IsNext<N>()
+        {
+            bool result = false;
+            _interlocker.Lock(() =>
+            {
+                if (!_isEmpty)
+                    result = typeof(N).IsAssignableFrom(_items[_queueStart].GetType());
+            });
+
+            return result;
+        }
+
         public void Enqueue(T item)
         {
             _interlocker.Lock(() => Insert(item));

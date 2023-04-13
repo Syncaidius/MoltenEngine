@@ -54,20 +54,42 @@ namespace Molten.Graphics
         }
 
         /// <summary>Applies any pending changes to the resource, from the specified priority queue.</summary>
-        /// <param name="context">The graphics pipe to use when process changes.</param>
-        protected void ApplyChanges(GraphicsQueue context)
+        /// <param name="cmd">The graphics queue to use when process changes.</param>
+        protected void ApplyChanges(GraphicsQueue cmd)
         {
             if (_applyTaskQueue.Count > 0)
             {
                 IGraphicsResourceTask op = null;
                 bool invalidated = false;
                 while (_applyTaskQueue.TryDequeue(out op))
-                    invalidated = op.Process(context, this);
+                    invalidated = op.Process(cmd, this);
 
                 // If the resource was invalided, let the pipeline know it needs to be reapplied by incrementing version.
                 if (invalidated)
                     Version++;
             }
+        }
+
+        /// <summary>
+        /// Takes the next task from the task queue if it matches the specified type.
+        /// </summary>
+        /// <typeparam name="T">The type.</typeparam>
+        /// <param name="result">The task that was dequeued, if any.</param>
+        /// <returns></returns>
+        protected bool DequeueTaskIfType<T>(out T result)
+            where T : unmanaged, IGraphicsResourceTask
+        {
+            if(_applyTaskQueue.Count > 0 && _applyTaskQueue.IsNext<T>())
+            {
+                if(_applyTaskQueue.TryDequeue(out IGraphicsResourceTask task))
+                {
+                    result = (T)task;
+                    return true;
+                }
+            }
+
+            result = default;
+            return false;
         }
 
         protected override void OnApply(GraphicsQueue cmd)
