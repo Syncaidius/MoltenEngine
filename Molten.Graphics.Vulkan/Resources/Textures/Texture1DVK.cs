@@ -9,10 +9,15 @@ namespace Molten.Graphics.Vulkan
 {
     public class Texture1DVK : TextureVK, ITexture1D
     {
-        public Texture1DVK(GraphicsDevice device, GraphicsTextureType type, TextureDimensions dimensions, 
-            AntiAliasLevel aaLevel, MSAAQuality sampleQuality, GraphicsFormat format, GraphicsResourceFlags flags, 
-            bool allowMipMapGen, string name) : 
-            base(device, type, dimensions, aaLevel, sampleQuality, format, flags, allowMipMapGen, name)
+        public Texture1DVK(GraphicsDevice device, uint width, uint mipMapLevels, uint arraySize, 
+            GraphicsFormat format, GraphicsResourceFlags flags, bool allowMipMapGen, string name) : 
+            base(device, GraphicsTextureType.Texture1D, 
+                new TextureDimensions(width, 1, 1, mipMapLevels, arraySize), 
+                AntiAliasLevel.None, MSAAQuality.Default, 
+                format,
+                flags, 
+                allowMipMapGen,
+                name)
         {
 
         }

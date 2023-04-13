@@ -31,14 +31,11 @@ namespace Molten.Examples
             HlslShader mat = _hShader.Get<HlslShader>();
 
             // Manually construct a 2D texture array from the 3 textures we requested earlier
-            ITexture2D texture = _hTexture.Get<ITexture2D>();
-            mat.SetDefaultResource(texture, 0);
+            ITexture2D tex = _hTexture.Get<ITexture2D>();
+            mat.SetDefaultResource(tex, 0);
             TestMesh.Shader = mat;
 
-            TextureProperties p = texture.GetProperties();
-            p.Flags = GraphicsResourceFlags.AllReadWrite;
-            ITexture2D staging = Engine.Renderer.Device.CreateTexture(p) as ITexture2D;
-
+            GraphicsTexture staging = Engine.Renderer.Device.CreateStagingTexture(tex);
             TextureData loadedData = _hTexData.Get<TextureData>();
             loadedData.Decompress(Log);
 
@@ -48,7 +45,7 @@ namespace Molten.Examples
             };
 
             Engine.Content.SaveToFile("assets/saved_recompressed_texture_raw.dds", loadedData, parameters: texParams);
-            texture.GetData(GraphicsPriority.EndOfFrame, staging as GraphicsTexture, (data) =>
+            tex.GetData(GraphicsPriority.EndOfFrame, staging, (data) =>
             {
                 ContentSaveHandle saveHandle = Engine.Content.SaveToFile("assets/saved_texture.dds", data, parameters: texParams);
             });

@@ -88,5 +88,10 @@ namespace Molten.Graphics
         internal GraphicsQueue Queue { get; }
 
         public TrackedFrame Frame => _frames[_frameIndex];
+
+        /// <summary>
+        /// Gets the current frame index. The value will be between 0 and <see cref="GraphicsSettings.BufferingMode"/> - 1, from <see cref="GraphicsDevice.Settings"/>.
+        /// </summary>
+        public uint FrameIndex => _frameIndex;
     }
 }

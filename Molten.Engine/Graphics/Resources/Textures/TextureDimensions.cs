@@ -8,15 +8,15 @@ namespace Molten.Graphics
 {
     public struct TextureDimensions
     {
-        public uint Width;
+        public uint Width = 1;
 
-        public uint Height;
+        public uint Height = 1;
 
-        public uint Depth;
+        public uint Depth = 1;
 
-        public uint MipMapLevels;
+        public uint MipMapLevels = 1;
 
-        public uint ArraySize;
+        public uint ArraySize = 1;
 
         public TextureDimensions(uint width, uint height, uint depth, uint mipMapLevels, uint arraySize)
         {

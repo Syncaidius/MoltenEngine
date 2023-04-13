@@ -9,11 +9,10 @@ namespace Molten.Graphics.Vulkan
 {
     public class Texture3DVK : TextureVK, ITexture3D
     {
-        public Texture3DVK(GraphicsDevice device, GraphicsTextureType type, 
-            TextureDimensions dimensions, AntiAliasLevel aaLevel, 
-            MSAAQuality sampleQuality, GraphicsFormat format, 
+        public Texture3DVK(GraphicsDevice device, 
+            TextureDimensions dimensions, GraphicsFormat format, 
             GraphicsResourceFlags flags, bool allowMipMapGen, string name) : 
-            base(device, type, dimensions, aaLevel, sampleQuality, format, flags, allowMipMapGen, name)
+            base(device, GraphicsTextureType.Texture3D, dimensions, AntiAliasLevel.None, MSAAQuality.Default, format, flags, allowMipMapGen, name)
         {
         }
 

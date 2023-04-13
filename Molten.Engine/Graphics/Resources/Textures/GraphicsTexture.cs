@@ -40,27 +40,6 @@ namespace Molten.Graphics
                 SizeInBytes = (ResourceFormat.BytesPerPixel() * (Width * Height)) * ArraySize;
         }
 
-        /// <inheritdoc/>
-        public TextureProperties GetProperties()
-        {
-            return new TextureProperties(TextureType)
-            {
-                Dimensions = new TextureDimensions()
-                {
-                    Width = Width,
-                    Height = Height,
-                    Depth = Depth,
-                    ArraySize = ArraySize,
-                    MipMapLevels = MipMapCount,
-                },
-                Flags = Flags,
-                Format = ResourceFormat,
-                MultiSampleLevel = MultiSampleLevel,
-                SampleQuality = SampleQuality,
-                Name = Name
-            };
-        }
-
         protected void InvokeOnResize()
         {
             OnResize?.Invoke(this);

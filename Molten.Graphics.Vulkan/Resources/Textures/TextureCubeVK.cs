@@ -9,11 +9,11 @@ namespace Molten.Graphics.Vulkan
 {
     public class TextureCubeVK : Texture2DVK, ITextureCube
     {
-        public TextureCubeVK(GraphicsDevice device, GraphicsTextureType type, TextureDimensions dimensions, 
-            AntiAliasLevel aaLevel, MSAAQuality sampleQuality, 
+        public TextureCubeVK(GraphicsDevice device, uint cubeCount, TextureDimensions dimensions, 
             GraphicsFormat format, GraphicsResourceFlags flags, bool allowMipMapGen, string name) : 
-            base(device, type, dimensions, aaLevel, sampleQuality, format, flags, allowMipMapGen, name)
+            base(device, GraphicsTextureType.TextureCube, dimensions, AntiAliasLevel.None, MSAAQuality.Default, format, flags, allowMipMapGen, name)
         {
+            CubeCount = cubeCount;
         }
 
         protected override void SetCreateInfo(ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo)

@@ -115,11 +115,6 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public TextureProperties Get1DProperties()
-        {
-            throw new NotImplementedException();
-        }
-
         public void Resize(uint newWidth, uint newMipMapCount, GraphicsFormat format)
         {
             throw new NotImplementedException();
@@ -240,11 +235,6 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public TextureProperties GetProperties()
-        {
-            throw new NotImplementedException();
-        }
-
         public void GenerateMipMaps(GraphicsPriority priority, Action<GraphicsResource> completionCallback = null)
         {
             throw new NotImplementedException();
@@ -325,5 +315,11 @@ namespace Molten.Graphics
         public GraphicsResourceFlags Flags => throw new NotImplementedException();
 
         public GraphicsFormat ResourceFormat => throw new NotImplementedException();
+
+        public MSAAQuality SampleQuality => throw new NotImplementedException();
+
+        public GraphicsTextureType TextureType => throw new NotImplementedException();
+
+        public TextureDimensions Dimensions => throw new NotImplementedException();
     }
 }

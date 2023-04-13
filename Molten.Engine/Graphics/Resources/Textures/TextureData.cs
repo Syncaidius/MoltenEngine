@@ -8,11 +8,15 @@ namespace Molten.Graphics
 
         public uint Height { get; private set; }
 
+        public uint Depth { get; private set; }
+
         public uint MipMapLevels { get; private set; }
 
         public uint ArraySize { get; private set; }
 
         public AntiAliasLevel MultiSampleLevel = AntiAliasLevel.None;
+
+        public MSAAQuality MultiSampleQuality = MSAAQuality.Default;
 
         /// <summary>The most detailed mip map level. by default, this is 0.</summary>
         public uint HighestMipMap = 0;

@@ -34,10 +34,6 @@ namespace Molten.Graphics.Vulkan
         {
             base.Begin();
 
-            // TODO refactor FrameTracker to track only the latest command list of each branch.
-            // CommandList should have a 'Previous' property so we can back-track to the beginning when cleaning up/recycling command lists.
-            // Implement a Begin-End stack, so we can push and pop DrawInfo objects for each nested-begin
-
             CommandBufferLevel level = flags.Has(GraphicsCommandListFlags.Deferred) ?
                 CommandBufferLevel.Secondary :
                 CommandBufferLevel.Primary;

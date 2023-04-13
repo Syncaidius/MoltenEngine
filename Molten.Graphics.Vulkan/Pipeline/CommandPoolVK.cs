@@ -37,6 +37,7 @@ namespace Molten.Graphics.Vulkan
                 CommandListVK list = a.Get();
                 if (list != null)
                 {
+                    Queue.VK.ResetCommandBuffer(list.Ptr, CommandBufferResetFlags.None);
                     result = list;
                     break;
                 }

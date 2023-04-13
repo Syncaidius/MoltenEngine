@@ -285,11 +285,6 @@ namespace Molten.Graphics.Vulkan
             throw new NotImplementedException();
         }
 
-        public TextureProperties Get1DProperties()
-        {
-            throw new NotImplementedException();
-        }
-
         public void GenerateMipMaps(GraphicsPriority priority, Action<GraphicsResource> completionCallback = null)
         {
             throw new NotImplementedException();
@@ -341,7 +336,6 @@ namespace Molten.Graphics.Vulkan
         {
             throw new NotImplementedException();
         }
-
         public void Close()
         {
             if(_window != null)
@@ -354,11 +348,6 @@ namespace Molten.Graphics.Vulkan
         }
 
         public override void GraphicsRelease()
-        {
-            throw new NotImplementedException();
-        }
-
-        public TextureProperties GetProperties()
         {
             throw new NotImplementedException();
         }
@@ -410,5 +399,11 @@ namespace Molten.Graphics.Vulkan
         internal SurfaceKHR Native { get; private set; }
 
         public GraphicsResourceFlags Flags => throw new NotImplementedException();
+
+        public MSAAQuality SampleQuality => throw new NotImplementedException();
+
+        public GraphicsTextureType TextureType => throw new NotImplementedException();
+
+        public TextureDimensions Dimensions => throw new NotImplementedException();
     }
 }

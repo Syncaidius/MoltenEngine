@@ -11,8 +11,6 @@
         /// </summary>
         event TextureHandler OnResize;
 
-        TextureProperties GetProperties();
-
         /// <summary>
         /// Generates any missing mip-maps for a texture, so long as it's creation flags included <see cref="TextureFlags.AllowMipMapGeneration"/>.
         /// </summary>
@@ -128,9 +126,18 @@
         /// </summary>
         AntiAliasLevel MultiSampleLevel { get; }
 
+        MSAAQuality SampleQuality { get; }
+
         /// <summary>
         /// Gets whether or not the texture is multisampled. This is true if <see cref="SampleCount"/> is greater than 1.
         /// </summary>
         bool IsMultisampled { get; }
+
+        GraphicsTextureType TextureType { get; }
+
+        /// <summary>
+        /// Gets the dimensions of the texture.
+        /// </summary>
+        TextureDimensions Dimensions { get; }
     }
 }

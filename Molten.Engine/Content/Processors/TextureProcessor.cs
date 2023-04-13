@@ -2,6 +2,7 @@
 using Molten.Graphics;
 using Molten.Graphics.Textures;
 using Molten.Graphics.Textures.DDS;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Molten.Content
 {
@@ -222,43 +223,50 @@ namespace Molten.Content
                 switch (tex)
                 {
                     case ITextureCube texCube:
-                        staging = handle.Manager.Engine.Renderer.Device.CreateTexture(new TextureProperties(GraphicsTextureType.TextureCube)
-                        {
-                            Flags = (GraphicsResourceFlags.AllReadWrite),
-                            Format = texCube.ResourceFormat,
-                            ArraySize = texCube.ArraySize,
-                            Height = texCube.Height,
-                            MipMapLevels = texCube.MipMapCount,
-                            MultiSampleLevel = texCube.MultiSampleLevel,
-                            Width = texCube.Width,
-                            Name = handle.Info.Name,
-                        });
+                        staging = handle.Manager.Engine.Renderer.Device.CreateTextureCube(
+                            tex.Width, 
+                            tex.Height, 
+                            tex.MipMapCount, 
+                            tex.ResourceFormat,
+                            texCube.CubeCount,
+                            tex.ArraySize,
+                            tex.Flags, 
+                            false, 
+                            tex.Name + "_staging");
                         break;
 
-                    case ITexture2D tex2D:
-                        staging = handle.Manager.Engine.Renderer.Device.CreateTexture(new TextureProperties(GraphicsTextureType.Texture2D)
-                        {
-                            Flags = (GraphicsResourceFlags.AllReadWrite),
-                            Format = tex2D.ResourceFormat,
-                            ArraySize = tex2D.ArraySize,
-                            Height = tex2D.Height,
-                            MipMapLevels = tex2D.MipMapCount,
-                            MultiSampleLevel = tex2D.MultiSampleLevel,
-                            Width = tex2D.Width,
-                            Name = handle.Info.Name,
-                        });
+                    case ITexture3D:
+                        staging = handle.Manager.Engine.Renderer.Device.CreateTexture3D(
+                            tex.Width,
+                            tex.Height,
+                            tex.Depth,
+                            tex.MipMapCount,
+                            tex.ResourceFormat,
+                            tex.Flags,
+                            false,
+                            tex.Name + "_staging");
                         break;
 
-                    case ITexture tex1D:
-                        staging = handle.Manager.Engine.Renderer.Device.CreateTexture(new TextureProperties(GraphicsTextureType.Texture1D)
-                        {
-                            Flags = (GraphicsResourceFlags.AllReadWrite),
-                            Format = tex1D.ResourceFormat,
-                            ArraySize = tex1D.ArraySize,
-                            MipMapLevels = tex1D.MipMapCount,
-                            Width = tex1D.Width,
-                            Name = handle.Info.Name,
-                        });
+                    case ITexture2D:
+                        staging = handle.Manager.Engine.Renderer.Device.CreateTexture2D(
+                            tex.Width,
+                            tex.Height,
+                            tex.MipMapCount,
+                            tex.ArraySize,
+                            tex.ResourceFormat,
+                            tex.Flags,
+                            name: tex.Name + "_staging");
+                        break;
+
+                    case ITexture:
+                        staging = handle.Manager.Engine.Renderer.Device.CreateTexture1D(
+                            tex.Width,
+                            tex.MipMapCount,
+                            tex.ArraySize,
+                            tex.ResourceFormat,
+                            tex.Flags,
+                            false,
+                            tex.Name + "_staging");
                         break;
                 }
 
