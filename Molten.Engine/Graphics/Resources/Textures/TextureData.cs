@@ -23,7 +23,7 @@ namespace Molten.Graphics
 
         public TextureSlice[] Levels;
         public GraphicsFormat Format;
-        public GraphicsResourceFlags Flags = GraphicsResourceFlags.GpuWrite;
+        public GraphicsResourceFlags Flags = GraphicsResourceFlags.None;
 
         public bool IsCompressed;
 
