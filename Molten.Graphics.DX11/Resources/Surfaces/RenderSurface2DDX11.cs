@@ -5,14 +5,11 @@ namespace Molten.Graphics.DX11
 {
     public unsafe class RenderSurface2DDX11 : Texture2DDX11, IRenderSurface2D
     {
-        /// <summary>The viewport which represents the current render surface.</summary>
-        ViewportF _vp;
-
         internal RenderSurface2DDX11(
             GraphicsDevice device,
             uint width,
             uint height,
-            GraphicsResourceFlags flags = GraphicsResourceFlags.GpuWrite,
+            GraphicsResourceFlags flags = GraphicsResourceFlags.None,
             GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm,
             uint mipCount = 1,
             uint arraySize = 1,
@@ -72,7 +69,7 @@ namespace Molten.Graphics.DX11
             _desc.Format = newFormat;
             //_description.MipLevels = newMipMapCount; // NOTE: Do we set this on render targets?
 
-            Viewport = new ViewportF(_vp.X, _vp.Y, newWidth, newHeight);
+            Viewport = new ViewportF(Viewport.X, Viewport.Y, newWidth, newHeight);
         }
 
         internal virtual void OnClear(GraphicsQueueDX11 cmd, Color color)
@@ -103,11 +100,7 @@ namespace Molten.Graphics.DX11
         }
 
         /// <summary>Gets the viewport that defines the default renderable area of the render target.</summary>
-        public ViewportF Viewport
-        {
-            get => _vp;
-            protected set => _vp = value;
-        }
+        public ViewportF Viewport { get; protected set; }
 
         /// <summary>
         /// Gets the DX11 render target view (RTV) for the current render surface.

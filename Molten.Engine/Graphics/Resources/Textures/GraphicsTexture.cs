@@ -27,6 +27,8 @@ namespace Molten.Graphics
             MSAASupport msaaSupport = MSAASupport.NotSupported; // TODO re-support. _renderer.Device.Features.GetMSAASupport(format, aaLevel);
             _dimensions = dimensions;
             TextureType = type;
+
+            ValidateDimensions(ref _dimensions);
             Name = string.IsNullOrWhiteSpace(name) ? $"{GetType().Name}_{Width}x{Height}" : name;
 
             MultiSampleLevel = aaLevel > AntiAliasLevel.Invalid ? aaLevel : AntiAliasLevel.None;
@@ -39,6 +41,8 @@ namespace Molten.Graphics
             else
                 SizeInBytes = (ResourceFormat.BytesPerPixel() * (Width * Height)) * ArraySize;
         }
+
+        protected virtual void ValidateDimensions(ref TextureDimensions dimensions) { }
 
         protected void InvokeOnResize()
         {

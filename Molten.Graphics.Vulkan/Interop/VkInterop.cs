@@ -52,5 +52,10 @@ namespace Molten.Graphics.Vulkan
                 case GraphicsFormat.R32_UInt: return Format.R32Uint;
             }
         }
+
+        internal static bool Has(this MemoryPropertyFlags flags, MemoryPropertyFlags value)
+        {
+            return (flags & value) == value;
+        }
     }
 }

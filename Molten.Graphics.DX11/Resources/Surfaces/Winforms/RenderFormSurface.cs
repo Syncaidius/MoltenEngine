@@ -205,6 +205,6 @@
             }
         }
 
-        public IntPtr? WindowHandle => Handle;
+        public nint? WindowHandle => ControlHandle;
     }
 }

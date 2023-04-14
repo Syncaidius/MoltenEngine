@@ -33,11 +33,6 @@
         event WindowSurfaceHandler OnFocusLost;
 
         /// <summary>
-        /// Gets or sets the internal name of the underlying native control.
-        /// </summary>
-        string Name { get; set; }
-
-        /// <summary>
         /// Gets whether or not the current <see cref="INativeSurface"/> is focused.
         /// </summary>
         bool IsFocused { get; }
@@ -45,17 +40,14 @@
         /// <summary>Gets or sets the window mode of the underlying control.</summary>
         WindowMode Mode { get; set; }
 
-        /// <summary>Gets an <see cref="IntPtr"/> to the handle of the underlying control.</summary>
-        IntPtr Handle { get; }
-
         /// <summary>
         /// Gets the current <see cref="INativeSurface"/> parent's control handle. Null if no parent is assigned.
         /// </summary>
-        IntPtr? ParentHandle { get; set; }
+        nint? ParentHandle { get; set; }
 
         /// <summary>
         /// Gets the handle of the window or form containing the current <see cref="INativeSurface"/>. This is not neccessarily it's direct parent of ancestor.
         /// </summary>
-        IntPtr? WindowHandle { get; }
+        nint? WindowHandle { get; }
     }
 }

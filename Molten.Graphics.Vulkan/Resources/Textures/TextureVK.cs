@@ -18,11 +18,9 @@ namespace Molten.Graphics.Vulkan
             _handle = EngineUtil.Alloc<ResourceHandleVK>();
             _handle->Ptr = EngineUtil.Alloc<Image>();
             _view = EngineUtil.Alloc<ImageView>();
-
-            CreateImage();
         }
 
-        protected void CreateImage()
+        protected virtual void CreateImage()
         {
             DeviceVK device = Device as DeviceVK;
 
@@ -129,6 +127,35 @@ namespace Molten.Graphics.Vulkan
             r = device.VK.CreateImageView(device, _viewDesc, null, _view);
             if (r.Check(device, () => "Failed to create image view"))
                 return;
+
+            // Can we write directly to image memory?
+            if (memFlags.Has(MemoryPropertyFlags.HostVisibleBit))
+            {
+                // TODO Add a vulkan-specific MapResource() method that maps the entire resource in 1 call.
+                //      We can then write each TextureSetTask to one stream via offsets.
+                for(uint a = 0; a < ArraySize; a++)
+                {
+                    for (uint m = 0; m < MipMapCount; m++)
+                    {
+                        if (!DequeueTaskIfType(out TextureSetTask task))
+                            throw new GraphicsResourceException(this, "Immutable texture SetData() was not called or did not provide enough data.");
+
+                        if (task.MipLevel != m || task.ArrayIndex != a)
+                            throw new GraphicsResourceException(this, "The provided immutable texture subresource data was not correctly ordered.");
+
+                        uint subIndex = (a * MipMapCount) + m;
+                        using (GraphicsStream stream = Device.Queue.MapResource(this, subIndex, 0, GraphicsMapType.Write))
+                            stream.WriteRange(task.Data, task.NumBytes);
+                    }
+                }
+            }
+            else // Direct writing not allowed. Use a staging buffer.
+            {
+                throw new NotImplementedException("Requires per-frame staging buffers to be implemented in the renderer");
+                // TODO Will need to make use of vkBufferImageCopy - A form of resource region
+                //      Image must have TRANSFER_DST_BIT set
+                //      Buffer must have TRANSFER_SRC_BIT set
+            }
         }
 
         private void Transition(GraphicsQueueVK cmd, ImageLayout oldLayout, ImageLayout newLayout, GraphicsFormat newFormat, uint newMipMapCount, uint newArraySize)
@@ -169,6 +196,17 @@ namespace Molten.Graphics.Vulkan
             }
 
             cmd.MemoryBarrier(srcFlags, destFlags, &barrier);
+        }
+
+        protected override void OnApply(GraphicsQueue cmd)
+        {
+            if (IsDisposed)
+                return;
+
+            if (((Image*)_handle->Ptr)->Handle == 0)
+                CreateImage();
+
+            base.OnApply(cmd);
         }
 
         protected override void OnGenerateMipMaps(GraphicsQueue cmd)

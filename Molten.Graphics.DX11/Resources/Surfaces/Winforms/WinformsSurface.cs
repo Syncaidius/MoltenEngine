@@ -10,8 +10,8 @@ namespace Molten.Graphics.DX11
     {
         T _control;
         Control _parent;
-        IntPtr _handle;
-        IntPtr? _parentHandle;
+        nint _handle;
+        nint? _parentHandle;
 
         protected Rectangle _bounds;
         DisplayModeDXGI _displayMode;
@@ -153,7 +153,7 @@ namespace Molten.Graphics.DX11
 
             bool controlAlive = true;
 
-            if (_handle != IntPtr.Zero)
+            if (_handle != 0U)
             {
                 // Previous code not compatible with Application.AddMessageFilter but faster then DoEvents
                 NativeMessage msg;
@@ -225,7 +225,7 @@ namespace Molten.Graphics.DX11
             }
         }
 
-        public IntPtr Handle => _handle;
+        protected nint ControlHandle => _handle;
 
         /// <summary>Gets or sets the mode of the output form.</summary>
         public WindowMode Mode
@@ -254,7 +254,7 @@ namespace Molten.Graphics.DX11
         /// <summary>
         /// Gets or sets the control's handle.
         /// </summary>
-        public IntPtr? ParentHandle
+        public nint? ParentHandle
         {
             get => _parentHandle;
             set

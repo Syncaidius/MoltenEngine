@@ -1,4 +1,5 @@
 ﻿using Silk.NET.Core.Native;
+using Silk.NET.Direct3D.Compilers;
 using Silk.NET.GLFW;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
@@ -6,7 +7,7 @@ using Image = Silk.NET.Vulkan.Image;
 
 namespace Molten.Graphics.Vulkan
 {
-    internal unsafe class WindowSurfaceVK : GraphicsObject, INativeSurface
+    internal unsafe class WindowSurfaceVK : RenderSurface2DVK, INativeSurface
     {
         struct BackBuffer
         {
@@ -28,7 +29,6 @@ namespace Molten.Graphics.Vulkan
         public event WindowSurfaceHandler OnRestore;
         public event WindowSurfaceHandler OnFocusGained;
         public event WindowSurfaceHandler OnFocusLost;
-        public event TextureHandler OnResize;
 
         GraphicsQueueVK _presentQueue;
         WindowHandle* _window;
@@ -38,24 +38,29 @@ namespace Molten.Graphics.Vulkan
         BackBuffer[] _backBuffer;
 
         string _title;
-        uint _width;
-        uint _height;
-        uint _backBufferSize;
+        uint _curChainSize;
 
         ColorSpaceKHR _colorSpace = ColorSpaceKHR.SpaceSrgbNonlinearKhr;
         Format _format;
 
         KhrSwapchain _extSwapChain;
 
-        internal unsafe WindowSurfaceVK(DeviceVK device, GraphicsFormat format, string title, uint width, uint height,
-            PresentModeKHR presentMode = PresentModeKHR.MailboxKhr) : 
-            base(device, GraphicsBindTypeFlags.Input | GraphicsBindTypeFlags.Output)
+        internal unsafe WindowSurfaceVK(DeviceVK device, string title, TextureDimensions dimensions,
+            GraphicsResourceFlags flags = GraphicsResourceFlags.None,
+            GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm,
+            PresentModeKHR presentMode = PresentModeKHR.MailboxKhr,
+            string name = null) : 
+            base(device, dimensions, AntiAliasLevel.None, MSAAQuality.Default, format, flags, false, name)
         {
-            _format = format.ToApi();
-            RendererVK renderer = Device.Renderer as RendererVK;
             _title = title;
-            _width = width;
-            _height = height;
+            _mode = presentMode;
+        }
+
+        protected override void CreateImage()
+        {
+            DeviceVK device = Device as DeviceVK;
+            _format = ResourceFormat.ToApi();
+            RendererVK renderer = Device.Renderer as RendererVK;
 
             KhrSurface extSurface = renderer.GetInstanceExtension<KhrSurface>();
             if (extSurface == null)
@@ -73,7 +78,7 @@ namespace Molten.Graphics.Vulkan
 
             renderer.GLFW.WindowHint(WindowHintClientApi.ClientApi, ClientApi.NoApi);
             renderer.GLFW.WindowHint(WindowHintBool.Resizable, true);
-            _window = renderer.GLFW.CreateWindow((int)width, (int)height, _title, null, null);
+            _window = renderer.GLFW.CreateWindow((int)Width, (int)Height, _title, null, null);
 
             VkHandle instanceHandle = new VkHandle(renderer.Instance->Handle);
             VkNonDispatchableHandle surfaceHandle = new VkNonDispatchableHandle();
@@ -96,15 +101,17 @@ namespace Molten.Graphics.Vulkan
             if (!r.Check(renderer))
                 return;
 
-            if (!IsFormatSupported(extSurface, format, _colorSpace))
+            if (!IsFormatSupported(extSurface, ResourceFormat, _colorSpace))
             {
-                renderer.Log.Error($"Surface format '{format}' with a '{_colorSpace}' color-space is not supported");
+                renderer.Log.Error($"Surface format '{ResourceFormat}' with a '{_colorSpace}' color-space is not supported");
                 return;
             }
 
-            _mode = ValidatePresentMode(extSurface, presentMode);
-            ValidateSize();
+            _mode = ValidatePresentMode(extSurface, _mode);
             ValidateBackBufferSize();
+
+            // TODO Set properties for swapchain image in SetCreateInfo() override 
+            base.CreateImage();
 
             r = CreateSwapChain();
             if (r.Check(renderer))
@@ -118,10 +125,10 @@ namespace Molten.Graphics.Vulkan
             {
                 SType = StructureType.SwapchainCreateInfoKhr,
                 Surface = Native,
-                MinImageCount = _backBufferSize,
+                MinImageCount = _curChainSize,
                 ImageFormat = ResourceFormat.ToApi(),
                 ImageColorSpace = _colorSpace,
-                ImageExtent = new Extent2D(_width, _height),
+                ImageExtent = new Extent2D(Width, Height),
                 ImageArrayLayers = 1,
                 ImageUsage = ImageUsageFlags.ColorAttachmentBit,
             };
@@ -229,20 +236,22 @@ namespace Molten.Graphics.Vulkan
         {
             BackBufferMode mode = Device.Renderer.Settings.Graphics.BufferingMode;
             if (mode == BackBufferMode.Default)
-                _backBufferSize = _cap.MinImageCount + 1;
+                _curChainSize = _cap.MinImageCount + 1;
             else
-                _backBufferSize = (uint)mode;
+                _curChainSize = (uint)mode;
 
             if (_cap.MaxImageCount > 0)
-                _backBufferSize = uint.Clamp(_backBufferSize, _cap.MinImageCount, _cap.MaxImageCount);
+                _curChainSize = uint.Clamp(_curChainSize, _cap.MinImageCount, _cap.MaxImageCount);
             else
-                _backBufferSize = uint.Max(_cap.MinImageCount, _backBufferSize);
+                _curChainSize = uint.Max(_cap.MinImageCount, _curChainSize);
         }
 
-        private void ValidateSize()
+        protected override void ValidateDimensions(ref TextureDimensions dimensions)
         {
-            _width = uint.Clamp(_width, _cap.MinImageExtent.Width, _cap.MaxImageExtent.Width);
-            _height = uint.Clamp(_height, _cap.MinImageExtent.Height, _cap.MaxImageExtent.Height);
+            base.ValidateDimensions(ref dimensions);
+
+            dimensions.Width = uint.Clamp(dimensions.Width, _cap.MinImageExtent.Width, _cap.MaxImageExtent.Width);
+            dimensions.Height = uint.Clamp(dimensions.Height, _cap.MinImageExtent.Height, _cap.MaxImageExtent.Height);
         }
 
         protected override void OnDispose()
@@ -332,55 +341,19 @@ namespace Molten.Graphics.Vulkan
             throw new NotImplementedException();
         }
 
-        public void Clear(GraphicsPriority priority, Color color)
-        {
-            throw new NotImplementedException();
-        }
         public void Close()
         {
             if(_window != null)
                 (Device.Renderer as RendererVK).GLFW.SetWindowShouldClose(_window, true);
         }
 
-        protected override void OnApply(GraphicsQueue context)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void GraphicsRelease()
-        {
-            throw new NotImplementedException();
-        }
-
         public bool IsFocused => throw new NotImplementedException();
 
         public WindowMode Mode { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public nint Handle => (nint)_window;
-
         public nint? ParentHandle { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public nint? WindowHandle => throw new NotImplementedException();
-
-        public ViewportF Viewport => throw new NotImplementedException();
-
-        public GraphicsFormat ResourceFormat => _format.FromApi();
-
-        public bool IsBlockCompressed => throw new NotImplementedException();
-
-        public uint Width => _width;
-
-        public uint Height => _height;
-
-        public uint Depth => 1;
-
-        public uint MipMapCount => throw new NotImplementedException();
-
-        public uint ArraySize => throw new NotImplementedException();
-
-        public AntiAliasLevel MultiSampleLevel => throw new NotImplementedException();
-
-        public bool IsMultisampled => throw new NotImplementedException();
+        public nint? WindowHandle => (nint)_window;
 
         public Rectangle RenderBounds => throw new NotImplementedException();
 
@@ -397,13 +370,5 @@ namespace Molten.Graphics.Vulkan
         public bool IsVisible { get; set; }
 
         internal SurfaceKHR Native { get; private set; }
-
-        public GraphicsResourceFlags Flags => throw new NotImplementedException();
-
-        public MSAAQuality SampleQuality => throw new NotImplementedException();
-
-        public GraphicsTextureType TextureType => throw new NotImplementedException();
-
-        public TextureDimensions Dimensions => throw new NotImplementedException();
     }
 }
