@@ -81,9 +81,15 @@ namespace Molten.Graphics
             }
         }
 
-        public static uint GetLevelID(uint mipMapCount, uint targetMip, uint targetArraySlice)
+        /// <summary>
+        /// Gets the subresource ID for the specified mip-map level and array slice, based on <see cref="MipMapLevels"/>.
+        /// </summary>
+        /// <param name="targetMip"></param>
+        /// <param name="targetArraySlice"></param>
+        /// <returns></returns>
+        public uint GetLevelID(uint targetMip, uint targetArraySlice)
         {
-            return (targetArraySlice * mipMapCount) + targetMip;
+            return (targetArraySlice * MipMapLevels) + targetMip;
         }
 
         object ICloneable.Clone()

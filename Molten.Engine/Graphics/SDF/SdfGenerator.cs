@@ -55,7 +55,7 @@ namespace Molten.Graphics.SDF
             Color[] finalData = new Color[src.Width * src.Height];
             ITexture2D tex = renderer.Device.CreateTexture2D(src.Width, src.Height, 1, 1, 
                 GraphicsFormat.R8G8B8A8_UNorm, 
-                GraphicsResourceFlags.GpuWrite, name: $"SDF_{src.Width}x{src.Height}");
+                GraphicsResourceFlags.None, name: $"SDF_{src.Width}x{src.Height}");
 
             fixed (Color* ptr = finalData)
             {

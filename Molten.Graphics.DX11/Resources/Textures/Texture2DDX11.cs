@@ -59,10 +59,12 @@ namespace Molten.Graphics.DX11
 
         protected override unsafe ID3D11Resource* CreateResource(bool resize)
         {
-            SubresourceData* subData = null;
+            SubresourceData* subData = GetImmutableData(_desc.Usage);
+
             fixed (Texture2DDesc1* pDesc = &_desc)
                 (Device as DeviceDX11).Ptr->CreateTexture2D1(pDesc, subData, ref NativeTexture);
 
+            EngineUtil.Free(ref subData);
             return (ID3D11Resource*)NativeTexture;
         }
 

@@ -77,7 +77,7 @@ namespace Molten.Graphics
         /// <param name="result">The task that was dequeued, if any.</param>
         /// <returns></returns>
         protected bool DequeueTaskIfType<T>(out T result)
-            where T : unmanaged, IGraphicsResourceTask
+            where T : IGraphicsResourceTask
         {
             if(_applyTaskQueue.Count > 0 && _applyTaskQueue.IsNext<T>())
             {

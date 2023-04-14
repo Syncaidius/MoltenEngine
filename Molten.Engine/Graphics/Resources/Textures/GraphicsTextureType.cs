@@ -27,5 +27,20 @@ namespace Molten.Graphics
         /// Represents a cube texture.
         /// </summary>
         TextureCube = 3,
+
+        /// <summary>
+        /// Represents a 1D render surface.
+        /// </summary>
+        Surface1D = 4,
+
+        /// <summary>
+        /// Represents a 2D render surface.
+        /// </summary>
+        Surface2D = 5,
+
+        /// <summary>
+        /// Represents a 3D render surface.
+        /// </summary>
+        Surface3D = 6,
     }
 }

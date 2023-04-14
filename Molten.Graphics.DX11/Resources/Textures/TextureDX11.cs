@@ -21,8 +21,15 @@ namespace Molten.Graphics.DX11
         SRView _srv;
         UAView _uav;
 
-        internal TextureDX11(GraphicsDevice device, GraphicsTextureType type, TextureDimensions dimensions, AntiAliasLevel aaLevel, MSAAQuality sampleQuality, GraphicsFormat format, GraphicsResourceFlags flags, bool allowMipMapGen, string name) :
-            base(device, type, dimensions, aaLevel, sampleQuality, format, flags, allowMipMapGen, name)
+        internal TextureDX11(GraphicsDevice device, GraphicsTextureType type, 
+            TextureDimensions dimensions, 
+            AntiAliasLevel aaLevel, 
+            MSAAQuality sampleQuality, 
+            GraphicsFormat format, 
+            GraphicsResourceFlags flags, 
+            bool allowMipMapGen, 
+            string name) :
+            base(device, type, dimensions, aaLevel, sampleQuality, format, flags | GraphicsResourceFlags.GpuRead, allowMipMapGen, name)
         {
             _srv = new SRView(this);
             _uav = new UAView(this);
@@ -81,6 +88,40 @@ namespace Molten.Graphics.DX11
             {
                 OnCreateFailed?.Invoke(this);
             }
+        }
+
+        protected SubresourceData* GetImmutableData(Usage usage)
+        {
+            SubresourceData* subData = null;
+
+            // Check if we're passing initial data to the texture.
+            // Render surfaces and depth-stencil buffers cannot be initialized with data.
+            if (TextureType < GraphicsTextureType.Surface2D)
+            {
+                // We can only pass data for immutable textures.
+                if (usage == Usage.Immutable)
+                {
+                    subData = EngineUtil.AllocArray<SubresourceData>(MipMapCount * ArraySize);
+
+                    // Immutable textures expect data to be provided via SetData() before other operations are performed on them.
+                    for (uint a = 0; a < ArraySize; a++)
+                    {
+                        for (uint m = 0; m < MipMapCount; m++)
+                        {
+                            if (!DequeueTaskIfType(out TextureSetTask task))
+                                throw new GraphicsResourceException(this, "Immutable texture SetData() was not called or did not provide enough data.");
+
+                            if (task.MipLevel != m || task.ArrayIndex != a)
+                                throw new GraphicsResourceException(this, "The provided immutable texture subresource data was not correctly ordered.");
+
+                            uint subIndex = (a * MipMapCount) + m;
+                            subData[subIndex] = new SubresourceData(task.Data, task.Pitch, task.NumBytes);
+                        }
+                    }
+                }
+            }
+
+            return subData;
         }
 
         protected abstract void SetUAVDescription(ref ShaderResourceViewDesc1 srvDesc, ref UnorderedAccessViewDesc1 desc);

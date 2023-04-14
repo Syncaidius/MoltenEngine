@@ -161,7 +161,7 @@ namespace Molten.Graphics
             if (!texBounds.Contains(area))
                 throw new Exception("The provided area would go outside of the current texture's bounds.");
 
-            QueueTask(priority, new TextureSetTask<T>(data, 0, numElements)
+            QueueTask(priority, new TextureSetTask(data, (uint)sizeof(T), 0, numElements)
             {
                 Pitch = texturePitch,
                 StartIndex = 0,
@@ -190,7 +190,7 @@ namespace Molten.Graphics
                 {
                     uint slice = srcArraySlice + a;
                     uint mip = srcMipIndex + m;
-                    uint dataID = TextureData.GetLevelID(data.MipMapLevels, mip, slice);
+                    uint dataID = data.GetLevelID(mip, slice);
                     level = data.Levels[dataID];
 
                     if (level.TotalBytes == 0)
@@ -206,7 +206,7 @@ namespace Molten.Graphics
         public unsafe void SetData(GraphicsPriority priority, TextureSlice data, uint mipIndex, uint arraySlice, Action<GraphicsResource> completeCallback = null)
         {
             // Store pending change.
-            QueueTask(priority, new TextureSetTask<byte>(data.Data, 0, data.TotalBytes)
+            QueueTask(priority, new TextureSetTask(data.Data, 1, 0, data.TotalBytes)
             {
                 Pitch = data.Pitch,
                 ArrayIndex = arraySlice,
@@ -221,7 +221,7 @@ namespace Molten.Graphics
         {
             fixed (T* ptrData = data)
             {
-                QueueTask(priority, new TextureSetTask<T>(ptrData, startIndex, count)
+                QueueTask(priority, new TextureSetTask(ptrData, (uint)sizeof(T), startIndex, count)
                 {
                     Pitch = pitch,
                     ArrayIndex = arrayIndex,
@@ -242,7 +242,7 @@ namespace Molten.Graphics
         public unsafe void SetData<T>(GraphicsPriority priority, uint level, T* data, uint startIndex, uint count, uint pitch, uint arrayIndex, Action<GraphicsResource> completeCallback = null)
             where T : unmanaged
         {
-            QueueTask(priority, new TextureSetTask<T>(data, startIndex, count)
+            QueueTask(priority, new TextureSetTask(data, (uint)sizeof(T), startIndex, count)
             {
                 Pitch = pitch,
                 ArrayIndex = arrayIndex,

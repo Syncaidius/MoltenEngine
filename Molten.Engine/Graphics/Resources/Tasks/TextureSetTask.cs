@@ -2,14 +2,11 @@
 
 namespace Molten.Graphics
 {
-    public unsafe struct TextureSetTask<T> : IGraphicsResourceTask
-        where T: unmanaged
+    public unsafe struct TextureSetTask : IGraphicsResourceTask
     {
-        T* _data;
-
         public uint MipLevel;
 
-        public T* Data => _data;
+        public void* Data;
 
         public uint StartIndex;
 
@@ -29,15 +26,15 @@ namespace Molten.Graphics
 
         public Action<GraphicsResource> CompleteCallback;
 
-        public TextureSetTask(T* data, uint startIndex, uint numElements)
+        public TextureSetTask(void* data, uint stride, uint startIndex, uint numElements)
         {
-            Stride = (uint)sizeof(T);
+            Stride = stride;
             NumElements = numElements;
             NumBytes = Stride * NumElements;
 
-            _data = (T*)EngineUtil.Alloc(NumBytes);
+            Data = EngineUtil.Alloc(NumBytes);
 
-            T* ptrStart = data + startIndex;
+            void* ptrStart = (byte*)data + startIndex;
             Buffer.MemoryCopy(ptrStart, Data, NumBytes, NumBytes);
         }
 
@@ -139,7 +136,7 @@ namespace Molten.Graphics
                 }
             }
 
-            EngineUtil.Free(ref _data);
+            EngineUtil.Free(ref Data);
             CompleteCallback?.Invoke(resource);
             return true;
         }
