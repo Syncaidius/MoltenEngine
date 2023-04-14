@@ -63,7 +63,7 @@ namespace Molten.Graphics.DX11
 
         protected override ID3D11Resource* CreateResource(bool resize)
         {
-            SubresourceData* subData = null;
+            SubresourceData* subData = GetImmutableData(_desc.Usage);
 
             fixed(Texture1DDesc* pDesc = &_desc)
                 (Device as DeviceDX11).Ptr->CreateTexture1D(pDesc, subData, ref NativeTexture);
