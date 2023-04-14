@@ -335,7 +335,11 @@ namespace Molten.Graphics.Vulkan
 
         public override INativeSurface CreateFormSurface(string formTitle, string formName, uint mipCount = 1)
         {
-            return new WindowSurfaceVK(_renderer.NativeDevice, GraphicsFormat.B8G8R8A8_UNorm, formTitle, 1024, 800);
+            return new WindowSurfaceVK(_renderer.NativeDevice, formTitle, new TextureDimensions()
+            {
+                Width = 1024,
+                Height = 800
+            });
         }
 
         public override void ResolveTexture(GraphicsTexture source, GraphicsTexture destination)
