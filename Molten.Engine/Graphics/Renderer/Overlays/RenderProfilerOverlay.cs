@@ -48,7 +48,7 @@
 
         private void DrawStats(Timing time, SpriteBatcher sb, SpriteFont font, RenderProfiler.Snapshot frame, ref Vector2F textPos, float lineHeight)
         {
-            textPos.Y += lineHeight; sb.DrawString(font, $"FPS: {time.FPS}", textPos, _colText);
+            textPos.Y += lineHeight; sb.DrawString(font, $"FPS: {time.FPS} -- Frame ID: {time.FrameID}", textPos, _colText);
             textPos.Y += lineHeight; sb.DrawString(font, $"Time: {frame.Time.ToString("N2")}ms", textPos, _colText);
             textPos.Y += lineHeight; sb.DrawString(font, $"Target: {frame.TargetTime.ToString("N2")}ms", textPos, _colText);
             textPos.Y += lineHeight; sb.DrawString(font, $"Delta: {(frame.Time / frame.TargetTime).ToString("N2")}ms", textPos, _colText);
