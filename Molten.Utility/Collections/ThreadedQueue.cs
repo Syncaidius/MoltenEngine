@@ -360,7 +360,7 @@ namespace Molten.Collections
 
             T item = _items[_queueStart];
 
-            _items[_queueStart] = default(T);
+            _items[_queueStart] = default;
             _queueStart++;
             _count--;
             _isEmpty = _count == 0;

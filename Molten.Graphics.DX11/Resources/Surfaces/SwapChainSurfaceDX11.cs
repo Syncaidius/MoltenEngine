@@ -112,7 +112,7 @@ namespace Molten.Graphics.DX11
         {
             // Avoid calling RenderFormSurface's OnPipelineDispose implementation by skipping it. Jump straight to base.
             // This prevents any swapchain render loops from being aborted due to disposal flags being set.
-            base.GraphicsRelease();
+            base.OnGraphicsRelease();
         }
 
         public void Dispatch(Action action)
@@ -120,11 +120,11 @@ namespace Molten.Graphics.DX11
             _dispatchQueue.Enqueue(action);
         }
 
-        public override void GraphicsRelease()
+        protected override void OnGraphicsRelease()
         {
             SilkUtil.ReleasePtr(ref NativeSwapChain);
             EngineUtil.Free(ref _presentParams);
-            base.GraphicsRelease();
+            base.OnGraphicsRelease();
         }
 
         protected abstract bool OnPresent();

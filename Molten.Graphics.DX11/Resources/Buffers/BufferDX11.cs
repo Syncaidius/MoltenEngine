@@ -140,7 +140,7 @@ namespace Molten.Graphics.DX11
         }
 
         /// <inheritdoc/>
-        public override void GraphicsRelease()
+        protected override void OnGraphicsRelease()
         {
             NativeSRV.Release();
             NativeUAV.Release();

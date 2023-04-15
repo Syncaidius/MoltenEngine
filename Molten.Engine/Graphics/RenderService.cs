@@ -1,4 +1,5 @@
-﻿using Molten.Collections;
+﻿using System.Data;
+using Molten.Collections;
 using Molten.Graphics.Overlays;
 using Molten.Threading;
 
@@ -10,9 +11,16 @@ namespace Molten.Graphics
     /// </summary>
     public abstract class RenderService : EngineService
     {
+        const double MAX_STAGING_BUFFER_MEGABYTES = 5.5;
+
+        public delegate void FrameBufferSizeChangedHandler(uint oldSize, uint newSize);
+
+        public event FrameBufferSizeChangedHandler OnFrameBufferSizeChanged;
+
         bool _disposeRequested;
         bool _shouldPresent;
         bool _surfaceResizeRequired;
+        uint _newFrameBufferSize;
         RenderChain _chain;
         Dictionary<RenderTaskPriority, ThreadedQueue<RenderTask>> _tasks;
         AntiAliasLevel _requestedMultiSampleLevel = AntiAliasLevel.None;
@@ -20,7 +28,9 @@ namespace Molten.Graphics
         internal AntiAliasLevel MsaaLevel = AntiAliasLevel.None;
         internal HlslShader FxStandardMesh;
         internal HlslShader FxStandardMesh_NoNormalMap;
-        internal GraphicsBuffer StagingBuffer;
+
+        // Per-frame resources
+        GraphicsBuffer[] _stagingBuffers;
 
         /// <summary>
         /// Creates a new instance of a <see cref="RenderService"/> sub-type.
@@ -46,6 +56,101 @@ namespace Molten.Graphics
         protected override void OnStop()
         {
             _shouldPresent = false;
+        }
+
+        /// <summary>
+        /// Occurs when the renderer is being initialized.
+        /// </summary>
+        /// <param name="settings">The engine settings to apply and bind to the current <see cref="RenderService"/>.</param>
+        protected override sealed void OnInitialize(EngineSettings settings)
+        {
+
+            DisplayManager = OnInitializeDisplayManager(settings.Graphics);
+            _chain = new RenderChain(this);
+
+            try
+            {
+                DisplayManager.Initialize(this, settings.Graphics);
+                Log.WriteLine($"Initialized display manager");
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Failed to initialize renderer");
+                Log.Error(ex, true);
+            }
+
+            settings.Graphics.Log(Log, "Graphics");
+            MsaaLevel = _requestedMultiSampleLevel = MsaaLevel;
+            settings.Graphics.MSAA.OnChanged += MSAA_OnChanged;
+
+            try
+            {
+                Device = OnInitializeDevice(settings.Graphics, DisplayManager);
+                Log.WriteLine("Initialized graphics device");
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Failed to initialize graphics device");
+                Log.Error(ex, true);
+            }
+
+            OnInitializeRenderer(settings);
+
+            // Setup tracking of frame buffer size
+            _newFrameBufferSize = 1;
+            settings.Graphics.BufferingMode.OnChanged += BufferingMode_OnChanged;
+            UpdateFrameBuffer();
+
+            SpriteBatch = new SpriteBatcher(this, 3000, 20);
+            LoadDefaultShaders();
+
+            Surfaces.Initialize(BiggestWidth, BiggestHeight);
+            Fonts = new SpriteFontManager(Log, this);
+            Fonts.Initialize();
+        }
+
+        private void BufferingMode_OnChanged(BackBufferMode oldValue, BackBufferMode newValue)
+        {
+            _newFrameBufferSize = Math.Max(1, (uint)newValue);
+        }
+
+        private void UpdateFrameBuffer()
+        {
+            if (_newFrameBufferSize != CurrentFrameBufferSize)
+            {
+                // Only trigger event if resizing and not initializing. CurrentFrameBufferSize is 0 when uninitialized.
+                if (CurrentFrameBufferSize > 0)
+                    OnFrameBufferSizeChanged?.Invoke(CurrentFrameBufferSize, _newFrameBufferSize);
+
+                CurrentFrameBufferSize = _newFrameBufferSize;
+
+                // Ensure we have enough staging buffers
+                if (_stagingBuffers == null || _stagingBuffers.Length < CurrentFrameBufferSize)
+                {
+                    Array.Resize(ref _stagingBuffers, (int)CurrentFrameBufferSize);
+                    if(_stagingBuffers.Length < CurrentFrameBufferSize)
+                    {
+                        uint bufferBytes = (uint)ByteMath.FromMegabytes(MAX_STAGING_BUFFER_MEGABYTES);
+                        for (int i = 0; i < _stagingBuffers.Length; i++)
+                        {
+                            if (_stagingBuffers[i] == null)
+                                _stagingBuffers[i] = Device.CreateStagingBuffer(true, true, bufferBytes);
+                        }
+                    }
+                }
+            }
+
+            // Ensure we don't have too many staging buffers
+            if(_stagingBuffers.Length > CurrentFrameBufferSize)
+            {
+                for (int i = _stagingBuffers.Length; i < CurrentFrameBufferSize; i++)
+                {
+                    _stagingBuffers[i].Dispose();
+                    _stagingBuffers[i] = null;
+                }
+            }
+
+            FrameIndex = (FrameIndex + 1) % CurrentFrameBufferSize;
         }
 
         private void ProcessTasks(RenderTaskPriority priority)
@@ -93,6 +198,7 @@ namespace Molten.Graphics
                 return;
 
             Profiler.Begin();
+            UpdateFrameBuffer();
             Device.DisposeMarkedObjects();
             OnPrePresent(time);
 
@@ -186,7 +292,7 @@ namespace Molten.Graphics
             Surfaces.ResetFirstCleared();
 
             // Present all output surfaces
-            OutputSurfaces.For(0, 1, (index, surface) =>
+            OutputSurfaces.For(0, (index, surface) =>
             {
                 surface.Present();
                 return false;
@@ -219,62 +325,12 @@ namespace Molten.Graphics
             }
         }
 
-        /// <summary>
-        /// Occurs when the renderer is being initialized.
-        /// </summary>
-        /// <param name="settings"></param>
-        protected override sealed void OnInitialize(EngineSettings settings)
-        {
-            DisplayManager = OnInitializeDisplayManager(settings.Graphics);
-            _chain = new RenderChain(this);
-
-            try
-            {
-                DisplayManager.Initialize(this, settings.Graphics);
-                Log.WriteLine($"Initialized display manager");
-            }
-            catch (Exception ex)
-            {
-                Log.Error("Failed to initialize renderer");
-                Log.Error(ex, true);
-            }
-
-            settings.Graphics.Log(Log, "Graphics");
-            MsaaLevel = _requestedMultiSampleLevel = MsaaLevel;
-            settings.Graphics.MSAA.OnChanged += MSAA_OnChanged;
-
-            try
-            {
-                Device = OnInitializeDevice(settings.Graphics, DisplayManager);
-                Log.WriteLine("Initialized graphics device");
-            }
-            catch (Exception ex)
-            {
-                Log.Error("Failed to initialize graphics device");
-                Log.Error(ex, true);
-            }
-
-            OnInitializeRenderer(settings);
-
-            uint maxBufferSize = (uint)ByteMath.FromMegabytes(5.5);
-            StagingBuffer = Device.CreateStagingBuffer(true, true, maxBufferSize);
-            SpriteBatch = new SpriteBatcher(this, 3000, 20);
-
-            LoadDefaultShaders();
-
-            Surfaces.Initialize(BiggestWidth, BiggestHeight);
-            Fonts = new SpriteFontManager(Log, this);
-            Fonts.Initialize();
-        }
-
         private void LoadDefaultShaders()
         {
             ShaderCompileResult result = Device.LoadEmbeddedShader("Molten.Assets", "gbuffer.mfx");
             FxStandardMesh = result["gbuffer"];
             FxStandardMesh_NoNormalMap = result["gbuffer-sans-nmap"];
         }
-
-        protected abstract void OnInitializeRenderer(EngineSettings settings);
 
         private void MSAA_OnChanged(AntiAliasLevel oldValue, AntiAliasLevel newValue)
         {
@@ -324,6 +380,8 @@ namespace Molten.Graphics
             PushTask(priority, task);
         }
 
+        protected abstract void OnInitializeRenderer(EngineSettings settings);
+
         /// <summary>
         /// Invoked during the first stage of service initialization to allow any api-related objects to be created/initialized prior to renderer initialization.
         /// </summary>
@@ -357,7 +415,7 @@ namespace Molten.Graphics
             base.OnDispose();
 
             // Dispose of any registered output services.
-            OutputSurfaces.For(0, 1, (index, surface) =>
+            OutputSurfaces.For(0, (index, surface) =>
             {
                 surface.Dispose();
                 return false;
@@ -424,5 +482,11 @@ namespace Molten.Graphics
         /// Gets the internal <see cref="SpriteFontManager"/> bound to the current <see cref="RenderService"/>.
         /// </summary>
         internal SpriteFontManager Fonts { get; private set; }
+
+        public uint CurrentFrameBufferSize { get; private set; }
+
+        public uint FrameIndex { get; private set; }
+
+        public GraphicsBuffer StagingBuffer => _stagingBuffers[FrameIndex];
     }
 }

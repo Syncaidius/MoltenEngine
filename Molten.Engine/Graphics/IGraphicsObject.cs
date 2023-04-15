@@ -9,11 +9,6 @@
         void Apply(GraphicsQueue cmd);
 
         /// <summary>
-        /// Invoked when the current <see cref="IGraphicsObject"/> should release any resources that are bound to the GPU.
-        /// </summary>
-        void GraphicsRelease();
-
-        /// <summary>
         /// Gets the <see cref="GraphicsDevice"/> that the current <see cref="GraphicsObject"/> is bound to.
         /// </summary>
         GraphicsDevice Device { get; }

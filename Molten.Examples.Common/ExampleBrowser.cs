@@ -418,7 +418,7 @@ namespace Molten.Examples
 
             OnGamepadInput(time);
 
-            _examples.For(0, 1, (index, example) => example.Update(Time));
+            _examples.For(0, (index, example) => example.Update(Time));
         }
 
         protected virtual void OnDrawSprites(SpriteBatcher sb)

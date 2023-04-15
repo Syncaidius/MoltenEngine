@@ -27,7 +27,7 @@ namespace Molten.Graphics.Vulkan
                 System.Buffer.MemoryCopy(&ptr, desc.PDynamicStates, numBytes, numBytes);
         }
 
-        public override void GraphicsRelease()
+        protected override void OnGraphicsRelease()
         {
             DynamicState* dPtr = Desc.Value.PDynamicStates;
             Desc.Dispose();

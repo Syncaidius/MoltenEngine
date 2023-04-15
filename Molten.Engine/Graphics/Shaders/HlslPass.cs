@@ -80,7 +80,7 @@ namespace Molten.Graphics
             return comp;
         }
 
-        public override void GraphicsRelease()
+        protected override void OnGraphicsRelease()
         {
             foreach (ShaderComposition c in _compositions.Values)
                 c.Dispose();

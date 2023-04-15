@@ -103,7 +103,7 @@ namespace Molten.Graphics.Vulkan
             _info.PInputAssemblyState = _inputState.Desc;
         }
 
-        public override void GraphicsRelease()
+        protected override void OnGraphicsRelease()
         {
             // Release indirect memory allocations for pipleine shader stages
             for(uint i = 0; i < _info.StageCount; i++)

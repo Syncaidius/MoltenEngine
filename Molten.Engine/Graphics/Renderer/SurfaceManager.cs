@@ -28,7 +28,7 @@ namespace Molten.Graphics
 
         public void Dispose()
         {
-            _surfaces.For(0, 1, (index, config) => config.Dispose());
+            _surfaces.For(0, (index, config) => config.Dispose());
             _surfaces.Clear();
             _depthSurface.Dispose();
             _surfacesByKey.Clear();
@@ -76,7 +76,7 @@ namespace Molten.Graphics
 
         internal void Rebuild(uint requiredWidth, uint requiredHeight)
         {
-            _surfaces.For(0, 1, (index, config) => config.RefreshSize(requiredWidth, requiredHeight));
+            _surfaces.For(0, (index, config) => config.RefreshSize(requiredWidth, requiredHeight));
             _depthSurface.RefreshSize(requiredWidth, requiredHeight);
         }
 

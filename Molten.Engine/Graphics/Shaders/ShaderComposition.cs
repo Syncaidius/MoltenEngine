@@ -32,7 +32,7 @@
 
         protected override void OnApply(GraphicsQueue context) { }
 
-        public override void GraphicsRelease() { }
+        protected override void OnGraphicsRelease() { }
 
         public void* PtrShader
         {

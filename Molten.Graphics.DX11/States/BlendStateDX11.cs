@@ -43,7 +43,7 @@ namespace Molten.Graphics.DX11
 
         protected override void OnApply(GraphicsQueue cmd) { }
 
-        public override void GraphicsRelease()
+        protected override void OnGraphicsRelease()
         {
             SilkUtil.ReleasePtr(ref _native);
         }

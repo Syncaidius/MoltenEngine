@@ -61,7 +61,7 @@ namespace Molten
         /// </summary>
         public static void DisposeAll()
         {
-            _loggers.For(0, 1, (index, log) => log.Dispose());
+            _loggers.For(0, (index, log) => log.Dispose());
             _loggers.Clear();
         }
 

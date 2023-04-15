@@ -134,7 +134,7 @@ namespace Molten.Graphics.DX11
             return true;
         }
 
-        public override void GraphicsRelease()
+        protected override void OnGraphicsRelease()
         {
             SilkUtil.ReleasePtr(ref _native);
         }

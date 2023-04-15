@@ -22,7 +22,7 @@ namespace Molten
 
         internal void CheckForChanges()
         {
-            Handles.For(0, 1, (index, handle) =>
+            Handles.For(0, (index, handle) =>
             {
                 DateTime writeTime = File.GetLastWriteTimeUtc(handle.Info.FullName);
 

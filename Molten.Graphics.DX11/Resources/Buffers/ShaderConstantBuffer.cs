@@ -56,10 +56,10 @@ namespace Molten.Graphics.DX11
             Desc.ByteWidth = desc.Size;
         }
 
-        public override void GraphicsRelease()
+        protected override void OnGraphicsRelease()
         {
             EngineUtil.Free(ref _constData);
-            base.GraphicsRelease();
+            base.OnGraphicsRelease();
         }
 
         protected override void OnApply(GraphicsQueue cmd)

@@ -130,10 +130,10 @@ namespace Molten.Graphics.DX11
 
         protected virtual void OnDisposeForRecreation()
         {
-            GraphicsRelease();
+            OnGraphicsRelease();
         }
 
-        public override void GraphicsRelease()
+        protected override void OnGraphicsRelease()
         {
             _srv.Release();
             _uav.Release();

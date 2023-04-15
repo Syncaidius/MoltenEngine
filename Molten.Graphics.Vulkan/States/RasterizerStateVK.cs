@@ -26,7 +26,7 @@ namespace Molten.Graphics.Vulkan
             raDesc.Flags = 0; // Reserved for use in future Vulkan versions.  
         }
 
-        public override void GraphicsRelease()
+        protected override void OnGraphicsRelease()
         {
             Desc.Dispose();
         }

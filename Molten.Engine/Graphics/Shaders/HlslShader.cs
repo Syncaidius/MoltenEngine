@@ -44,12 +44,10 @@
             _passes[id] = pass;
         }
 
-        public override void GraphicsRelease()
+        protected override void OnGraphicsRelease()
         {
             for (int i = 0; i < _passes.Length; i++)
                 _passes[i].Dispose();
-
-            base.OnDispose();
         }
 
         public void SetDefaultResource(IGraphicsResource resource, uint slot)

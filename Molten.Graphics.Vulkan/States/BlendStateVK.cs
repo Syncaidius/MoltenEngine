@@ -41,7 +41,7 @@ namespace Molten.Graphics.Vulkan
             }
         }
 
-        public override void GraphicsRelease()
+        protected override void OnGraphicsRelease()
         {
             Desc.Dispose();
         }

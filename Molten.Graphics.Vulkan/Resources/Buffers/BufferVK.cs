@@ -81,7 +81,7 @@ namespace Molten.Graphics.Vulkan
             }
         }
 
-        public override void GraphicsRelease()
+        protected override void OnGraphicsRelease()
         {
             DeviceVK device = Device as DeviceVK;
 

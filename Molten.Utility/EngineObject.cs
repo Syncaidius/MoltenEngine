@@ -46,7 +46,7 @@ namespace Molten
         protected abstract void OnDispose();
 
         /// <summary>Gets whether or not the object has been disposed.</summary>
-        public bool IsDisposed { get; protected set; }
+        public bool IsDisposed { get; private set; }
 
         /// <summary>
         /// Gets the unique <see cref="EngineObject"/> ID (EOID) of the current <see cref="EngineObject"/>.

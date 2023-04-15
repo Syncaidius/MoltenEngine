@@ -33,7 +33,7 @@ namespace Molten.Graphics.DX11
             device.Ptr->CreateSamplerState(&desc, ref _native);
         }
 
-        public override void GraphicsRelease()
+        protected override void OnGraphicsRelease()
         {
             SilkUtil.ReleasePtr(ref _native);
         }

@@ -185,12 +185,12 @@ namespace Molten.Graphics.DX11
             });
         }
 
-        public override void GraphicsRelease()
+        protected override void OnGraphicsRelease()
         {
             SilkUtil.ReleasePtr(ref _depthView);
             SilkUtil.ReleasePtr(ref _readOnlyView);
 
-            base.GraphicsRelease();
+            base.OnGraphicsRelease();
         }
 
         /// <summary>Gets the DepthStencilView instance associated with this surface.</summary>

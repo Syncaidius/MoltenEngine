@@ -48,7 +48,7 @@ namespace Molten
             }
 
 
-            _handles.For(0, 1, (index, handle) =>
+            _handles.For(0, (index, handle) =>
             {
                 if (handle.Asset != null)
                     _toLoad.Remove(handle);

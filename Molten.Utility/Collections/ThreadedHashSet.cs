@@ -196,7 +196,7 @@ namespace Molten.Utility.Collections
         public bool TryTake(out T item)
         {
             bool result = false;
-            T temp = default(T);
+            T temp = default;
 
             _interlocker.Lock(() =>
             {
@@ -207,7 +207,7 @@ namespace Molten.Utility.Collections
                 }
                 else
                 {
-                    temp = default(T);
+                    temp = default;
                 }
 
             });

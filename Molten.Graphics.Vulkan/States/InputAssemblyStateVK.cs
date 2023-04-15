@@ -20,7 +20,7 @@ namespace Molten.Graphics.Vulkan
             desc.PrimitiveRestartEnable = false;
         }
 
-        public override void GraphicsRelease()
+        protected override void OnGraphicsRelease()
         {
             Desc.Dispose();
         }

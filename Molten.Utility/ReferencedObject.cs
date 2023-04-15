@@ -5,7 +5,7 @@
     /// <typeparam name="T"></typeparam>
     public class ReferencedObject<T> where T : class
     {
-        public T Value = default(T);
+        public T Value = default;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReferencedObject{T}"/> class and sets the reference count to 1.

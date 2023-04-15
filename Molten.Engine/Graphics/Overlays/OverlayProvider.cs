@@ -17,7 +17,7 @@ namespace Molten.Graphics.Overlays
             if (Font == null)
                 return;
 
-            _overlays.For(0, 1, (index, overlay) => overlay.OnRender(time, sb, Font, rendererProfiler, sceneProfiler, camera));
+            _overlays.For(0, (index, overlay) => overlay.OnRender(time, sb, Font, rendererProfiler, sceneProfiler, camera));
         }
 
         public void Add(IRenderOverlay overlay)

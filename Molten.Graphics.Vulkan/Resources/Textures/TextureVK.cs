@@ -228,7 +228,7 @@ namespace Molten.Graphics.Vulkan
             _memory?.Free();
         }
 
-        public override void GraphicsRelease()
+        protected override void OnGraphicsRelease()
         {
             DestroyResources();
             EngineUtil.Free(ref _view);

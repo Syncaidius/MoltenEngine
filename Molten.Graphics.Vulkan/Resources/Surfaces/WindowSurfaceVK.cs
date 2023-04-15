@@ -254,7 +254,7 @@ namespace Molten.Graphics.Vulkan
             dimensions.Height = uint.Clamp(dimensions.Height, _cap.MinImageExtent.Height, _cap.MaxImageExtent.Height);
         }
 
-        protected override void OnDispose()
+        protected override void OnGraphicsRelease()
         {
             DeviceVK device = Device as DeviceVK;
             if (_swapChain.Handle != 0)

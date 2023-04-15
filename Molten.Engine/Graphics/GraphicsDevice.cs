@@ -17,7 +17,8 @@ namespace Molten.Graphics
         public event DisplayOutputChanged OnOutputDeactivated;
 
         long _allocatedVRAM;
-        ThreadedQueue<GraphicsObject> _objectsToDispose;
+        ThreadedList<GraphicsObject> _disposals;
+
         Dictionary<Type, Dictionary<StructKey, GraphicsObject>> _objectCache;
 
         /// <summary>
@@ -30,7 +31,7 @@ namespace Molten.Graphics
             Renderer = renderer;
             Manager = manager;
             Log = renderer.Log;
-            _objectsToDispose = new ThreadedQueue<GraphicsObject>();
+            _disposals = new ThreadedList<GraphicsObject>();
             _objectCache = new Dictionary<Type, Dictionary<StructKey, GraphicsObject>>();
         }
 
@@ -63,16 +64,27 @@ namespace Molten.Graphics
 
         internal void DisposeMarkedObjects()
         {
-            while (_objectsToDispose.TryDequeue(out GraphicsObject obj))
-                obj.GraphicsRelease();
+            // We want to wait at least a quarter of the target FPS before deleting staging buffers.
+            Timing timing = Renderer.Thread.Timing;
+            uint framesToWait = (uint)timing.TargetUPS / 4U;
+
+            _disposals.For(_disposals.Count - 1, -1, 0, (index, obj) =>
+            {
+                ulong age = timing.FrameID - obj.LastUsedFrameID;
+                if (age >= framesToWait)
+                {
+                    obj.GraphicsRelease();
+                    _disposals.RemoveAt(index);
+                }
+            });
         }
 
-        public void MarkForRelease(GraphicsObject pObject)
+        public void MarkForRelease(GraphicsObject obj)
         {
             if (IsDisposed)
-                pObject.GraphicsRelease();
-            else
-                _objectsToDispose.Enqueue(pObject);
+                throw new ObjectDisposedException("GraphicsDevice has already been disposed, so it cannot mark GraphicsObject instances for release.");
+
+            _disposals.Add(obj);
         }
 
         protected override void OnDispose()

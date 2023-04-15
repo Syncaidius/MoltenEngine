@@ -464,11 +464,11 @@ namespace Molten.Collections
             if (index != _count)
             {
                 Array.Copy(_items, index + 1, _items, index, _count - index); // Move items ahead of the index, back one element.
-                _items[_count] = default(T); // Clear last element, since it moved back by one index.
+                _items[_count] = default; // Clear last element, since it moved back by one index.
             }
             else
             {
-                _items[index] = default(T);
+                _items[index] = default;
             }
         }
 
@@ -583,7 +583,7 @@ namespace Molten.Collections
         public bool TryTake(out T item)
         {
             bool hasItem = false;
-            T temp = default(T);
+            T temp = default;
 
             _interlocker.Lock(() =>
             {
@@ -594,7 +594,7 @@ namespace Molten.Collections
                 }
                 else
                 {
-                    temp = default(T);
+                    temp = default;
                 }
 
                 _version++;
@@ -635,13 +635,12 @@ namespace Molten.Collections
         /// However, it can hurt performance if the loop takes too long to execute while other threads are waiting to access the list. <para/>
         /// Return true from the callback to break out of the for loop.</summary>
         /// <param name="start">The start index.</param>
-        /// <param name="increment">The increment.</param>
         /// <param name="callback">The callback to run on each iteration. The callback can optionally return true to break out of the loop.</param>
-        public void For(int start, int increment, Action<int, T> callback)
+        public void For(int start, Action<int, T> callback)
         {
             _interlocker.Lock(() =>
             {
-                for (int i = start; i < _count; i += increment)
+                for (int i = start; i < _count; i++)
                     callback(i, _items[i]);
             });
         }
@@ -650,17 +649,34 @@ namespace Molten.Collections
         /// However, it can hurt performance if the loop takes too long to execute while other threads are waiting to access the list. <para/>
         /// Return true from the callback to break out of the for loop.</summary>
         /// <param name="start">The start index.</param>
-        /// <param name="increment">The increment.</param>
         /// <param name="callback">The callback to run on each iteration. The callback can optionally return true to break out of the loop.</param>
-        public void For(int start, int increment, Func<int, T, bool> callback)
+        public void For(int start, Func<int, T, bool> callback)
         {
             _interlocker.Lock(() =>
             {
-                for (int i = start; i < _count; i += increment)
+                for (int i = start; i < _count; i++)
                 {
                     if (callback(i, _items[i]))
                         break;
                 }
+            });
+        }
+
+        /// <summary>Runs a for loop inside an interlock on the current <see cref="ThreadedList{T}"/> instance. This allows the collection to be iterated over in a thread-safe manner. 
+        /// However, it can hurt performance if the loop takes too long to execute while other threads are waiting to access the list. <para/>
+        /// Return true from the callback to break out of the for loop.</summary>
+        /// <param name="start">The start index.</param>
+        /// <param name="increment">The increment.</param>
+        /// <param name="end">The element to iterate up to.</param>
+        /// <param name="callback">The callback to run on each iteration. The callback can optionally return true to break out of the loop.</param>
+        public void For(int start, int increment, int end, Action<int, T> callback)
+        {
+            _interlocker.Lock(() =>
+            {
+                // Figure out which is the smallest condition value. 
+                int last = Math.Min(_count, end);
+                for (int i = start; i < last; i += increment)
+                    callback(i, _items[i]);
             });
         }
 
@@ -756,7 +772,7 @@ namespace Molten.Collections
         {
             get
             {
-                T result = default(T);
+                T result = default;
                 _interlocker.Lock(() =>
                 {
                     if (index >= _count)

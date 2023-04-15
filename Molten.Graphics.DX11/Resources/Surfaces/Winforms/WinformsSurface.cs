@@ -182,9 +182,9 @@ namespace Molten.Graphics.DX11
             return controlAlive;
         }
 
-        public override void GraphicsRelease()
+        protected override void OnGraphicsRelease()
         {
-            base.GraphicsRelease();
+            base.OnGraphicsRelease();
 
             _disposing = true;
         }

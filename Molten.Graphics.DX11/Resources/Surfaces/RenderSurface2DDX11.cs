@@ -93,10 +93,10 @@ namespace Molten.Graphics.DX11
         }
 
         /// <summary>Called when the render target needs to be disposed.</summary>
-        public override void GraphicsRelease()
+        protected override void OnGraphicsRelease()
         {
             RTV.Release();
-            base.GraphicsRelease();
+            base.OnGraphicsRelease();
         }
 
         /// <summary>Gets the viewport that defines the default renderable area of the render target.</summary>

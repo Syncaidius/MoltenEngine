@@ -4,7 +4,7 @@
     {
         protected GraphicsObject(GraphicsDevice device, GraphicsBindTypeFlags bindFlags)
         {
-            Device = device; 
+            Device = device;
             BoundTo = new List<GraphicsSlot>();
             BindFlags = bindFlags;
             LastUsedFrameID = device.Queue.Profiler.FrameID;
@@ -22,15 +22,24 @@
 
         protected abstract void OnApply(GraphicsQueue cmd);
 
-        protected override void OnDispose()
+        protected override sealed void OnDispose()
         {
             Device.MarkForRelease(this);
+        }
+
+        internal void GraphicsRelease()
+        {
+            if (IsReleased)
+                throw new GraphicsObjectException(this, "The current GraphicsObject is already released");
+
+            OnGraphicsRelease();
+            IsReleased = true;
         }
 
         /// <summary>
         /// Invoked when the object should release any graphics resources.
         /// </summary>
-        public abstract void GraphicsRelease();
+        protected abstract void OnGraphicsRelease();
 
         /// <summary>
         /// Gets the <see cref="GraphicsDevice"/> that the current <see cref="GraphicsObject"/> is bound to.
@@ -62,5 +71,10 @@
         /// Gets the ID of the frame that the current <see cref="GraphicsObject"/> was applied.
         /// </summary>
         public uint LastUsedFrameID { get; private set; }
+
+        /// <summary>
+        /// Gets whether or not the current <see cref="GraphicsObject"/> has been successfully disposed and released by its parent <see cref="Device"/>.
+        /// </summary>
+        public bool IsReleased { get; private set; }
     }
 }

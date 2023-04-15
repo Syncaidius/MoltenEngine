@@ -24,7 +24,7 @@
         /// <returns></returns>
         public T GetInstance()
         {
-            T instance = default(T);
+            T instance = default;
             if (_pool.TryDequeue(out instance) == false)
                 instance = _generator();
 
@@ -44,7 +44,7 @@
             //disposable of all disposable objects.
             while (_pool.Count > 0)
             {
-                T o = default(T);
+                T o = default;
                 if (_pool.TryDequeue(out o))
                 {
                     IDisposable d = (IDisposable)o;
