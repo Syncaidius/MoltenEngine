@@ -27,6 +27,11 @@ namespace Molten.Graphics
 
             internal ulong FrameID;
 
+            internal TrackedFrame()
+            {
+                Branches = new GraphicsCommandList[INITIAL_BRANCH_COUNT];
+            }
+
             public void Track(GraphicsCommandList cmd)
             {
                 if (cmd.BranchIndex == Branches.Length)
@@ -54,7 +59,7 @@ namespace Molten.Graphics
                     }
                 }
 
-                Array.Clear(Branches, 0, Branches.Length);
+                Array.Clear(Branches);
             }
 
             internal void Dispose()
@@ -73,9 +78,10 @@ namespace Molten.Graphics
 
         internal RenderFrameTracker(RenderService renderer)
         {
-            _newFrameBufferSize = 1;
+            SettingValue<BackBufferMode> bufferingMode = renderer.Settings.Graphics.BufferingMode;
+            _newFrameBufferSize = Math.Max(1, (uint)bufferingMode.Value);
             Queue = renderer.Device.Queue;
-            renderer.Settings.Graphics.BufferingMode.OnChanged += BufferingMode_OnChanged;
+            bufferingMode.OnChanged += BufferingMode_OnChanged;
             StartFrame();
         }
 
@@ -111,21 +117,22 @@ namespace Molten.Graphics
                         }
                     }
                 }
+            }
 
-                // If the oldest frame hasn't finished yet, wait for it before replacing it with a new one.
-                // This stops the CPU from getting too far ahead of the GPU.
-                _frames[_frameIndex].Fence?.Wait();
+            // If the oldest frame hasn't finished yet, wait for it before replacing it with a new one.
+            // This stops the CPU from getting too far ahead of the GPU.
+            _frames[_frameIndex].Fence?.Wait();
+            _frames[_frameIndex].Reset();
 
-                // Ensure we don't have too many tracked frames.
-                // TODO Check how many full runs we've done and wait until we've done at least 2 before disposing of any tracked frames.
-                //      Reset run count if buffer size is changed.
-                if (_frames.Length > CurrentFrameBufferSize)
+            // Ensure we don't have too many tracked frames.
+            // TODO Check how many full runs we've done and wait until we've done at least 2 before disposing of any tracked frames.
+            //      Reset run count if buffer size is changed.
+            if (_frames.Length > CurrentFrameBufferSize)
+            {
+                for (int i = _frames.Length; i < CurrentFrameBufferSize; i++)
                 {
-                    for (int i = _frames.Length; i < CurrentFrameBufferSize; i++)
-                    {
-                        _frames[i].Dispose();
-                        _frames[i] = null;
-                    }
+                    _frames[i].Dispose();
+                    _frames[i] = null;
                 }
             }
         }
@@ -144,10 +151,19 @@ namespace Molten.Graphics
                 _frames[i].Dispose();
         }
 
+        /// <summary>
+        /// Gets the graphics queue that this frame tracker is associated with.
+        /// </summary>
         internal GraphicsQueue Queue { get; }
 
+        /// <summary>
+        /// Gets the currently tracked frame.
+        /// </summary>
         public TrackedFrame Frame => _frames[_frameIndex];
 
+        /// <summary>
+        /// Gets the current frame-buffer size. The value will be between 1 and <see cref="GraphicsSettings.BufferingMode"/>, from <see cref="GraphicsDevice.Settings"/>.
+        /// </summary>
         public uint CurrentFrameBufferSize { get; private set; }
 
         /// <summary>

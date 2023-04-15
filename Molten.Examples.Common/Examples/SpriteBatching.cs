@@ -222,7 +222,8 @@ namespace Molten.Examples
             SampleSpriteRenderComponent com = SpriteLayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
             com.RenderCallback = (sb) =>
             {
-                for (int i = 0; i < _numRects; i++)
+                int maxRects = Math.Min(_numRects, _rects.Length);
+                for (int i = 0; i < maxRects; i++)
                     sb.DrawRect(_rects[i], 0, Vector2F.Zero, ref _rectStyles[i]);
 
                 sb.DrawLine(new Vector2F(0), new Vector2F(400), Color.Lime, 2, 1);
