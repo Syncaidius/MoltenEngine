@@ -41,16 +41,6 @@ namespace Molten.Graphics.DX12
             
         }
 
-        protected override void OnPostPresent(Timing time)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override void OnPrePresent(Timing time)
-        {
-            throw new NotImplementedException();
-        }
-
         protected override void OnDisposeBeforeRender()
         {
             NativeDevice?.Dispose();

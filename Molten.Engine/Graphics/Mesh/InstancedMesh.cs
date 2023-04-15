@@ -54,7 +54,7 @@
         public void SetInstanceData(I[] data, uint startIndex, uint count)
         {
             _instanceCount = count;
-            _instanceBuffer.SetData(GraphicsPriority.Apply, data, startIndex, count, true, 0, Renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
+            _instanceBuffer.SetData(GraphicsPriority.Apply, data, startIndex, count, true, 0, Renderer.Frame.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
         protected override void OnApply(GraphicsQueue cmd)

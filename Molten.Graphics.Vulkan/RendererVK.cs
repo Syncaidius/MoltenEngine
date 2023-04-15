@@ -174,16 +174,6 @@ namespace Molten.Graphics.Vulkan
             return _instanceLoader.GetExtension<E>();
         }
 
-        protected override void OnPrePresent(Timing time)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override void OnPostPresent(Timing time)
-        {
-            throw new NotImplementedException();
-        }
-
         protected override void OnDisposeBeforeRender()
         {
             _shaderCompiler.Dispose();

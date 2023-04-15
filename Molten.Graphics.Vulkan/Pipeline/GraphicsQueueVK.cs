@@ -40,8 +40,8 @@ namespace Molten.Graphics.Vulkan
 
             CommandBufferBeginInfo beginInfo = new CommandBufferBeginInfo(StructureType.CommandBufferBeginInfo);
             beginInfo.Flags = CommandBufferUsageFlags.OneTimeSubmitBit;
-            _cmd = _poolFrame.Allocate(level, Tracker.Frame.BranchCount++, flags);
-            Tracker.Track(_cmd);
+            _cmd = _poolFrame.Allocate(level, Device.Renderer.Frame.BranchCount++, flags);
+            Device.Renderer.Frame.Track(_cmd);
             _vk.BeginCommandBuffer(_cmd, &beginInfo);
         }
 
@@ -111,7 +111,7 @@ namespace Molten.Graphics.Vulkan
                 beginInfo.Flags = CommandBufferUsageFlags.OneTimeSubmitBit;
 
                 _vk.BeginCommandBuffer(_cmd, &beginInfo);
-                Tracker.Track(_cmd);
+                Device.Renderer.Frame.Track(_cmd);
             }
         }
 

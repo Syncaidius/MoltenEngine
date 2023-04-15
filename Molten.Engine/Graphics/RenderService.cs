@@ -11,26 +11,19 @@ namespace Molten.Graphics
     /// </summary>
     public abstract class RenderService : EngineService
     {
-        const double MAX_STAGING_BUFFER_MEGABYTES = 5.5;
-
-        public delegate void FrameBufferSizeChangedHandler(uint oldSize, uint newSize);
-
-        public event FrameBufferSizeChangedHandler OnFrameBufferSizeChanged;
-
         bool _disposeRequested;
         bool _shouldPresent;
         bool _surfaceResizeRequired;
-        uint _newFrameBufferSize;
+
+        RenderFrameTracker _tracker;
         RenderChain _chain;
+
         Dictionary<RenderTaskPriority, ThreadedQueue<RenderTask>> _tasks;
         AntiAliasLevel _requestedMultiSampleLevel = AntiAliasLevel.None;
 
         internal AntiAliasLevel MsaaLevel = AntiAliasLevel.None;
         internal HlslShader FxStandardMesh;
         internal HlslShader FxStandardMesh_NoNormalMap;
-
-        // Per-frame resources
-        GraphicsBuffer[] _stagingBuffers;
 
         /// <summary>
         /// Creates a new instance of a <see cref="RenderService"/> sub-type.
@@ -86,6 +79,7 @@ namespace Molten.Graphics
             try
             {
                 Device = OnInitializeDevice(settings.Graphics, DisplayManager);
+
                 Log.WriteLine("Initialized graphics device");
             }
             catch (Exception ex)
@@ -97,9 +91,7 @@ namespace Molten.Graphics
             OnInitializeRenderer(settings);
 
             // Setup tracking of frame buffer size
-            _newFrameBufferSize = 1;
-            settings.Graphics.BufferingMode.OnChanged += BufferingMode_OnChanged;
-            UpdateFrameBuffer();
+            _tracker = new RenderFrameTracker(this);
 
             SpriteBatch = new SpriteBatcher(this, 3000, 20);
             LoadDefaultShaders();
@@ -107,50 +99,6 @@ namespace Molten.Graphics
             Surfaces.Initialize(BiggestWidth, BiggestHeight);
             Fonts = new SpriteFontManager(Log, this);
             Fonts.Initialize();
-        }
-
-        private void BufferingMode_OnChanged(BackBufferMode oldValue, BackBufferMode newValue)
-        {
-            _newFrameBufferSize = Math.Max(1, (uint)newValue);
-        }
-
-        private void UpdateFrameBuffer()
-        {
-            if (_newFrameBufferSize != CurrentFrameBufferSize)
-            {
-                // Only trigger event if resizing and not initializing. CurrentFrameBufferSize is 0 when uninitialized.
-                if (CurrentFrameBufferSize > 0)
-                    OnFrameBufferSizeChanged?.Invoke(CurrentFrameBufferSize, _newFrameBufferSize);
-
-                CurrentFrameBufferSize = _newFrameBufferSize;
-
-                // Ensure we have enough staging buffers
-                if (_stagingBuffers == null || _stagingBuffers.Length < CurrentFrameBufferSize)
-                {
-                    Array.Resize(ref _stagingBuffers, (int)CurrentFrameBufferSize);
-                    if(_stagingBuffers.Length < CurrentFrameBufferSize)
-                    {
-                        uint bufferBytes = (uint)ByteMath.FromMegabytes(MAX_STAGING_BUFFER_MEGABYTES);
-                        for (int i = 0; i < _stagingBuffers.Length; i++)
-                        {
-                            if (_stagingBuffers[i] == null)
-                                _stagingBuffers[i] = Device.CreateStagingBuffer(true, true, bufferBytes);
-                        }
-                    }
-                }
-            }
-
-            // Ensure we don't have too many staging buffers
-            if(_stagingBuffers.Length > CurrentFrameBufferSize)
-            {
-                for (int i = _stagingBuffers.Length; i < CurrentFrameBufferSize; i++)
-                {
-                    _stagingBuffers[i].Dispose();
-                    _stagingBuffers[i] = null;
-                }
-            }
-
-            FrameIndex = (FrameIndex + 1) % CurrentFrameBufferSize;
         }
 
         private void ProcessTasks(RenderTaskPriority priority)
@@ -168,25 +116,6 @@ namespace Molten.Graphics
         /// <param name="time"></param>
         protected override sealed void OnUpdate(Timing time)
         {
-            /* TODO: 
-            *  Procedure:
-            *      1) Calculate:
-            *          a) Capture the current transform matrix of each object in the render tree
-            *          b) Calculate the distance from the scene camera. Store on RenderData
-            *          
-            *      2) Sort objects by distance from camera:
-            *          a) Sort objects into buckets inside RenderTree, front-to-back (reduce overdraw by drawing closest first).
-            *          b) Only re-sort a bucket when objects are added or the camera moves
-            *          c) While sorting, build up separate bucket list of objects with a transparent material sorted back-to-front (for alpha to work)
-            *          
-            *  Extras:
-            *      3) Reduce z-sorting needed in (2) by adding scene-graph culling (quad-tree, octree or BSP) later down the line.
-            *      4) Reduce (3) further by frustum culling the graph-culling results
-            * 
-            *  NOTES:
-                - when SceneObject.IsVisible is changed, queue an Add or Remove operation on the RenderTree depending on visibility. This will remove it from culling/sorting.
-            */
-
             if (_disposeRequested)
             {
                 Surfaces.Dispose();
@@ -197,10 +126,9 @@ namespace Molten.Graphics
             if (!_shouldPresent)
                 return;
 
+            _tracker.StartFrame();
             Profiler.Begin();
-            UpdateFrameBuffer();
             Device.DisposeMarkedObjects();
-            OnPrePresent(time);
 
             if (_requestedMultiSampleLevel != MsaaLevel)
             {
@@ -248,7 +176,6 @@ namespace Molten.Graphics
                 Surfaces.Rebuild(BiggestWidth, BiggestHeight);
                 _surfaceResizeRequired = false;
             }
-
             
             foreach (SceneRenderData sceneData in Scenes)
             {
@@ -298,10 +225,9 @@ namespace Molten.Graphics
                 return false;
             });
 
-            OnPostPresent(time);
-
             ProcessTasks(RenderTaskPriority.EndOfFrame);
             Profiler.End(time);
+            _tracker.EndFrame();
         }
 
         internal void RenderSceneLayer(GraphicsQueue cmd, LayerRenderData layerData, RenderCamera camera)
@@ -391,18 +317,6 @@ namespace Molten.Graphics
         protected abstract GraphicsDevice OnInitializeDevice(GraphicsSettings settings, GraphicsManager manager);
 
         /// <summary>
-        /// Occurs before the render engine begins rendering all of the active scenes to the active output(s).
-        /// </summary>
-        /// <param name="time">A timing instance.</param>
-        protected abstract void OnPrePresent(Timing time);
-
-        /// <summary>
-        /// Occurs after render presentation is completed and profiler timing has been finalized for the current frame. Useful if you need to do some per-frame cleanup/resetting.
-        /// </summary>
-        /// <param name="time">A timing instance.</param>
-        protected abstract void OnPostPresent(Timing time);
-
-        /// <summary>
         /// Occurs when the current <see cref="RenderService"/> instance/implementation is being disposed.
         /// </summary>
         protected override sealed void OnDispose()
@@ -423,7 +337,7 @@ namespace Molten.Graphics
 
             _chain.Dispose();
             SpriteBatch.Dispose();
-            StagingBuffer.Dispose();
+            _tracker.Dispose();
 
             OnDisposeBeforeRender();
 
@@ -483,10 +397,6 @@ namespace Molten.Graphics
         /// </summary>
         internal SpriteFontManager Fonts { get; private set; }
 
-        public uint CurrentFrameBufferSize { get; private set; }
-
-        public uint FrameIndex { get; private set; }
-
-        public GraphicsBuffer StagingBuffer => _stagingBuffers[FrameIndex];
+        public RenderFrameTracker.TrackedFrame Frame => _tracker.Frame;
     }
 }

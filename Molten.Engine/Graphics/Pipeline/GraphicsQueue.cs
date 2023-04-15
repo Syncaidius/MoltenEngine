@@ -46,7 +46,6 @@ namespace Molten.Graphics
         RenderProfiler _profiler;
         RenderProfiler _defaultProfiler;
         List<GraphicsSlot> _slots;
-        GraphicsFrameTracker _tracker;
 
         protected GraphicsQueue(GraphicsDevice device)
         {
@@ -54,7 +53,6 @@ namespace Molten.Graphics
             Device = device;
             _slots = new List<GraphicsSlot>();
             _defaultProfiler = _profiler = new RenderProfiler();
-            _tracker = new GraphicsFrameTracker(this);
         }
 
         public GraphicsSlot<T> RegisterSlot<T, B>(GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex)
@@ -93,11 +91,6 @@ where B : GraphicsSlotBinder<T>, new()
             _slots.AddRange(slots);
 
             return grp;
-        }
-
-        internal void StartFrame()
-        {
-            _tracker.StartFrame();
         }
 
         /// <summary>
@@ -346,8 +339,6 @@ where B : GraphicsSlotBinder<T>, new()
         public GraphicsSlotGroup<IRenderSurface2D> Surfaces { get; protected set; }
 
         protected BatchDrawInfo DrawInfo { get; }
-
-        protected GraphicsFrameTracker Tracker => _tracker;
 
         protected abstract GraphicsCommandList Cmd { get; set; }
     }

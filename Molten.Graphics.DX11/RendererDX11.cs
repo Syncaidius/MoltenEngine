@@ -47,10 +47,6 @@ namespace Molten.Graphics.DX11
             _shaderCompiler = new FxcCompiler(this, Log, "\\Assets\\HLSL\\include\\", includeAssembly);
         }
 
-        protected override void OnPrePresent(Timing time) { }
-
-        protected override void OnPostPresent(Timing time) { }
-
         protected override void OnDisposeBeforeRender()
         {
             _displayManager.Dispose();
