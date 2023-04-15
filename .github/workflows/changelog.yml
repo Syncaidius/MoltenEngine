@@ -42,7 +42,11 @@ jobs:
          VERSION=${{inputs.version}}
          VERSION_FN=${VERSION//./_}
          CHANGES=$(git log --no-merges --pretty="| [[%h](https://github.com/Syncaidius/MoltenEngine/commits/%H)] | %s___%b |" --after=${{inputs.origin}})
+         CHANGES=${CHANGES//$'['/$'___['}
          CHANGES=${CHANGES//$'___'/'<br>'}
+         CHANGES=${CHANGES//$'[<br>['/'[['}
+         CHANGES=${CHANGES//$'| <br>['/'| ['}
+         CHANGES=${CHANGES//$'<br><br>'/'<br>'}
          CHANGES=${CHANGES//$'\r\n'/$'<br>'}
          CHANGES=${CHANGES//$'<br> |'/$' |\r\n'}
          echo $CHANGES >> "Changelogs/CHANGELOG_${VERSION_FN}.md" 
@@ -53,7 +57,11 @@ jobs:
          VERSION=${{inputs.version}}
          VERSION_FN=${VERSION//./_}
          CHANGES=$(git log --no-merges --pretty="| [[%h](https://github.com/Syncaidius/MoltenEngine/commits/%H)] | %s___%b |" ${{inputs.origin}}..HEAD)
+         CHANGES=${CHANGES//$'['/$'___['}
          CHANGES=${CHANGES//$'___'/'<br>'}
+         CHANGES=${CHANGES//$'[<br>['/'[['}
+         CHANGES=${CHANGES//$'| <br>['/'| ['}
+         CHANGES=${CHANGES//$'<br><br>'/'<br>'}
          CHANGES=${CHANGES//$'\r\n'/$'<br>'}
          CHANGES=${CHANGES//$'<br> |'/$' |\r\n'}
          echo $CHANGES >> "Changelogs/CHANGELOG_${VERSION_FN}.md" 
