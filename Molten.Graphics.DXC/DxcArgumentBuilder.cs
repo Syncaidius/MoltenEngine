@@ -46,11 +46,9 @@ namespace Molten.Graphics.Dxc
             [DxcCompilerArg.StripPrivate] = "-Qstrip_priv",
             [DxcCompilerArg.StripReflection] = "-Qstrip_reflect",
             [DxcCompilerArg.StripRootSignature] = "-Qstrip_rootsignature",
-            [DxcCompilerArg.SpirVReflection] = "-fspv-reflect"
-        };
+            [DxcCompilerArg.SpirVReflection] = "-fspv-reflect",
 
-        static Dictionary<DxcCompilerArg, string> _parameterArgLookup = new Dictionary<DxcCompilerArg, string>()
-        {
+            // Parameterized arguments
             [DxcCompilerArg.EntryPoint] = "-E",
             [DxcCompilerArg.TargetProfile] = "-T",
             [DxcCompilerArg.OutputAssemblyFile] = "-Fc",
@@ -74,7 +72,7 @@ namespace Molten.Graphics.Dxc
 
         internal bool Set(DxcCompilerArg arg, string parameterValue = null)
         {
-            if (_parameterArgLookup.TryGetValue(arg, out string argString))
+            if (_argLookup.TryGetValue(arg, out string argString))
             {
                 if (string.IsNullOrWhiteSpace(parameterValue))
                 {
