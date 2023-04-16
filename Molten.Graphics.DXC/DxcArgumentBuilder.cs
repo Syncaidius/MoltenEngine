@@ -104,7 +104,7 @@ namespace Molten.Graphics.Dxc
 
         internal void SetShaderProfile(ShaderModel model, ShaderType type)
         {
-            string profile = model.ToProfile(type, ShaderLanguage.Hlsl);
+            string profile = model.ToProfile(type);
             Set(DxcCompilerArg.TargetProfile, profile);
         }
 

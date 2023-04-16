@@ -5,24 +5,13 @@
     {
         /// <summary>Converts the shader model value to a usable profile string.</summary>
         /// <param name="model">The model value to convert.</param>
+        /// <param name="type">The type of shader profile to define.</param>
         /// <returns></returns>
-        public static string ToProfile(this ShaderModel model, ShaderType profile, ShaderLanguage language)
-        {
-            switch(language)
-            {
-                default:
-                case ShaderLanguage.Unknown: throw new Exception("Unsupported shader language.");
-                case ShaderLanguage.Hlsl: return ToHlslProfile(model, profile);
-                case ShaderLanguage.Glsl: return ToGlslProfile(model, profile);
-                case ShaderLanguage.SpirV: return ToSpirVProfile(model, profile);
-            }
-        }
-
-        public static string ToHlslProfile(this ShaderModel model, ShaderType profile)
+        public static string ToProfile(this ShaderModel model, ShaderType type)
         {
             string pString = "";
 
-            switch (profile)
+            switch (type)
             {
                 case ShaderType.Compute:
                     pString += "cs_";
@@ -51,22 +40,12 @@
                     throw new InvalidOperationException("Cannot convert unknown shader model value.");
             }
 
-            if (profile != ShaderType.Unknown)
+            if (type != ShaderType.Unknown)
                 pString += model.ToString().Replace("Model", "");
             else
                 throw new InvalidOperationException("Cannot convert unknown shader profile type.");
 
             return pString;
-        }
-
-        public static string ToGlslProfile(this ShaderModel model, ShaderType profile)
-        {
-            throw new NotImplementedException();
-        }
-
-        public static string ToSpirVProfile(this ShaderModel model, ShaderType profile)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -103,6 +103,7 @@ namespace Molten.Graphics.Dxc
                     else
                         args.Set(arg, argVal);
                 }
+
                 args.SetEntryPoint(entryPoint);
                 args.SetShaderProfile(ShaderModel.Model6_0, type);
 
@@ -112,7 +113,7 @@ namespace Molten.Graphics.Dxc
                 void* ptrResult;
 
                 DxcSourceBlob srcBlob = BuildSource(context.Source, NativeStringEncoding.LPStr);
-                HResult hResult = (HResult)Native->Compile(in srcBlob.BlobBuffer, argArray, (uint)argArray.Length, null, &dxcResultGuid, &ptrResult);
+                HResult hResult = (HResult)Native->Compile(srcBlob.BlobBuffer, argArray, (uint)argArray.Length, null, &dxcResultGuid, &ptrResult);
 
                 IDxcResult* dxcResult = (IDxcResult*)ptrResult;
                 IDxcBlob* byteCode = null;

@@ -205,7 +205,7 @@ namespace Molten.Graphics.DX11
             if (!context.Shaders.TryGetValue(entryPoint, out result))
             {
                 ulong numBytes = 0;
-                string shaderProfile = ShaderModel.Model5_0.ToProfile(type, ShaderLanguage.Hlsl);
+                string shaderProfile = ShaderModel.Model5_0.ToProfile(type);
                 byte* pSourceName = EngineUtil.StringToPtr(context.Source.Filename, encoding);
                 byte* pEntryPoint = (byte*)SilkMarshal.StringToPtr(entryPoint, nativeEncoding);
                 byte* pTarget = (byte*)SilkMarshal.StringToPtr(shaderProfile, nativeEncoding);
