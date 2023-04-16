@@ -114,16 +114,13 @@ namespace Molten.Graphics.Dxc
                 args.SetEntryPoint(entryPoint);
                 args.SetShaderProfile(ShaderModel.Model6_0, type);
 
-                string argString = args.ToString();
-                uint argCount = args.Count;
-                char** ptrArgString = args.GetArgsPtr();
+                string[] argArray = args.GetArgsArray();
 
                 Guid dxcResultGuid = IDxcResult.Guid;
                 void* ptrResult;
 
                 DxcSourceBlob srcBlob = BuildSource(context.Source);
-
-                Native->Compile(in srcBlob.BlobBuffer, ptrArgString, argCount, null, &dxcResultGuid, &ptrResult);
+                Native->Compile(in srcBlob.BlobBuffer, argArray, (uint)argArray.Length, null, &dxcResultGuid, &ptrResult);
 
                 IDxcResult* dxcResult = (IDxcResult*)ptrResult;
                 IDxcBlob* byteCode = null;
@@ -151,7 +148,6 @@ namespace Molten.Graphics.Dxc
                         context.AddDebug($"\t{kind}");
                 }
 
-                SilkMarshal.Free((nint)ptrArgString);
                 SilkUtil.ReleasePtr(ref pdbData);
 
                 if (context.HasErrors)
@@ -209,7 +205,7 @@ namespace Molten.Graphics.Dxc
             nuint numBytes = pErrorBlob->GetBufferSize();
             string strErrors = SilkMarshal.PtrToString((nint)ptrErrors, NativeStringEncoding.UTF8);
 
-            string[] errors = strErrors.Split('\r', '\n');
+            string[] errors = strErrors.Split('\r', '\n', StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < errors.Length; i++)
                 context.AddError(errors[i]);
 

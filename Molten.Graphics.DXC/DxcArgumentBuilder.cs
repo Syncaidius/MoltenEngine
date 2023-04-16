@@ -63,12 +63,12 @@ namespace Molten.Graphics.Dxc
             [DxcCompilerArg.VulkanVersion] = "-fspv-target-env=",
         };
 
-        Dictionary<DxcCompilerArg, string> _args;
+        Dictionary<DxcCompilerArg, string[]> _args;
         ShaderCompilerContext _context;
 
         internal DxcArgumentBuilder(ShaderCompilerContext context)
         {
-            _args = new Dictionary<DxcCompilerArg, string>();
+            _args = new Dictionary<DxcCompilerArg, string[]>();
             _context = context;
         }
 
@@ -77,7 +77,7 @@ namespace Molten.Graphics.Dxc
             // Ensure we're using a valid argument
             if (_argLookup.TryGetValue(arg, out string argString))
             {
-                _args[arg] = argString;
+                _args[arg] = new string[] { argString };
                 return true;
             }
             else if (_parameterArgLookup.ContainsKey(arg))
@@ -96,11 +96,11 @@ namespace Molten.Graphics.Dxc
         {
             if (_parameterArgLookup.TryGetValue(arg, out string argString))
             {
-                // If the parameter is set using an = operator, we don't need to add a space.
-                if(argString.EndsWith('='))
-                    _args[arg] = $"{argString}{parameterValue}";
+                // If the parameter is set using an = operator, we don't need to separate the arg and it's value
+                if (argString.EndsWith('='))
+                    _args[arg] = new string[] { $"{argString}{parameterValue}" };
                 else
-                    _args[arg] = $"{argString} {parameterValue}";
+                    _args[arg] = new string[] { argString, parameterValue };
 
                 return true;
             }
@@ -131,19 +131,29 @@ namespace Molten.Graphics.Dxc
         {
             string s = "";
             bool first = true;
-            foreach (KeyValuePair<DxcCompilerArg, string> p in _args)
+            foreach (KeyValuePair<DxcCompilerArg, string[]> p in _args)
             {
-                s += first ? p.Value : $" {p.Value}";
+                s += first ? p.Value : $" {string.Join(' ', p.Value)}";
                 first = false;
             }
 
             return s;
         }
 
-        public char** GetArgsPtr()
+        public char** GetArgsPtr(NativeStringEncoding encoding, out uint argCount)
         {
-            IReadOnlyList<string> args = _args.Values.ToList().AsReadOnly();
-            return (char**)SilkMarshal.StringArrayToPtr(args, NativeStringEncoding.UTF8);
+            string[] args = GetArgsArray();
+            argCount = (uint)args.Length;
+            return (char**)SilkMarshal.StringArrayToPtr(args, encoding);
+        }
+
+        public string[] GetArgsArray()
+        {
+            List<string> args = new List<string>();
+            foreach (string[] p in _args.Values)
+                args.AddRange(p);
+
+            return args.ToArray();
         }
 
         internal uint Count => (uint)_args.Count;
