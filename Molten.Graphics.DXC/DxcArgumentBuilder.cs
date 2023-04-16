@@ -1,4 +1,5 @@
-﻿using Silk.NET.Core.Native;
+﻿using System.Text;
+using Silk.NET.Core.Native;
 using Silk.NET.Direct3D.Compilers;
 
 namespace Molten.Graphics.Dxc
@@ -123,18 +124,20 @@ namespace Molten.Graphics.Dxc
 
         public char** GetArgsPtr(NativeStringEncoding encoding, out uint argCount)
         {
-            string[] args = GetArgsArray();
-            argCount = (uint)args.Length;
-            return (char**)SilkMarshal.StringArrayToPtr(args, encoding);
-        }
-
-        public string[] GetArgsArray()
-        {
             List<string> args = new List<string>();
             foreach (string[] p in _args.Values)
                 args.AddRange(p);
 
-            return args.ToArray();
+            argCount = (uint)args.Count;
+            return (char**)SilkMarshal.StringArrayToPtr(args, encoding);
+        }
+
+        public void FreeArgsPtr(ref char** ptr, uint argCount, NativeStringEncoding encoding)
+        {
+            for (uint i = 0; i < argCount; i++)
+                SilkMarshal.FreeString((nint)ptr[i], encoding);
+
+            SilkMarshal.Free((nint)ptr);
         }
 
         internal uint Count => (uint)_args.Count;

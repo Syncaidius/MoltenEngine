@@ -87,6 +87,8 @@ namespace Molten.Graphics.Dxc
         public override bool CompileSource(string entryPoint, ShaderType type, 
             ShaderCompilerContext context, out ShaderCodeResult result)
         {
+            const NativeStringEncoding argEncoding = NativeStringEncoding.LPWStr;
+
             // Since it's not possible to have two functions in the same file with the same name, we'll just check if
             // a shader with the same entry-point name is already loaded in the context.
             if (!context.Shaders.TryGetValue(entryPoint, out result))
@@ -103,16 +105,16 @@ namespace Molten.Graphics.Dxc
                         args.Set(arg, argVal);
                 }
 
-                args.SetEntryPoint(entryPoint);
                 args.SetShaderProfile(ShaderModel.Model6_0, type);
+                args.SetEntryPoint(entryPoint);
 
-                string[] argArray = args.GetArgsArray();
+                char** ptrArgs = args.GetArgsPtr(argEncoding, out uint argCount);
 
                 Guid dxcResultGuid = IDxcResult.Guid;
                 void* ptrResult;
 
-                DxcBuffer srvBuffer = BuildSource(context.Source, NativeStringEncoding.LPStr);
-                HResult hResult = (HResult)Native->Compile(srvBuffer, argArray, (uint)argArray.Length, null, &dxcResultGuid, &ptrResult);
+                DxcBuffer srvBuffer = BuildSource(context.Source, NativeStringEncoding.UTF8);
+                HResult hResult = (HResult)Native->Compile(srvBuffer, ptrArgs, argCount, null, &dxcResultGuid, &ptrResult);
 
                 IDxcResult* dxcResult = (IDxcResult*)ptrResult;
                 IDxcBlob* byteCode = null;
@@ -135,7 +137,7 @@ namespace Molten.Graphics.Dxc
                     switch (kind)
                     {
                         case OutKind.Errors:
-                            LoadErrors(context, dxcResult);
+                            LoadErrors(context, dxcResult, NativeStringEncoding.UTF8);
                             break;
 
                         case OutKind.Pdb:
@@ -157,6 +159,7 @@ namespace Molten.Graphics.Dxc
                 }
 
                 SilkUtil.ReleasePtr(ref pdbData);
+                args.FreeArgsPtr(ref ptrArgs, argCount, argEncoding);
 
                 if (context.HasErrors)
                     return false;
@@ -206,18 +209,26 @@ namespace Molten.Graphics.Dxc
             return r;
         }
 
-        private void LoadErrors(ShaderCompilerContext context, IDxcResult* dxcResult)
+        private void LoadErrors(ShaderCompilerContext context, IDxcResult* dxcResult, NativeStringEncoding encoding)
         {
             IDxcBlobEncoding* pErrorBlob = null;
             dxcResult->GetErrorBuffer(&pErrorBlob);
 
             void* ptrErrors = pErrorBlob->GetBufferPointer();
-            nuint numBytes = pErrorBlob->GetBufferSize();
-            string strErrors = SilkMarshal.PtrToString((nint)ptrErrors, NativeStringEncoding.UTF8);
 
-            string[] errors = strErrors.Split('\r', '\n', StringSplitOptions.RemoveEmptyEntries);
-            for (int i = 0; i < errors.Length; i++)
-                context.AddError(errors[i]);
+            if (ptrErrors != null)
+            {
+                nuint numBytes = pErrorBlob->GetBufferSize();
+                string strErrors = SilkMarshal.PtrToString((nint)ptrErrors, encoding);
+
+                string[] errors = strErrors.Split('\r', '\n', StringSplitOptions.RemoveEmptyEntries);
+                for (int i = 0; i < errors.Length; i++)
+                    context.AddError(errors[i]);
+            }
+            else
+            {
+
+            }
 
             SilkUtil.ReleasePtr(ref pErrorBlob);
         }
@@ -255,7 +266,7 @@ namespace Molten.Graphics.Dxc
         {
             if(!_sourceBlobs.TryGetValue(source, out DxcBuffer buffer))
             {
-                Encoding encoding = Encoding.UTF8; // CodePagesEncodingProvider.Instance.GetEncoding(1252); // Ansi codepage
+                Encoding encoding = CodePagesEncodingProvider.Instance.GetEncoding(1252); // Ansi codepage
                 buffer = new DxcBuffer();
                 void* ptrSource = EngineUtil.StringToPtr(source.SourceCode, encoding, out ulong numBytes); // (void*)SilkMarshal.StringToPtr(source.SourceCode, encoding);
                 //uint numBytesSilk = (uint)SilkMarshal.GetMaxSizeOf(source.SourceCode, nativeEncoding);
