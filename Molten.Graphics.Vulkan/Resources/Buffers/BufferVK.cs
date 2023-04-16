@@ -65,7 +65,7 @@ namespace Molten.Graphics.Vulkan
             MemoryRequirements memRequirements;
             device.VK.GetBufferMemoryRequirements(device, *(Buffer*)_handle->Ptr, &memRequirements);
            _memory = device.Memory.Allocate(ref memRequirements, memFlags);
-            if (_memory != null)
+            if (_memory == null)
                 throw new GraphicsResourceException(this, "Unable to allocate memory for buffer.");
 
             _handle->Memory = _memory;
