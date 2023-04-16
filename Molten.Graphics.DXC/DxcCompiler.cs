@@ -222,9 +222,27 @@ namespace Molten.Graphics.Dxc
                 nuint numBytes = pErrorBlob->GetBufferSize();
                 string strErrors = SilkMarshal.PtrToString((nint)ptrErrors, encoding);
 
-                string[] errors = strErrors.Split('\r', '\n', StringSplitOptions.RemoveEmptyEntries);
-                for (int i = 0; i < errors.Length; i++)
-                    context.AddError(errors[i]);
+                string[] entries = strErrors.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+
+                bool isError = true;
+                for (int i = 0; i < entries.Length; i++)
+                {
+                    string err = entries[i].Trim();
+                    if (string.IsNullOrWhiteSpace(err) || err == "^")
+                        continue;
+
+                    if(err.Contains("error: "))
+                        isError = true;
+                    else if(err.Contains("warning: "))
+                        isError = false;
+
+
+                    // Add error without any trimming
+                    if (isError)
+                        context.AddError(entries[i]);
+                    else
+                        context.AddWarning(entries[i]);
+                }
             }
 
             SilkUtil.ReleasePtr(ref pErrorBlob);

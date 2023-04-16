@@ -114,6 +114,6 @@
         /// <summary>
         /// Emit additional SPIR-V instructions to aid reflection. Only works if <see cref="DxcCompilerArg.SpirV"/> is set.
         /// </summary>
-        SpirVReflection = 40,
+        SpirVReflection = 41,
     }
 }
