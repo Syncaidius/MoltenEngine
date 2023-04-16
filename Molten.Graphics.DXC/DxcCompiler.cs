@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
+using System.Text;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D.Compilers;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using DxcBuffer = Silk.NET.Direct3D.Compilers.Buffer;
 
 namespace Molten.Graphics.Dxc
@@ -76,18 +78,6 @@ namespace Molten.Graphics.Dxc
             return (T*)ppv;
         }
 
-        protected override unsafe ShaderReflection BuildReflection(ShaderCompilerContext context, void* ptrData)
-        {
-            IDxcResult* dxcResult = (IDxcResult*)ptrData;
-            IDxcContainerReflection* containerReflection = LoadReflection(context, dxcResult);
-
-            ShaderReflection r = new ShaderReflection();
-
-            // TODO populate reflection
-
-            return r;
-        }
-
         /// <summary>Compiles HLSL source code and outputs the result. Returns true if successful, or false if there were errors.</summary>
         /// <param name="entryPoint"></param>
         /// <param name="type"></param>
@@ -103,7 +93,9 @@ namespace Molten.Graphics.Dxc
             if (!context.Shaders.TryGetValue(entryPoint, out result))
             {
                 DxcArgumentBuilder args = new DxcArgumentBuilder(context);
-                foreach(DxcCompilerArg arg in _baseArgs.Keys)
+                ShaderReflection reflection = null;
+
+                foreach (DxcCompilerArg arg in _baseArgs.Keys)
                 {
                     string argVal = _baseArgs[arg];
                     if (string.IsNullOrWhiteSpace(argVal))
@@ -119,41 +111,56 @@ namespace Molten.Graphics.Dxc
                 Guid dxcResultGuid = IDxcResult.Guid;
                 void* ptrResult;
 
-                DxcSourceBlob srcBlob = BuildSource(context.Source);
-                Native->Compile(in srcBlob.BlobBuffer, argArray, (uint)argArray.Length, null, &dxcResultGuid, &ptrResult);
+                DxcSourceBlob srcBlob = BuildSource(context.Source, NativeStringEncoding.LPStr);
+                HResult hResult = (HResult)Native->Compile(in srcBlob.BlobBuffer, argArray, (uint)argArray.Length, null, &dxcResultGuid, &ptrResult);
 
                 IDxcResult* dxcResult = (IDxcResult*)ptrResult;
                 IDxcBlob* byteCode = null;
                 IDxcBlob* pdbData = null;
                 string pdbPath = "";
-                List<OutKind> _availableOutputs;
-
-                _availableOutputs = new List<OutKind>();
-                dxcResult->GetResult(&byteCode);
-
-                uint numOutputs = dxcResult->GetNumOutputs();
-                context.AddDebug($"{numOutputs} DXC outputs found: ");
-
-                LoadPdbData(context, dxcResult, ref pdbData, ref pdbPath);
-                LoadErrors(context, dxcResult);
-                OutKind[] outTypes = Enum.GetValues<OutKind>();
 
                 // List all available outputs
-                foreach (OutKind kind in outTypes)
+                uint numOutputs = dxcResult->GetNumOutputs();
+                context.AddDebug($"{numOutputs} DXC outputs found: ");
+                for(uint i = 0; i < numOutputs; i++)
                 {
-                    if (kind == OutKind.None)
-                        continue;
+                    OutKind kind = dxcResult->GetOutputByIndex(i);
+                    context.AddDebug($"\t{kind}");
+                }
 
-                    if(dxcResult->HasOutput(kind) > 0)
-                        context.AddDebug($"\t{kind}");
+                // Now retrieve the outputs we care about.
+                for (uint i = 0; i < numOutputs; i++)
+                {
+                    OutKind kind = dxcResult->GetOutputByIndex(i);
+                    switch (kind)
+                    {
+                        case OutKind.Errors:
+                            LoadErrors(context, dxcResult);
+                            break;
+
+                        case OutKind.Pdb:
+                            LoadPdbData(context, dxcResult, ref pdbData, ref pdbPath);
+                            break;
+
+                        case OutKind.Reflection:
+                            reflection = BuildReflection(context, dxcResult);
+                            break;
+
+                        case OutKind.Object:
+                            // Same as calling dxcResult->GetResult(&byteCode);
+                            if (GetDxcOutput(context, OutKind.Object, dxcResult, ref byteCode))
+                            {
+                                // Store shader object. Do we flag errors as warnings if we have successfully output bytecode?
+                            }
+                            break;
+                    }
                 }
 
                 SilkUtil.ReleasePtr(ref pdbData);
 
                 if (context.HasErrors)
                     return false;
-
-                ShaderReflection reflection = BuildReflection(context, dxcResult);
+                
                 result = new ShaderCodeResult(reflection, byteCode, byteCode->GetBufferSize());
                 context.Shaders.Add(entryPoint, result);
             }
@@ -175,8 +182,9 @@ namespace Molten.Graphics.Dxc
             }
         }
 
-        private IDxcContainerReflection* LoadReflection(ShaderCompilerContext context, IDxcResult* dxcResult)
+        protected override unsafe ShaderReflection BuildReflection(ShaderCompilerContext context, void* ptrData)
         {
+            IDxcResult* dxcResult = (IDxcResult*)ptrData;
             IDxcBlob* outData = null;
             DxcBuffer* reflectionBuffer = null;
             void* pReflection = null;
@@ -190,14 +198,16 @@ namespace Molten.Graphics.Dxc
                 context.AddDebug($"\t Loaded DXC container reflection data -- Bytes: {dataSize}");
             }
 
-            return (IDxcContainerReflection*)pReflection;
+            IDxcContainerReflection* containerReflection = (IDxcContainerReflection*)pReflection;
+            ShaderReflection r = new ShaderReflection();
+
+            // TODO populate reflection
+
+            return r;
         }
 
         private void LoadErrors(ShaderCompilerContext context, IDxcResult* dxcResult)
         {
-            if (dxcResult->HasOutput(OutKind.Errors) == 0)
-                return;
-
             IDxcBlobEncoding* pErrorBlob = null;
             dxcResult->GetErrorBuffer(&pErrorBlob);
 
@@ -241,20 +251,21 @@ namespace Molten.Graphics.Dxc
         /// </summary>
         /// <param name="compiler"></param>
         /// <returns></returns>
-        internal DxcSourceBlob BuildSource(ShaderSource source)
+        internal DxcSourceBlob BuildSource(ShaderSource source, NativeStringEncoding nativeEncoding)
         {
             if(!_sourceBlobs.TryGetValue(source, out DxcSourceBlob blob))
             {
+                Encoding encoding = Encoding.UTF8; // CodePagesEncodingProvider.Instance.GetEncoding(1252); // Ansi codepage
                 blob = new DxcSourceBlob();
-                void* ptrSource = (void*)SilkMarshal.StringToPtr(source.SourceCode, NativeStringEncoding.UTF8);
-                uint numBytes = (uint)SilkMarshal.GetMaxSizeOf(source.SourceCode, NativeStringEncoding.UTF8);
+                void* ptrSource = EngineUtil.StringToPtr(source.SourceCode, encoding, out ulong numBytes); // (void*)SilkMarshal.StringToPtr(source.SourceCode, encoding);
+                uint numBytesSilk = (uint)SilkMarshal.GetMaxSizeOf(source.SourceCode, nativeEncoding);
 
-                _utils->CreateBlob(ptrSource, numBytes, DXC.CPUtf16, ref blob.Ptr);
+                //_utils->CreateBlob(ptrSource, numBytes, DXC.CPUtf16, ref blob.Ptr);
 
                 blob.BlobBuffer = new DxcBuffer()
                 {
-                    Ptr = blob.Ptr->GetBufferPointer(),
-                    Size = blob.Ptr->GetBufferSize(),
+                    Ptr = ptrSource, // blob.Ptr->GetBufferPointer(),
+                    Size = (nuint)numBytes, //blob.Ptr->GetBufferSize(),
                     Encoding = 0
                 };
             }

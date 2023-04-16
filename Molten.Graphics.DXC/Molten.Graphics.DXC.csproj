@@ -35,6 +35,7 @@
 
   <ItemGroup>
     <PackageReference Include="Silk.NET.Direct3D.Compilers" Version="2.17.1" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>

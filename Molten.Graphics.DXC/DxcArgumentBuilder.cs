@@ -72,41 +72,24 @@ namespace Molten.Graphics.Dxc
             _context = context;
         }
 
-        internal bool Set(DxcCompilerArg arg)
-        {
-            // Ensure we're using a valid argument
-            if (_argLookup.TryGetValue(arg, out string argString))
-            {
-                _args[arg] = new string[] { argString };
-                return true;
-            }
-            else if (_parameterArgLookup.ContainsKey(arg))
-            {
-                _context.AddError($"HLSL parameterized compiler argument '{arg}' cannot be added as a non-parameterized argument.");
-            }
-            else
-            {
-                _context.AddError($"Invalid compiler argument of value '{arg}'");
-            }
-
-            return false;
-        }
-
-        internal bool Set(DxcCompilerArg arg, string parameterValue)
+        internal bool Set(DxcCompilerArg arg, string parameterValue = null)
         {
             if (_parameterArgLookup.TryGetValue(arg, out string argString))
             {
-                // If the parameter is set using an = operator, we don't need to separate the arg and it's value
-                if (argString.EndsWith('='))
-                    _args[arg] = new string[] { $"{argString}{parameterValue}" };
+                if (string.IsNullOrWhiteSpace(parameterValue))
+                {
+                    _args[arg] = new string[] { argString };
+                }
                 else
-                    _args[arg] = new string[] { argString, parameterValue };
+                {
+                    // If the parameter is set using an = operator, we don't need to separate the arg and it's value
+                    if (argString.EndsWith('='))
+                        _args[arg] = new string[] { $"{argString}{parameterValue}" };
+                    else
+                        _args[arg] = new string[] { argString, parameterValue };
+                }
 
                 return true;
-            }
-            else if (_argLookup.ContainsKey(arg))
-            {
-                _context.AddError($"HLSL non-parameterized argument '{arg}' cannot be added as parameterized argument.");
             }
             else
             {
@@ -133,7 +116,7 @@ namespace Molten.Graphics.Dxc
             bool first = true;
             foreach (KeyValuePair<DxcCompilerArg, string[]> p in _args)
             {
-                s += first ? p.Value : $" {string.Join(' ', p.Value)}";
+                s += $"{(first ? "" : " ")}{string.Join(' ', p.Value)}";
                 first = false;
             }
 
