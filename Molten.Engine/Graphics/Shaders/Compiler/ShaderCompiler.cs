@@ -109,7 +109,6 @@ namespace Molten.Graphics
             if (!valid)
                 return null;
 
-
             HlslShader shader = new HlslShader(renderer.Device, def, context.Source.Filename);
 
             // Proceed to compiling each shader pass.

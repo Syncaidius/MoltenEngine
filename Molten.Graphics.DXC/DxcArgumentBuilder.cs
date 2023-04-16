@@ -45,7 +45,8 @@ namespace Molten.Graphics.Dxc
             [DxcCompilerArg.StripDebug] = "_Qstrip_debug",
             [DxcCompilerArg.StripPrivate] = "-Qstrip_priv",
             [DxcCompilerArg.StripReflection] = "-Qstrip_reflect",
-            [DxcCompilerArg.StripRootSignature] = "Qstrip_rootsignature"
+            [DxcCompilerArg.StripRootSignature] = "-Qstrip_rootsignature",
+            [DxcCompilerArg.SpirVReflection] = "-fspv-reflect"
         };
 
         static Dictionary<DxcCompilerArg, string> _parameterArgLookup = new Dictionary<DxcCompilerArg, string>()
@@ -58,6 +59,8 @@ namespace Molten.Graphics.Dxc
             [DxcCompilerArg.OutputHeaderFile] = "-Fh",
             [DxcCompilerArg.OutputObjectFile] = "-Fo",
             [DxcCompilerArg.PreProcessToFile] = "-P",
+            [DxcCompilerArg.HlslVersion] = "-HV",
+            [DxcCompilerArg.VulkanVersion] = "-fspv-target-env=",
         };
 
         Dictionary<DxcCompilerArg, string> _args;
@@ -93,7 +96,12 @@ namespace Molten.Graphics.Dxc
         {
             if (_parameterArgLookup.TryGetValue(arg, out string argString))
             {
-                _args[arg] = $"{argString} {parameterValue}";
+                // If the parameter is set using an = operator, we don't need to add a space.
+                if(argString.EndsWith('='))
+                    _args[arg] = $"{argString}{parameterValue}";
+                else
+                    _args[arg] = $"{argString} {parameterValue}";
+
                 return true;
             }
             else if (_argLookup.ContainsKey(arg))

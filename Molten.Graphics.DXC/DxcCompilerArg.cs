@@ -100,5 +100,20 @@
         /// Tells DXC to compile HLSL to Spr-V bytecode.
         /// </summary>
         SpirV = 38,
+
+        /// <summary>
+        /// Tells DXC what version of HLSL we are compiling. e.g. "2021".
+        /// </summary>
+        HlslVersion = 39,
+
+        /// <summary>
+        /// The version of vulkan to target. e.g. "vulkan1.1", "vulkan1.2" or "vulkan1.3".
+        /// </summary>
+        VulkanVersion = 40,
+
+        /// <summary>
+        /// Emit additional SPIR-V instructions to aid reflection. Only works if <see cref="DxcCompilerArg.SpirV"/> is set.
+        /// </summary>
+        SpirVReflection = 40,
     }
 }

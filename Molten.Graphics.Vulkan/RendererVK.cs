@@ -92,6 +92,9 @@ namespace Molten.Graphics.Vulkan
         {
             Assembly includeAssembly = GetType().Assembly;
             _shaderCompiler = new DxcCompiler(this, "\\Assets\\HLSL\\include\\", includeAssembly);
+            _shaderCompiler.AddBaseArg(DxcCompilerArg.SpirV);
+            _shaderCompiler.AddBaseArg(DxcCompilerArg.HlslVersion, "2021");
+            _shaderCompiler.AddBaseArg(DxcCompilerArg.VulkanVersion, $"vulkan{ApiVersion.Major}.{ApiVersion.Minor}");
         }
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]

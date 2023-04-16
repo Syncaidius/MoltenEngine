@@ -28,6 +28,7 @@ namespace Molten.Graphics.Dxc
        
         IDxcCompiler3* _compiler;
         IDxcUtils* _utils;
+        Dictionary<DxcCompilerArg, string> _baseArgs;
         Dictionary<ShaderSource, DxcSourceBlob> _sourceBlobs;
 
         /// <summary>
@@ -40,10 +41,24 @@ namespace Molten.Graphics.Dxc
             base(renderer, includePath, includeAssembly)
         {
             _sourceBlobs = new Dictionary<ShaderSource, DxcSourceBlob>();
+            _baseArgs = new Dictionary<DxcCompilerArg, string>();
 
             Dxc = DXC.GetApi();
             _utils = CreateDxcInstance<IDxcUtils>(CLSID_DxcUtils, IDxcUtils.Guid);
             _compiler = CreateDxcInstance<IDxcCompiler3>(CLSID_DxcCompiler, IDxcCompiler3.Guid);
+        }
+
+        /// <summary>
+        /// Adds a DXC compiler argument that is included with every DXC shader compilation call of the current <see cref="DxcCompiler"/> instance.
+        /// </summary>
+        /// <param name="arg">The DXC argument to add.</param>
+        /// <param name="value">The argument value to add, or null of none. Default value is null.</param>
+        public void AddBaseArg(DxcCompilerArg arg, string value = null)
+        {
+            if (_baseArgs.ContainsKey(arg))
+                _baseArgs[arg] = value;
+            else
+                _baseArgs.Add(arg, value);
         }
 
         protected override void OnDispose()
@@ -88,8 +103,16 @@ namespace Molten.Graphics.Dxc
             if (!context.Shaders.TryGetValue(entryPoint, out result))
             {
                 DxcArgumentBuilder args = new DxcArgumentBuilder(context);
+                foreach(DxcCompilerArg arg in _baseArgs.Keys)
+                {
+                    string argVal = _baseArgs[arg];
+                    if (string.IsNullOrWhiteSpace(argVal))
+                        args.Set(arg);
+                    else
+                        args.Set(arg, argVal);
+                }
                 args.SetEntryPoint(entryPoint);
-                args.SetShaderProfile(ShaderModel.Model5_0, type);
+                args.SetShaderProfile(ShaderModel.Model6_0, type);
 
                 string argString = args.ToString();
                 uint argCount = args.Count;
