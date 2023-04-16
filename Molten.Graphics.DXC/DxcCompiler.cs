@@ -2,7 +2,6 @@
 using System.Text;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D.Compilers;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using DxcBuffer = Silk.NET.Direct3D.Compilers.Buffer;
 
 namespace Molten.Graphics.Dxc
@@ -31,7 +30,7 @@ namespace Molten.Graphics.Dxc
         IDxcCompiler3* _compiler;
         IDxcUtils* _utils;
         Dictionary<DxcCompilerArg, string> _baseArgs;
-        Dictionary<ShaderSource, DxcSourceBlob> _sourceBlobs;
+        Dictionary<ShaderSource, DxcBuffer> _sourceBlobs;
 
         /// <summary>
         /// Creates a new instance of <see cref="DxcCompiler"/>.
@@ -42,7 +41,7 @@ namespace Molten.Graphics.Dxc
         public DxcCompiler(RenderService renderer, string includePath, Assembly includeAssembly) : 
             base(renderer, includePath, includeAssembly)
         {
-            _sourceBlobs = new Dictionary<ShaderSource, DxcSourceBlob>();
+            _sourceBlobs = new Dictionary<ShaderSource, DxcBuffer>();
             _baseArgs = new Dictionary<DxcCompilerArg, string>();
 
             Dxc = DXC.GetApi();
@@ -112,8 +111,8 @@ namespace Molten.Graphics.Dxc
                 Guid dxcResultGuid = IDxcResult.Guid;
                 void* ptrResult;
 
-                DxcSourceBlob srcBlob = BuildSource(context.Source, NativeStringEncoding.LPStr);
-                HResult hResult = (HResult)Native->Compile(srcBlob.BlobBuffer, argArray, (uint)argArray.Length, null, &dxcResultGuid, &ptrResult);
+                DxcBuffer srvBuffer = BuildSource(context.Source, NativeStringEncoding.LPStr);
+                HResult hResult = (HResult)Native->Compile(srvBuffer, argArray, (uint)argArray.Length, null, &dxcResultGuid, &ptrResult);
 
                 IDxcResult* dxcResult = (IDxcResult*)ptrResult;
                 IDxcBlob* byteCode = null;
@@ -252,26 +251,26 @@ namespace Molten.Graphics.Dxc
         /// </summary>
         /// <param name="compiler"></param>
         /// <returns></returns>
-        internal DxcSourceBlob BuildSource(ShaderSource source, NativeStringEncoding nativeEncoding)
+        internal DxcBuffer BuildSource(ShaderSource source, NativeStringEncoding nativeEncoding)
         {
-            if(!_sourceBlobs.TryGetValue(source, out DxcSourceBlob blob))
+            if(!_sourceBlobs.TryGetValue(source, out DxcBuffer buffer))
             {
                 Encoding encoding = Encoding.UTF8; // CodePagesEncodingProvider.Instance.GetEncoding(1252); // Ansi codepage
-                blob = new DxcSourceBlob();
+                buffer = new DxcBuffer();
                 void* ptrSource = EngineUtil.StringToPtr(source.SourceCode, encoding, out ulong numBytes); // (void*)SilkMarshal.StringToPtr(source.SourceCode, encoding);
-                uint numBytesSilk = (uint)SilkMarshal.GetMaxSizeOf(source.SourceCode, nativeEncoding);
+                //uint numBytesSilk = (uint)SilkMarshal.GetMaxSizeOf(source.SourceCode, nativeEncoding);
 
-                //_utils->CreateBlob(ptrSource, numBytes, DXC.CPUtf16, ref blob.Ptr);
-
-                blob.BlobBuffer = new DxcBuffer()
+                buffer = new DxcBuffer()
                 {
-                    Ptr = ptrSource, // blob.Ptr->GetBufferPointer(),
-                    Size = (nuint)numBytes, //blob.Ptr->GetBufferSize(),
+                    Ptr = ptrSource, 
+                    Size = (nuint)numBytes, 
                     Encoding = 0
                 };
+
+                _sourceBlobs.Add(source, buffer);
             }
 
-            return blob;
+            return buffer;
         }
 
         public override ShaderIOStructure BuildIO(ShaderCodeResult result, ShaderType sType, ShaderIOStructureType type)
