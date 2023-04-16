@@ -26,8 +26,9 @@ namespace Molten.Graphics.Dxc
 
         internal static readonly Guid CLSID_DxcContainerReflection = new Guid(0xb9f54489, 0x55b8, 0x400c,
             0xba, 0x3a, 0x16, 0x75, 0xe4, 0x72, 0x8b, 0x91);
-       
-        IDxcCompiler3* _compiler;
+
+        DXC _dxc;
+        IDxcCompiler3* _native;
         IDxcUtils* _utils;
         Dictionary<DxcCompilerArg, string> _baseArgs;
         Dictionary<ShaderSource, DxcBuffer> _sourceBlobs;
@@ -44,9 +45,9 @@ namespace Molten.Graphics.Dxc
             _sourceBlobs = new Dictionary<ShaderSource, DxcBuffer>();
             _baseArgs = new Dictionary<DxcCompilerArg, string>();
 
-            Dxc = DXC.GetApi();
+            _dxc = DXC.GetApi();
             _utils = CreateDxcInstance<IDxcUtils>(CLSID_DxcUtils, IDxcUtils.Guid);
-            _compiler = CreateDxcInstance<IDxcCompiler3>(CLSID_DxcCompiler, IDxcCompiler3.Guid);
+            _native = CreateDxcInstance<IDxcCompiler3>(CLSID_DxcCompiler, IDxcCompiler3.Guid);
         }
 
         /// <summary>
@@ -64,16 +65,16 @@ namespace Molten.Graphics.Dxc
 
         protected override void OnDispose()
         {
-            SilkUtil.ReleasePtr(ref _compiler);
+            SilkUtil.ReleasePtr(ref _native);
             SilkUtil.ReleasePtr(ref _utils);
-            Dxc.Dispose();
+            _dxc.Dispose();
         }
 
         private T* CreateDxcInstance<T>(Guid clsid, Guid iid) 
             where T : unmanaged
         {
             void* ppv = null;
-            HResult result = Dxc.CreateInstance(&clsid, &iid, ref ppv);
+            HResult result = _dxc.CreateInstance(&clsid, &iid, ref ppv);
             return (T*)ppv;
         }
 
@@ -113,8 +114,8 @@ namespace Molten.Graphics.Dxc
                 Guid dxcResultGuid = IDxcResult.Guid;
                 void* ptrResult;
 
-                DxcBuffer srvBuffer = BuildSource(context.Source, NativeStringEncoding.UTF8);
-                HResult hResult = (HResult)Native->Compile(srvBuffer, ptrArgs, argCount, null, &dxcResultGuid, &ptrResult);
+                DxcBuffer srvBuffer = BuildSource(context.Source, Encoding.UTF8);
+                HResult hResult = (HResult)_native->Compile(srvBuffer, ptrArgs, argCount, null, &dxcResultGuid, &ptrResult);
 
                 IDxcResult* dxcResult = (IDxcResult*)ptrResult;
                 IDxcBlob* byteCode = null;
@@ -225,10 +226,6 @@ namespace Molten.Graphics.Dxc
                 for (int i = 0; i < errors.Length; i++)
                     context.AddError(errors[i]);
             }
-            else
-            {
-
-            }
 
             SilkUtil.ReleasePtr(ref pErrorBlob);
         }
@@ -253,6 +250,7 @@ namespace Molten.Graphics.Dxc
             Guid iid = IDxcBlob.Guid;
             dxcResult->GetOutput(outputType, &iid, &pData, outPath);
             outData = (IDxcBlob*)pData;
+
             return true;
         }
 
@@ -262,14 +260,11 @@ namespace Molten.Graphics.Dxc
         /// </summary>
         /// <param name="compiler"></param>
         /// <returns></returns>
-        internal DxcBuffer BuildSource(ShaderSource source, NativeStringEncoding nativeEncoding)
+        internal DxcBuffer BuildSource(ShaderSource source, Encoding encoding)
         {
             if(!_sourceBlobs.TryGetValue(source, out DxcBuffer buffer))
             {
-                Encoding encoding = CodePagesEncodingProvider.Instance.GetEncoding(1252); // Ansi codepage
-                buffer = new DxcBuffer();
-                void* ptrSource = EngineUtil.StringToPtr(source.SourceCode, encoding, out ulong numBytes); // (void*)SilkMarshal.StringToPtr(source.SourceCode, encoding);
-                //uint numBytesSilk = (uint)SilkMarshal.GetMaxSizeOf(source.SourceCode, nativeEncoding);
+                void* ptrSource = EngineUtil.StringToPtr(source.SourceCode, encoding, out ulong numBytes);
 
                 buffer = new DxcBuffer()
                 {
@@ -298,11 +293,5 @@ namespace Molten.Graphics.Dxc
         {
             throw new NotImplementedException();
         }
-
-        internal DXC Dxc { get; }
-
-        internal IDxcCompiler3* Native => _compiler;
-
-        internal IDxcUtils* Utils => _utils;
     }
 }
