@@ -91,11 +91,34 @@ namespace Molten.Graphics.Vulkan
         protected override void OnInitializeRenderer(EngineSettings settings)
         {
             Assembly includeAssembly = GetType().Assembly;
-            _shaderCompiler = new DxcCompiler(this, "\\Assets\\HLSL\\include\\", includeAssembly);
+            _shaderCompiler = new DxcCompiler(this, "\\Assets\\HLSL\\include\\", includeAssembly, new DxcCallbackInfo()
+            {
+                BuildShader = OnBuildShader
+            });
             _shaderCompiler.AddBaseArg(DxcCompilerArg.SpirV);
             _shaderCompiler.AddBaseArg(DxcCompilerArg.HlslVersion, "2021");
             _shaderCompiler.AddBaseArg(DxcCompilerArg.VulkanVersion, $"vulkan{ApiVersion.Major}.{ApiVersion.Minor}");
+            _shaderCompiler.AddBaseArg(DxcCompilerArg.Debug);
+            _shaderCompiler.AddBaseArg(DxcCompilerArg.StripReflection);
+            _shaderCompiler.AddBaseArg(DxcCompilerArg.StripDebug);
+            _shaderCompiler.AddBaseArg(DxcCompilerArg.SpirVReflection);
         }
+
+        internal unsafe void* OnBuildShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes)
+        {
+            ShaderModuleCreateInfo info = new ShaderModuleCreateInfo(StructureType.ShaderModuleCreateInfo);
+            info.CodeSize = numBytes;
+            info.PCode = (uint*)byteCode;
+
+            DeviceVK device = parent.Device as DeviceVK;
+            ShaderModule* shader = EngineUtil.Alloc<ShaderModule>();
+            Result r = VK.CreateShaderModule(device, info, null, shader);
+            if (!r.Check(device, () => $"Failed to create {type} shader module"))
+                EngineUtil.Free(ref shader);
+
+            return shader;
+        }
+
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         internal delegate Bool32 DebugMessengerCallback(DebugUtilsMessageSeverityFlagsEXT messageSeverity,

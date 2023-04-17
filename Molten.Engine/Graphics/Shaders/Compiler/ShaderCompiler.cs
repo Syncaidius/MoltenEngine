@@ -153,7 +153,7 @@ namespace Molten.Graphics
                     result[epType] = cResult;
                     ShaderComposition sc = pass.AddComposition(epType);
 
-                    sc.PtrShader = BuildShader(pass, epType, cResult.ByteCode);
+                    sc.PtrShader = BuildShader(pass, epType, cResult.ByteCode, cResult.NumBytes);
                     sc.InputStructure = BuildIO(cResult, sc.Type, ShaderIOStructureType.Input);
                     sc.OutputStructure = BuildIO(cResult, sc.Type, ShaderIOStructureType.Output);
                 }
@@ -497,7 +497,7 @@ namespace Molten.Graphics
             }
         }
 
-        public unsafe abstract void* BuildShader(HlslPass parent, ShaderType type, void* byteCode);
+        protected unsafe abstract void* BuildShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes);
 
         public RenderService Renderer { get; }
 

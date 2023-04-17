@@ -32,6 +32,7 @@ namespace Molten.Graphics.Dxc
         IDxcUtils* _utils;
         Dictionary<DxcCompilerArg, string> _baseArgs;
         Dictionary<ShaderSource, DxcBuffer> _sourceBlobs;
+        DxcCallbackInfo _callbacks;
 
         /// <summary>
         /// Creates a new instance of <see cref="DxcCompiler"/>.
@@ -39,9 +40,10 @@ namespace Molten.Graphics.Dxc
         /// <param name="renderer">The renderer which owns the compiler.</param>
         /// <param name="includePath">The default path for engine/game HLSL include files.</param>
         /// <param name="includeAssembly"></param>
-        public DxcCompiler(RenderService renderer, string includePath, Assembly includeAssembly) : 
+        public DxcCompiler(RenderService renderer, string includePath, Assembly includeAssembly, DxcCallbackInfo callbacks) : 
             base(renderer, includePath, includeAssembly)
         {
+            _callbacks = callbacks;
             _sourceBlobs = new Dictionary<ShaderSource, DxcBuffer>();
             _baseArgs = new Dictionary<DxcCompilerArg, string>();
 
@@ -307,9 +309,15 @@ namespace Molten.Graphics.Dxc
             throw new NotImplementedException();
         }
 
-        public override unsafe void* BuildShader(HlslPass parent, ShaderType type, void* byteCode)
+        protected override unsafe void* BuildShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes)
         {
-            throw new NotImplementedException();
+            if(type == ShaderType.Vertex || type == ShaderType.Compute)
+                parent.InputByteCode = byteCode;
+
+            if(_callbacks.BuildShader != null)
+                return _callbacks.BuildShader.Invoke(parent, type, byteCode, numBytes);
+            else
+                return null;
         }
     }
 }

@@ -556,11 +556,11 @@ namespace Molten.Graphics.DX11
             return bVar;
         }
 
-        public override unsafe void* BuildShader(HlslPass parent, ShaderType type, void* byteCode)
+        protected override unsafe void* BuildShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes)
         {
             ID3D10Blob* dx11ByteCode = (ID3D10Blob*)byteCode;
             void* ptrBytecode = dx11ByteCode->GetBufferPointer();
-            nuint numBytes = dx11ByteCode->GetBufferSize();
+            numBytes = dx11ByteCode->GetBufferSize();
             DeviceDX11 device = Renderer.Device as DeviceDX11;
 
             switch (type)
