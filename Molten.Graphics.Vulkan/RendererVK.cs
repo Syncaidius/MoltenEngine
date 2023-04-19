@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using Molten.Graphics.Dxc;
 using Silk.NET.Core;
 using Silk.NET.Core.Native;
+using Silk.NET.Direct3D.Compilers;
 using Silk.NET.GLFW;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
@@ -106,9 +107,13 @@ namespace Molten.Graphics.Vulkan
 
         internal unsafe void* OnBuildShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes)
         {
+            IDxcBlob* blob = (IDxcBlob*)byteCode;
+            byteCode = blob->GetBufferPointer();
+
             ShaderModuleCreateInfo info = new ShaderModuleCreateInfo(StructureType.ShaderModuleCreateInfo);
             info.CodeSize = numBytes;
             info.PCode = (uint*)byteCode;
+            info.Flags = ShaderModuleCreateFlags.None;
 
             DeviceVK device = parent.Device as DeviceVK;
             ShaderModule* shader = EngineUtil.Alloc<ShaderModule>();

@@ -48,6 +48,7 @@ namespace Molten.Graphics.Dxc
             [DxcCompilerArg.StripReflection] = "-Qstrip_reflect",
             [DxcCompilerArg.StripRootSignature] = "-Qstrip_rootsignature",
             [DxcCompilerArg.SpirVReflection] = "-fspv-reflect",
+            [DxcCompilerArg.SpriVDirectXLayout] = "-fvk-use-dx-layout",
 
             // Parameterized arguments
             [DxcCompilerArg.EntryPoint] = "-E",

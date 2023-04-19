@@ -115,5 +115,10 @@
         /// Emit additional SPIR-V instructions to aid reflection. Only works if <see cref="DxcCompilerArg.SpirV"/> is set.
         /// </summary>
         SpirVReflection = 41,
+
+        /// <summary>
+        /// Use DirectX memory layout for Vulkan resources
+        /// </summary>
+        SpriVDirectXLayout = 42,
     }
 }
