@@ -102,7 +102,6 @@ namespace Molten.Graphics.Vulkan
             _shaderCompiler.AddBaseArg(DxcCompilerArg.Debug);
             _shaderCompiler.AddBaseArg(DxcCompilerArg.StripReflection);
             _shaderCompiler.AddBaseArg(DxcCompilerArg.StripDebug);
-            _shaderCompiler.AddBaseArg(DxcCompilerArg.SpirVReflection);
         }
 
         internal unsafe void* OnBuildShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes)

@@ -99,6 +99,16 @@ namespace Molten.Graphics.Dxc
             return false;
         }
 
+        internal bool Has(DxcCompilerArg arg)
+        {
+            return _args.ContainsKey(arg);
+        }
+
+        internal bool Remove(DxcCompilerArg arg)
+        {
+            return _args.Remove(arg);
+        }
+
         internal void SetEntryPoint(string entryPoint)
         {
             Set(DxcCompilerArg.EntryPoint, entryPoint);

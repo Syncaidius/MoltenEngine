@@ -119,6 +119,27 @@ namespace Molten.Graphics.Dxc
                 DxcBuffer srvBuffer = BuildSource(context.Source, Encoding.UTF8);
                 HResult hResult = (HResult)_native->Compile(srvBuffer, ptrArgs, argCount, null, &dxcResultGuid, &ptrResult);
 
+                // Compile again without SPIR-V options, if present.
+                if (args.Has(DxcCompilerArg.SpirV))
+                {
+                    // Remove all SPIR-V related arguments
+                    args.Remove(DxcCompilerArg.SpirV);
+                    args.Remove(DxcCompilerArg.SpirVReflection);
+                    args.Remove(DxcCompilerArg.SpriVDirectXLayout);
+
+                    // Recreate args pointer
+                    args.FreeArgsPtr(ref ptrArgs, argCount, argEncoding);
+                    ptrArgs = args.GetArgsPtr(argEncoding, out argCount);
+
+                    // Compile to output HLSL bytecode
+                    void* ptrReflectionResult;
+                    hResult = (HResult)_native->Compile(srvBuffer, ptrArgs, argCount, null, &dxcResultGuid, &ptrReflectionResult);
+                    IDxcResult* rResult = (IDxcResult*)ptrReflectionResult;
+                    reflection = BuildReflection(context, rResult);
+                }
+
+                args.FreeArgsPtr(ref ptrArgs, argCount, argEncoding);
+
                 IDxcResult* dxcResult = (IDxcResult*)ptrResult;
                 IDxcBlob* byteCode = null;
                 IDxcBlob* pdbData = null;
@@ -151,18 +172,30 @@ namespace Molten.Graphics.Dxc
                             reflection = BuildReflection(context, dxcResult);
                             break;
 
+                        case OutKind.Hlsl:
+
+                            break;
+
+                        case OutKind.RootSignature:
+
+                            break;
+
+                        case OutKind.ShaderHash:
+
+                            break;
+
+                        case OutKind.Disassembly:
+
+                            break;
+
                         case OutKind.Object:
                             // Same as calling dxcResult->GetResult(&byteCode);
-                            if (GetDxcOutput(context, OutKind.Object, dxcResult, ref byteCode))
-                            {
-                                // Store shader object. Do we flag errors as warnings if we have successfully output bytecode?
-                            }
+                            bool success = GetDxcOutput(context, OutKind.Object, dxcResult, ref byteCode) ;
                             break;
                     }
                 }
 
                 SilkUtil.ReleasePtr(ref pdbData);
-                args.FreeArgsPtr(ref ptrArgs, argCount, argEncoding);
 
                 if (context.HasErrors)
                     return false;
@@ -192,12 +225,18 @@ namespace Molten.Graphics.Dxc
         {
             IDxcResult* dxcResult = (IDxcResult*)ptrData;
             IDxcBlob* outData = null;
-            DxcBuffer* reflectionBuffer = null;
+            DxcBuffer reflectionBuffer;
             void* pReflection = null;
             Guid guidReflection = CLSID_DxcContainerReflection;
 
             if (GetDxcOutput(context, OutKind.Reflection, dxcResult, ref outData))
             {
+                reflectionBuffer = new DxcBuffer()
+                {
+                    Ptr = outData->GetBufferPointer(),
+                    Size = outData->GetBufferSize(),
+                    Encoding = 0
+                };
                 _utils->CreateReflection(reflectionBuffer, ref guidReflection, ref pReflection);
 
                 nuint dataSize = outData->GetBufferSize();
