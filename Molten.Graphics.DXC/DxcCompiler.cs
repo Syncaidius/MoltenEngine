@@ -6,7 +6,7 @@ using DxcBuffer = Silk.NET.Direct3D.Compilers.Buffer;
 
 namespace Molten.Graphics.Dxc
 {
-    public unsafe class DxcCompiler : ShaderCompiler
+    public unsafe abstract class DxcCompiler : ShaderCompiler
     {
         // For reference or help see the following:
         // See: https://github.com/microsoft/DirectXShaderCompiler/blob/master/include/dxc/dxcapi.h
@@ -24,7 +24,7 @@ namespace Molten.Graphics.Dxc
         internal static readonly Guid CLSID_DxcCompiler = new Guid(0x73e22d93U, (ushort)0xe6ceU, (ushort)0x47f3U, 
             0xb5, 0xbf, 0xf0, 0x66, 0x4f, 0x39, 0xc1, 0xb0 );
 
-        internal static readonly Guid CLSID_DxcContainerReflection = new Guid(0xb9f54489, 0x55b8, 0x400c,
+        protected internal static readonly Guid CLSID_DxcContainerReflection = new Guid(0xb9f54489, 0x55b8, 0x400c,
             0xba, 0x3a, 0x16, 0x75, 0xe4, 0x72, 0x8b, 0x91);
 
         DXC _dxc;
@@ -32,7 +32,6 @@ namespace Molten.Graphics.Dxc
         IDxcUtils* _utils;
         Dictionary<DxcCompilerArg, string> _baseArgs;
         Dictionary<ShaderSource, DxcBuffer> _sourceBlobs;
-        DxcCallbackInfo _callbacks;
 
         /// <summary>
         /// Creates a new instance of <see cref="DxcCompiler"/>.
@@ -40,10 +39,9 @@ namespace Molten.Graphics.Dxc
         /// <param name="renderer">The renderer which owns the compiler.</param>
         /// <param name="includePath">The default path for engine/game HLSL include files.</param>
         /// <param name="includeAssembly"></param>
-        public DxcCompiler(RenderService renderer, string includePath, Assembly includeAssembly, DxcCallbackInfo callbacks) : 
+        public DxcCompiler(RenderService renderer, string includePath, Assembly includeAssembly) : 
             base(renderer, includePath, includeAssembly)
         {
-            _callbacks = callbacks;
             _sourceBlobs = new Dictionary<ShaderSource, DxcBuffer>();
             _baseArgs = new Dictionary<DxcCompilerArg, string>();
 
@@ -111,33 +109,13 @@ namespace Molten.Graphics.Dxc
                 args.SetShaderProfile(ShaderModel.Model6_0, type);
                 args.SetEntryPoint(entryPoint);
 
-                char** ptrArgs = args.GetArgsPtr(argEncoding, out uint argCount);
 
                 Guid dxcResultGuid = IDxcResult.Guid;
                 void* ptrResult;
+                char** ptrArgs = args.GetArgsPtr(argEncoding, out uint argCount);
 
                 DxcBuffer srvBuffer = BuildSource(context.Source, Encoding.UTF8);
                 HResult hResult = (HResult)_native->Compile(srvBuffer, ptrArgs, argCount, null, &dxcResultGuid, &ptrResult);
-
-                // Compile again without SPIR-V options, if present.
-                if (args.Has(DxcCompilerArg.SpirV))
-                {
-                    // Remove all SPIR-V related arguments
-                    args.Remove(DxcCompilerArg.SpirV);
-                    args.Remove(DxcCompilerArg.SpirVReflection);
-                    args.Remove(DxcCompilerArg.SpriVDirectXLayout);
-
-                    // Recreate args pointer
-                    args.FreeArgsPtr(ref ptrArgs, argCount, argEncoding);
-                    ptrArgs = args.GetArgsPtr(argEncoding, out argCount);
-
-                    // Compile to output HLSL bytecode
-                    void* ptrReflectionResult;
-                    hResult = (HResult)_native->Compile(srvBuffer, ptrArgs, argCount, null, &dxcResultGuid, &ptrReflectionResult);
-                    IDxcResult* rResult = (IDxcResult*)ptrReflectionResult;
-                    reflection = BuildReflection(context, rResult);
-                }
-
                 args.FreeArgsPtr(ref ptrArgs, argCount, argEncoding);
 
                 IDxcResult* dxcResult = (IDxcResult*)ptrResult;
@@ -225,31 +203,26 @@ namespace Molten.Graphics.Dxc
         {
             IDxcResult* dxcResult = (IDxcResult*)ptrData;
             IDxcBlob* outData = null;
-            DxcBuffer reflectionBuffer;
-            void* pReflection = null;
-            Guid guidReflection = CLSID_DxcContainerReflection;
+            ShaderReflection result = null;
 
             if (GetDxcOutput(context, OutKind.Reflection, dxcResult, ref outData))
             {
-                reflectionBuffer = new DxcBuffer()
+                DxcBuffer reflectionBuffer = new DxcBuffer()
                 {
                     Ptr = outData->GetBufferPointer(),
                     Size = outData->GetBufferSize(),
                     Encoding = 0
                 };
-                _utils->CreateReflection(reflectionBuffer, ref guidReflection, ref pReflection);
+                result = OnBuildDxcReflection(context, ref reflectionBuffer);
 
                 nuint dataSize = outData->GetBufferSize();
                 context.AddDebug($"\t Loaded DXC container reflection data -- Bytes: {dataSize}");
             }
 
-            IDxcContainerReflection* containerReflection = (IDxcContainerReflection*)pReflection;
-            ShaderReflection r = new ShaderReflection();
-
-            // TODO populate reflection
-
-            return r;
+            return result;
         }
+
+        protected abstract ShaderReflection OnBuildDxcReflection(ShaderCompilerContext context, ref DxcBuffer reflectionBuffer);
 
         private void LoadErrors(ShaderCompilerContext context, IDxcResult* dxcResult, NativeStringEncoding encoding)
         {
@@ -348,15 +321,8 @@ namespace Molten.Graphics.Dxc
             throw new NotImplementedException();
         }
 
-        protected override unsafe void* BuildShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes)
-        {
-            if(type == ShaderType.Vertex || type == ShaderType.Compute)
-                parent.InputByteCode = byteCode;
+        protected IDxcUtils* Utils => _utils;
 
-            if(_callbacks.BuildShader != null)
-                return _callbacks.BuildShader.Invoke(parent, type, byteCode, numBytes);
-            else
-                return null;
-        }
+        protected DXC Api => _dxc;
     }
 }
