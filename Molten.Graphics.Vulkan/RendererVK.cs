@@ -20,7 +20,7 @@ namespace Molten.Graphics.Vulkan
         Instance* _instance;
         DebugUtilsMessengerEXT* _debugMessengerHandle;
         List<DeviceVK> _devices;
-        SpirVCompiler _shaderCompiler;
+        SpirvCompiler _shaderCompiler;
 
         public RendererVK()
         {
@@ -92,7 +92,7 @@ namespace Molten.Graphics.Vulkan
         protected override void OnInitializeRenderer(EngineSettings settings)
         {
             Assembly includeAssembly = GetType().Assembly;
-            _shaderCompiler = new SpirVCompiler(VK, this, "\\Assets\\HLSL\\include\\", includeAssembly, ApiVersion);
+            _shaderCompiler = new SpirvCompiler(VK, this, "\\Assets\\HLSL\\include\\", includeAssembly, ApiVersion);
         }
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]

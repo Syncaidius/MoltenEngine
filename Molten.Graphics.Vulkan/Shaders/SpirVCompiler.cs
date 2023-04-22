@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Molten.Graphics.Dxc;
 using Silk.NET.Direct3D.Compilers;
 using Silk.NET.Vulkan;
@@ -11,11 +9,11 @@ using DxcBuffer = Silk.NET.Direct3D.Compilers.Buffer;
 
 namespace Molten.Graphics.Vulkan
 {
-    internal class SpirVCompiler : DxcCompiler
+    internal class SpirvCompiler : DxcCompiler
     {
         Vk _vk;
 
-        public SpirVCompiler(Vk vk, RenderService renderer, string includePath, Assembly includeAssembly, VersionVK targetApi) : 
+        public SpirvCompiler(Vk vk, RenderService renderer, string includePath, Assembly includeAssembly, VersionVK targetApi) : 
             base(renderer, includePath, includeAssembly)
         {
             _vk = vk;
@@ -54,7 +52,7 @@ namespace Molten.Graphics.Vulkan
 
         protected override unsafe ShaderReflection OnBuildReflection(ShaderCompilerContext context, IDxcBlob* byteCode, DxcBuffer* reflectionBuffer)
         {
-            SpirVReflector reflector = new SpirVReflector(byteCode->GetBufferPointer(), byteCode->GetBufferSize());
+            SpirvReflector reflector = new SpirvReflector(byteCode->GetBufferPointer(), byteCode->GetBufferSize());
             // TODO Add support for pre-compiled shaders.
             // TODO Build external tool for running khronos spirv-reflect tool alongside our own SpirVCompiler to generate a .mcfx (molten compiled fx) file.
             // TODO Store ShaderReflection object as json inside the .mcfx file.
