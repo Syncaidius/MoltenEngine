@@ -8,7 +8,7 @@ namespace Molten.Graphics
 
         void* _debugData;
 
-        public unsafe ShaderCodeResult(ShaderReflection reflection, void* byteCode, nuint numBytes)
+        public unsafe ShaderCodeResult(ShaderReflection reflection, void* byteCode, nuint numBytes, void* debugData)
         {
             Reflection = reflection;
             _byteCode = byteCode;

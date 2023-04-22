@@ -28,14 +28,13 @@ namespace Molten.Graphics.DX11
             _d3dCompiler.Dispose();
         }
 
-        protected override unsafe ShaderReflection BuildReflection(ShaderCompilerContext context, void* ptrData)
+        private unsafe ShaderReflection BuildReflection(ShaderCompilerContext context, ID3D10Blob* byteCode)
         {
-            ID3D10Blob* bCode = (ID3D10Blob*)ptrData;
             Guid guidReflect = ID3D11ShaderReflection.Guid;
             void* ppReflection = null;
 
-            void* ppByteCode = bCode->GetBufferPointer();
-            nuint numBytes = bCode->GetBufferSize();
+            void* ppByteCode = byteCode->GetBufferPointer();
+            nuint numBytes = byteCode->GetBufferSize();
 
             _d3dCompiler.Reflect(ppByteCode, numBytes, &guidReflect, &ppReflection);
             FxcReflection fxcReflection = new FxcReflection((ID3D11ShaderReflection*)ppReflection);
@@ -234,7 +233,7 @@ namespace Molten.Graphics.DX11
                 if (!context.HasErrors)
                 {
                     ShaderReflection reflection = BuildReflection(context, pByteCode);
-                    result = new ShaderCodeResult(reflection, pByteCode, pByteCode->GetBufferSize());
+                    result = new ShaderCodeResult(reflection, pByteCode, pByteCode->GetBufferSize(), null);
                     context.Shaders.Add(entryPoint, result);
                 }
 

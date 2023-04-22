@@ -24,7 +24,7 @@ namespace Molten.Graphics.DX12
             throw new NotImplementedException();
         }
 
-        protected override unsafe ShaderReflection OnBuildDxcReflection(ShaderCompilerContext context, ref DxcBuffer reflectionBuffer)
+        protected override unsafe ShaderReflection OnBuildReflection(ShaderCompilerContext context, IDxcBlob* byteCode, DxcBuffer* reflectionBuffer)
         {
             Guid guidReflection = ID3D12ShaderReflection.Guid;
             Guid guidContainer = IDxcContainerReflection.Guid;
@@ -52,6 +52,8 @@ namespace Molten.Graphics.DX12
                 fourcc += (char)((pk >> 16) & 0xFF);
                 fourcc += (char)((pk >> 24) & 0xFF);
             }
+
+            // TODO populate shader reflection.
 
             return new ShaderReflection();
         }
