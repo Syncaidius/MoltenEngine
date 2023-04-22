@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.Vulkan
 {
-    public enum SpirvOpcode
+    public unsafe class OpAssumeTrueKHR : SpirvOpcode
     {
-        Unknown = 0,
+        public override uint ID => 5630;
 
-        OpUnDef = 1
+        public uint Condition => Ptr[1];
     }
 }
