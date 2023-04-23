@@ -1,0 +1,89 @@
+{
+  "OpNop": {
+    "ID": 0,
+    "Words": {}
+  },
+
+  "OpUndef": {
+    "ID": 1,
+    "Words": {
+      "Result Type": "id",
+      "Result": "id"
+    }
+  },
+
+  "OpSourceContinued": {
+    "ID": 2,
+    "Words": {
+      "Continued Source": "SpirvLiteralString"
+    }
+  },
+
+  "OpSource": {
+    "ID": 3,
+    "Words": {
+      "Source Language": "SpirvSourceLanguage",
+      "Version": "SpirvVersion",
+      "File": "id",
+      "Source": "SpirvLiteralString"
+    }
+  },
+
+  "OpSourceExtension": {
+    "ID": 4,
+    "Words": {
+      "Extension": "SpirvLiteralString"
+    }
+  },
+
+  "OpName": {
+    "ID": 5,
+    "Words": {
+      "Target": "id",
+      "Name": "SpirvLiteralString"
+    }
+  },
+
+  "OpMemberName": {
+    "ID": 6,
+    "Words": {
+      "Type": "id",
+      "Member": "SpirvLiteralUInt32",
+      "Name": "SpirvLiteralString"
+    }
+  },
+
+  "OpString": {
+    "ID": 7,
+    "Words": {
+      "Result": "id",
+      "Name": "SpirvLiteralString"
+    }
+  },
+
+  "OpSizeOf": {
+    "ID": 321,
+    "Words": {
+      "Result Type": "id",
+      "Result": "id",
+      "Pointer": "id"
+    }
+  },
+
+  "OpAssumeTrueKHR": {
+    "ID": 5630,
+    "Words": {
+      "Condition": "id"
+    }
+  },
+
+  "OpExpectKHR": {
+    "ID": 5631,
+    "Words": {
+      "Result Type": "id",
+      "Result": "id",
+      "Value": "id",
+      "ExpectedValue": "id"
+    }
+  }
+}
