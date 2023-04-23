@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Graphics.Vulkan
 {
-    public class SpirvLiteralString
+    public class SpirvString : SpirvLiteral
     {
         public string Value;
 
-        internal unsafe void Read(uint* ptr, uint wordCount)
+        public override unsafe void Read(uint* ptrWord, uint wordCount)
         {
             throw new NotImplementedException();
         }

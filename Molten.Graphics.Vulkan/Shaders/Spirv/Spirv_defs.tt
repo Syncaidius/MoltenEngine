@@ -14,28 +14,20 @@ public class SpirvInstructionDef
 {
     public uint ID { get; set; }
 
+    public string DeprecationMessage { get; set; }
+
     public Dictionary<string, string> Words { get; set; } = new Dictionary<string, string>();
 
     public string GetVariable()
     {
         foreach(string key in Words.Keys)
         {
-            if (Words[key] == "SpirvLiteralString")
+            string type = Words[key];
+            if (type == "SpirvLiteralString" || type == "SpirvDecoration" || type == "SpirvDecorationGroupID")
                 return key;
         }
 
         return null;
-    }
-
-    public bool IsVariableLength()
-    {
-        foreach(string value in Words.Values)
-        {
-            if (value == "SpirvLiteralString")
-                return true;
-        }
-
-        return false;
     }
 
     public string GetWordCountString()

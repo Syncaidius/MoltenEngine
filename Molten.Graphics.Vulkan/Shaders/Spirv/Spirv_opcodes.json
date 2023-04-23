@@ -7,15 +7,15 @@
   "OpUndef": {
     "ID": 1,
     "Words": {
-      "Result Type": "id",
-      "Result": "id"
+      "Result Type": "SpirvID",
+      "Result": "SprivResultID"
     }
   },
 
   "OpSourceContinued": {
     "ID": 2,
     "Words": {
-      "Continued Source": "SpirvLiteralString"
+      "Continued Source": "SpirvString"
     }
   },
 
@@ -24,66 +24,120 @@
     "Words": {
       "Source Language": "SpirvSourceLanguage",
       "Version": "SpirvVersion",
-      "File": "id",
-      "Source": "SpirvLiteralString"
+      "File": "SpirvID",
+      "Source": "SpirvString"
     }
   },
 
   "OpSourceExtension": {
     "ID": 4,
     "Words": {
-      "Extension": "SpirvLiteralString"
+      "Extension": "SpirvString"
     }
   },
 
   "OpName": {
     "ID": 5,
     "Words": {
-      "Target": "id",
-      "Name": "SpirvLiteralString"
+      "Target": "SpirvID",
+      "Name": "SpirvString"
     }
   },
 
   "OpMemberName": {
     "ID": 6,
     "Words": {
-      "Type": "id",
-      "Member": "SpirvLiteralUInt32",
-      "Name": "SpirvLiteralString"
+      "Type": "SpirvID",
+      "Member": "SpirvLiteral<uint>",
+      "Name": "SpirvString"
     }
   },
 
   "OpString": {
     "ID": 7,
     "Words": {
-      "Result": "id",
-      "Name": "SpirvLiteralString"
+      "Result": "SprivResultID",
+      "Name": "SpirvString"
     }
+  },
+
+  "OpLine": {
+    "ID": 8,
+    "Words": {
+      "File": "SpirvID",
+      "Line": "SpirvLiteral<uint>",
+      "Column": "SpirvLiteral<uint>"
+    }
+  },
+
+  "OpNoLine": {
+    "ID": 317,
+    "Words": {}
   },
 
   "OpSizeOf": {
     "ID": 321,
     "Words": {
-      "Result Type": "id",
-      "Result": "id",
-      "Pointer": "id"
+      "Result Type": "SpirvID",
+      "Result": "SprivResultID",
+      "Pointer": "SpirvID"
+    }
+  },
+
+  "OpModuleProcessed": {
+    "ID": 330,
+    "Words": {
+      "Process": "SpirvString"
     }
   },
 
   "OpAssumeTrueKHR": {
     "ID": 5630,
     "Words": {
-      "Condition": "id"
+      "Condition": "SpirvID"
     }
   },
 
   "OpExpectKHR": {
     "ID": 5631,
     "Words": {
-      "Result Type": "id",
-      "Result": "id",
-      "Value": "id",
-      "ExpectedValue": "id"
+      "Result Type": "SpirvID",
+      "Result": "SprivResultID",
+      "Value": "SpirvID",
+      "ExpectedValue": "SpirvID"
+    }
+  },
+
+  "OpDecorate": {
+    "ID": 71,
+    "Words": {
+      "Target": "SpirvID",
+      "Decoration": "SpirvDecoration"
+    }
+  },
+
+  "OpMemberDecorate": {
+    "ID": 72,
+    "Words": {
+      "Structure Type": "SpirvID",
+      "Member": "SpirvLiteral<uint>",
+      "Decoration": "SpirvDecoration"
+    }
+  },
+
+  "OpDecorationGroup": {
+    "ID": 73,
+    "DeprecationMessage": "Directly use non-group decoration instructions instead",
+    "Words": {
+      "Result": "SprivResultID"
+    }
+  },
+
+  "OpGroupDecorate": {
+    "ID": 74,
+    "DeprecationMessage": "Directly use non-group decoration instructions instead",
+    "Words": {
+      "Decoration Group": "SpirvDecorationGroupID"
     }
   }
 }

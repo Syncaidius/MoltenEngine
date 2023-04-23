@@ -48,9 +48,13 @@ namespace Molten.Graphics.Vulkan
     public enum SpirvOpCode : uint
     {
 <#
-            foreach(string opName in defs.Keys)
+            List<KeyValuePair<string, SpirvInstructionDef>> orderedDef = new List<KeyValuePair<string, SpirvInstructionDef>>(defs);
+            orderedDef.Sort((a, b) => a.Value.ID.CompareTo(b.Value.ID));
+
+            foreach(KeyValuePair<string, SpirvInstructionDef> op in orderedDef)
             {
-                SpirvInstructionDef def = defs[opName];
+                string opName = op.Key; 
+                SpirvInstructionDef def = op.Value;
 #>
         /// <summary>
         /// The SPIR-V '<#=opName#>' instruction opcode.
@@ -76,6 +80,14 @@ namespace Molten.Graphics.Vulkan
         ///     </list>
         /// </para>
         /// </summary>
+<#
+        if(def.DeprecationMessage != null)
+        {
+#>
+        [Obsolete("<#=def.DeprecationMessage#>")]
+<# 
+        }
+#>
         <#=opName#> = <#=def.ID#>,
 
 <#

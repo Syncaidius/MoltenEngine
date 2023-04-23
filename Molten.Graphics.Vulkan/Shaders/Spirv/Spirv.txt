@@ -1,1 +1,1 @@
-Output 11 SPIR-V opcodes
+Output 18 SPIR-V opcodes
