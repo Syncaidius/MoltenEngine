@@ -30,11 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="Shaders\Spirv\Spirv.txt">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Spirv.tt</DependentUpon>
-    </Compile>
     <Compile Include="Shaders\Spirv\Spirv_defs.txt">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -57,11 +52,6 @@
     <None Include="..\README.md" Link="README.md">
       <PackagePath>\</PackagePath>
       <Pack>True</Pack>
-    </None>
-    <None Include="Shaders\Spirv\Spirv.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Spirv.tt</DependentUpon>
     </None>
     <None Include="Shaders\Spirv\Spirv_defs.cs">
       <DesignTime>True</DesignTime>

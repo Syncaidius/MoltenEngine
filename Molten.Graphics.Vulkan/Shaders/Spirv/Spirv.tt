@@ -99,5 +99,5 @@ namespace Molten.Graphics.Vulkan
 <#
 SaveFile(outputPath, "SpirvOpCode", this.GenerationEnvironment.ToString());
 this.GenerationEnvironment.Clear();
-this.GenerationEnvironment.Append($"Output {defs.Count} SPIR-V opcodes");
+this.GenerationEnvironment.Append($" ");
 #>
