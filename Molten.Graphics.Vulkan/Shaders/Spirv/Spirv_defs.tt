@@ -12,6 +12,8 @@
 
 public class SpirvInstructionDef
 {
+    static string[] _variableLengthTypes = new string[] { "SpirvLiteralString", "SpirvDecoration", "SpirvDecorationGroupID" };
+
     public uint ID { get; set; }
 
     public string DeprecationMessage { get; set; }
@@ -23,8 +25,11 @@ public class SpirvInstructionDef
         foreach(string key in Words.Keys)
         {
             string type = Words[key];
-            if (type == "SpirvLiteralString" || type == "SpirvDecoration" || type == "SpirvDecorationGroupID")
-                return key;
+            for(int i = 0; i < _variableLengthTypes.Length; i++)
+            {
+                if (type == _variableLengthTypes[i])
+                    return key;
+            }
         }
 
         return null;

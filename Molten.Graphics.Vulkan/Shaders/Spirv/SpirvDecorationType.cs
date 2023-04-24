@@ -109,5 +109,14 @@ namespace Molten.Graphics.Vulkan
         DontStaticallyCoalesceINTEL = 5901,
         PrefetchINTEL = 5902,
         StallEnableINTEl = 5905,
+        FuseLoopsInFunctionINTEL = 5907,
+        AliasScopeINTEL = 5914,
+        NoAliasINTEL = 5915,
+        BufferLocationINTEL = 5921,
+        IOPipeStorageINTEL = 5944,
+        FunctionFloatingPointModeINTEL = 6080,
+        SingleElementVectorINTEL = 6085,
+        VectorComputeCallableFunctionINTEL = 6087,
+        MediaBlockINTEL = 6140,
     }
 }
