@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,16 +18,21 @@ namespace Molten.Graphics.Vulkan
     {
         const uint MAGIC_NUMBER = 0x07230203;
 
-        uint* _instructions;
+        uint* _ptrStart;
+        uint* _ptrEnd;
+        uint* _ptr;
         ulong _numInstructions;
-        ulong _pos;
+        List<SpirvInstruction> _instructions;
 
         internal SpirvReflector(void* byteCode, nuint numBytes)
         {
             if (numBytes % 4 != 0)
                 throw new ArgumentException("Bytecode size must be a multiple of 4.", nameof(numBytes));
 
-            _instructions = (uint*)byteCode;
+            _ptrEnd = (uint*)((byte*)byteCode + numBytes);
+            _ptrStart = (uint*)byteCode;
+            _ptr = _ptrStart;
+            _instructions = new List<SpirvInstruction>();
             _numInstructions = numBytes / 4U;
 
             // First op is always the magic number.
@@ -45,29 +51,23 @@ namespace Molten.Graphics.Vulkan
             // Next op is the schema number.
             uint schema = ReadWord();
 
-            ulong test = ReadInstruction<ulong>();
+            uint instID = 0;
+            while(_ptr < _ptrEnd)
+            {
+                SpirvInstruction inst = new SpirvInstruction(_ptr);
+                _instructions.Add(inst);
+
+                Debug.WriteLine($"Instruction {instID++}: {(Enum.IsDefined(inst.OpCode) ? inst.OpCode : $"Unknown Opcode ({inst.OpCode})")}");
+                _ptr += inst.WordCount;
+            }
         }
 
         private uint ReadWord()
         {
-            return _instructions[_pos++];
+            uint val = *_ptr;
+            _ptr++;
+            return val;
         }
-
-        private T ReadInstruction<T>()
-            where T : unmanaged
-        {
-            uint head = _instructions[_pos++];
-            ulong opDataPos = _pos;
-
-            uint wordCount = head >> 16;
-            uint opCode = head & 0xFFFF;
-
-            T op = *(T*)(_instructions + opDataPos);
-            _pos += wordCount - 1;
-            return op;
-        }
-
-        public ulong Position => _pos;
 
         public ulong NumInstructions => _numInstructions;
     }

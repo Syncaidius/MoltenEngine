@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.Vulkan
 {
-    public abstract class SpirvLiteral
+    public abstract class SpirvLiteral : SpirvWord
     {
-        public abstract unsafe void Read(uint* ptrWord, uint wordCount);
+        
     }
 
     /// <summary>

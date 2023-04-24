@@ -8,7 +8,7 @@
     "ID": 1,
     "Words": {
       "Result Type": "SpirvID",
-      "Result": "SprivResultID"
+      "Result": "SpirvResultID"
     }
   },
 
@@ -48,7 +48,7 @@
     "ID": 6,
     "Words": {
       "Type": "SpirvID",
-      "Member": "SpirvLiteral<uint>",
+      "Member": "SpirvMemberID",
       "Name": "SpirvString"
     }
   },
@@ -56,7 +56,7 @@
   "OpString": {
     "ID": 7,
     "Words": {
-      "Result": "SprivResultID",
+      "Result": "SpirvResultID",
       "Name": "SpirvString"
     }
   },
@@ -65,8 +65,8 @@
     "ID": 8,
     "Words": {
       "File": "SpirvID",
-      "Line": "SpirvLiteral<uint>",
-      "Column": "SpirvLiteral<uint>"
+      "Line": "SpirvLiteral{uint}",
+      "Column": "SpirvLiteral{uint}"
     }
   },
 
@@ -79,7 +79,7 @@
     "ID": 321,
     "Words": {
       "Result Type": "SpirvID",
-      "Result": "SprivResultID",
+      "Result": "SpirvResultID",
       "Pointer": "SpirvID"
     }
   },
@@ -102,7 +102,7 @@
     "ID": 5631,
     "Words": {
       "Result Type": "SpirvID",
-      "Result": "SprivResultID",
+      "Result": "SpirvResultID",
       "Value": "SpirvID",
       "ExpectedValue": "SpirvID"
     }
@@ -120,7 +120,7 @@
     "ID": 72,
     "Words": {
       "Structure Type": "SpirvID",
-      "Member": "SpirvLiteral<uint>",
+      "Member": "SpirvMemberID",
       "Decoration": "SpirvDecoration"
     }
   },
@@ -129,7 +129,7 @@
     "ID": 73,
     "DeprecationMessage": "Directly use non-group decoration instructions instead",
     "Words": {
-      "Result": "SprivResultID"
+      "Result": "SpirvResultID"
     }
   },
 
@@ -138,6 +138,100 @@
     "DeprecationMessage": "Directly use non-group decoration instructions instead",
     "Words": {
       "Decoration Group": "SpirvDecorationGroupID"
+    }
+  },
+
+  "OpGroupMemberDecorate": {
+    "ID": 75,
+    "DeprecationMessage": "Directly use non-group decoration instructions instead",
+    "Words": {
+      "Decoration Group": "SpirvDecorationGroupID"
+    }
+  },
+
+  "OpDecorateId": {
+    "ID": 332,
+    "Words": {
+      "Target": "SpirvID",
+      "Decoration": "SpirvDecoration"
+    }
+  },
+
+  "OpDecorateString": {
+    "ID": 5632,
+    "Words": {
+      "Target": "SpirvID",
+      "Decoration": "SpirvDecoration"
+    }
+  },
+
+
+  "OpDecorateStringGOOGLE": {
+    "ID": 5632,
+    "Words": {
+      "Target": "SpirvID",
+      "Decoration": "SpirvDecoration"
+    }
+  },
+
+  "OpMemberDecorateString": {
+    "ID": 5633,
+    "Words": {
+      "StructType": "SpirvID",
+      "Member": "SpirvMemberID",
+      "Decoration": "SpirvDecoration"
+    }
+  },
+
+  "OpMemberDecorateStringGOOGLE": {
+    "ID": 5633,
+    "Words": {
+      "StructType": "SpirvID",
+      "Member": "SpirvMemberID",
+      "Decoration": "SpirvDecoration"
+    }
+  },
+
+  "OpExtension": {
+    "ID": 10,
+    "Words": {
+      "Name": "SpirvString"
+    }
+  },
+
+  "OpExtInstImport": {
+    "ID": 11,
+    "Words": {
+      "Result": "SpirvResultID",
+      "Name": "SpirvString"
+    }
+  },
+
+  "OpExtInst": {
+    "ID": 12,
+    "Words": {
+      "Result Type": "SpirvID",
+      "Result": "SpirvResultID",
+      "Name": "SpirvString",
+      "Set": "SpirvID",
+      "Instruction": "SpirvLiteral{uint}"
+    }
+  },
+
+  "OpMemoryModel": {
+    "ID": 14,
+    "Words": {
+      "AddressingModel": "SpirvLiteral{SpirvAddressingModel}",
+      "MemoryModel": "SpirvLiteral{SpirvMemoryModel}"
+    }
+  },
+
+  "OpEntryPoint": {
+    "ID": 15,
+    "Words": {
+      "Execution Model": "SpirvLiteral{SpirvExecutionModel}",
+      "Entry Point": "SpirvID",
+      "Name": "SpirvString"
     }
   }
 }

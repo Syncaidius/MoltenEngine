@@ -37,7 +37,7 @@ namespace Molten.Graphics.Vulkan
         ///         </item>
         ///         <item>
         ///             <term>Result</term>
-        ///             <description>SprivResultID</description>
+        ///             <description>SpirvResultID</description>
         ///         </item>
         ///     </list>
         /// </para>
@@ -47,7 +47,7 @@ namespace Molten.Graphics.Vulkan
         /// <summary>
         /// The SPIR-V 'OpSourceContinued' instruction opcode.
         /// <para>Opcode ID: 2</para>
-        /// <para>Word Count: 2
+        /// <para>Word Count: 2 + variable, based on length of 'Continued Source'.
         ///     <list type="number">
         ///         <listheader>
         ///             <term>Header</term>
@@ -65,7 +65,7 @@ namespace Molten.Graphics.Vulkan
         /// <summary>
         /// The SPIR-V 'OpSource' instruction opcode.
         /// <para>Opcode ID: 3</para>
-        /// <para>Word Count: 5
+        /// <para>Word Count: 5 + variable, based on length of 'Source'.
         ///     <list type="number">
         ///         <listheader>
         ///             <term>Header</term>
@@ -95,7 +95,7 @@ namespace Molten.Graphics.Vulkan
         /// <summary>
         /// The SPIR-V 'OpSourceExtension' instruction opcode.
         /// <para>Opcode ID: 4</para>
-        /// <para>Word Count: 2
+        /// <para>Word Count: 2 + variable, based on length of 'Extension'.
         ///     <list type="number">
         ///         <listheader>
         ///             <term>Header</term>
@@ -113,7 +113,7 @@ namespace Molten.Graphics.Vulkan
         /// <summary>
         /// The SPIR-V 'OpName' instruction opcode.
         /// <para>Opcode ID: 5</para>
-        /// <para>Word Count: 3
+        /// <para>Word Count: 3 + variable, based on length of 'Name'.
         ///     <list type="number">
         ///         <listheader>
         ///             <term>Header</term>
@@ -135,7 +135,7 @@ namespace Molten.Graphics.Vulkan
         /// <summary>
         /// The SPIR-V 'OpMemberName' instruction opcode.
         /// <para>Opcode ID: 6</para>
-        /// <para>Word Count: 4
+        /// <para>Word Count: 4 + variable, based on length of 'Name'.
         ///     <list type="number">
         ///         <listheader>
         ///             <term>Header</term>
@@ -147,7 +147,7 @@ namespace Molten.Graphics.Vulkan
         ///         </item>
         ///         <item>
         ///             <term>Member</term>
-        ///             <description>SpirvLiteral<uint></description>
+        ///             <description>SpirvMemberID</description>
         ///         </item>
         ///         <item>
         ///             <term>Name</term>
@@ -161,7 +161,7 @@ namespace Molten.Graphics.Vulkan
         /// <summary>
         /// The SPIR-V 'OpString' instruction opcode.
         /// <para>Opcode ID: 7</para>
-        /// <para>Word Count: 3
+        /// <para>Word Count: 3 + variable, based on length of 'Name'.
         ///     <list type="number">
         ///         <listheader>
         ///             <term>Header</term>
@@ -169,7 +169,7 @@ namespace Molten.Graphics.Vulkan
         ///         </listheader>
         ///         <item>
         ///             <term>Result</term>
-        ///             <description>SprivResultID</description>
+        ///             <description>SpirvResultID</description>
         ///         </item>
         ///         <item>
         ///             <term>Name</term>
@@ -195,16 +195,138 @@ namespace Molten.Graphics.Vulkan
         ///         </item>
         ///         <item>
         ///             <term>Line</term>
-        ///             <description>SpirvLiteral<uint></description>
+        ///             <description>SpirvLiteral{uint}</description>
         ///         </item>
         ///         <item>
         ///             <term>Column</term>
-        ///             <description>SpirvLiteral<uint></description>
+        ///             <description>SpirvLiteral{uint}</description>
         ///         </item>
         ///     </list>
         /// </para>
         /// </summary>
         OpLine = 8,
+
+        /// <summary>
+        /// The SPIR-V 'OpExtension' instruction opcode.
+        /// <para>Opcode ID: 10</para>
+        /// <para>Word Count: 2 + variable, based on length of 'Name'.
+        ///     <list type="number">
+        ///         <listheader>
+        ///             <term>Header</term>
+        ///             <description>Upper 16 bits contain word count. Lower 16 bits contain opcode ID.</description>
+        ///         </listheader>
+        ///         <item>
+        ///             <term>Name</term>
+        ///             <description>SpirvString</description>
+        ///         </item>
+        ///     </list>
+        /// </para>
+        /// </summary>
+        OpExtension = 10,
+
+        /// <summary>
+        /// The SPIR-V 'OpExtInstImport' instruction opcode.
+        /// <para>Opcode ID: 11</para>
+        /// <para>Word Count: 3 + variable, based on length of 'Name'.
+        ///     <list type="number">
+        ///         <listheader>
+        ///             <term>Header</term>
+        ///             <description>Upper 16 bits contain word count. Lower 16 bits contain opcode ID.</description>
+        ///         </listheader>
+        ///         <item>
+        ///             <term>Result</term>
+        ///             <description>SpirvResultID</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Name</term>
+        ///             <description>SpirvString</description>
+        ///         </item>
+        ///     </list>
+        /// </para>
+        /// </summary>
+        OpExtInstImport = 11,
+
+        /// <summary>
+        /// The SPIR-V 'OpExtInst' instruction opcode.
+        /// <para>Opcode ID: 12</para>
+        /// <para>Word Count: 6 + variable, based on length of 'Name'.
+        ///     <list type="number">
+        ///         <listheader>
+        ///             <term>Header</term>
+        ///             <description>Upper 16 bits contain word count. Lower 16 bits contain opcode ID.</description>
+        ///         </listheader>
+        ///         <item>
+        ///             <term>Result Type</term>
+        ///             <description>SpirvID</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Result</term>
+        ///             <description>SpirvResultID</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Name</term>
+        ///             <description>SpirvString</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Set</term>
+        ///             <description>SpirvID</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Instruction</term>
+        ///             <description>SpirvLiteral{uint}</description>
+        ///         </item>
+        ///     </list>
+        /// </para>
+        /// </summary>
+        OpExtInst = 12,
+
+        /// <summary>
+        /// The SPIR-V 'OpMemoryModel' instruction opcode.
+        /// <para>Opcode ID: 14</para>
+        /// <para>Word Count: 3
+        ///     <list type="number">
+        ///         <listheader>
+        ///             <term>Header</term>
+        ///             <description>Upper 16 bits contain word count. Lower 16 bits contain opcode ID.</description>
+        ///         </listheader>
+        ///         <item>
+        ///             <term>AddressingModel</term>
+        ///             <description>SpirvLiteral{SpirvAddressingModel}</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>MemoryModel</term>
+        ///             <description>SpirvLiteral{SpirvMemoryModel}</description>
+        ///         </item>
+        ///     </list>
+        /// </para>
+        /// </summary>
+        OpMemoryModel = 14,
+
+        /// <summary>
+        /// The SPIR-V 'OpEntryPoint' instruction opcode.
+        /// <para>Opcode ID: 15</para>
+        /// <para>Word Count: 4 + variable, based on length of 'Name'.
+        ///     <list type="number">
+        ///         <listheader>
+        ///             <term>Header</term>
+        ///             <description>Upper 16 bits contain word count. Lower 16 bits contain opcode ID.</description>
+        ///         </listheader>
+        ///         <item>
+        ///             <term>Execution Model</term>
+        ///             <description>SpirvLiteral{SpirvExecutionModel}</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Entry Point</term>
+        ///             <description>SpirvID</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Name</term>
+        ///             <description>SpirvString</description>
+        ///         </item>
+        ///     </list>
+        /// </para>
+        /// </summary>
+        OpEntryPoint = 15,
 
         /// <summary>
         /// The SPIR-V 'OpDecorate' instruction opcode.
@@ -243,7 +365,7 @@ namespace Molten.Graphics.Vulkan
         ///         </item>
         ///         <item>
         ///             <term>Member</term>
-        ///             <description>SpirvLiteral<uint></description>
+        ///             <description>SpirvMemberID</description>
         ///         </item>
         ///         <item>
         ///             <term>Decoration</term>
@@ -265,7 +387,7 @@ namespace Molten.Graphics.Vulkan
         ///         </listheader>
         ///         <item>
         ///             <term>Result</term>
-        ///             <description>SprivResultID</description>
+        ///             <description>SpirvResultID</description>
         ///         </item>
         ///     </list>
         /// </para>
@@ -291,6 +413,25 @@ namespace Molten.Graphics.Vulkan
         /// </summary>
         [Obsolete("Directly use non-group decoration instructions instead")]
         OpGroupDecorate = 74,
+
+        /// <summary>
+        /// The SPIR-V 'OpGroupMemberDecorate' instruction opcode.
+        /// <para>Opcode ID: 75</para>
+        /// <para>Word Count: 2 + variable, based on length of 'Decoration Group'.
+        ///     <list type="number">
+        ///         <listheader>
+        ///             <term>Header</term>
+        ///             <description>Upper 16 bits contain word count. Lower 16 bits contain opcode ID.</description>
+        ///         </listheader>
+        ///         <item>
+        ///             <term>Decoration Group</term>
+        ///             <description>SpirvDecorationGroupID</description>
+        ///         </item>
+        ///     </list>
+        /// </para>
+        /// </summary>
+        [Obsolete("Directly use non-group decoration instructions instead")]
+        OpGroupMemberDecorate = 75,
 
         /// <summary>
         /// The SPIR-V 'OpNoLine' instruction opcode.
@@ -321,7 +462,7 @@ namespace Molten.Graphics.Vulkan
         ///         </item>
         ///         <item>
         ///             <term>Result</term>
-        ///             <description>SprivResultID</description>
+        ///             <description>SpirvResultID</description>
         ///         </item>
         ///         <item>
         ///             <term>Pointer</term>
@@ -335,7 +476,7 @@ namespace Molten.Graphics.Vulkan
         /// <summary>
         /// The SPIR-V 'OpModuleProcessed' instruction opcode.
         /// <para>Opcode ID: 330</para>
-        /// <para>Word Count: 2
+        /// <para>Word Count: 2 + variable, based on length of 'Process'.
         ///     <list type="number">
         ///         <listheader>
         ///             <term>Header</term>
@@ -349,6 +490,28 @@ namespace Molten.Graphics.Vulkan
         /// </para>
         /// </summary>
         OpModuleProcessed = 330,
+
+        /// <summary>
+        /// The SPIR-V 'OpDecorateId' instruction opcode.
+        /// <para>Opcode ID: 332</para>
+        /// <para>Word Count: 3 + variable, based on length of 'Decoration'.
+        ///     <list type="number">
+        ///         <listheader>
+        ///             <term>Header</term>
+        ///             <description>Upper 16 bits contain word count. Lower 16 bits contain opcode ID.</description>
+        ///         </listheader>
+        ///         <item>
+        ///             <term>Target</term>
+        ///             <description>SpirvID</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Decoration</term>
+        ///             <description>SpirvDecoration</description>
+        ///         </item>
+        ///     </list>
+        /// </para>
+        /// </summary>
+        OpDecorateId = 332,
 
         /// <summary>
         /// The SPIR-V 'OpAssumeTrueKHR' instruction opcode.
@@ -383,7 +546,7 @@ namespace Molten.Graphics.Vulkan
         ///         </item>
         ///         <item>
         ///             <term>Result</term>
-        ///             <description>SprivResultID</description>
+        ///             <description>SpirvResultID</description>
         ///         </item>
         ///         <item>
         ///             <term>Value</term>
@@ -397,6 +560,102 @@ namespace Molten.Graphics.Vulkan
         /// </para>
         /// </summary>
         OpExpectKHR = 5631,
+
+        /// <summary>
+        /// The SPIR-V 'OpDecorateString' instruction opcode.
+        /// <para>Opcode ID: 5632</para>
+        /// <para>Word Count: 3 + variable, based on length of 'Decoration'.
+        ///     <list type="number">
+        ///         <listheader>
+        ///             <term>Header</term>
+        ///             <description>Upper 16 bits contain word count. Lower 16 bits contain opcode ID.</description>
+        ///         </listheader>
+        ///         <item>
+        ///             <term>Target</term>
+        ///             <description>SpirvID</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Decoration</term>
+        ///             <description>SpirvDecoration</description>
+        ///         </item>
+        ///     </list>
+        /// </para>
+        /// </summary>
+        OpDecorateString = 5632,
+
+        /// <summary>
+        /// The SPIR-V 'OpDecorateStringGOOGLE' instruction opcode.
+        /// <para>Opcode ID: 5632</para>
+        /// <para>Word Count: 3 + variable, based on length of 'Decoration'.
+        ///     <list type="number">
+        ///         <listheader>
+        ///             <term>Header</term>
+        ///             <description>Upper 16 bits contain word count. Lower 16 bits contain opcode ID.</description>
+        ///         </listheader>
+        ///         <item>
+        ///             <term>Target</term>
+        ///             <description>SpirvID</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Decoration</term>
+        ///             <description>SpirvDecoration</description>
+        ///         </item>
+        ///     </list>
+        /// </para>
+        /// </summary>
+        OpDecorateStringGOOGLE = 5632,
+
+        /// <summary>
+        /// The SPIR-V 'OpMemberDecorateString' instruction opcode.
+        /// <para>Opcode ID: 5633</para>
+        /// <para>Word Count: 4 + variable, based on length of 'Decoration'.
+        ///     <list type="number">
+        ///         <listheader>
+        ///             <term>Header</term>
+        ///             <description>Upper 16 bits contain word count. Lower 16 bits contain opcode ID.</description>
+        ///         </listheader>
+        ///         <item>
+        ///             <term>StructType</term>
+        ///             <description>SpirvID</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Member</term>
+        ///             <description>SpirvMemberID</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Decoration</term>
+        ///             <description>SpirvDecoration</description>
+        ///         </item>
+        ///     </list>
+        /// </para>
+        /// </summary>
+        OpMemberDecorateString = 5633,
+
+        /// <summary>
+        /// The SPIR-V 'OpMemberDecorateStringGOOGLE' instruction opcode.
+        /// <para>Opcode ID: 5633</para>
+        /// <para>Word Count: 4 + variable, based on length of 'Decoration'.
+        ///     <list type="number">
+        ///         <listheader>
+        ///             <term>Header</term>
+        ///             <description>Upper 16 bits contain word count. Lower 16 bits contain opcode ID.</description>
+        ///         </listheader>
+        ///         <item>
+        ///             <term>StructType</term>
+        ///             <description>SpirvID</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Member</term>
+        ///             <description>SpirvMemberID</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Decoration</term>
+        ///             <description>SpirvDecoration</description>
+        ///         </item>
+        ///     </list>
+        /// </para>
+        /// </summary>
+        OpMemberDecorateStringGOOGLE = 5633,
 
     }
 }

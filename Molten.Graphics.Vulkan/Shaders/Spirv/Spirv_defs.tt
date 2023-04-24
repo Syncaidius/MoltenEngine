@@ -12,7 +12,7 @@
 
 public class SpirvInstructionDef
 {
-    static string[] _variableLengthTypes = new string[] { "SpirvLiteralString", "SpirvDecoration", "SpirvDecorationGroupID" };
+    static string[] _variableLengthTypes = new string[] { "SpirvString", "SpirvDecoration", "SpirvDecorationGroupID" };
 
     public uint ID { get; set; }
 
