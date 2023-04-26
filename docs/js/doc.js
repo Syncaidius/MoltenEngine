@@ -66,7 +66,7 @@ class DocManager {
         let idName = this.toIDName(curPath);
         let dataTarget = empty == true ? "" : `data-target="${curPath}"`;
         el.append(`<div id="i-${idName}" class="sec-namespace${(treePath.length > 1 ? "-noleft" : "")}">
-                    <span class="index-toggle\" ${dataTarget}>${title}</span><br/>
+                    <span class="index-toggle\" ${dataTarget}>${this.toHtml(title)}</span><br/>
                     <div id="in-${idName}" class="sec-namespace-inner"></div>
                 </div>`);
 

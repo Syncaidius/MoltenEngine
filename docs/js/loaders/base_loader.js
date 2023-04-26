@@ -136,6 +136,9 @@ class BaseLoader {
                     if (member.DocType == "Method" || member.DocType == "Constructor")
                         docTarget += this.buildParameterHtml(member);
 
+                    if (member.DocType == "Property" && member.IsIndexer == true)
+                        docTarget += this.buildParameterHtml(member, '[', ']');
+
                     memberHtml += `
                     <tr>
                         <td>${icon}</td>
@@ -220,11 +223,13 @@ class BaseLoader {
         return html;
     }
 
-    buildParameterHtml(dataNode) {
+    buildParameterHtml(dataNode, leftBrace = '(', rightBrace = ')') {
         if (dataNode.Params == null || dataNode.Params.length == 0)
-            return "()";
+            return `${leftBrace}${rightBrace}`;
 
         let html = "";
+        let paramCount = dataNode.Params.length;
+
         dataNode.Params.forEach((pNode, index) => {
             let pType = this.getPathParts(pNode.TypeName);
             let pTitle = pType[pType.length - 1];
@@ -235,9 +240,12 @@ class BaseLoader {
 
             let docTarget = this.getDocTarget(pNode.TypeName, pNode.Name, pTitle, 0, "doc-parameter");
             html += `${keyword}${docTarget}`;
+
+            if (index == paramCount - 1)
+                return false;
         });
 
-        return `(${html})`;
+        return `${leftBrace}${html}${rightBrace}`;
     }
 
     filterMembers(dataNode, docTypeFilter) {

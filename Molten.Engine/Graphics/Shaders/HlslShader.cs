@@ -73,7 +73,7 @@
         /// <value>
         /// The <see cref="ShaderVariable"/>.
         /// </value>
-        /// <param name="varName">The varialbe name.</param>
+        /// <param name="varName">The variable name.</param>
         /// <returns></returns>
         public ShaderVariable this[string varName]
         {

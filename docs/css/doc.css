@@ -119,7 +119,7 @@ body {
     padding: 0px 0px 0px 0px;
     margin-top: auto;
     display: block;
-    width: 500px;
+    width: 550px;
     overflow-y: scroll;
     height: 100%;
 }
@@ -265,9 +265,10 @@ body {
 .index-toggle {
     cursor: pointer;
     user-select: none; /* Prevent text selection */
-    width: 80%;
+    width: 90%;
     display:inline-block;
 }
+
     .index-toggle:hover {
         color: var(--main-color);
     }
