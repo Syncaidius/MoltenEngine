@@ -12,9 +12,18 @@
 
 public class SpirvInstructionDef
 {
-    static string[] _variableLengthTypes = new string[] { "SpirvString", "SpirvDecoration", "SpirvDecorationGroupID" };
+    static string[] _variableLengthTypes = new string[] { 
+        "SpirvString", 
+        "SpirvDecoration", 
+        "SpirvDecorationGroupID",
+        "SpirvLiteral{SpirvExecutionModel}",
+        "SpirvLiteral{SpirvExecutionMode}",
+        "SpirvLiteral{SpirvCapability}",
+    };
 
     public uint ID { get; set; }
+
+    public string[] Alias { get; set; }
 
     public string DeprecationMessage { get; set; }
 

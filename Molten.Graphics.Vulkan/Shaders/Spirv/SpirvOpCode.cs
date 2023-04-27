@@ -305,7 +305,7 @@ namespace Molten.Graphics.Vulkan
         /// <summary>
         /// The SPIR-V 'OpEntryPoint' instruction opcode.
         /// <para>Opcode ID: 15</para>
-        /// <para>Word Count: 4 + variable, based on length of 'Name'.
+        /// <para>Word Count: 4 + variable, based on length of 'Execution Model'.
         ///     <list type="number">
         ///         <listheader>
         ///             <term>Header</term>
@@ -327,6 +327,50 @@ namespace Molten.Graphics.Vulkan
         /// </para>
         /// </summary>
         OpEntryPoint = 15,
+
+        /// <summary>
+        /// The SPIR-V 'OpExecutionMode' instruction opcode.
+        /// <para>Opcode ID: 16</para>
+        /// <para>Word Count: 3 + variable, based on length of 'Execution Model'.
+        ///     <list type="number">
+        ///         <listheader>
+        ///             <term>Header</term>
+        ///             <description>Upper 16 bits contain word count. Lower 16 bits contain opcode ID.</description>
+        ///         </listheader>
+        ///         <item>
+        ///             <term>Entry Point</term>
+        ///             <description>SpirvID</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Execution Model</term>
+        ///             <description>SpirvLiteral{SpirvExecutionMode}</description>
+        ///         </item>
+        ///     </list>
+        /// </para>
+        /// </summary>
+        OpExecutionMode = 16,
+
+        /// <summary>
+        /// The SPIR-V 'OpCapability' instruction opcode.
+        /// <para>Opcode ID: 17</para>
+        /// <para>Word Count: 3 + variable, based on length of 'Execution Model'.
+        ///     <list type="number">
+        ///         <listheader>
+        ///             <term>Header</term>
+        ///             <description>Upper 16 bits contain word count. Lower 16 bits contain opcode ID.</description>
+        ///         </listheader>
+        ///         <item>
+        ///             <term>Entry Point</term>
+        ///             <description>SpirvID</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Execution Model</term>
+        ///             <description>SpirvLiteral{SpirvCapability}</description>
+        ///         </item>
+        ///     </list>
+        /// </para>
+        /// </summary>
+        OpCapability = 17,
 
         /// <summary>
         /// The SPIR-V 'OpDecorate' instruction opcode.
@@ -630,32 +674,6 @@ namespace Molten.Graphics.Vulkan
         /// </para>
         /// </summary>
         OpMemberDecorateString = 5633,
-
-        /// <summary>
-        /// The SPIR-V 'OpMemberDecorateStringGOOGLE' instruction opcode.
-        /// <para>Opcode ID: 5633</para>
-        /// <para>Word Count: 4 + variable, based on length of 'Decoration'.
-        ///     <list type="number">
-        ///         <listheader>
-        ///             <term>Header</term>
-        ///             <description>Upper 16 bits contain word count. Lower 16 bits contain opcode ID.</description>
-        ///         </listheader>
-        ///         <item>
-        ///             <term>StructType</term>
-        ///             <description>SpirvID</description>
-        ///         </item>
-        ///         <item>
-        ///             <term>Member</term>
-        ///             <description>SpirvMemberID</description>
-        ///         </item>
-        ///         <item>
-        ///             <term>Decoration</term>
-        ///             <description>SpirvDecoration</description>
-        ///         </item>
-        ///     </list>
-        /// </para>
-        /// </summary>
-        OpMemberDecorateStringGOOGLE = 5633,
 
     }
 }

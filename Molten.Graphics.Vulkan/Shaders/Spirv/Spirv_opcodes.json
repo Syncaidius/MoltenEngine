@@ -176,15 +176,7 @@
 
   "OpMemberDecorateString": {
     "ID": 5633,
-    "Words": {
-      "StructType": "SpirvID",
-      "Member": "SpirvMemberID",
-      "Decoration": "SpirvDecoration"
-    }
-  },
-
-  "OpMemberDecorateStringGOOGLE": {
-    "ID": 5633,
+    "Alias": [ "OpMemberDecorateStringGOOGLE" ],
     "Words": {
       "StructType": "SpirvID",
       "Member": "SpirvMemberID",
@@ -232,6 +224,22 @@
       "Execution Model": "SpirvLiteral{SpirvExecutionModel}",
       "Entry Point": "SpirvID",
       "Name": "SpirvString"
+    }
+  },
+
+  "OpExecutionMode": {
+    "ID": 16,
+    "Words": {
+      "Entry Point": "SpirvID",
+      "Execution Model": "SpirvLiteral{SpirvExecutionMode}"
+    }
+  },
+
+  "OpCapability": {
+    "ID": 17,
+    "Words": {
+      "Entry Point": "SpirvID",
+      "Execution Model": "SpirvLiteral{SpirvCapability}"
     }
   }
 }

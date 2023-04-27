@@ -25,7 +25,7 @@ namespace Molten.IO
         }
 
         /// <summary>
-        /// 
+        /// Attempts to open an embedded resource file and returns a <see cref="Stream"/> if successful.
         /// </summary>
         /// <param name="name">The name of the asset/resource to be loaded.</param>
         /// <param name="assembly">The assembly from which to retrieve a stream. If null, <see cref="Assembly.GetExecutingAssembly()"/> will be used.</param>

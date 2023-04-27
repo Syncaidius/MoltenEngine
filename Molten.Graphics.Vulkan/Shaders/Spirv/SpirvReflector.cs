@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Molten.IO;
+using Newtonsoft.Json;
 
 namespace Molten.Graphics.Vulkan
 {
@@ -18,13 +20,47 @@ namespace Molten.Graphics.Vulkan
     {
         const uint MAGIC_NUMBER = 0x07230203;
 
+        static Dictionary<SpirvOpCode, SpirvInstructionDef> _defs;
+
         uint* _ptrStart;
         uint* _ptrEnd;
         uint* _ptr;
         ulong _numInstructions;
         List<SpirvInstruction> _instructions;
 
-        internal SpirvReflector(void* byteCode, nuint numBytes)
+        static SpirvReflector()
+        {
+            _defs = new Dictionary<SpirvOpCode, SpirvInstructionDef>();
+            Stream stream = EmbeddedResource.TryGetStream("Molten.Graphics.Vulkan.Shaders.Spirv.Spirv_opcodes.json", typeof(SpirvInstructionDef).Assembly);
+            if (stream != null)
+            {
+                string json = null;
+                using (StreamReader reader = new StreamReader(stream))
+                    json = reader.ReadToEnd();
+
+                stream.Dispose();
+
+                if (!string.IsNullOrWhiteSpace(json))
+                {
+                    try
+                    {
+                        Dictionary<string, SpirvInstructionDef> instructionDefs = JsonConvert.DeserializeObject<Dictionary<string, SpirvInstructionDef>>(json);
+                        foreach (SpirvInstructionDef def in instructionDefs.Values)
+                            _defs.Add((SpirvOpCode)def.ID, def);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Failed to parse SPIR-V opcode definitions: {ex.Message}");
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine($"SPIR-V opcode definition file not found.");
+            }
+        }
+
+        internal SpirvReflector(void* byteCode, nuint numBytes, Logger log)
         {
             if (numBytes % 4 != 0)
                 throw new ArgumentException("Bytecode size must be a multiple of 4.", nameof(numBytes));
@@ -57,7 +93,7 @@ namespace Molten.Graphics.Vulkan
                 SpirvInstruction inst = new SpirvInstruction(_ptr);
                 _instructions.Add(inst);
 
-                Debug.WriteLine($"Instruction {instID++}: {(Enum.IsDefined(inst.OpCode) ? inst.OpCode : $"Unknown Opcode ({inst.OpCode})")}");
+                log.WriteLine($"Instruction {instID++}: {(Enum.IsDefined(inst.OpCode) ? inst.OpCode : $"Unknown Opcode ({inst.OpCode})")}");
                 _ptr += inst.WordCount;
             }
         }
