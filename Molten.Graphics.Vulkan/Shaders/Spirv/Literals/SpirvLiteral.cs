@@ -24,7 +24,11 @@ namespace Molten.Graphics.Vulkan
             return base.Read(ptrWord, wordCount);
         }
 
-        public T Value;
+        public override string ToString()
+        {
+            return $"{Value}";
+        }
 
+        public T Value;
     }
 }

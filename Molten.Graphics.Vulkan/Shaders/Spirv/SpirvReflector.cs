@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 using Molten.IO;
@@ -25,7 +26,7 @@ namespace Molten.Graphics.Vulkan
         uint* _ptrStart;
         uint* _ptrEnd;
         uint* _ptr;
-        ulong _numInstructions;
+        ulong _numWords;
         List<SpirvInstruction> _instructions;
 
         static SpirvReflector()
@@ -69,7 +70,7 @@ namespace Molten.Graphics.Vulkan
             _ptrStart = (uint*)byteCode;
             _ptr = _ptrStart;
             _instructions = new List<SpirvInstruction>();
-            _numInstructions = numBytes / 4U;
+            _numWords = numBytes / 4U;
 
             // First op is always the magic number.
             if (ReadWord() != MAGIC_NUMBER)
@@ -106,8 +107,7 @@ namespace Molten.Graphics.Vulkan
                         string wordTypeName = def.Words[wordDesc];
                         uint readCount = 1;
 
-                        wordTypeName = wordTypeName.Replace('{', '<').Replace('}', '>');
-                        Type t = Type.GetType($"Molten.Graphics.Vulkan.{wordTypeName}");
+                        Type t = GetWordType(log, wordTypeName);
                         if (t != null)
                         {
                             SpirvWord word = Activator.CreateInstance(t) as SpirvWord;
@@ -137,6 +137,43 @@ namespace Molten.Graphics.Vulkan
             }
         }
 
+        private Type GetWordType(Logger log, string typeName)
+        {
+            int genericIndex = typeName.IndexOf('{');
+            List<Type> genericTypes = new List<Type>();
+            Type t = null;
+
+            if (genericIndex > -1)
+            {
+                string generics = typeName.Substring(genericIndex + 1, typeName.Length - genericIndex - 2);
+                typeName = typeName.Substring(0, genericIndex);
+                string[] gParams = generics.Split(',');
+
+                foreach(string gp in gParams)
+                {
+                    string genericName = gp.Trim();
+                    Type gType = GetWordType(log, genericName);
+                    if (gType == null)
+                    {
+                        log.Warning($"Unknown generic type '{genericName}' for type '{typeName}'");
+                        return null;
+                    }
+
+                    genericTypes.Add(gType);
+                }
+
+                t = Type.GetType($"Molten.Graphics.Vulkan.{typeName}`{genericTypes.Count}");
+                if (t != null)
+                    t = t.MakeGenericType(genericTypes.ToArray());
+            }
+            else
+            {
+                t = Type.GetType($"Molten.Graphics.Vulkan.{typeName}");
+            }
+
+            return t;
+        }
+
         private uint ReadWord()
         {
             uint val = *_ptr;
@@ -144,6 +181,6 @@ namespace Molten.Graphics.Vulkan
             return val;
         }
 
-        public ulong NumInstructions => _numInstructions;
+        public ulong WordCount => _numWords;
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.Vulkan
 {
-    public abstract class SpirvResultID : SpirvLiteral<uint>
+    public class SpirvResultID : SpirvLiteral<uint>
     {
         public override string ToString()
         {

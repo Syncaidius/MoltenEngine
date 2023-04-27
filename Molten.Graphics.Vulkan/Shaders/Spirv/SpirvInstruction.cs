@@ -16,6 +16,11 @@ namespace Molten.Graphics.Vulkan
             Words = new List<SpirvWord>();
         }
 
+        public override string ToString()
+        {
+            return $"{OpCode} - {WordCount} words";
+        }
+
         public uint WordCount => _ptr[0] >> 16;
 
         public SpirvOpCode OpCode => (SpirvOpCode)(_ptr[0] & 0xFFFF);

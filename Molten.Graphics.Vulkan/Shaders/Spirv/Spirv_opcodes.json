@@ -231,7 +231,7 @@
     "ID": 17,
     "Words": {
       "Entry Point": "SpirvID",
-      "Execution Model": "SpirvLiteral{SpirvCapability}"
+      "Capability": "SpirvLiteral{SpirvCapability}"
     }
   }
 }
