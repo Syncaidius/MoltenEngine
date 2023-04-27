@@ -88,8 +88,13 @@ namespace Molten.Graphics.Vulkan
             // Next op is the schema number.
             uint schema = ReadWord();
 
+            ReadInstructions(log);
+        }
+
+        private void ReadInstructions(Logger log)
+        {
             uint instID = 0;
-            while(_ptr < _ptrEnd)
+            while (_ptr < _ptrEnd)
             {
                 SpirvInstruction inst = new SpirvInstruction(_ptr);
                 _instructions.Add(inst);
@@ -102,7 +107,7 @@ namespace Molten.Graphics.Vulkan
                     ptrInst++;
                     remainingWords--;
 
-                    foreach ( string wordDesc in def.Words.Keys)
+                    foreach (string wordDesc in def.Words.Keys)
                     {
                         string wordTypeName = def.Words[wordDesc];
                         uint readCount = 1;
@@ -112,7 +117,11 @@ namespace Molten.Graphics.Vulkan
                         {
                             SpirvWord word = Activator.CreateInstance(t) as SpirvWord;
                             word.Name = wordDesc;
-                            inst.Words.Add(word);
+
+                            if(word is SpirvResultID resultID)
+                                inst.Result = resultID;
+                            else
+                                inst.Words.Add(word);
 
                             readCount = word.Read(ptrInst, remainingWords);
                         }
@@ -126,7 +135,8 @@ namespace Molten.Graphics.Vulkan
                     }
 
                     string operands = string.Join(", ", inst.Words.Select(x => x.ToString()));
-                    log.WriteLine($"Instruction {instID++}: {inst.OpCode} - {operands}");
+                    string opResult = inst.Result != null ? $"{inst.Result} = " : ""; 
+                    log.WriteLine($"Instruction {instID++}: {opResult}{inst.OpCode} -- {operands}");
                 }
                 else
                 {
