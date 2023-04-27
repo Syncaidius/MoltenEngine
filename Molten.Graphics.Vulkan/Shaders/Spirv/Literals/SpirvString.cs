@@ -9,9 +9,9 @@ namespace Molten.Graphics.Vulkan
     {
         public string Value;
 
-        public override unsafe void Read(uint* ptrWord, uint wordCount)
+        public override unsafe uint Read(uint* ptrWord, uint wordCount)
         {
-            throw new NotImplementedException();
+            return base.Read(ptrWord, wordCount);
         }
     }
 }

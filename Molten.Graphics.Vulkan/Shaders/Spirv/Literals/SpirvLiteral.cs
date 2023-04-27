@@ -18,9 +18,10 @@ namespace Molten.Graphics.Vulkan
     public class SpirvLiteral<T> : SpirvLiteral
         where T : unmanaged
     {
-        public override unsafe void Read(uint* ptrWord, uint wordCount)
+        public override unsafe uint Read(uint* ptrWord, uint wordCount)
         {
             Value = *(T*)ptrWord;
+            return base.Read(ptrWord, wordCount);
         }
 
         public T Value;

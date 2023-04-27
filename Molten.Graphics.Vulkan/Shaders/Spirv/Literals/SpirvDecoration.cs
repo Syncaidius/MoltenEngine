@@ -8,13 +8,15 @@ namespace Molten.Graphics.Vulkan
 {
     public class SpirvDecoration : SpirvLiteral
     {
-        public override unsafe void Read(uint* ptrWord, uint wordCount)
+        public override unsafe uint Read(uint* ptrWord, uint wordCount)
         {
             DecorationType = (SpirvDecorationType)ptrWord[0];
 
             // TODO: Read decoration literals, if any.
             //       A JSON map will be needed to map decoration types to included literals (and tell us how many to read).
             //       See: https://registry.khronos.org/SPIR-V/specs/unified1/SPIRV.html#Decoration
+
+            return base.Read(ptrWord, wordCount);
         }
 
         public SpirvDecorationType DecorationType { get; private set; }

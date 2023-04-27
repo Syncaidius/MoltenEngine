@@ -6,5 +6,12 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.Vulkan
 {
-    public abstract class SpirvID : SpirvLiteral<uint> { }
+    public class SpirvID : SpirvLiteral<uint>
+    {
+
+        public override string ToString()
+        {
+            return $"ID ({Value})";
+        }
+    }
 }

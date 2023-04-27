@@ -8,6 +8,11 @@ namespace Molten.Graphics.Vulkan
 {
     public abstract class SpirvWord
     {
-        public abstract unsafe void Read(uint* ptrWord, uint wordCount);
+        public virtual unsafe uint Read(uint* ptrWord, uint remainingWords)
+        {
+            return 1;
+        }
+
+        public string Name { get; internal set; }
     }
 }

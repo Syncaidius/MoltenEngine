@@ -22,8 +22,8 @@
   "OpSource": {
     "ID": 3,
     "Words": {
-      "Source Language": "SpirvSourceLanguage",
-      "Version": "SpirvVersion",
+      "Source Language": "SpirvLiteral{SpirvSourceLanguage}",
+      "Version": "SpirvLiteral{SpirvVersion}",
       "File": "SpirvID",
       "Source": "SpirvString"
     }
@@ -159,15 +159,7 @@
 
   "OpDecorateString": {
     "ID": 5632,
-    "Words": {
-      "Target": "SpirvID",
-      "Decoration": "SpirvDecoration"
-    }
-  },
-
-
-  "OpDecorateStringGOOGLE": {
-    "ID": 5632,
+    "Alias": [ "OpDecorateStringGOOGLE" ],
     "Words": {
       "Target": "SpirvID",
       "Decoration": "SpirvDecoration"

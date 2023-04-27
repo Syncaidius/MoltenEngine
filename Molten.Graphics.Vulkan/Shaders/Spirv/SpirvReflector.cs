@@ -93,7 +93,46 @@ namespace Molten.Graphics.Vulkan
                 SpirvInstruction inst = new SpirvInstruction(_ptr);
                 _instructions.Add(inst);
 
-                log.WriteLine($"Instruction {instID++}: {(Enum.IsDefined(inst.OpCode) ? inst.OpCode : $"Unknown Opcode ({inst.OpCode})")}");
+                if (_defs.TryGetValue(inst.OpCode, out SpirvInstructionDef def))
+                {
+                    uint* ptrInst = _ptr;
+                    uint remainingWords = inst.WordCount;
+                    uint* ptrEnd = ptrInst + inst.WordCount;
+                    ptrInst++;
+                    remainingWords--;
+
+                    foreach ( string wordDesc in def.Words.Keys)
+                    {
+                        string wordTypeName = def.Words[wordDesc];
+                        uint readCount = 1;
+
+                        wordTypeName = wordTypeName.Replace('{', '<').Replace('}', '>');
+                        Type t = Type.GetType($"Molten.Graphics.Vulkan.{wordTypeName}");
+                        if (t != null)
+                        {
+                            SpirvWord word = Activator.CreateInstance(t) as SpirvWord;
+                            word.Name = wordDesc;
+                            inst.Words.Add(word);
+
+                            readCount = word.Read(ptrInst, remainingWords);
+                        }
+                        else
+                        {
+                            log.Warning($"Unknown word type: {wordTypeName}");
+                        }
+
+                        ptrInst += readCount;
+                        remainingWords -= readCount;
+                    }
+
+                    string operands = string.Join(", ", inst.Words.Select(x => x.ToString()));
+                    log.WriteLine($"Instruction {instID++}: {inst.OpCode} - {operands}");
+                }
+                else
+                {
+                    log.Warning($"Instruction {instID}: Unknown opcode ({inst.OpCode}).");
+                }
+
                 _ptr += inst.WordCount;
             }
         }
