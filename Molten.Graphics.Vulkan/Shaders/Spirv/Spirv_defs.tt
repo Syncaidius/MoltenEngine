@@ -23,7 +23,7 @@ public class SpirvInstructionDef
 
     public uint ID { get; set; }
 
-    public string[] Alias { get; set; }
+    public string[] Alias { get; set; } = new string[0];
 
     public string DeprecationMessage { get; set; }
 

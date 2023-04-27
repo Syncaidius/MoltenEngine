@@ -675,6 +675,32 @@ namespace Molten.Graphics.Vulkan
         /// </summary>
         OpMemberDecorateString = 5633,
 
+        /// <summary>
+        /// The SPIR-V 'OpMemberDecorateStringGOOGLE' instruction opcode.
+        /// <para>Opcode ID: 5633</para>
+        /// <para>Word Count: 4 + variable, based on length of 'Decoration'.
+        ///     <list type="number">
+        ///         <listheader>
+        ///             <term>Header</term>
+        ///             <description>Upper 16 bits contain word count. Lower 16 bits contain opcode ID.</description>
+        ///         </listheader>
+        ///         <item>
+        ///             <term>StructType</term>
+        ///             <description>SpirvID</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Member</term>
+        ///             <description>SpirvMemberID</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Decoration</term>
+        ///             <description>SpirvDecoration</description>
+        ///         </item>
+        ///     </list>
+        /// </para>
+        /// </summary>
+        OpMemberDecorateStringGOOGLE = 5633,
+
     }
 }
 
