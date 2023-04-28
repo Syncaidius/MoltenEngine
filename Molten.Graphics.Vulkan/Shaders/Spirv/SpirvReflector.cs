@@ -19,15 +19,9 @@ namespace Molten.Graphics.Vulkan
     /// </remarks>
     internal unsafe class SpirvReflector
     {
-        const uint MAGIC_NUMBER = 0x07230203;
-
         static Dictionary<SpirvOpCode, SpirvInstructionDef> _defs;
-
-        uint* _ptrStart;
-        uint* _ptrEnd;
-        uint* _ptr;
-        ulong _numWords;
         List<SpirvInstruction> _instructions;
+        SpirvStream _stream;
 
         static SpirvReflector()
         {
@@ -63,30 +57,20 @@ namespace Molten.Graphics.Vulkan
 
         internal SpirvReflector(void* byteCode, nuint numBytes, Logger log)
         {
-            if (numBytes % 4 != 0)
-                throw new ArgumentException("Bytecode size must be a multiple of 4.", nameof(numBytes));
-
-            _ptrEnd = (uint*)((byte*)byteCode + numBytes);
-            _ptrStart = (uint*)byteCode;
-            _ptr = _ptrStart;
             _instructions = new List<SpirvInstruction>();
-            _numWords = numBytes / 4U;
-
-            // First op is always the magic number.
-            if (ReadWord() != MAGIC_NUMBER)
-                throw new ArgumentException("Invalid SPIR-V bytecode.", nameof(byteCode));
+            _stream = new SpirvStream(byteCode, numBytes);
 
             // Next op is the version number.
-            SpirvVersion version = (SpirvVersion)ReadWord();
+            SpirvVersion version = (SpirvVersion)_stream.ReadWord();
 
             // Next op is the generator number.
-            uint generator = ReadWord();
+            uint generator = _stream.ReadWord();
 
             // Next op is the bound number.
-            uint bound = ReadWord();
+            uint bound = _stream.ReadWord();
 
             // Next op is the schema number.
-            uint schema = ReadWord();
+            uint schema = _stream.ReadWord();
 
             ReadInstructions(log);
         }
@@ -94,25 +78,18 @@ namespace Molten.Graphics.Vulkan
         private void ReadInstructions(Logger log)
         {
             uint instID = 0;
-            while (_ptr < _ptrEnd)
+            while (!_stream.IsEndOfStream)
             {
-                SpirvInstruction inst = new SpirvInstruction(_ptr);
+                SpirvInstruction inst = _stream.ReadInstruction();
                 _instructions.Add(inst);
 
                 if (_defs.TryGetValue(inst.OpCode, out SpirvInstructionDef def))
                 {
-                    uint* ptrInst = _ptr;
-                    uint remainingWords = inst.WordCount;
-                    uint* ptrEnd = ptrInst + inst.WordCount;
-                    ptrInst++;
-                    remainingWords--;
-
                     foreach (string wordDesc in def.Words.Keys)
                     {
                         string wordTypeName = def.Words[wordDesc];
-                        uint readCount = 1;
-
                         Type t = GetWordType(log, wordTypeName);
+
                         if (t != null)
                         {
                             SpirvWord word = Activator.CreateInstance(t) as SpirvWord;
@@ -123,27 +100,24 @@ namespace Molten.Graphics.Vulkan
                             else
                                 inst.Words.Add(word);
 
-                            readCount = word.Read(ptrInst, remainingWords);
+                            word.Read(inst);
                         }
                         else
                         {
                             log.Warning($"Unknown word type: {wordTypeName}");
                         }
-
-                        ptrInst += readCount;
-                        remainingWords -= readCount;
                     }
 
                     string operands = string.Join(", ", inst.Words.Select(x => x.ToString()));
                     string opResult = inst.Result != null ? $"{inst.Result} = " : ""; 
-                    log.WriteLine($"Instruction {instID++}: {opResult}{inst.OpCode} -- {operands}");
+                    log.WriteLine($"Instruction {instID}: {opResult}{inst.OpCode} -- {operands}");
                 }
                 else
                 {
                     log.Warning($"Instruction {instID}: Unknown opcode ({inst.OpCode}).");
                 }
 
-                _ptr += inst.WordCount;
+                instID++;
             }
         }
 
@@ -184,13 +158,8 @@ namespace Molten.Graphics.Vulkan
             return t;
         }
 
-        private uint ReadWord()
-        {
-            uint val = *_ptr;
-            _ptr++;
-            return val;
-        }
 
-        public ulong WordCount => _numWords;
+
+
     }
 }

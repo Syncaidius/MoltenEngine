@@ -11,7 +11,7 @@ namespace Molten.Graphics.Vulkan
 
         public override string ToString()
         {
-            return $"ID ({Value})";
+            return $"%{Value}";
         }
     }
 }

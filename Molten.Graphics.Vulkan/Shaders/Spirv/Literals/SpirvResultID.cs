@@ -10,7 +10,7 @@ namespace Molten.Graphics.Vulkan
     {
         public override string ToString()
         {
-            return $"Result ({Value})";
+            return $"%{Value}";
         }
     }
 }
