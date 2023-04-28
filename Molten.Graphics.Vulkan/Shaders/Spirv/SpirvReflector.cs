@@ -57,6 +57,8 @@ namespace Molten.Graphics.Vulkan
 
         internal SpirvReflector(void* byteCode, nuint numBytes, Logger log)
         {
+            // TODO replace manual mapping file with: https://raw.githubusercontent.com/KhronosGroup/SPIRV-Headers/main/include/spirv/unified1/spirv.core.grammar.json
+
             _instructions = new List<SpirvInstruction>();
             _stream = new SpirvStream(byteCode, numBytes);
 

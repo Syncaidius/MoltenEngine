@@ -1,5 +1,5 @@
 <#@ template debug="false" hostspecific="true" language="C#" #>
-<#@ include file="spirv_defs.tt" #>
+<#@ include file="spirv_gen.tt" #>
 <#@ assembly name="System.Core" #>
 <#@ import namespace="System.IO" #>
 <#@ import namespace="System.Text" #>
@@ -9,103 +9,26 @@
 <#@ assembly name="Newtonsoft.Json" #>
 <#@ import namespace="Newtonsoft.Json" #>
 <#@ output extension=".txt" #> 
+
 <#
-    T ReadJsonDef<T>(string folder, string fileName) where T : class
-    {
-        string json = File.ReadAllText(Path.Combine(folder, fileName.Trim()));
-        Console.WriteLine("Read {0} bytes from {1}", json.Length, fileName);
-        return JsonConvert.DeserializeObject<T>(json);
-    }
+    string downloadUrl = "https://raw.githubusercontent.com/KhronosGroup/SPIRV-Headers/main/include/spirv/unified1/";
+    string downloadPath = this.Host.ResolvePath("Maps\\Spir.json");
 
-    void SaveFile(string folder, string fileName, string content)
+    // SPIR-V grammar file downloads
+    string[] downloads = new string[]
     {
-        string path = Path.Combine(folder, fileName.Trim() + ".cs");
-        if(!Directory.Exists(folder))
-            Directory.CreateDirectory(folder);
+        "spirv.core.grammar.json"
+    };
 
-	    using (FileStream fs = new FileStream(path, FileMode.Create))
-        {
-            using (StreamWriter str = new StreamWriter(fs))
-            {
-                str.WriteLine(content);
-                str.Flush();
-            }
-        }
+    foreach(string file in downloads)
+    {
+        string url = $"{downloadUrl}{file}";
+        string filePath = $"{downloadPath}{file};
+
+        Generator gen = new Generator(this.GenerationEnvironment, this.Host, url, filePath);
     }
 
     string outputPath = this.Host.ResolvePath("");
     Dictionary<string, SpirvInstructionDef> defs = ReadJsonDef<Dictionary<string, SpirvInstructionDef>>(outputPath, "spirv_opcodes.json");
     this.GenerationEnvironment.Clear();
-#>
-namespace Molten.Graphics.Vulkan
-{
-    /// <summary>
-    /// Represents a SPIR-V instruction opcode.
-    /// <para>See: <see href="https://registry.khronos.org/SPIR-V/specs/unified1/SPIRV.html#Instructions"/></para>
-    /// <para>Each instruction is made up of 32-bit unsigned integer "words".</para>
-    /// <para>The first word of an instruction contains the word count in the upper 16 bits, and the opcode in the lower 16 bits.</para>
-    /// </summary>
-    public enum SpirvOpCode : uint
-    {
-<#
-            List<KeyValuePair<string, SpirvInstructionDef>> orderedDef = new List<KeyValuePair<string, SpirvInstructionDef>>(defs);
-            orderedDef.Sort((a, b) => a.Value.ID.CompareTo(b.Value.ID));
-
-            foreach(KeyValuePair<string, SpirvInstructionDef> op in orderedDef)
-            {
-                List<string> names = new List<string>();
-                names.Add(op.Key);
-                names.AddRange(op.Value.Alias);
-
-                SpirvInstructionDef def = op.Value;
-
-                for(int i = 0; i < names.Count; i++)
-                {
-                    string opName = names[i];
-#>
-        /// <summary>
-        /// The SPIR-V '<#=opName#>' instruction opcode.
-        /// <para>Opcode ID: <#=def.ID#></para>
-        /// <para>Word Count: <#=def.GetWordCountString()#>
-        ///     <list type="number">
-        ///         <listheader>
-        ///             <term>Header</term>
-        ///             <description>Upper 16 bits contain word count. Lower 16 bits contain opcode ID.</description>
-        ///         </listheader>
-<#
-            foreach(string wordName in def.Words.Keys)
-            {
-                string wordType = def.Words[wordName];
-#>
-        ///         <item>
-        ///             <term><#=wordName#></term>
-        ///             <description><#=wordType#></description>
-        ///         </item>
-<#
-                }   
-#>
-        ///     </list>
-        /// </para>
-        /// </summary>
-<#
-        if(def.DeprecationMessage != null)
-        {
-#>
-        [Obsolete("<#=def.DeprecationMessage#>")]
-<# 
-        }
-#>
-        <#=opName#> = <#=def.ID#>,
-
-<#
-            }
-        }
-#>
-    }
-}
-
-<#
-SaveFile(outputPath, "SpirvOpCode", this.GenerationEnvironment.ToString());
-this.GenerationEnvironment.Clear();
-this.GenerationEnvironment.Append($" ");
 #>

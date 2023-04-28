@@ -1,0 +1,179 @@
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Runtime.InteropServices" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="Microsoft.VisualStudio.TextTemplating" #>
+<#@ assembly name="Newtonsoft.Json" #>
+<#@ import namespace="Newtonsoft.Json" #>
+<#@ output extension=".txt" #>
+
+<#+
+
+public class SpirvDef
+{
+    [JsonProperty("major_version")]
+    public int MajorVersion { get; set; }
+
+    [JsonProperty("minor_version")]
+    public int MinorVersion { get; set; }
+
+    [JsonProperty("version")]
+    public int Version
+    {
+        get => MinorVersion;
+        set => MinorVersion = value;
+    }
+
+    [JsonProperty("revision")]
+    public int Revision { get; set; }
+
+    public SpirvInstructionDef[] Instructions { get; set; } = new SpirvInstructionDef[0];
+
+    [JsonProperty("operand_kinds")]
+    public SpirvOperandKindDef[] OperandKinds { get; set; } = new SpirvOperandKindDef[0];
+}
+
+public class SpirvEnumerantDef
+{
+    public string Enumerant { get; set; }
+
+    public uint Value { get; set; }
+
+    public string[] Capabilities { get; set; } = new string[0];
+
+    public SpirvKindDef[] Parameters { get; set; } = new SpirvKindDef[0];
+
+    public string[] Extensions { get; set; } = new string[0];
+
+    /// <summary>
+    /// The minimum Vulkan API version required for this enumerant to be supported.
+    /// </summary>
+    public string Version { get; set; }
+}
+
+public class SpirvInstructionDef
+{
+    public string OpName { get; set; }
+
+    public string Class { get; set; }
+
+    public uint Opcode { get; set; }
+
+    public SpirvOperandDef[] Operands { get; set; } = new SpirvOperandDef[0];
+}
+
+public class SpirvKindDef
+{
+    public string Name { get; set; }
+
+    public string Kind { get; set; }
+
+    public string Quantifier { get; set; }
+}
+
+public class SpirvOperandDef
+{
+    public string Category { get; set; }
+
+    public string Kind { get; set; }
+}
+
+public class SpirvOperandKindDef
+{
+    public string Category { get; set; }
+
+    public string Kind { get; set; }
+
+    public SpirvEnumerantDef[] Enumerants { get; set; } = new SpirvEnumerantDef[0];
+}
+
+public class Generator
+{
+    public delegate void GenerateOperandKindCallback(SpirvDef spirv, SpirvOperandKindDef def);
+
+    StringBuilder _sb;
+    ITextTemplatingEngineHost _host;
+    string _outputPath;
+    SpirvDef _def;
+
+    public Generator(StringBuilder genEnvironment, ITextTemplatingEngineHost host, string typeDefFileName, string downloadUrl, string downloadPath, string genOutPath)
+    {
+        _sb = genEnvironment;
+        _host = host;
+        _outputPath = _host.ResolvePath(genOutPath);
+
+        DownloadFile(downloadUrl, downloadPath);
+        string json = File.ReadAllText(downloadPath);
+
+        Console.WriteLine("Read {0} bytes from {1}", json.Length * sizeof(char), downloadPath);
+        _def = JsonConvert.DeserializeObject<SpirvDef>(json);
+    }
+
+    public void GenerateEnums(GenerateOperandKindCallback callback)
+    {
+        foreach(SpirvOperandKindDef kindDef in _def.OperandKinds)
+        {
+            if(kindDef.Kind == "EnumValue" || kindDef.Kind == "BitEnum")
+                callback(_def, kindDef);
+        }
+    }
+
+    private void Out(int indent, string text)
+    {
+        _sb.AppendLine($"{new string('\t', indent)}{text}");
+    }
+
+    private void Out(string text)
+    {
+        _sb.AppendLine(text);
+    }
+
+    private void Indent(int indent)
+    {
+        _sb.Append(new string('\t', indent));
+    }
+
+    private void Append(string text)
+    {
+        _sb.Append(text);
+    }
+
+    private string Capitalize(string word)
+    {
+        if(word.Length > 1)
+        {
+            char first = char.ToUpper(word[0]);
+            return $"{first}{word.Substring(1, word.Length - 1)}";
+        }
+        else
+        {
+            return word.ToUpper();
+        }
+    }
+
+    public void SaveFile(string folder, string fileName, string content)
+    {
+        string path = Path.Combine(folder, fileName.Trim() + ".cs");
+        if(!Directory.Exists(folder))
+            Directory.CreateDirectory(folder);
+
+	    using (FileStream fs = new FileStream(path, FileMode.Create))
+        {
+            using (StreamWriter str = new StreamWriter(fs))
+            {
+                str.WriteLine(content);
+                str.Flush();
+            }
+        }
+    }
+
+    private void DownloadFile(string url, string path)
+    {
+        using (System.Net.WebClient client = new System.Net.WebClient())
+        {
+            client.DownloadFile(url, path);
+        }
+    }
+}
+#>

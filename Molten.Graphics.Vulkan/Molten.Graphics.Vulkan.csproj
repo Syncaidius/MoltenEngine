@@ -30,19 +30,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Shaders\Spirv\Spirv_opcodes.json" />
+    <None Remove="Shaders\Spirv\Maps\spirv.core.grammar.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="Shaders\Spirv\Spirv_defs.txt">
+    <Compile Include="Shaders\Spirv\Spirv_gen.txt">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>Spirv_defs.tt</DependentUpon>
+      <DependentUpon>Spirv_gen.tt</DependentUpon>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Shaders\Spirv\Spirv_opcodes.json" />
+    <EmbeddedResource Include="Shaders\Spirv\Maps\spirv.core.grammar.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -60,11 +60,6 @@
     <None Include="..\README.md" Link="README.md">
       <PackagePath>\</PackagePath>
       <Pack>True</Pack>
-    </None>
-    <None Include="Shaders\Spirv\Spirv_defs.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Spirv_defs.tt</DependentUpon>
     </None>
   </ItemGroup>
 
@@ -86,14 +81,19 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Spirv.tt</DependentUpon>
     </None>
-    <None Update="Shaders\Spirv\Spirv_defs.tt">
-      <LastGenOutput>Spirv_defs.txt</LastGenOutput>
+    <None Update="Shaders\Spirv\Spirv_gen.tt">
+      <LastGenOutput>Spirv_gen.txt</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
     </None>
     <None Update="Shaders\Spirv\Spirv_defs.txt">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Spirv_defs.tt</DependentUpon>
+    </None>
+    <None Update="Shaders\Spirv\Spirv_gen.txt">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Spirv_gen.tt</DependentUpon>
     </None>
   </ItemGroup>
 
