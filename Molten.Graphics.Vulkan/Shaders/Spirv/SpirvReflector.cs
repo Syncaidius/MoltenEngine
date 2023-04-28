@@ -108,9 +108,16 @@ namespace Molten.Graphics.Vulkan
                         }
                     }
 
-                    string operands = string.Join(", ", inst.Words.Select(x => x.ToString()));
-                    string opResult = inst.Result != null ? $"{inst.Result} = " : ""; 
-                    log.WriteLine($"Instruction {instID}: {opResult}{inst.OpCode} -- {operands}");
+                    string opResult = inst.Result != null ? $"{inst.Result} = " : "";
+                    if (inst.Words.Count > 0)
+                    {
+                        string operands = string.Join(", ", inst.Words.Select(x => x.ToString()));
+                        log.WriteLine($"Instruction {instID}: {opResult}{inst.OpCode} -- {operands}");
+                    }
+                    else
+                    {
+                        log.WriteLine($"Instruction {instID}: {opResult}{inst.OpCode}");
+                    }
                 }
                 else
                 {
@@ -147,12 +154,17 @@ namespace Molten.Graphics.Vulkan
                 }
 
                 t = Type.GetType($"Molten.Graphics.Vulkan.{typeName}`{genericTypes.Count}");
+                if(t == null)
+                    t = Type.GetType($"System.{typeName}`{genericTypes.Count}");
+
                 if (t != null)
-                    t = t.MakeGenericType(genericTypes.ToArray());
+                    t = t.MakeGenericType(genericTypes.ToArray());                    
             }
             else
             {
                 t = Type.GetType($"Molten.Graphics.Vulkan.{typeName}");
+                if(t == null)
+                    t = Type.GetType($"System.{typeName}");
             }
 
             return t;

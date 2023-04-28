@@ -60,7 +60,10 @@ namespace Molten.Graphics.Vulkan
 
         public override string ToString()
         {
-            return $"{OpCode} - {WordCount} words";
+            if (Words.Count > 0)
+                return $"{OpCode} - {WordCount} words";
+            else
+                return $"{OpCode}";
         }
 
         public uint WordCount => _ptr[0] >> 16;

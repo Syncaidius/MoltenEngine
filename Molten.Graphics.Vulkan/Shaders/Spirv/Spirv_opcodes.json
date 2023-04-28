@@ -65,8 +65,8 @@
     "ID": 8,
     "Words": {
       "File": "SpirvID",
-      "Line": "SpirvLiteral{uint}",
-      "Column": "SpirvLiteral{uint}"
+      "Line": "SpirvLiteral{UInt32}",
+      "Column": "SpirvLiteral{UInt32}"
     }
   },
 
@@ -198,7 +198,7 @@
       "Result": "SpirvResultID",
       "Name": "SpirvString",
       "Set": "SpirvID",
-      "Instruction": "SpirvLiteral{uint}"
+      "Instruction": "SpirvLiteral{UInt32}"
     }
   },
 
@@ -230,8 +230,239 @@
   "OpCapability": {
     "ID": 17,
     "Words": {
-      "Entry Point": "SpirvID",
       "Capability": "SpirvLiteral{SpirvCapability}"
+    }
+  },
+
+  "OpExecutionModeId": {
+    "ID": 331,
+    "Words": {
+      "Entry Point": "SpirvID",
+      "Capability": "SpirvLiteral{SpirvExecutionMode}"
+    }
+  },
+
+  "OpTypeVoid": {
+    "ID": 19,
+    "Words": {
+      "Result": "SpirvResultID"
+    }
+  },
+
+  "OpTypeBool": {
+    "ID": 20,
+    "Words": {
+      "Result": "SpirvResultID"
+    }
+  },
+
+  "OpTypeInt": {
+    "ID": 21,
+    "Words": {
+      "Result": "SpirvResultID",
+      "Width": "SpirvLiteral{UInt32}",
+      "Signedness": "SpirvLiteral{UInt32}"
+    }
+  },
+
+  "OpTypeFloat": {
+    "ID": 22,
+    "Words": {
+      "Result": "SpirvResultID",
+      "Width": "SpirvLiteral{UInt32}"
+    }
+  },
+
+  "OpTypeVector": {
+    "ID": 23,
+    "Words": {
+      "Result": "SpirvResultID",
+      "Component Type": "SpirvID",
+      "Component Count": "SpirvLiteral{UInt32}"
+    },
+  },
+
+  "OpTypeMatrix": {
+    "ID": 24,
+    "Words": {
+      "Result": "SpirvResultID",
+      "Column Type": "SpirvID",
+      "Column Count": "SpirvLiteral{UInt32}"
+    }
+  },
+
+  "OpTypeImage": {
+    "ID": 25,
+    "Words": {
+      "Result": "SpirvResultID",
+      "Sampled Type": "SpirvID",
+      "Dim": "SpirvLiteral{SpirvDimensionality}",
+      "Depth": "SpirvLiteral{UInt32}",
+      "Arrayed": "SpirvLiteral{UInt32}",
+      "MS": "SpirvLiteral{UInt32}",
+      "Sampled": "SpirvLiteral{UInt32}",
+      "Format": "SpirvLiteral{SpirvImageFormat}",
+      "Access Qualifier": "SpirvLiteral{SpirvAccessQualifier}"
+    }
+  },
+
+  "OpTypeSampler": {
+    "ID": 26,
+    "Words": {
+      "Result": "SpirvResultID"
+    }
+  },
+
+  "OpTypeSampledImage": {
+    "ID": 27,
+    "Words": {
+      "Result": "SpirvResultID",
+      "Image Type": "SpirvID"
+    }
+  },
+
+  "OpTypeArray": {
+    "ID": 28,
+    "Words": {
+      "Result": "SpirvResultID",
+      "Element Type": "SpirvID",
+      "Length": "SpirvID"
+    }
+  },
+
+  "OpTypeRuntimeArray": {
+    "ID": 29,
+    "Words": {
+      "Result": "SpirvResultID",
+      "Element Type": "SpirvID"
+    }
+  },
+
+  "OpTypeStruct": {
+    "ID": 30,
+    "Words": {
+      "Result": "SpirvResultID"
+    }
+  },
+
+  "OpTypeOpaque": {
+    "ID": 31,
+    "Words": {
+      "Result": "SpirvResultID",
+      "Opaque Type Name": "SpirvString"
+    }
+  },
+
+  "OpTypePointer": {
+    "ID": 32,
+    "Words": {
+      "Result": "SpirvResultID",
+      "Storage Class": "SpirvLiteral{SpirvStorageClass}",
+      "Type": "SpirvID"
+    }
+  },
+
+  "OpTypeFunction": {
+    "ID": 33,
+    "Words": {
+      "Result": "SpirvResultID",
+      "Return Type": "SpirvID"
+    }
+  },
+
+  "OpTypeEvent": {
+    "ID": 34,
+    "Words": {
+      "Result": "SpirvResultID"
+    }
+  },
+
+  "OpTypeDeviceEvent": {
+    "ID": 35,
+    "Words": {
+      "Result": "SpirvResultID"
+    }
+  },
+
+  "OpTypeReserveId": {
+    "ID": 36,
+    "Words": {
+      "Result": "SpirvResultID"
+    }
+  },
+
+  "OpTypeQueue": {
+    "ID": 37,
+    "Words": {
+      "Result": "SpirvResultID"
+    }
+  },
+
+  "OpTypePipe": {
+    "ID": 38,
+    "Words": {
+      "Result": "SpirvResultID",
+      "Access Qualifier": "SpirvLiteral{SpirvAccessQualifier}"
+    }
+  },
+
+  "OpTypeForwardPointer": {
+    "ID": 39,
+    "Words": {
+      "Result": "SpirvResultID",
+      "Storage Class": "SpirvLiteral{SpirvStorageClass}"
+    }
+  },
+
+  "OpTypePipeStorage": {
+    "ID": 322,
+    "Words": {
+      "Result": "SpirvResultID"
+    }
+  },
+
+  "OpTypeNamedBarrier": {
+    "ID": 327,
+    "Words": {
+      "Result": "SpirvResultID"
+    }
+  },
+
+  "OpTypeBufferSurfaceINTEL": {
+    "ID": 6086,
+    "Words": {
+      "Result": "SpirvResultID",
+      "Access Qualifier": "SpirvLiteral{SpirvAccessQualifier}"
+    }
+  },
+
+  "OpTypeStructContinuedINTEL": {
+    "ID": 6090,
+    "Words": {}
+  },
+
+  "OpConstantTrue": {
+    "ID": 41,
+    "Words": {
+      "Result Type": "SpirvID",
+      "Result": "SpirvResultID"
+    }
+  },
+
+  "OpConstantFalse": {
+    "ID": 42,
+    "Words": {
+      "Result Type": "SpirvID",
+      "Result": "SpirvResultID"
+    }
+  },
+
+  "OpConstant": {
+    "ID": 43,
+    "Words": {
+      "Result Type": "SpirvID",
+      "Result": "SpirvResultID",
+      "Value": "SpirvLiteral{UInt32}"
     }
   }
 }
