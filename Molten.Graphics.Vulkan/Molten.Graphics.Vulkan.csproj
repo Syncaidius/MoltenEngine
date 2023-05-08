@@ -30,22 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Shaders\Spirv\Maps\spirv.core.grammar.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="Shaders\Spirv\Spirv_gen.txt">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Spirv_gen.tt</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Shaders\Spirv\Maps\spirv.core.grammar.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Silk.NET.GLFW" Version="2.17.1" />
     <PackageReference Include="Silk.NET.Vulkan" Version="2.17.1" />
     <PackageReference Include="Silk.NET.Vulkan.Extensions.EXT" Version="2.17.1" />
@@ -69,32 +53,6 @@
     <ProjectReference Include="..\Molten.Graphics.DXC\Molten.Graphics.DXC.csproj" />
     <ProjectReference Include="..\Molten.Math\Molten.Math.csproj" />
     <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Shaders\Spirv\Spirv.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Spirv.txt</LastGenOutput>
-    </None>
-    <None Update="Shaders\Spirv\Spirv.txt">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Spirv.tt</DependentUpon>
-    </None>
-    <None Update="Shaders\Spirv\Spirv_gen.tt">
-      <LastGenOutput>Spirv_gen.txt</LastGenOutput>
-      <Generator>TextTemplatingFileGenerator</Generator>
-    </None>
-    <None Update="Shaders\Spirv\Spirv_defs.txt">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Spirv_defs.tt</DependentUpon>
-    </None>
-    <None Update="Shaders\Spirv\Spirv_gen.txt">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Spirv_gen.tt</DependentUpon>
-    </None>
   </ItemGroup>
 
   <ItemGroup>

@@ -52,7 +52,8 @@ namespace Molten.Graphics.Vulkan
 
         protected override unsafe ShaderReflection OnBuildReflection(ShaderCompilerContext context, IDxcBlob* byteCode, DxcBuffer* reflectionBuffer)
         {
-            SpirvReflector reflector = new SpirvReflector(byteCode->GetBufferPointer(), byteCode->GetBufferSize(), Log);
+            //SpirvReflector reflector = new SpirvReflector(byteCode->GetBufferPointer(), byteCode->GetBufferSize(), Log);
+
             // TODO Add support for pre-compiled shaders.
             // TODO Build external tool for running khronos spirv-reflect tool alongside our own SpirVCompiler to generate a .mcfx (molten compiled fx) file.
             // TODO Store ShaderReflection object as json inside the .mcfx file.
