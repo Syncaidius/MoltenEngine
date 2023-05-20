@@ -5,6 +5,7 @@ using System.Reflection;
 using Molten.Graphics.Dxc;
 using Silk.NET.Direct3D.Compilers;
 using Silk.NET.Vulkan;
+using SpirvReflector;
 using DxcBuffer = Silk.NET.Direct3D.Compilers.Buffer;
 
 namespace Molten.Graphics.Vulkan
@@ -12,11 +13,14 @@ namespace Molten.Graphics.Vulkan
     internal class SpirvCompiler : DxcCompiler
     {
         Vk _vk;
+        ReflectionLogAdapter _logger;
 
         public SpirvCompiler(Vk vk, RenderService renderer, string includePath, Assembly includeAssembly, VersionVK targetApi) : 
             base(renderer, includePath, includeAssembly)
         {
             _vk = vk;
+            _logger = new ReflectionLogAdapter(renderer.Log);
+
             AddBaseArg(DxcCompilerArg.SpirV);
             AddBaseArg(DxcCompilerArg.HlslVersion, "2021");
             AddBaseArg(DxcCompilerArg.VulkanVersion, $"vulkan{targetApi.Major}.{targetApi.Minor}");
@@ -52,13 +56,18 @@ namespace Molten.Graphics.Vulkan
 
         protected override unsafe ShaderReflection OnBuildReflection(ShaderCompilerContext context, IDxcBlob* byteCode, DxcBuffer* reflectionBuffer)
         {
-            //SpirvReflector reflector = new SpirvReflector(byteCode->GetBufferPointer(), byteCode->GetBufferSize(), Log);
+            SpirvReflection reflection = new SpirvReflection(_logger);
+            SpirvReflectionResult result = reflection.Reflect(byteCode->GetBufferPointer(), byteCode->GetBufferSize());
 
-            // TODO Add support for pre-compiled shaders.
-            // TODO Build external tool for running khronos spirv-reflect tool alongside our own SpirVCompiler to generate a .mcfx (molten compiled fx) file.
-            // TODO Store ShaderReflection object as json inside the .mcfx file.
+            //using (FileStream stream = new FileStream(context.Source.Filename + ".spirv", FileMode.Create, FileAccess.Write))
+            //{
+            //    using (BinaryWriter writer = new BinaryWriter(stream))
+            //    {
+            //        Span<byte> t = new Span<byte>(byteCode->GetBufferPointer(), (int)byteCode->GetBufferSize());
+            //        writer.Write(t.ToArray(), 0, (int)byteCode->GetBufferSize());
+            //    }
+            //}
 
-            // TODO also consider simply running DXC in DX12 mode in the external tool to remove dependency on spirv-reflect. This would only work on windows for now however.
             throw new NotImplementedException();
         }
     }
