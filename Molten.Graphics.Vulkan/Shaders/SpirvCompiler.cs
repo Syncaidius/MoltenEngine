@@ -205,8 +205,11 @@ namespace Molten.Graphics.Vulkan
                 default:
                     return $"GL_{builtIn.ToString().ToUpper()}";
 
+                case SpirvBuiltIn.InstanceId:
+                case SpirvBuiltIn.PrimitiveId:
+                case SpirvBuiltIn.Position:
                 case SpirvBuiltIn.VertexId:
-                    return "SV_VERTEXID";
+                    return $"SV_{builtIn.ToString().ToUpper()}";
             }
         }
 
