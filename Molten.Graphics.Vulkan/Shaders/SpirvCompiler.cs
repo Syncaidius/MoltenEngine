@@ -39,13 +39,6 @@ namespace Molten.Graphics.Vulkan
             info.PCode = (uint*)byteCode;
             info.Flags = ShaderModuleCreateFlags.None;
 
-            string fn = parent.Parent.Filename.Replace('.', '_').Replace('/', '_').Replace('\\', '_');
-            using (FileStream stream = new FileStream($"test_{fn}.spirv", FileMode.Create, FileAccess.Write))
-            {
-                Span<byte> t = new Span<byte>(byteCode, (int)numBytes);
-                stream.Write(t.ToArray(), 0, (int)numBytes);
-            }
-
             DeviceVK device = parent.Device as DeviceVK;
             ShaderModule* shader = EngineUtil.Alloc<ShaderModule>();
             Result r = _vk.CreateShaderModule(device, info, null, shader);
@@ -57,6 +50,18 @@ namespace Molten.Graphics.Vulkan
 
         protected override unsafe ShaderReflection OnBuildReflection(ShaderCompilerContext context, IDxcBlob* byteCode, DxcBuffer* reflectionBuffer)
         {
+            // Output to file.
+            string fn = $"{context.Source.Filename}_{context.Type}.spirv";
+            /*using (FileStream stream = new FileStream(fn, FileMode.Create, FileAccess.Write))
+            {
+                using (BinaryWriter writer = new BinaryWriter(stream))
+                {
+                    Span<byte> t = new Span<byte>(byteCode->GetBufferPointer(), (int)byteCode->GetBufferSize());
+                    writer.Write(t.ToArray(), 0, (int)byteCode->GetBufferSize());
+                    context.AddDebug($"Saved SPIR-V bytecode to {fn}");
+                }
+            }*/
+
             SpirvReflection reflection = new SpirvReflection(_logger);
             SpirvReflectionResult rr = reflection.Reflect(byteCode->GetBufferPointer(), byteCode->GetBufferSize());
 
@@ -64,15 +69,6 @@ namespace Molten.Graphics.Vulkan
             {
                 GSInputPrimitive = GeometryHullTopology.Triangle, // TODO populate
             };
-
-            //using (FileStream stream = new FileStream(context.Source.Filename + ".spirv", FileMode.Create, FileAccess.Write))
-            //{
-            //    using (BinaryWriter writer = new BinaryWriter(stream))
-            //    {
-            //        Span<byte> t = new Span<byte>(byteCode->GetBufferPointer(), (int)byteCode->GetBufferSize());
-            //        writer.Write(t.ToArray(), 0, (int)byteCode->GetBufferSize());
-            //    }
-            //}
 
             // TODO get input/output resource bindings
 
@@ -198,6 +194,11 @@ namespace Molten.Graphics.Vulkan
             p.SemanticNamePtr = (void*)SilkMarshal.StringToPtr(p.SemanticName, NativeStringEncoding.UTF8);
         }
 
+        /// <summary>
+        /// See for more info: https://registry.khronos.org/SPIR-V/specs/1.0/SPIRV.html#BuiltIn
+        /// </summary>
+        /// <param name="builtIn"></param>
+        /// <returns></returns>
         private string BuiltInToSemantic(SpirvBuiltIn builtIn)
         {
             switch (builtIn)

@@ -9,13 +9,15 @@
 
         internal ShaderCompileResult Result { get; }
 
-        internal IReadOnlyList<ShaderCompilerMessage> Messages { get; }
+        internal IReadOnlyList<ShaderCompilerMessage> Messages => _messages;
 
         public bool HasErrors { get; private set; }
 
         public ShaderSource Source { get; set; }
 
         public ShaderCompileFlags Flags { get; set; }
+
+        public ShaderType Type { get; set; }
 
         public ShaderCompiler Compiler { get; }
 
@@ -26,7 +28,6 @@
         {
             _messages = new List<ShaderCompilerMessage>();
             _resources = new Dictionary<Type, Dictionary<string, object>>();
-            Messages = _messages.AsReadOnly();
             Shaders = new Dictionary<string, ShaderCodeResult>();
             Result = new ShaderCompileResult();
             Compiler = compiler;

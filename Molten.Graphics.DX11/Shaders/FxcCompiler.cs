@@ -266,9 +266,7 @@ namespace Molten.Graphics.DX11
                     return null;
             }
 
-            int count = parameters.Count;
-            ShaderIOStructureDX11 structure = new ShaderIOStructureDX11(result, sType, type);
-            return structure;
+            return new ShaderIOStructureDX11(result, sType, type);
         }
 
         public override bool BuildStructure(ShaderCompilerContext context,

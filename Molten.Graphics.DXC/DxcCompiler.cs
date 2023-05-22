@@ -140,11 +140,20 @@ namespace Molten.Graphics.Dxc
 
                 if (GetDxcOutput(context, OutKind.Object, dxcResult, ref byteCode))
                 {
+                    LoadPdbData(context, dxcResult, ref pdbData, ref pdbPath);
+
+                    try
+                    {
+                        reflection = BuildReflection(context, args, byteCode, dxcResult);
+                    }
+                    catch (Exception ex)
+                    {
+                        context.AddError($"An error occurred while building shader reflection: {ex.Message}");
+                        return false;
+                    }
+
                     result = new ShaderCodeResult(reflection, byteCode, byteCode->GetBufferSize(), pdbData);
                     context.Shaders.Add(entryPoint, result);
-
-                    LoadPdbData(context, dxcResult, ref pdbData, ref pdbPath);
-                    reflection = BuildReflection(context, args, byteCode, dxcResult);
                 }
             }
 
@@ -198,7 +207,6 @@ namespace Molten.Graphics.Dxc
         {
             IDxcBlobEncoding* pErrorBlob = null;
             dxcResult->GetErrorBuffer(&pErrorBlob);
-
             void* ptrErrors = pErrorBlob->GetBufferPointer();
 
             if (ptrErrors != null)
@@ -243,7 +251,7 @@ namespace Molten.Graphics.Dxc
         {
             if (dxcResult->HasOutput(outputType) == 0)
             {
-                context.AddError($"Unable to retrieve '{outputType}' data: Not found");
+                context.AddWarning($"Unable to retrieve '{outputType}' data: Not found");
                 return false;
             }
 
@@ -283,7 +291,23 @@ namespace Molten.Graphics.Dxc
 
         public override ShaderIOStructure BuildIO(ShaderCodeResult result, ShaderType sType, ShaderIOStructureType type)
         {
-            throw new NotImplementedException();
+            List<ShaderParameterInfo> parameters;
+
+            switch (type)
+            {
+                case ShaderIOStructureType.Input:
+                    parameters = result.Reflection.InputParameters;
+                    break;
+
+                case ShaderIOStructureType.Output:
+                    parameters = result.Reflection.OutputParameters;
+                    break;
+
+                default:
+                    return null;
+            }
+
+            return new DXCShaderIOStructure(result, sType, type);
         }
 
         public override bool BuildStructure(ShaderCompilerContext context, HlslShader shader, ShaderCodeResult result, ShaderComposition composition)

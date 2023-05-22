@@ -139,6 +139,7 @@ namespace Molten.Graphics
             foreach (ShaderType epType in passDef.EntryPoints.Keys)
             {
                 string ep = passDef.EntryPoints[epType];
+                context.Type = epType;
 
                 if (string.IsNullOrWhiteSpace(ep))
                 {
