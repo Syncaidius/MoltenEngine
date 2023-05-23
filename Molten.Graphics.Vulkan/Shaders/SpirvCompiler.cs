@@ -115,8 +115,8 @@ namespace Molten.Graphics.Vulkan
                     Mask = ShaderComponentMaskFlags.All,
                     ReadWriteMask = 255,
                     MinPrecision = GetMinPrecision(v.Type),
-                    Register = v.Binding,
-                    SemanticIndex = v.Binding,
+                    Register = v.Binding.HasValue ? v.Binding.Value : 0,
+                    SemanticIndex = v.Binding.HasValue ? v.Binding.Value : 0,
                     Stream = 0,
                 };
 
