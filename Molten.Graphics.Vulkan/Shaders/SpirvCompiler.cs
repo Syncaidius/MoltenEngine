@@ -67,10 +67,12 @@ namespace Molten.Graphics.Vulkan
 
             ShaderReflection result = new ShaderReflection()
             {
-                GSInputPrimitive = GeometryHullTopology.Triangle, // TODO populate
+                GSInputPrimitive = GeometryHullTopology.Undefined, // TODO populate
             };
 
-            // TODO get input/output resource bindings
+            // Populate uniform/constant buffer binding info.
+            foreach(SpirvVariable v in rr.Uniforms)
+                PopulateConstantBuffer(v, result);
 
             // Populate input/output resource parameters
             foreach (SpirvEntryPoint ep in rr.EntryPoints)
@@ -83,6 +85,147 @@ namespace Molten.Graphics.Vulkan
 
             return result;
         }
+
+        private void PopulateConstantBuffer(SpirvVariable v, ShaderReflection result)
+        {
+            ShaderResourceInfo bindInfo = new ShaderResourceInfo()
+            {
+                Name = v.Name,
+                BindCount = 1,
+                BindPoint = v.Binding.HasValue ? v.Binding.Value : 0,
+                Dimension = ShaderResourceDimension.Buffer,
+                Type = ShaderInputType.CBuffer,
+                NumSamples = 1,
+                ResourceReturnType = ShaderReturnType.None,
+                Flags = ShaderInputFlags.None, // TODO populate. This is needed for checking if a sampler is a comparison sampler.
+            };
+
+            result.BoundResources.Add(bindInfo);
+
+            ConstantBufferInfo cBufferInfo = new ConstantBufferInfo()
+            {
+                Name = v.Name,
+                Type = ConstantBufferType.CBuffer, // TODO Can a TBuffer be detected from SPIR-V?
+                Flags = ConstantBufferFlags.UserPacked, // TODO Can we detect ForceDWord mode in SPIR-V?
+                Size = v.Type.NumBytes,
+            };
+
+            result.ConstantBuffers.Add(bindInfo.Name, cBufferInfo);
+
+            for (int i = 0; i < v.Type.Members.Count; i++)
+            {
+                SpirvTypeMember member = v.Type.Members[i];
+                ShaderReflection.ReflectionPtr ptrDefault = null;
+
+                // TODO fix this once struct members can have default values.
+                /*if (v.DefaultValue != null)
+                {
+                    ptrDefault = result.NewPtr(desc.Size);
+                    System.Buffer.MemoryCopy(desc.DefaultValue, ptrDefault, desc.Size, desc.Size);
+                }*/
+
+                ConstantBufferVariableInfo cVarInfo = new ConstantBufferVariableInfo()
+                {
+                    DefaultValue = ptrDefault,
+                    Name = member.Name,
+                    Size = member.Type.NumBytes,
+                    StartOffset = member.ByteOffset,
+                    SamplerSize = 0, // TODO Populate this
+                    StartSampler = 0, // TODO Populate this
+                    StartTexture = 0, // TODO Popualte this
+                    TextureSize = 0, // TODO Populate this
+                    Flags = ShaderVariableFlags.None, // TODO Can these flags be detected in SpirvReflector?
+                };
+                
+                cBufferInfo.Variables.Add(cVarInfo);
+                cVarInfo.Type.Name = member.Name;
+                cVarInfo.Type.Offset = member.ByteOffset;
+                cVarInfo.Type.Type = GetMemberVariableType(member.Type);
+                PopulateTypeInfo(cVarInfo.Type, member);
+            }
+        }
+        
+        private void PopulateTypeInfo(ShaderTypeInfo typeInfo, SpirvTypeMember member)
+        {
+            SpirvType memberType = member.Type;
+
+            switch (memberType.Kind)
+            {
+                case SpirvTypeKind.Bool:
+                case SpirvTypeKind.Float:
+                case SpirvTypeKind.Int:
+                    typeInfo.Class = ShaderVariableClass.Scalar;
+                    typeInfo.ColumnCount = 1;
+                    typeInfo.RowCount = 1;
+                    break;
+
+                case SpirvTypeKind.Matrix:
+                    if (member.Decorations.HasDecoration(SpirvDecoration.RowMajor))
+                    {
+                        typeInfo.Class = ShaderVariableClass.MatrixRows;
+                        typeInfo.ColumnCount = memberType.Length;
+                        typeInfo.RowCount = memberType.ElementType.Length;
+                    }
+                    else
+                    {
+                        typeInfo.Class = ShaderVariableClass.MatrixColumns;
+                        typeInfo.ColumnCount = memberType.ElementType.Length;
+                        typeInfo.RowCount = memberType.Length;
+                    }
+                    break;
+
+                case SpirvTypeKind.Vector:
+                    typeInfo.Class = ShaderVariableClass.Vector;
+                    typeInfo.ColumnCount = memberType.Length;
+                    typeInfo.RowCount = 1;
+                    break;
+
+                case SpirvTypeKind.Struct:
+                    typeInfo.Class = ShaderVariableClass.Struct;
+                    break;
+            }
+        }
+
+        private ShaderVariableType GetMemberVariableType(SpirvType type)
+        {
+            switch (type.Kind)
+            {
+                default:
+                case SpirvTypeKind.Bool:
+                    return ShaderVariableType.Bool;
+
+                case SpirvTypeKind.Int:
+                    if(type.NumBytes == 8)
+                        return ShaderVariableType.Int64;
+                    else if(type.NumBytes == 4)
+                        return ShaderVariableType.Int;
+                    else if(type.NumBytes == 2)
+                        return ShaderVariableType.Int16;
+                    else
+                        throw new ArgumentException($"GetVariableType() encountered an unknown Int size: {type.NumBytes}");
+
+                case SpirvTypeKind.Float:
+                    if(type.NumBytes == 8)
+                        return ShaderVariableType.Double;
+                    else if(type.NumBytes == 4)
+                        return ShaderVariableType.Float;
+                    else if(type.NumBytes == 2)
+                        return ShaderVariableType.Float16;
+                    else
+                        throw new ArgumentException($"GetVariableType() encountered an unknown Float size: {type.NumBytes}");
+
+                case SpirvTypeKind.UInt:
+                    if (type.NumBytes == 8)
+                        return ShaderVariableType.UInt64;
+                    else if (type.NumBytes == 4)
+                        return ShaderVariableType.UInt;
+                    else if (type.NumBytes == 2)
+                        return ShaderVariableType.UInt16;
+                    else
+                        throw new ArgumentException($"GetVariableType() encountered an unknown UInt size: {type.NumBytes}");
+            }
+        }
+
 
         private void PopulateReflectionParamters(ShaderReflection result, SpirvEntryPoint ep, ShaderIOStructureType type)
         {
@@ -111,7 +254,7 @@ namespace Molten.Graphics.Vulkan
 
                 ShaderParameterInfo p = new ShaderParameterInfo()
                 {
-                    ComponentType = ShaderRegisterType.UInt32,
+                    ComponentType = GetRegisterType(v.Type),
                     Mask = ShaderComponentMaskFlags.All,
                     ReadWriteMask = 255,
                     MinPrecision = GetMinPrecision(v.Type),
@@ -123,6 +266,49 @@ namespace Molten.Graphics.Vulkan
                 ProcessDecorations(p, v);
                 p.SystemValueType = GetSystemValue(p.SemanticName);
                 parameters.Add(p);
+            }
+        }
+
+        private ShaderRegisterType GetRegisterType(SpirvType t)
+        {
+            if (t.Kind == SpirvTypeKind.Vector)
+                t = t.ElementType;
+            else if (t.Kind == SpirvTypeKind.Matrix)
+                t = t.ElementType.ElementType;
+
+            switch (t.Kind)
+            {
+                default:
+                    return ShaderRegisterType.Unknown;
+
+                case SpirvTypeKind.Float:
+                    switch (t.NumBytes)
+                    {
+                        default: throw new Exception($"Unsupported float length: {t.NumBytes}");
+                        case 2: return ShaderRegisterType.Float16;
+                        case 4: return ShaderRegisterType.Float32;
+                        case 8: return ShaderRegisterType.Float64;
+                    }
+
+                case SpirvTypeKind.Int:
+                    switch (t.NumBytes)
+                    {
+                        default: throw new Exception($"Unsupported int length: {t.NumBytes}");
+                        case 1: return ShaderRegisterType.SInt8;
+                        case 2: return ShaderRegisterType.SInt16;
+                        case 4: return ShaderRegisterType.SInt32;
+                        case 8: return ShaderRegisterType.SInt64;
+                    }
+
+                case SpirvTypeKind.UInt:
+                    switch (t.NumBytes)
+                    {
+                        default: throw new Exception($"Unsupported uint length: {t.NumBytes}");
+                        case 1: return ShaderRegisterType.UInt8;
+                        case 2: return ShaderRegisterType.UInt16;
+                        case 4: return ShaderRegisterType.UInt32;
+                        case 8: return ShaderRegisterType.UInt64;
+                    }
             }
         }
 

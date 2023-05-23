@@ -100,7 +100,7 @@ namespace Molten.Graphics.DX11
                         {
                             case ShaderVariableType.Int:
                                 return new ScalarArray<int>(this, elementCount, name);
-                            case ShaderVariableType.Uint:
+                            case ShaderVariableType.UInt:
                                 return new ScalarArray<uint>(this, elementCount, name);
                             case ShaderVariableType.Float:
                                 return new ScalarArray<float>(this, elementCount, name);
@@ -112,7 +112,7 @@ namespace Molten.Graphics.DX11
                         {
                             case ShaderVariableType.Int:
                                 return new ScalarVariable<int>(this, rows, columns, name);
-                            case ShaderVariableType.Uint:
+                            case ShaderVariableType.UInt:
                                 return new ScalarVariable<uint>(this, rows, columns, name);
                             case ShaderVariableType.Float:
                                 return new ScalarVariable<float>(this, rows, columns, name);

@@ -1,4 +1,6 @@
 ﻿
+using Silk.NET.Core.Native;
+
 namespace Molten.Graphics
 {
     public enum ShaderIOStructureType
@@ -68,57 +70,13 @@ namespace Molten.Graphics
             for (int i = 0; i < count; i++)
             {
                 ShaderParameterInfo pInfo = parameters[i];
-                ShaderComponentMaskFlags usageMask = (pInfo.Mask & ShaderComponentMaskFlags.ComponentX);
-                usageMask |= (pInfo.Mask & ShaderComponentMaskFlags.ComponentY);
-                usageMask |= (pInfo.Mask & ShaderComponentMaskFlags.ComponentZ);
-                usageMask |= (pInfo.Mask & ShaderComponentMaskFlags.ComponentW);
-
-                ShaderRegisterType comType = pInfo.ComponentType;
-                GraphicsFormat eFormat = GraphicsFormat.Unknown;
-                switch (usageMask)
-                {
-                    case ShaderComponentMaskFlags.ComponentX:
-                        if (comType == ShaderRegisterType.UInt32)
-                            eFormat = GraphicsFormat.R32_UInt;
-                        else if (comType == ShaderRegisterType.SInt32)
-                            eFormat = GraphicsFormat.R32_SInt;
-                        else if (comType == ShaderRegisterType.Float32)
-                            eFormat = GraphicsFormat.R32_Float;
-                        break;
-
-                    case ShaderComponentMaskFlags.ComponentX | ShaderComponentMaskFlags.ComponentY:
-                        if (comType == ShaderRegisterType.UInt32)
-                            eFormat = GraphicsFormat.R32G32_UInt;
-                        else if (comType == ShaderRegisterType.SInt32)
-                            eFormat = GraphicsFormat.R32G32_SInt;
-                        else if (comType == ShaderRegisterType.Float32)
-                            eFormat = GraphicsFormat.R32G32_Float;
-                        break;
-
-                    case ShaderComponentMaskFlags.ComponentX | ShaderComponentMaskFlags.ComponentY |
-                ShaderComponentMaskFlags.ComponentZ:
-                        if (comType == ShaderRegisterType.UInt32)
-                            eFormat = GraphicsFormat.R32G32B32_UInt;
-                        else if (comType == ShaderRegisterType.SInt32)
-                            eFormat = GraphicsFormat.R32G32B32_SInt;
-                        else if (comType == ShaderRegisterType.Float32)
-                            eFormat = GraphicsFormat.R32G32B32_Float;
-                        break;
-
-                    case ShaderComponentMaskFlags.ComponentX | ShaderComponentMaskFlags.ComponentY |
-                ShaderComponentMaskFlags.ComponentZ | ShaderComponentMaskFlags.ComponentW:
-                        if (comType == ShaderRegisterType.UInt32)
-                            eFormat = GraphicsFormat.R32G32B32A32_UInt;
-                        else if (comType == ShaderRegisterType.SInt32)
-                            eFormat = GraphicsFormat.R32G32B32A32_SInt;
-                        else if (comType == ShaderRegisterType.Float32)
-                            eFormat = GraphicsFormat.R32G32B32A32_Float;
-                        break;
-                }
 
                 // Store the element
-                if(isVertex)
+                if (isVertex)
+                {
+                    GraphicsFormat eFormat = GetFormatFromMask(pInfo.Mask, pInfo.ComponentType);
                     BuildVertexElement(result, type, pInfo, eFormat, i);
+                }
 
                 Metadata[i] = new InputElementMetadata()
                 {
@@ -127,6 +85,89 @@ namespace Molten.Graphics
                     SemanticIndex = pInfo.SemanticIndex
                 };
             }
+        }
+
+        private GraphicsFormat GetFormatFromMask(ShaderComponentMaskFlags usageMask, ShaderRegisterType comType)
+        {
+            uint regSize = 8;
+            string regType = "";
+            string formatName = "";
+
+            // Get format type
+            switch (comType)
+            {
+                case ShaderRegisterType.SInt8:
+                case ShaderRegisterType.SInt16:
+                case ShaderRegisterType.SInt32:
+                case ShaderRegisterType.SInt64:
+                    regType = "Int";
+                    break;
+
+                case ShaderRegisterType.UInt8:
+                case ShaderRegisterType.UInt16:
+                case ShaderRegisterType.UInt32:
+                case ShaderRegisterType.UInt64:
+                    regType = "UInt";
+                    break;
+
+                case ShaderRegisterType.Float16:
+                case ShaderRegisterType.Float32:
+                case ShaderRegisterType.Float64:
+                    regType = "Float";
+                    break;
+            }
+
+            // Get format component size
+            switch (comType)
+            {
+                case ShaderRegisterType.SInt8:
+                case ShaderRegisterType.UInt8:
+                    regSize = 8;
+                    break;
+
+                case ShaderRegisterType.SInt16:
+                case ShaderRegisterType.UInt16:
+                case ShaderRegisterType.Float16:
+                    regSize = 16;
+                    break;
+
+                case ShaderRegisterType.SInt32:
+                case ShaderRegisterType.UInt32:
+                case ShaderRegisterType.Float32:
+                    regSize = 32;
+                    break; ;
+
+                case ShaderRegisterType.SInt64:
+                case ShaderRegisterType.UInt64:
+                case ShaderRegisterType.Float64:
+                    regSize = 64;
+                    break;
+            }
+
+            // Build the format string based on the provided component mask flags.
+            switch (usageMask)
+            {
+                case ShaderComponentMaskFlags.ComponentX:
+                    formatName = $"R{regSize}_{regType}";
+                    break;
+
+                case ShaderComponentMaskFlags.ComponentX | ShaderComponentMaskFlags.ComponentY:
+                    formatName = $"R{regSize}G{regSize}_{regType}";
+                    break;
+
+                case ShaderComponentMaskFlags.ComponentX | ShaderComponentMaskFlags.ComponentY | ShaderComponentMaskFlags.ComponentZ:
+                    formatName = $"R{regSize}G{regSize}B{regSize}_{regType}";
+                    break;
+
+                case ShaderComponentMaskFlags.ComponentX | ShaderComponentMaskFlags.ComponentY | ShaderComponentMaskFlags.ComponentZ | ShaderComponentMaskFlags.ComponentW:
+                    formatName = $"R{regSize}G{regSize}B{regSize}A{regSize}_{regType}";
+                    break;
+            }
+
+            if (Enum.TryParse(formatName, true, out GraphicsFormat format))
+                return format;
+            else
+                return GraphicsFormat.Unknown;
         }
 
         protected abstract void Initialize(uint vertexElementCount);

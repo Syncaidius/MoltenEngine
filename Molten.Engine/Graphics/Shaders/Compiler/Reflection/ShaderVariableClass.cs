@@ -1,8 +1,8 @@
 ﻿namespace Molten.Graphics
 {
     /// <summary>
-    /// Based on the D3D shader variable type enum: D3D_SHADER_VARIABLE_TYPE .
-    /// <param>See: https://learn.microsoft.com/en-us/windows/win32/api/d3dcommon/ne-d3dcommon-d3d_shader_variable_type</param>
+    /// Based on the D3D shader variable type enum: D3D_SHADER_VARIABLE_CLASS .
+    /// <param>See: https://learn.microsoft.com/en-us/windows/win32/api/d3dcommon/ne-d3dcommon-d3d_shader_variable_class</param>
     /// </summary>
     public enum ShaderVariableClass
     {
@@ -22,6 +22,6 @@
 
         InterfacePointer = 7,
 
-        ForceDword = int.MaxValue
+        ForceDword = 0x7fffffff,
     }
 }

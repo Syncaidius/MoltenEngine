@@ -62,7 +62,6 @@ namespace Molten.Graphics.DX11
                 };
 
                 r.BoundResources.Add(bindInfo);
-                uint bindPoint = bindInfo.BindPoint;
 
                 switch (bindInfo.Type)
                 {
