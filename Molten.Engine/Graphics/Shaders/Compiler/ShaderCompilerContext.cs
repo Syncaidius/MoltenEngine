@@ -21,6 +21,8 @@
 
         public ShaderCompiler Compiler { get; }
 
+        public string EntryPoint { get; internal set; }
+
         List<ShaderCompilerMessage> _messages;
         Dictionary<Type, Dictionary<string, object>> _resources;
 

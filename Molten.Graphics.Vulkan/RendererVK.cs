@@ -48,6 +48,11 @@ namespace Molten.Graphics.Vulkan
             return (((variant) << 29) | ((major) << 22) | ((minor) << 12) | (patch));
         }
 
+        internal bool HasExtension(string extName)
+        {
+            return _instanceLoader.HasExtension(extName);
+        }
+
         protected override GraphicsManager OnInitializeDisplayManager(GraphicsSettings settings)
         {
             // TODO Store baseline profiles for each OS/platform where possible, or default to Moltens own.

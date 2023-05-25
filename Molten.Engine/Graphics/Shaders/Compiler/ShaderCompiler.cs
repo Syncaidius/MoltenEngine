@@ -138,10 +138,10 @@ namespace Molten.Graphics
             // Compile each stage of the material pass.
             foreach (ShaderType epType in passDef.EntryPoints.Keys)
             {
-                string ep = passDef.EntryPoints[epType];
+                context.EntryPoint = passDef.EntryPoints[epType];
                 context.Type = epType;
 
-                if (string.IsNullOrWhiteSpace(ep))
+                if (string.IsNullOrWhiteSpace(context.EntryPoint))
                 {
                     if (_mandatoryShaders.Contains(epType))
                         context.AddError($"Mandatory '{epType}' point for  shader is missing.");
@@ -149,18 +149,26 @@ namespace Molten.Graphics
                     continue;
                 }
 
-                if (CompileSource(ep, epType, context, out ShaderCodeResult cResult))
+                if (CompileSource(context.EntryPoint, epType, context, out ShaderCodeResult cResult))
                 {
                     result[epType] = cResult;
                     ShaderComposition sc = pass.AddComposition(epType);
 
-                    sc.PtrShader = BuildShader(pass, epType, cResult.ByteCode, cResult.NumBytes);
-                    sc.InputStructure = BuildIO(cResult, sc.Type, ShaderIOStructureType.Input);
-                    sc.OutputStructure = BuildIO(cResult, sc.Type, ShaderIOStructureType.Output);
+                    if (Validate(pass, context, cResult))
+                    {
+                        sc.PtrShader = BuildShader(pass, epType, cResult.ByteCode, cResult.NumBytes);
+                        sc.InputStructure = BuildIO(cResult, sc.Type, ShaderIOStructureType.Input);
+                        sc.OutputStructure = BuildIO(cResult, sc.Type, ShaderIOStructureType.Output);
+                    }
+                    else
+                    {
+                        context.AddError($"{context.Source.Filename}: Validation failed for '{epType}' stage of shader pass.");
+                        return;
+                    }
                 }
                 else
                 {
-                    context.AddError($"{context.Source.Filename}: Failed to compile {epType} stage of material pass.");
+                    context.AddError($"{context.Source.Filename}: Failed to compile {epType} stage of shader pass.");
                     return;
                 }
             }
@@ -497,6 +505,8 @@ namespace Molten.Graphics
         }
 
         protected unsafe abstract void* BuildShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes);
+
+        protected abstract bool Validate(HlslPass pass, ShaderCompilerContext context, ShaderCodeResult result);
 
         public RenderService Renderer { get; }
 

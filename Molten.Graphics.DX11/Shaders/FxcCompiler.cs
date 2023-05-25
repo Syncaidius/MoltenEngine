@@ -28,6 +28,11 @@ namespace Molten.Graphics.DX11
             _d3dCompiler.Dispose();
         }
 
+        protected override bool Validate(HlslPass pass, ShaderCompilerContext context, ShaderCodeResult result)
+        {
+            return true;
+        }
+
         private unsafe ShaderReflection BuildReflection(ShaderCompilerContext context, ID3D10Blob* byteCode)
         {
             Guid guidReflect = ID3D11ShaderReflection.Guid;

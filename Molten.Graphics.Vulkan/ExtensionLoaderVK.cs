@@ -168,7 +168,6 @@ namespace Molten.Graphics.Vulkan
                 }
             }
 
-
             bool failWarned = false;
             for (int i = 0; i < names.Count; i++)
             {

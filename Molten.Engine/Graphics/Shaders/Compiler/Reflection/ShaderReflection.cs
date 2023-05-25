@@ -21,6 +21,11 @@
         /// </summary>
         public GeometryHullTopology GSInputPrimitive;
 
+        /// <summary>
+        /// Gets a list of required API-specific extensions, if any.
+        /// </summary>
+        public List<string> RequiredExtensions { get; } = new List<string>();
+
         public List<ShaderResourceInfo> BoundResources { get; } = new List<ShaderResourceInfo>();
 
         public List<ShaderParameterInfo> InputParameters { get; } = new List<ShaderParameterInfo>();

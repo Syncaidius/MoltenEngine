@@ -24,6 +24,11 @@ namespace Molten.Graphics.DX12
             throw new NotImplementedException();
         }
 
+        protected override bool Validate(HlslPass pass, ShaderCompilerContext context, ShaderCodeResult result)
+        {
+            throw new NotImplementedException();
+        }
+
         protected override unsafe ShaderReflection OnBuildReflection(ShaderCompilerContext context, IDxcBlob* byteCode, DxcBuffer* reflectionBuffer)
         {
             Guid guidReflection = ID3D12ShaderReflection.Guid;

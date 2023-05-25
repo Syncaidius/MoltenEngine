@@ -70,11 +70,18 @@ namespace Molten.Graphics.Vulkan
             ActiveOutputs = _activeOutputs.AsReadOnly();
         }
 
+        internal bool HasExtension(string extName)
+        {
+            return _loader.HasExtension(extName);
+        }
+
         internal void Initialize(CommandSetCapabilityFlags capFlags)
         {
             _native = EngineUtil.Alloc<Device>();
             _queues = new List<GraphicsQueueVK>();
             _loader = new DeviceLoaderVK(_renderer, this, capFlags);
+            _loader.AddBasicExtension("VK_GOOGLE_hlsl_functionality1");
+            _loader.AddBasicExtension("VK_GOOGLE_user_type");
         }
 
         private DeviceVendor ParseVendorID(uint vendorID)

@@ -51,7 +51,7 @@ namespace Molten.Graphics.Vulkan
         protected override unsafe ShaderReflection OnBuildReflection(ShaderCompilerContext context, IDxcBlob* byteCode, DxcBuffer* reflectionBuffer)
         {
             // Output to file.
-            string fn = $"{context.Source.Filename}_{context.Type}.spirv";
+            string fn = $"{context.Source.Filename}_{context.Type}_{context.EntryPoint}.spirv";
             /*using (FileStream stream = new FileStream(fn, FileMode.Create, FileAccess.Write))
             {
                 using (BinaryWriter writer = new BinaryWriter(stream))
@@ -62,13 +62,16 @@ namespace Molten.Graphics.Vulkan
                 }
             }*/
 
-            SpirvReflection reflection = new SpirvReflection(_logger);
+            SpirvReflection reflection = new SpirvReflection(_logger, SpirvReflectionFlags.LogDebug);
             SpirvReflectionResult rr = reflection.Reflect(byteCode->GetBufferPointer(), byteCode->GetBufferSize());
 
             ShaderReflection result = new ShaderReflection()
             {
                 GSInputPrimitive = GeometryHullTopology.Undefined, // TODO populate
             };
+
+            foreach(string ext in rr.Extensions)
+                result.RequiredExtensions.Add(ext);
 
             // Populate uniform/constant buffer binding info.
             foreach(SpirvVariable v in rr.Uniforms)
@@ -84,6 +87,24 @@ namespace Molten.Graphics.Vulkan
             }
 
             return result;
+        }
+
+        protected override bool Validate(HlslPass pass, ShaderCompilerContext context, ShaderCodeResult result)
+        {
+            DeviceVK device = pass.Device as DeviceVK;
+            for(int i = 0; i < result.Reflection.RequiredExtensions.Count; i++)
+            {
+                string extName = result.Reflection.RequiredExtensions[i];
+                extName = "VK_" + extName.Substring(4); // Convert from SPIR-V extension name to Vulkan extension name.
+
+                if(!device.HasExtension(extName))
+                {
+                    context.AddError($"Required extension '{extName}' is not enabled on the current device.");
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private void PopulateConstantBuffer(SpirvVariable v, ShaderReflection result)
@@ -160,7 +181,7 @@ namespace Molten.Graphics.Vulkan
                     break;
 
                 case SpirvTypeKind.Matrix:
-                    if (member.Decorations.HasDecoration(SpirvDecoration.RowMajor))
+                    if (member.Decorations.Has(SpirvDecoration.RowMajor))
                     {
                         typeInfo.Class = ShaderVariableClass.MatrixRows;
                         typeInfo.ColumnCount = memberType.Length;
