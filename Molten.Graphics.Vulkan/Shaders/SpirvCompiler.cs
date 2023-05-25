@@ -65,10 +65,7 @@ namespace Molten.Graphics.Vulkan
             SpirvReflection reflection = new SpirvReflection(_logger, SpirvReflectionFlags.LogDebug);
             SpirvReflectionResult rr = reflection.Reflect(byteCode->GetBufferPointer(), byteCode->GetBufferSize());
 
-            ShaderReflection result = new ShaderReflection()
-            {
-                GSInputPrimitive = GeometryHullTopology.Undefined, // TODO populate
-            };
+            ShaderReflection result = new ShaderReflection();
 
             foreach(string ext in rr.Extensions)
                 result.RequiredExtensions.Add(ext);
@@ -82,6 +79,9 @@ namespace Molten.Graphics.Vulkan
             {
                 PopulateReflectionParamters(result, ep, ShaderIOStructureType.Input);
                 PopulateReflectionParamters(result, ep, ShaderIOStructureType.Output);
+
+                if (context.Type == ShaderType.Geometry)
+                    result.GSInputPrimitive = GetGeometryTopology(ep);
 
                 break; //  TODO support multiple entry points in reflection
             }
@@ -105,6 +105,29 @@ namespace Molten.Graphics.Vulkan
             }
 
             return true;
+        }
+
+        private GeometryHullTopology GetGeometryTopology(SpirvEntryPoint ep)
+        {
+            foreach(SpirvExecutionMode mode in ep.Execution.Modes)
+            {
+                switch (mode)
+                {
+                    case SpirvExecutionMode.InputLines:
+                        return GeometryHullTopology.Line;
+
+                    case SpirvExecutionMode.InputLinesAdjacency:
+                        return GeometryHullTopology.LineAdjacency;
+
+                    case SpirvExecutionMode.InputPoints:
+                        return GeometryHullTopology.Point;
+
+                    case SpirvExecutionMode.InputTrianglesAdjacency:
+                        return GeometryHullTopology.TriangleAdjaccency;
+                }
+            }
+
+            return GeometryHullTopology.Triangle;
         }
 
         private void PopulateConstantBuffer(SpirvVariable v, ShaderReflection result)

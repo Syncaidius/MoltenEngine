@@ -29,12 +29,12 @@
         /// <summary>
         /// Line adjacency topology.
         /// </summary>
-        LineAdj = 6,
+        LineAdjacency = 6,
 
         /// <summary>
         /// Triangle adjacency topology.
         /// </summary>
-        TriangleAdj = 7,
+        TriangleAdjaccency = 7,
 
         /// <summary>
         /// A patch with 1 control point.

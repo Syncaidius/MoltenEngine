@@ -107,8 +107,8 @@
                 * quote: "A geometry shader that expects primitives with adjacency (for example, 6 vertices per triangle) is 
                 * not valid when tessellation is active (this results in undefined behavior, which the debug layer will complain about)."*/
             HlslPass pass = pResult.Pass;
-            valid = pass.GeometryPrimitive == GeometryHullTopology.LineAdj ||
-                pass.GeometryPrimitive == GeometryHullTopology.TriangleAdj;
+            valid = pass.GeometryPrimitive == GeometryHullTopology.LineAdjacency ||
+                pass.GeometryPrimitive == GeometryHullTopology.TriangleAdjaccency;
 
             return valid;
         }
