@@ -31,7 +31,7 @@ namespace Molten.Graphics.Vulkan
             for(uint i = 0; i < glfwCount; i++)
             {
                 string name = SilkMarshal.PtrToString((nint)glfwNames[i], NativeStringEncoding.UTF8);
-                AddBasicExtension(name);
+                AddExtension(name);
             }
         }
 

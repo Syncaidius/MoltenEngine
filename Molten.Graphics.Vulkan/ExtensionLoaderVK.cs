@@ -62,19 +62,26 @@ namespace Molten.Graphics.Vulkan
                 return t.Name;
         }
 
+        /// <summary>
+        /// Loads a module-based Vulkan extension, which provides application-level access to extended functionality.
+        /// </summary>
+        /// <typeparam name="E">The type of extension module to load.</typeparam>
+        /// <param name="loadCallback">A callback to invoke when the module is loaded.</param>
+        /// <param name="destroyCallback">A callback to invoke when the module is disposed and destroyed.</param>
         internal void AddExtension<E>(Action<E> loadCallback = null, Action<E> destroyCallback = null)
             where E : NativeExtension<Vk>
         {
-            if (_bind == null)
-                throw new Exception("Cannot add extensions before BeginNewInstance() has been called");
-
             VulkanExtension<E> ext = new VulkanExtension<E>(loadCallback, destroyCallback);
             string extName = GetNativeExtensionName<E>();
             if(!_bind.Extensions.ContainsKey(extName))
                 _bind.Extensions.Add(extName, ext);
         }
 
-        internal void AddBasicExtension(string name)
+        /// <summary>
+        /// Loads a non-module based Vulkan extension. That is, an extension that only requires a name to be provided for it to be loaded.
+        /// </summary>
+        /// <param name="name"></param>
+        internal void AddExtension(string name)
         {
             VulkanBasicExtension ext = new VulkanBasicExtension();
             if (!_bind.Extensions.ContainsKey(name))
