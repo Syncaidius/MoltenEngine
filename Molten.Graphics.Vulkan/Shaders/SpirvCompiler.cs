@@ -15,12 +15,14 @@ namespace Molten.Graphics.Vulkan
     {
         Vk _vk;
         ReflectionLogAdapter _logger;
+        SpirvReflection _reflector;
 
         public SpirvCompiler(Vk vk, RenderService renderer, string includePath, Assembly includeAssembly, VersionVK targetApi) : 
             base(renderer, includePath, includeAssembly)
         {
             _vk = vk;
             _logger = new ReflectionLogAdapter(renderer.Log);
+            _reflector = new SpirvReflection(_logger, SpirvReflectionFlags.LogDebug);
 
             AddBaseArg(DxcCompilerArg.SpirV);
             AddBaseArg(DxcCompilerArg.HlslVersion, "2021");
@@ -62,9 +64,7 @@ namespace Molten.Graphics.Vulkan
                 }
             }*/
 
-            SpirvReflection reflection = new SpirvReflection(_logger, SpirvReflectionFlags.LogDebug);
-            SpirvReflectionResult rr = reflection.Reflect(byteCode->GetBufferPointer(), byteCode->GetBufferSize());
-
+            SpirvReflectionResult rr = _reflector.Reflect(byteCode->GetBufferPointer(), byteCode->GetBufferSize());
             ShaderReflection result = new ShaderReflection();
 
             foreach(string ext in rr.Extensions)
