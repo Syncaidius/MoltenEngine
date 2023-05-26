@@ -15,10 +15,18 @@ namespace Molten.Graphics.Vulkan
         internal unsafe MemoryManagerVK(DeviceVK device)
         {
             _device = device;
-
-            PhysicalDeviceMemoryProperties2 mem = new PhysicalDeviceMemoryProperties2(StructureType.PhysicalDeviceMemoryProperties2);
-            device.VK.GetPhysicalDeviceMemoryProperties2(device.Adapter, &mem);
-            ref PhysicalDeviceMemoryProperties p = ref mem.MemoryProperties;
+            PhysicalDeviceMemoryProperties p;
+            RendererVK rendererVK = device.Renderer as RendererVK;
+            if (rendererVK.ApiVersion < new VersionVK(1, 1))
+            {
+                p = device.VK.GetPhysicalDeviceMemoryProperties(device.Adapter);
+            }
+            else
+            {
+                PhysicalDeviceMemoryProperties2 mem = new PhysicalDeviceMemoryProperties2(StructureType.PhysicalDeviceMemoryProperties2);
+                device.VK.GetPhysicalDeviceMemoryProperties2(device.Adapter, &mem);
+                p = mem.MemoryProperties;
+            }
 
             List<MemoryHeapVK.TypeIndex> types = new List<MemoryHeapVK.TypeIndex>();
             _heaps = new MemoryHeapVK[p.MemoryHeapCount];

@@ -32,7 +32,6 @@ namespace Molten.Graphics.Vulkan
             _devices = new List<DeviceVK>();
             _instanceLoader = new InstanceLoaderVK(this);
             _displayManager = new DisplayManagerVK(this);
-            ApiVersion = new VersionVK(1, 1, 0);
         }
 
         /// <summary>
@@ -97,7 +96,7 @@ namespace Molten.Graphics.Vulkan
         protected override void OnInitializeRenderer(EngineSettings settings)
         {
             Assembly includeAssembly = GetType().Assembly;
-            _shaderCompiler = new SpirvCompiler(VK, this, "\\Assets\\HLSL\\include\\", includeAssembly, ApiVersion);
+            _shaderCompiler = new SpirvCompiler(VK, this, "\\Assets\\HLSL\\include\\", includeAssembly, "vulkan1.1");
         }
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]

@@ -28,7 +28,7 @@ namespace Molten.Graphics.Vulkan
             return Renderer.VK.EnumerateDeviceExtensionProperties(_device.Adapter, nullptr, count, items);
         }
 
-        protected override bool LoadExtension(RendererVK renderer, VulkanExtension ext, Device* obj)
+        protected override bool LoadExtensionModule(RendererVK renderer, VulkanExtension ext, Device* obj)
         {
             return ext.Load(renderer, _vkInstance, obj);
         }

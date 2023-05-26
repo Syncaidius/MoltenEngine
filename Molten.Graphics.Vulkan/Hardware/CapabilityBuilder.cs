@@ -11,12 +11,22 @@ namespace Molten.Graphics.Vulkan
             public void* PNext;
         }
 
-        internal unsafe GraphicsCapabilities Build(DeviceVK device, RendererVK renderer, ref PhysicalDeviceProperties2 properties)
+        internal unsafe GraphicsCapabilities Build(DeviceVK device, RendererVK renderer, ref PhysicalDeviceProperties properties)
         {
-            PhysicalDeviceFeatures2 dFeatures = new PhysicalDeviceFeatures2(StructureType.PhysicalDeviceFeatures2);
-            renderer.VK.GetPhysicalDeviceFeatures2(device, &dFeatures);
-            PhysicalDeviceFeatures features = dFeatures.Features;
-            ref PhysicalDeviceLimits limits = ref properties.Properties.Limits;
+            PhysicalDeviceFeatures features;
+
+            if (renderer.ApiVersion < new VersionVK(1, 1))
+            {
+                features = renderer.VK.GetPhysicalDeviceFeatures(device);
+            }
+            else
+            {
+                PhysicalDeviceFeatures2 dFeatures = new PhysicalDeviceFeatures2(StructureType.PhysicalDeviceFeatures2);
+                renderer.VK.GetPhysicalDeviceFeatures2(device, &dFeatures);
+                features = dFeatures.Features;
+            }
+
+            ref PhysicalDeviceLimits limits = ref properties.Limits;
             GraphicsCapabilities cap = new GraphicsCapabilities();
 
             cap.MaxTexture1DSize = limits.MaxImageDimension1D;
@@ -32,7 +42,7 @@ namespace Molten.Graphics.Vulkan
             cap.MaxAllocatedSamplers = limits.MaxSamplerAllocationCount;
 
             uint variant, major, minor, patch;
-            UnpackVersion(properties.Properties.ApiVersion, out variant, out major, out minor, out patch);
+            UnpackVersion(properties.ApiVersion, out variant, out major, out minor, out patch);
 
             cap.ApiVersion = $"{variant}.{major}.{minor}.{patch}";
             if (major == 1)

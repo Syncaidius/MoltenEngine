@@ -42,7 +42,7 @@ namespace Molten.Graphics.Vulkan
             _bind = new ExtensionBinding();
         }
 
-        protected abstract bool LoadExtension(RendererVK renderer, VulkanExtension ext, D* obj);
+        protected abstract bool LoadExtensionModule(RendererVK renderer, VulkanExtension ext, D* obj);
 
         protected unsafe abstract Result OnBuild(RendererVK renderer, VersionVK apiVersion, TempData tmp, ExtensionBinding binding, D* obj);
 
@@ -122,8 +122,8 @@ namespace Molten.Graphics.Vulkan
             if (IsBuilt)
                 throw new Exception("Cannot call Build() more than once on the same ExtensionManager");
 
-            EnableLayers();
-            EnableExtensions();
+            PrepareLayers();
+            PrepareExtensions();
 
             TempData tmp = new TempData()
             {
@@ -139,7 +139,7 @@ namespace Molten.Graphics.Vulkan
                 // Load load all requested extension modules that were supported/available.
                 foreach (VulkanExtension ext in _bind.Extensions.Values)
                 {
-                    bool extSuccess = LoadExtension(Renderer, ext, ptr);
+                    bool extSuccess = LoadExtensionModule(Renderer, ext, ptr);
                 }
             }
 
@@ -150,7 +150,7 @@ namespace Molten.Graphics.Vulkan
             return success;
         }
 
-        private unsafe void EnableLayers()
+        private unsafe void PrepareLayers()
         {
             string typeName = typeof(D).Name.ToLower();
 
@@ -171,7 +171,7 @@ namespace Molten.Graphics.Vulkan
                     VersionVK specVersion = p.SpecVersion;
                     VersionVK implVersion = p.ImplementationVersion;
                     string desc = SilkMarshal.PtrToString((nint)p.Description, NativeStringEncoding.UTF8);
-                    Renderer.Log.WriteLine($"Loaded validation layer '{name}' -- Version: {specVersion} -- Implementation: {implVersion} -- Desc: {desc}");
+                    Renderer.Log.WriteLine($"Prepared validation layer '{name}' -- Version: {specVersion} -- Implementation: {implVersion} -- Desc: {desc}");
                 }
             }
 
@@ -182,7 +182,7 @@ namespace Molten.Graphics.Vulkan
                 {
                     if (!failWarned)
                     {
-                        Renderer.Log.Warning($"Failed to enable the following {typeName} layers:");
+                        Renderer.Log.Warning($"Failed to prepare the following {typeName} layers:");
                         failWarned = true;
                     }
                     Renderer.Log.Warning($"   {i + 1}. {names[i]}");
@@ -191,7 +191,7 @@ namespace Molten.Graphics.Vulkan
             }
         }
 
-        private unsafe void EnableExtensions()
+        private unsafe void PrepareExtensions()
         {
             string typeName = typeof(D).Name.ToLower();
             ExtensionProperties[] properties = Renderer.Enumerate<ExtensionProperties>(GetExtensions, $"{typeName} extensions");
@@ -199,7 +199,7 @@ namespace Molten.Graphics.Vulkan
             if (properties.Length == 0)
                 return;
 
-            List<string> loaded = new List<string>();
+            List<string> supported = new List<string>();
             List<string> names = _bind.Extensions.Keys.ToList();
 
             foreach(ExtensionProperties p in properties)
@@ -207,24 +207,26 @@ namespace Molten.Graphics.Vulkan
                 string name = SilkMarshal.PtrToString((nint)p.ExtensionName, NativeStringEncoding.UTF8);
                 if (_bind.Extensions.ContainsKey(name))
                 {
-                    loaded.Add(name);
+                    supported.Add(name);
                     VersionVK specVersion = p.SpecVersion;
-                    Renderer.Log.WriteLine($"Loaded {typeName} extension {name} -- Version: {specVersion}");
+                    Renderer.Log.WriteLine($"Prepared {typeName} extension {name} -- Version: {specVersion}");
                 }
             }
 
             bool failWarned = false;
             for (int i = 0; i < names.Count; i++)
             {
-                if (!loaded.Contains(names[i]))
+                string name = names[i];
+
+                if (!supported.Contains(name))
                 {
                     if (!failWarned)
                     {
-                        Renderer.Log.Warning($"Failed to enable the following {typeName} extensions:");
+                        Renderer.Log.Warning($"Failed to prepare the following {typeName} extensions:");
                         failWarned = true;
                     }
-                    Renderer.Log.Warning($"   {i + 1}. {names[i]}");
-                    _bind.Extensions.Remove(names[i]);
+                    Renderer.Log.Warning($"   {i + 1}. {name}");
+                    _bind.Extensions.Remove(name);
                 }
             }
         }

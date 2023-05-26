@@ -18,7 +18,7 @@ namespace Molten.Graphics.Vulkan
             return Renderer.VK.EnumerateInstanceExtensionProperties(nullptr, count, items);
         }
 
-        protected override bool LoadExtension(RendererVK renderer, VulkanExtension ext, Instance* obj)
+        protected override bool LoadExtensionModule(RendererVK renderer, VulkanExtension ext, Instance* obj)
         {
             return ext.Load(renderer, obj, null);
         }
@@ -40,6 +40,7 @@ namespace Molten.Graphics.Vulkan
             ApplicationInfo appInfo = new ApplicationInfo()
             {
                 SType = StructureType.ApplicationInfo,
+                PEngineName = (byte*)SilkMarshal.StringToPtr("Molten Engine", NativeStringEncoding.UTF8),
                 EngineVersion = 1,
                 ApiVersion = apiVersion,
             };
@@ -55,7 +56,10 @@ namespace Molten.Graphics.Vulkan
             };
 
             // Create the instance
-            return renderer.VK.CreateInstance(&createInfo, null, obj);
+            Result r = renderer.VK.CreateInstance(&createInfo, null, obj);
+            SilkMarshal.FreeString((nint)appInfo.PEngineName);
+
+            return r;
         }
     }
 }

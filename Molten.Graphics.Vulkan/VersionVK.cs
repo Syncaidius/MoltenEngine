@@ -12,6 +12,8 @@
             _value = value;
         }
 
+        public VersionVK(uint major, uint minor) : this(0, major, minor, 0) { }
+
         public VersionVK(uint major, uint minor, uint revision) : 
             this(0, major, minor, revision) { }
 
@@ -40,6 +42,39 @@
         public static implicit operator VersionVK(uint value)
         {
             return new VersionVK(value);
+        }
+
+        public static bool operator ==(VersionVK a, VersionVK b)
+        {
+            return a._value == b._value;
+        }
+
+        public static bool operator !=(VersionVK a, VersionVK b)
+        {
+            return a._value != b._value;
+        }
+
+        public static bool operator >(VersionVK a, VersionVK b)
+        {
+            return a._value > b._value;
+        }
+
+        public static bool operator <(VersionVK a, VersionVK b)
+        {
+            return a._value < b._value;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is VersionVK v)
+                return v._value == _value;
+            else
+                return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return _value.GetHashCode();
         }
 
         public override string ToString()

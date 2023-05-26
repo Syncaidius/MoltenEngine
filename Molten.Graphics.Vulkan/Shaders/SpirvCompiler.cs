@@ -17,7 +17,7 @@ namespace Molten.Graphics.Vulkan
         ReflectionLogAdapter _logger;
         SpirvReflection _reflector;
 
-        public SpirvCompiler(Vk vk, RenderService renderer, string includePath, Assembly includeAssembly, VersionVK targetApi) : 
+        public SpirvCompiler(Vk vk, RenderService renderer, string includePath, Assembly includeAssembly, string spirvTarget) : 
             base(renderer, includePath, includeAssembly)
         {
             _vk = vk;
@@ -26,7 +26,7 @@ namespace Molten.Graphics.Vulkan
 
             AddBaseArg(DxcCompilerArg.SpirV);
             AddBaseArg(DxcCompilerArg.HlslVersion, "2021");
-            AddBaseArg(DxcCompilerArg.VulkanVersion, $"vulkan{targetApi.Major}.{targetApi.Minor}");
+            AddBaseArg(DxcCompilerArg.VulkanVersion, spirvTarget);
             AddBaseArg(DxcCompilerArg.Debug);
             AddBaseArg(DxcCompilerArg.SpirVReflection);
         }
@@ -54,7 +54,7 @@ namespace Molten.Graphics.Vulkan
         {
             // Output to file.
             string fn = $"{context.Source.Filename}_{context.Type}_{context.EntryPoint}.spirv";
-            /*using (FileStream stream = new FileStream(fn, FileMode.Create, FileAccess.Write))
+            using (FileStream stream = new FileStream(fn, FileMode.Create, FileAccess.Write))
             {
                 using (BinaryWriter writer = new BinaryWriter(stream))
                 {
@@ -62,7 +62,7 @@ namespace Molten.Graphics.Vulkan
                     writer.Write(t.ToArray(), 0, (int)byteCode->GetBufferSize());
                     context.AddDebug($"Saved SPIR-V bytecode to {fn}");
                 }
-            }*/
+            }
 
             SpirvReflectionResult rr = _reflector.Reflect(byteCode->GetBufferPointer(), byteCode->GetBufferSize());
             ShaderReflection result = new ShaderReflection();

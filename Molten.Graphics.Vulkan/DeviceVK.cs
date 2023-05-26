@@ -50,19 +50,30 @@ namespace Molten.Graphics.Vulkan
             Adapter = pDevice;
             _memory = new MemoryManagerVK(this);
 
-            PhysicalDeviceProperties2 p = new PhysicalDeviceProperties2(StructureType.PhysicalDeviceProperties2);
-            _manager.Renderer.VK.GetPhysicalDeviceProperties2(Adapter, &p);
+            PhysicalDeviceProperties p;
+            bool usingP2 = false;
 
-            Name = SilkMarshal.PtrToString((nint)p.Properties.DeviceName, NativeStringEncoding.UTF8);
-            ID = ParseDeviceID(p.Properties.DeviceID);
-            Vendor = ParseVendorID(p.Properties.VendorID);
-            Type = (GraphicsDeviceType)p.Properties.DeviceType;
-
-            Capabilities = _manager.CapBuilder.Build(this, _manager.Renderer, ref p);
+            if (renderer.ApiVersion < new VersionVK(1, 1))
+            {
+                p = _manager.Renderer.VK.GetPhysicalDeviceProperties(Adapter);
+            }
+            else
+            {
+                PhysicalDeviceProperties2 p2 = new PhysicalDeviceProperties2(StructureType.PhysicalDeviceProperties2);
+                p = p2.Properties;
+                _manager.Renderer.VK.GetPhysicalDeviceProperties2(Adapter, &p2);
 
 #if DEBUG
-            _manager.CapBuilder.LogAdditionalProperties(_manager.Renderer.Log, &p);
+                _manager.CapBuilder.LogAdditionalProperties(_manager.Renderer.Log, &p2);
 #endif
+            }
+
+            Name = SilkMarshal.PtrToString((nint)p.DeviceName, NativeStringEncoding.UTF8);
+            ID = ParseDeviceID(p.DeviceID);
+            Vendor = ParseVendorID(p.VendorID);
+            Type = (GraphicsDeviceType)p.DeviceType;
+
+            Capabilities = _manager.CapBuilder.Build(this, _manager.Renderer, ref p);
 
             _outputs = new List<DisplayOutputVK>();
             _activeOutputs = new List<DisplayOutputVK>();
