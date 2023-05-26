@@ -51,7 +51,6 @@ namespace Molten.Graphics.Vulkan
             _memory = new MemoryManagerVK(this);
 
             PhysicalDeviceProperties p;
-            bool usingP2 = false;
 
             if (renderer.ApiVersion < new VersionVK(1, 1))
             {
@@ -201,7 +200,7 @@ namespace Molten.Graphics.Vulkan
                         if (_gfxQueue == null && queue.HasFlags(CommandSetCapabilityFlags.Graphics))
                             _gfxQueue = queue;
 
-                        _renderer.Log.Write($"Instantiated command queue -- Family: {qi.QueueFamilyIndex} -- Index: {index} -- Flags: {set.CapabilityFlags}");
+                        _renderer.Log.WriteLine($"Instantiated command queue -- Family: {qi.QueueFamilyIndex} -- Index: {index} -- Flags: {set.CapabilityFlags}");
                     }
                 }
 

@@ -300,7 +300,6 @@ namespace Molten.Graphics
         /// <para>Active outputs are added via <see cref="AddActiveOutput(IDisplayOutput)"/>.</para></summary>
         public abstract IReadOnlyList<IDisplayOutput> ActiveOutputs { get; }
 
-
         /// <summary>
         /// Gets the capabilities of the current <see cref="GraphicsDevice"/>.
         /// </summary>

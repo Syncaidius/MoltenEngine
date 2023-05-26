@@ -33,7 +33,7 @@ namespace Molten.Graphics.Vulkan
                 {
                     for (int i = 0; i < deviceCount; i++)
                     {
-                        DeviceVK adapter = new DeviceVK(Renderer, this, devices[0], Renderer.Instance);
+                        DeviceVK adapter = new DeviceVK(Renderer, this, devices[i], Renderer.Instance);
                         _devices.Add(adapter);
                     }
                 }

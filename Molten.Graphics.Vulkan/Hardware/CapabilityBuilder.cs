@@ -106,21 +106,21 @@ namespace Molten.Graphics.Vulkan
                 });
             }
 
+            PopulateMemoryProperties(device, cap);
             return cap;
         }
 
-        private void GetMemoryProperties(DeviceVK device)
+        private void PopulateMemoryProperties(DeviceVK device, GraphicsCapabilities cap)
         {
             for(uint i = 0; i < device.Memory.HeapCount; i++)
             {
-                MemoryHeapVK heap = device.Memory[i];;
-
+                MemoryHeapVK heap = device.Memory[i];
                 double heapSize = ByteMath.ToMegabytes(heap.Size);
 
                 if (heap.HasFlags(MemoryHeapFlags.DeviceLocalBit))
-                    device.Capabilities.DedicatedVideoMemory += heapSize;
+                    cap.DedicatedVideoMemory += heapSize;
                 else
-                    device.Capabilities.SharedVideoMemory += heapSize;
+                    cap.SharedVideoMemory += heapSize;
             }
         }
 
