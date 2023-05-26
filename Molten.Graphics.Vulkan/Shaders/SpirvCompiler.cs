@@ -28,7 +28,6 @@ namespace Molten.Graphics.Vulkan
             AddBaseArg(DxcCompilerArg.HlslVersion, "2021");
             AddBaseArg(DxcCompilerArg.VulkanVersion, spirvTarget);
             AddBaseArg(DxcCompilerArg.Debug);
-            AddBaseArg(DxcCompilerArg.SpirVReflection);
         }
 
         protected override unsafe void* BuildShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes)
@@ -54,7 +53,7 @@ namespace Molten.Graphics.Vulkan
         {
             // Output to file.
             string fn = $"{context.Source.Filename}_{context.Type}_{context.EntryPoint}.spirv";
-            using (FileStream stream = new FileStream(fn, FileMode.Create, FileAccess.Write))
+            /*using (FileStream stream = new FileStream(fn, FileMode.Create, FileAccess.Write))
             {
                 using (BinaryWriter writer = new BinaryWriter(stream))
                 {
@@ -62,7 +61,7 @@ namespace Molten.Graphics.Vulkan
                     writer.Write(t.ToArray(), 0, (int)byteCode->GetBufferSize());
                     context.AddDebug($"Saved SPIR-V bytecode to {fn}");
                 }
-            }
+            }*/
 
             SpirvReflectionResult rr = _reflector.Reflect(byteCode->GetBufferPointer(), byteCode->GetBufferSize());
             ShaderReflection result = new ShaderReflection();
@@ -308,7 +307,19 @@ namespace Molten.Graphics.Vulkan
                 };
 
                 ProcessDecorations(p, v);
-                p.SystemValueType = GetSystemValue(p.SemanticName);
+
+                // Try to get the semantic name using the variable name.
+                if (string.IsNullOrWhiteSpace(p.SemanticName))
+                {
+                    if(v.Name.StartsWith("in.var."))
+                        p.SemanticName = v.Name.Substring(7);
+                    else if(v.Name.StartsWith("out.var."))
+                        p.SemanticName = v.Name.Substring(8);
+                }
+
+                if(!string.IsNullOrWhiteSpace(p.SemanticName))
+                    p.SystemValueType = GetSystemValue(p.SemanticName);
+
                 parameters.Add(p);
             }
         }

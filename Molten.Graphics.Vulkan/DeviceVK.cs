@@ -91,8 +91,6 @@ namespace Molten.Graphics.Vulkan
             _native = EngineUtil.Alloc<Device>();
             _queues = new List<GraphicsQueueVK>();
             _loader = new DeviceLoaderVK(_renderer, this, capFlags);
-            _loader.AddExtension("VK_GOOGLE_hlsl_functionality1");
-            _loader.AddExtension("VK_GOOGLE_user_type");
         }
 
         private DeviceVendor ParseVendorID(uint vendorID)
