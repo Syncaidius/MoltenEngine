@@ -48,16 +48,24 @@
                     if (output.Metadata.Length > 0)
                     {
                         for (int o = 0; o < output.Metadata.Length; o++)
-                            context.AddError($"\t\t[{o}] {output.Metadata[o].SystemValueType} -- index: {output.Metadata[o].SemanticIndex}");
+                        {
+                            ref ShaderIOStructure.InputElementMetadata meta = ref output.Metadata[o];
+                            string name = meta.SystemValueType != ShaderSVType.Undefined ? $"SV_{meta.SystemValueType}" : meta.Name;
+                            context.AddError($"\t\t[{o}] {name} -- index: {meta.SemanticIndex}");
+                        }
                     }
                     else
                     {
                         context.AddError("No output elements expected.");
                     }
 
-                    context.AddError($"\tInput: {currentCompositionType}:");
+                    context.AddError($"\tInput -- {currentCompositionType}:");
                     for (int o = 0; o < input.Metadata.Length; o++)
-                        context.AddError($"\t\t[{o}] {input.Metadata[o].SystemValueType} -- index: {input.Metadata[o].SemanticIndex}");
+                    {
+                        ref ShaderIOStructure.InputElementMetadata meta = ref input.Metadata[o];
+                        string name = meta.SystemValueType != ShaderSVType.Undefined ? $"SV_{meta.SystemValueType}" : meta.Name;
+                        context.AddError($"\t\t[{o}] {name} -- index: {meta.SemanticIndex}");
+                    }
 
                     valid = false;
                 }

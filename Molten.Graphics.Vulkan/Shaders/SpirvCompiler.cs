@@ -295,7 +295,7 @@ namespace Molten.Graphics.Vulkan
         }
 
 
-        private void PopulateReflectionParamters(ShaderCompilerContext context, ShaderReflection result, SpirvEntryPoint ep, ShaderIOStructureType type)
+        private unsafe void PopulateReflectionParamters(ShaderCompilerContext context, ShaderReflection result, SpirvEntryPoint ep, ShaderIOStructureType type)
         {
             List<ShaderParameterInfo> parameters;
             IReadOnlyList<SpirvVariable> variables;
@@ -343,8 +343,16 @@ namespace Molten.Graphics.Vulkan
                 }
 
                 // Try to figure out the HLSL system value (SV_) type.
-                if(!string.IsNullOrWhiteSpace(p.SemanticName))
-                    p.SystemValueType = GetSystemValue(context.Type, p.SemanticName);
+                if (!string.IsNullOrWhiteSpace(p.SemanticName))
+                {
+                    p.SystemValueType = GetSystemValue(context.Type, p);
+                    p.SemanticNamePtr = (void*)SilkMarshal.StringToPtr(p.SemanticName, NativeStringEncoding.UTF8);
+                }
+
+                if(p.SystemValueType == ShaderSVType.Undefined)
+                {
+
+                }
 
                 parameters.Add(p);
             }
@@ -426,7 +434,7 @@ namespace Molten.Graphics.Vulkan
             }  
         }
 
-        private unsafe void ProcessDecorations(ShaderParameterInfo p, SpirvVariable v)
+        private void ProcessDecorations(ShaderParameterInfo p, SpirvVariable v)
         {
             // Prioritize UserSemantic decoration semantics
             foreach (SpirvDecoration dec in v.Decorations.Keys)
@@ -459,8 +467,6 @@ namespace Molten.Graphics.Vulkan
                         break;
                 }
             }
-
-            p.SemanticNamePtr = (void*)SilkMarshal.StringToPtr(p.SemanticName, NativeStringEncoding.UTF8);
         }
 
         /// <summary>
@@ -483,10 +489,15 @@ namespace Molten.Graphics.Vulkan
             }
         }
 
-        private ShaderSVType GetSystemValue(ShaderType shaderType, string semanticName)
+        private ShaderSVType GetSystemValue(ShaderType shaderType, ShaderParameterInfo p)
         {
-            semanticName = semanticName.ToLower();
+            string semanticName = p.SemanticName.ToLower();
 
+            // Remove the semantic index from the semantic name, if present.
+            if(semanticName.EndsWith(p.SemanticIndex.ToString()))
+                semanticName = semanticName.Substring(0, semanticName.Length - p.SemanticIndex.ToString().Length);
+
+            // Translate GLSL to HLSL semantics
             if (semanticName.StartsWith("gl_"))
             {
                 switch (semanticName)
@@ -572,11 +583,13 @@ namespace Molten.Graphics.Vulkan
             }
             else
             {
+                // Only translate HLSL SV_ semantics.
                 if (semanticName.StartsWith("sv_"))
+                {
                     semanticName = semanticName.Substring(3);
-
-                if (Enum.TryParse(semanticName, true, out ShaderSVType result))
-                    return result;
+                    if (Enum.TryParse(semanticName, true, out ShaderSVType result))
+                        return result;
+                }
             }
 
             return ShaderSVType.Undefined;
