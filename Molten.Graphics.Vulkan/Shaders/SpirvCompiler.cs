@@ -101,8 +101,8 @@ namespace Molten.Graphics.Vulkan
             // Populate input/output resource parameters
             foreach (SpirvEntryPoint ep in rr.EntryPoints)
             {
-                PopulateReflectionParamters(result, ep, ShaderIOStructureType.Input);
-                PopulateReflectionParamters(result, ep, ShaderIOStructureType.Output);
+                PopulateReflectionParamters(context, result, ep, ShaderIOStructureType.Input);
+                PopulateReflectionParamters(context, result, ep, ShaderIOStructureType.Output);
 
                 if (context.Type == ShaderType.Geometry)
                     result.GSInputPrimitive = GetGeometryTopology(ep);
@@ -295,7 +295,7 @@ namespace Molten.Graphics.Vulkan
         }
 
 
-        private void PopulateReflectionParamters(ShaderReflection result, SpirvEntryPoint ep, ShaderIOStructureType type)
+        private void PopulateReflectionParamters(ShaderCompilerContext context, ShaderReflection result, SpirvEntryPoint ep, ShaderIOStructureType type)
         {
             List<ShaderParameterInfo> parameters;
             IReadOnlyList<SpirvVariable> variables;
@@ -343,7 +343,7 @@ namespace Molten.Graphics.Vulkan
                 }
 
                 if(!string.IsNullOrWhiteSpace(p.SemanticName))
-                    p.SystemValueType = GetSystemValue(p.SemanticName);
+                    p.SystemValueType = GetSystemValue(context.Type, p.SemanticName);
 
                 parameters.Add(p);
             }
@@ -480,7 +480,7 @@ namespace Molten.Graphics.Vulkan
             }
         }
 
-        private ShaderSVType GetSystemValue(string semanticName)
+        private ShaderSVType GetSystemValue(ShaderType shaderType, string semanticName)
         {
             semanticName = semanticName.ToLower();
 
@@ -491,6 +491,80 @@ namespace Molten.Graphics.Vulkan
                     case "gl_vertexid":
                     case "gl_vertexindex":
                         return ShaderSVType.VertexID;
+
+                    case "gl_clipdistance":
+                        return ShaderSVType.ClipDistance;
+
+                    case "gl_culldistance":
+                        return ShaderSVType.CullDistance;
+
+                    case "gl_samplemaskin":
+                    case "gl_samplemask":
+                        return ShaderSVType.Coverage;
+
+                    case "gl_fragdepth":
+                        // TODO intepret whether layout() is depth_less or depth_greater
+                        //      and determine whether this is SV_DepthLessEqual or SV_DepthGreaterEqual
+                        return ShaderSVType.Depth;
+
+                    case "gl_globalinvocationid":
+                        return ShaderSVType.DispatchThreadID;
+
+                    case "gl_tesscord":
+                        return ShaderSVType.DomainLocation;
+
+                    case "gl_workgroupid":
+                        return ShaderSVType.GroupID;
+
+                    case "gl_localinvocationindex":
+                        return ShaderSVType.GroupIndex;
+
+                    case "gl_localinvocationid":
+                        return ShaderSVType.GroupThreadID;
+
+                    case "gl_invocationid":
+                        if (shaderType == ShaderType.Hull)
+                            return ShaderSVType.OutputControlPointID;
+                        else
+                            return ShaderSVType.GSInstanceID;
+
+                    case "gl_tesslevelinner":
+                        return ShaderSVType.InsideTessFactor;
+
+                    case "gl_instnaceid":
+                    case "gl_instanceindex":
+                        return ShaderSVType.InstanceID;
+
+                    case "gl_frontfacing":
+                        return ShaderSVType.IsFrontFace;
+
+                    case "gl_patchverticesin":
+                        return ShaderSVType.Undefined; // TODO support?
+
+                    case "gl_position":
+                    case "gl_fragcoord":
+                        return ShaderSVType.Position;
+
+                    case "gl_primitiveid":
+                        return ShaderSVType.PrimitiveID;
+
+                    case "gl_layer":
+                        return ShaderSVType.RenderTargetArrayIndex;
+
+                    case "gl_sampleid":
+                        return ShaderSVType.SampleIndex;
+
+                    case "gl_sampleposition":
+                        return ShaderSVType.Undefined; // TODO The equivalent functionality is available through EvaluateAttributeAtSample
+
+                    case "gl_stencilref":
+                        return ShaderSVType.StencilRef;
+
+                    case "gl_tesslevelouter":
+                        return ShaderSVType.TessFactor;
+
+                    case "gl_viewportindex":
+                        return ShaderSVType.ViewportArrayIndex;
                 }
             }
             else
