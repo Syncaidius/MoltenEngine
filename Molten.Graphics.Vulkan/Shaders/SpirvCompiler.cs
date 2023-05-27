@@ -342,6 +342,7 @@ namespace Molten.Graphics.Vulkan
                         p.SemanticName = v.Name.Substring(8);
                 }
 
+                // Try to figure out the HLSL system value (SV_) type.
                 if(!string.IsNullOrWhiteSpace(p.SemanticName))
                     p.SystemValueType = GetSystemValue(context.Type, p.SemanticName);
 
@@ -427,33 +428,35 @@ namespace Molten.Graphics.Vulkan
 
         private unsafe void ProcessDecorations(ShaderParameterInfo p, SpirvVariable v)
         {
-            // Prioritize user semantics
+            // Prioritize UserSemantic decoration semantics
+            foreach (SpirvDecoration dec in v.Decorations.Keys)
+            {
+                IReadOnlyList<object> parameters = v.Decorations[dec];
+                if (dec != SpirvDecoration.UserSemantic)
+                    continue;
+
+                p.SemanticName = parameters[0] as string;
+                break;
+            }
+
+            // Now for core SPIR-V decorations
             foreach (SpirvDecoration dec in v.Decorations.Keys)
             {
                 IReadOnlyList<object> parameters = v.Decorations[dec];
 
                 switch (dec)
                 {
-                    case SpirvDecoration.UserSemantic:
-                        p.SemanticName = parameters[0] as string;
-                        break;
-                }
-            }
-
-            // Now for built-in semantics.
-            if (string.IsNullOrWhiteSpace(p.SemanticName))
-            {
-                foreach (SpirvDecoration dec in v.Decorations.Keys)
-                {
-                    IReadOnlyList<object> parameters = v.Decorations[dec];
-
-                    switch (dec)
-                    {
-                        case SpirvDecoration.BuiltIn:
+                    case SpirvDecoration.BuiltIn:
+                        if (string.IsNullOrWhiteSpace(p.SemanticName))
+                        {
                             SpirvBuiltIn bi = (SpirvBuiltIn)parameters[0];
                             p.SemanticName = BuiltInToSemantic(bi);
-                            break;
-                    }
+                        }
+                        break;
+
+                    case SpirvDecoration.Location:
+                        p.SemanticIndex = (uint)parameters[0];
+                        break;
                 }
             }
 
