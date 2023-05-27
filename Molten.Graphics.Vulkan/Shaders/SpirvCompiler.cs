@@ -22,7 +22,7 @@ namespace Molten.Graphics.Vulkan
         {
             _vk = vk;
             _logger = new ReflectionLogAdapter(renderer.Log);
-            _reflector = new SpirvReflection(_logger, SpirvReflectionFlags.LogDebug);
+            _reflector = new SpirvReflection(_logger);
 
             string cTarget = null;
             switch (spirvTarget)
@@ -88,7 +88,7 @@ namespace Molten.Graphics.Vulkan
                 }
             }*/
 
-            SpirvReflectionResult rr = _reflector.Reflect(byteCode->GetBufferPointer(), byteCode->GetBufferSize());
+            SpirvReflectionResult rr = _reflector.Reflect(byteCode->GetBufferPointer(), byteCode->GetBufferSize(), SpirvReflectionFlags.LogDebug);
             ShaderReflection result = new ShaderReflection();
 
             foreach(string ext in rr.Extensions)
@@ -482,10 +482,27 @@ namespace Molten.Graphics.Vulkan
 
         private ShaderSVType GetSystemValue(string semanticName)
         {
-            if (!semanticName.StartsWith("SV_") || !Enum.TryParse(semanticName.Substring(3), out ShaderSVType result))
-                return ShaderSVType.Undefined;
+            semanticName = semanticName.ToLower();
 
-            return result;
+            if (semanticName.StartsWith("gl_"))
+            {
+                switch (semanticName)
+                {
+                    case "gl_vertexid":
+                    case "gl_vertexindex":
+                        return ShaderSVType.VertexID;
+                }
+            }
+            else
+            {
+                if (semanticName.StartsWith("sv_"))
+                    semanticName = semanticName.Substring(3);
+
+                if (Enum.TryParse(semanticName, true, out ShaderSVType result))
+                    return result;
+            }
+
+            return ShaderSVType.Undefined;
         }
     }
 }
