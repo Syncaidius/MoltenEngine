@@ -42,7 +42,6 @@ namespace Molten.Graphics.Vulkan
             }
 
             Renderer.GLFW.SetMonitorCallback(MonitorConnectionCallback);
-
             DetectOutputs();
 
             if (_devices.Count > 0)

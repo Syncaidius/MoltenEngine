@@ -107,7 +107,7 @@
         HlslVersion = 39,
 
         /// <summary>
-        /// The version of vulkan to target. e.g. "vulkan1.1", "vulkan1.1spirv1.4", "vulkan1.2", "vulkan1.3" or "universal1.5".
+        /// The version of vulkan to target. e.g. "vulkan1.0", "vulkan1.1", "vulkan1.1spirv1.4", "vulkan1.2", "vulkan1.3" or "universal1.5".
         /// </summary>
         VulkanVersion = 40,
 

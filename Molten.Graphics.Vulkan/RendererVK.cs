@@ -96,7 +96,7 @@ namespace Molten.Graphics.Vulkan
         protected override void OnInitializeRenderer(EngineSettings settings)
         {
             Assembly includeAssembly = GetType().Assembly;
-            _shaderCompiler = new SpirvCompiler(VK, this, "\\Assets\\HLSL\\include\\", includeAssembly, "vulkan1.1");
+            _shaderCompiler = new SpirvCompiler(VK, this, "\\Assets\\HLSL\\include\\", includeAssembly, SpirvCompileTarget.Vulkan1_1);
         }
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]

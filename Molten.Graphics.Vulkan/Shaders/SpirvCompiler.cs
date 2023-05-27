@@ -17,16 +17,41 @@ namespace Molten.Graphics.Vulkan
         ReflectionLogAdapter _logger;
         SpirvReflection _reflector;
 
-        public SpirvCompiler(Vk vk, RenderService renderer, string includePath, Assembly includeAssembly, string spirvTarget) : 
+        public SpirvCompiler(Vk vk, RenderService renderer, string includePath, Assembly includeAssembly, SpirvCompileTarget spirvTarget) : 
             base(renderer, includePath, includeAssembly)
         {
             _vk = vk;
             _logger = new ReflectionLogAdapter(renderer.Log);
             _reflector = new SpirvReflection(_logger, SpirvReflectionFlags.LogDebug);
 
+            string cTarget = null;
+            switch (spirvTarget)
+            {
+                default:
+                case SpirvCompileTarget.Vulkan1_0:
+                    cTarget = "vulkan1.0";
+                    break;
+
+                case SpirvCompileTarget.Vulkan1_1:
+                    cTarget = "vulkan1.1";
+                    break;
+
+                case SpirvCompileTarget.Vulkan1_1Spirv1_4:
+                    cTarget = "vulkan1.1spirv1.4";
+                    break;
+
+                case SpirvCompileTarget.Vulkan1_3:
+                    cTarget = "vulkan1.3";
+                    break;
+
+                case SpirvCompileTarget.Universal1_5:
+                    cTarget = "universal1.5";
+                    break; ;
+            }
+
             AddBaseArg(DxcCompilerArg.SpirV);
             AddBaseArg(DxcCompilerArg.HlslVersion, "2021");
-            AddBaseArg(DxcCompilerArg.VulkanVersion, spirvTarget);
+            AddBaseArg(DxcCompilerArg.VulkanVersion, cTarget);
             AddBaseArg(DxcCompilerArg.Debug);
         }
 
