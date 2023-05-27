@@ -34,7 +34,7 @@
     <PackageReference Include="Silk.NET.Vulkan" Version="2.17.1" />
     <PackageReference Include="Silk.NET.Vulkan.Extensions.EXT" Version="2.17.1" />
     <PackageReference Include="Silk.NET.Vulkan.Extensions.KHR" Version="2.17.1" />
-    <PackageReference Include="SpirvReflector" Version="0.2.1" />
+    <PackageReference Include="SpirvReflector" Version="0.2.2" />
   </ItemGroup>
 
   <ItemGroup>
