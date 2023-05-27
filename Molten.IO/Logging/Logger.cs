@@ -85,10 +85,11 @@ namespace Molten
         /// <summary>
         /// Writes a new line of text to the current <see cref="Logger"/>.
         /// </summary>
-        /// <param name="value"></param>
-        public void WriteLine(string value)
+        /// <param name="text">The message to be written to the logger.</param>
+        /// <param name="timestamp">If true, a timestamp will be prefixed to the start of the message.</param>
+        public void WriteLine(string text, bool timestamp = true)
         {
-            WriteLine(value, Color.White);
+            WriteLine(text, Color.White, LogCategory.Message, timestamp);
         }
 
         /// <summary>A debug version of <see cref="WriteLine(string)"/> which will be ignored and removed in release builds.</summary>
@@ -129,14 +130,15 @@ namespace Molten
         /// <param name="text">The message to be written to the logger.</param>
         /// <param name="color">The preferred color that the text should be written in.</param>
         /// <param name="category">The category of the logged message.</param>
-        public void WriteLine(string text, Color color, LogCategory category = LogCategory.Message)
+        /// <param name="timestamp">If true, a timestamp will be prefixed to the start of the message.</param>
+        public void WriteLine(string text, Color color, LogCategory category = LogCategory.Message, bool timestamp = true)
         {
             WriteInternal(text, color, category);
 
             _interlocker.Lock(() =>
             {
                 for (int i = 0; i < _outputs.Count; i++)
-                    _outputs[i].Write(text, _last);
+                    _outputs[i].Write(text, _last, timestamp);
 #if DEBUG
                 System.Diagnostics.Debug.WriteLine(text);
 #endif
@@ -166,10 +168,11 @@ namespace Molten
         /// </summary>
         /// <param name="text">The string of text to be written.</param>
         /// <param name="category">The category of the message.</param>
+        /// <param name="timestamp">If true, a timestamp will be prefixed to the start of the message.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Write(string text, LogCategory category = LogCategory.Message)
+        public void Write(string text, LogCategory category = LogCategory.Message, bool timestamp = true)
         {
-            Write(text, Color.White, category);
+            Write(text, Color.White, category, timestamp);
         }
 
         /// <summary>
@@ -178,14 +181,15 @@ namespace Molten
         /// <param name="text">The string of text to be written.</param>
         /// <param name="color">The color of the text in attached <see cref="ILogOutput"/>, if they support color.</param>
         /// <param name="category">The category of the message.</param>
-        public void Write(string text, Color color, LogCategory category = LogCategory.Message)
+        /// <param name="timestamp">If true, a timestamp will be prefixed to the start of the message.</param>
+        public void Write(string text, Color color, LogCategory category = LogCategory.Message, bool timestamp = true)
         {
             WriteInternal(text, color, category);
 
             _interlocker.Lock(() =>
             {
                 for (int i = 0; i < _outputs.Count; i++)
-                    _outputs[i].Write(text, _last);
+                    _outputs[i].Write(text, _last, timestamp);
 
 #if DEBUG
                 System.Diagnostics.Debug.Write(text);

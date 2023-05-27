@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using SpirvReflector;
 
 namespace Molten.Graphics.Vulkan
@@ -33,14 +34,16 @@ namespace Molten.Graphics.Vulkan
         public void Write(string value, ConsoleColor color = ConsoleColor.White)
         {
             Color wColor = ConvertConsoleColor(color);
-
-            _log.Write(value, wColor, LogCategory.Message);
+            _log.Write(value, wColor);
         }
 
         public void WriteLabeled(string label, string text, ConsoleColor labelColor = ConsoleColor.DarkGray, ConsoleColor textColor = ConsoleColor.White)
         {
-            Write(label, labelColor);
-            Write(text, textColor);
+            Color wColor = ConvertConsoleColor(labelColor);
+            _log.Write(label + ": ", wColor, LogCategory.Message, true); 
+            
+            wColor = ConvertConsoleColor(textColor);
+            _log.WriteLine(text, wColor, LogCategory.Message, false);
         }
 
         public void WriteLine(string value, ConsoleColor color = ConsoleColor.White)

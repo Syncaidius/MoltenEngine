@@ -103,9 +103,10 @@ namespace Molten
         /// </summary>
         /// <param name="text">The additional text to be written.</param>
         /// <param name="entry">The entry that was written to.</param>
-        public void Write(string text, Logger.Entry entry)
+        /// <param name="timestamp">If true, a timestamp will be written.</param>
+        public void Write(string text, Logger.Entry entry, bool timestamp)
         {
-            string line = string.Format(_strFormat, entry.TimeStamp.ToLongTimeString(), text);
+            string line = timestamp ? string.Format(_strFormat, entry.TimeStamp.ToLongTimeString(), text) : text;
 
             if (_lastEntry != null && _lastEntry != entry)
                 _writer.WriteLine("");

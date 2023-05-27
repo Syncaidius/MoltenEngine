@@ -88,7 +88,8 @@ namespace Molten.Graphics.Vulkan
                 }
             }*/
 
-            SpirvReflectionResult rr = _reflector.Reflect(byteCode->GetBufferPointer(), byteCode->GetBufferSize(), SpirvReflectionFlags.LogDebug);
+            SpirvReflectionFlags spirvFlags = SpirvReflectionFlags.LogDebug | SpirvReflectionFlags.LogInstructions | SpirvReflectionFlags.LogResult;
+            SpirvReflectionResult rr = _reflector.Reflect(byteCode->GetBufferPointer(), byteCode->GetBufferSize(), spirvFlags);
             ShaderReflection result = new ShaderReflection();
 
             foreach(string ext in rr.Extensions)
@@ -347,11 +348,6 @@ namespace Molten.Graphics.Vulkan
                 {
                     p.SystemValueType = GetSystemValue(context.Type, p);
                     p.SemanticNamePtr = (void*)SilkMarshal.StringToPtr(p.SemanticName, NativeStringEncoding.UTF8);
-                }
-
-                if(p.SystemValueType == ShaderSVType.Undefined)
-                {
-
                 }
 
                 parameters.Add(p);
