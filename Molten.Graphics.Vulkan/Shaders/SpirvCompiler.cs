@@ -52,6 +52,7 @@ namespace Molten.Graphics.Vulkan
             AddBaseArg(DxcCompilerArg.SpirV);
             AddBaseArg(DxcCompilerArg.HlslVersion, "2021");
             AddBaseArg(DxcCompilerArg.VulkanVersion, cTarget);
+            AddBaseArg(DxcCompilerArg.SkipOptimizations);
             AddBaseArg(DxcCompilerArg.Debug);
         }
 
@@ -88,7 +89,7 @@ namespace Molten.Graphics.Vulkan
                 }
             }*/
 
-            SpirvReflectionFlags spirvFlags = SpirvReflectionFlags.LogDebug | SpirvReflectionFlags.LogInstructions | SpirvReflectionFlags.LogResult;
+            SpirvReflectionFlags spirvFlags = SpirvReflectionFlags.LogDebug;
             SpirvReflectionResult rr = _reflector.Reflect(byteCode->GetBufferPointer(), byteCode->GetBufferSize(), spirvFlags);
             ShaderReflection result = new ShaderReflection();
 
@@ -347,6 +348,9 @@ namespace Molten.Graphics.Vulkan
                 if (!string.IsNullOrWhiteSpace(p.SemanticName))
                 {
                     p.SystemValueType = GetSystemValue(context.Type, p);
+                    if (p.SystemValueType != ShaderSVType.Undefined)
+                        p.SemanticName = $"SV_{p.SystemValueType}".ToUpper();
+
                     p.SemanticNamePtr = (void*)SilkMarshal.StringToPtr(p.SemanticName, NativeStringEncoding.UTF8);
                 }
 
