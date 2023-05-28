@@ -289,7 +289,7 @@ namespace Molten.Graphics.Vulkan
 
         protected override HlslPass OnCreateShaderPass(HlslShader shader, string name)
         {
-            return new MaterialPassVK(shader, name);
+            return new ShaderPassVK(shader, name);
         }
 
         protected override ShaderSampler OnCreateSampler(ref ShaderSamplerParameters parameters)
