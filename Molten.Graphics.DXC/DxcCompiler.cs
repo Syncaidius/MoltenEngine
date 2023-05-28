@@ -289,17 +289,17 @@ namespace Molten.Graphics.Dxc
             return buffer;
         }
 
-        public override ShaderIOStructure BuildIO(ShaderCodeResult result, ShaderType sType, ShaderIOStructureType type)
+        public override ShaderIOLayout BuildIO(ShaderCodeResult result, ShaderType sType, ShaderIOLayoutType type)
         {
             List<ShaderParameterInfo> parameters;
 
             switch (type)
             {
-                case ShaderIOStructureType.Input:
+                case ShaderIOLayoutType.Input:
                     parameters = result.Reflection.InputParameters;
                     break;
 
-                case ShaderIOStructureType.Output:
+                case ShaderIOLayoutType.Output:
                     parameters = result.Reflection.OutputParameters;
                     break;
 
@@ -307,7 +307,7 @@ namespace Molten.Graphics.Dxc
                     return null;
             }
 
-            return new DXCShaderIOStructure(result, sType, type);
+            return new DXCShaderIOLayout(result, sType, type);
         }
 
         public override bool BuildStructure(ShaderCompilerContext context, HlslShader shader, ShaderCodeResult result, ShaderComposition composition)

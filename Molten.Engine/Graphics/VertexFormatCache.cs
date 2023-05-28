@@ -6,13 +6,13 @@ using Molten.Comparers;
 namespace Molten.Graphics
 {
     /// <summary>An object type which stores objects against <see cref="Type"/> keys.</summary>
-    /// <typeparam name="IO">The <see cref="Type"/> of <see cref="ShaderIOStructure"/> to use when initializing new <see cref="VertexFormat"/> instances..</typeparam>
+    /// <typeparam name="IO">The <see cref="Type"/> of <see cref="ShaderIOLayout"/> to use when initializing new <see cref="VertexFormat"/> instances..</typeparam>
     public class VertexFormatCache<IO> : EngineObject
-        where  IO : ShaderIOStructure
+        where  IO : ShaderIOLayout
     {
-        public delegate ShaderIOStructure VertexFormatNewStructureCallback(uint elementCount);
+        public delegate ShaderIOLayout VertexFormatNewStructureCallback(uint elementCount);
 
-        public delegate void VertexFormatNewElementCallback(VertexElementAttribute att, ShaderIOStructure structure, uint index, uint byteOffset);
+        public delegate void VertexFormatNewElementCallback(VertexElementAttribute att, ShaderIOLayout structure, uint index, uint byteOffset);
 
         private class FieldElement
         {
@@ -112,7 +112,7 @@ namespace Molten.Graphics
             for (int ec = 0; ec < fieldElements.Count; ec++)
                 eCount += fieldElements[ec] != null ? 1U : 0;
 
-            ShaderIOStructure structure = _newCallback(eCount);
+            ShaderIOLayout structure = _newCallback(eCount);
             uint sizeOf = 0;
             eCount = 0;
 

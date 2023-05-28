@@ -13,9 +13,9 @@
 
         public List<uint> UnorderedAccessIds = new List<uint>();
 
-        public ShaderIOStructure InputStructure;
+        public ShaderIOLayout InputLayout;
 
-        public ShaderIOStructure OutputStructure;
+        public ShaderIOLayout OutputLayout;
 
         public string EntryPoint { get; internal set; }
 

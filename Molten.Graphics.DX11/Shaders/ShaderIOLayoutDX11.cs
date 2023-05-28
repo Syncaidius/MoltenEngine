@@ -3,13 +3,13 @@ using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics.DX11
 {
-    public unsafe class ShaderIOStructureDX11 : ShaderIOStructure
+    public unsafe class ShaderIOLayoutDX11 : ShaderIOLayout
     {
         internal InputElementDesc[] VertexElements { get; private set; }
 
-        public ShaderIOStructureDX11(uint elementCount) : base(elementCount) { }
+        public ShaderIOLayoutDX11(uint elementCount) : base(elementCount) { }
 
-        public ShaderIOStructureDX11(ShaderCodeResult result, ShaderType sType, ShaderIOStructureType type) : 
+        public ShaderIOLayoutDX11(ShaderCodeResult result, ShaderType sType, ShaderIOLayoutType type) : 
             base(result, sType, type) { }
 
         protected override void Initialize(uint numVertexElements)
@@ -18,7 +18,7 @@ namespace Molten.Graphics.DX11
                 VertexElements = new InputElementDesc[numVertexElements];
         }
 
-        protected override void BuildVertexElement(ShaderCodeResult result, ShaderIOStructureType type, ShaderParameterInfo pInfo, GraphicsFormat format, int index)
+        protected override void BuildVertexElement(ShaderCodeResult result, ShaderIOLayoutType type, ShaderParameterInfo pInfo, GraphicsFormat format, int index)
         {
             // Elements is null if the IO is not for a vertex shader input.
             if (VertexElements == null)

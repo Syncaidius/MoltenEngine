@@ -3,7 +3,7 @@ using Silk.NET.Core.Native;
 
 namespace Molten.Graphics
 {
-    public enum ShaderIOStructureType
+    public enum ShaderIOLayoutType
     {
         Input = 0,
 
@@ -12,7 +12,7 @@ namespace Molten.Graphics
 
     /// <summary>Represents an automatically generated shader input layout. 
     /// Also generating useful metadata that can be used to validate vertex input at engine level.</summary>
-    public unsafe abstract class ShaderIOStructure : EngineObject
+    public unsafe abstract class ShaderIOLayout : EngineObject
     {
         public struct InputElementMetadata
         {
@@ -32,29 +32,29 @@ namespace Molten.Graphics
         // Reference: http://takinginitiative.wordpress.com/2011/12/11/directx-1011-basic-shader-reflection-automatic-input-layout-creation/
 
         /// <summary>
-        /// Creates a new, empty instance of <see cref="ShaderIOStructure"/>.
+        /// Creates a new, empty instance of <see cref="ShaderIOLayout"/>.
         /// </summary>
         /// <param name="elementCount"></param>
-        protected ShaderIOStructure(uint elementCount)
+        protected ShaderIOLayout(uint elementCount)
         {
             Metadata = new InputElementMetadata[elementCount];
             Initialize(elementCount);
         }
 
-        /// <summary>Creates a new instance of <see cref="ShaderIOStructure"/> from reflection info.</summary>
+        /// <summary>Creates a new instance of <see cref="ShaderIOLayout"/> from reflection info.</summary>
         /// <param name="result">The <see cref="ShaderCodeResult"/> reflection object.</param>
         /// <param name="type">The type of IO structure to build from reflection.param>
-        protected ShaderIOStructure(ShaderCodeResult result, ShaderType sType, ShaderIOStructureType type)
+        protected ShaderIOLayout(ShaderCodeResult result, ShaderType sType, ShaderIOLayoutType type)
         {
             List<ShaderParameterInfo> parameters;
 
             switch (type)
             {
-                case ShaderIOStructureType.Input:
+                case ShaderIOLayoutType.Input:
                     parameters = result.Reflection.InputParameters;
                     break;
 
-                case ShaderIOStructureType.Output:
+                case ShaderIOLayoutType.Output:
                     parameters = result.Reflection.OutputParameters;
                     break;
 
@@ -173,17 +173,17 @@ namespace Molten.Graphics
         protected abstract void Initialize(uint vertexElementCount);
 
         protected abstract void BuildVertexElement(ShaderCodeResult result,
-            ShaderIOStructureType type,
+            ShaderIOLayoutType type,
             ShaderParameterInfo pInfo,
             GraphicsFormat format,
             int index);
 
-        public bool IsCompatible(ShaderIOStructure other)
+        public bool IsCompatible(ShaderIOLayout other)
         {
             return IsCompatible(other, 0);
         }
 
-        public bool IsCompatible(ShaderIOStructure other, int startIndex)
+        public bool IsCompatible(ShaderIOLayout other, int startIndex)
         {
             int count = Math.Min(Metadata.Length - startIndex, other.Metadata.Length);
             for (int i = 0; i < count; i++)

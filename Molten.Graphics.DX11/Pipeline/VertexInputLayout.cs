@@ -12,7 +12,7 @@ namespace Molten.Graphics.DX11
         internal VertexInputLayout(DeviceDX11 device, 
             GraphicsSlotGroup<GraphicsBuffer> vbSlots, 
             ID3D10Blob* vertexBytecode,
-            ShaderIOStructure io) : 
+            ShaderIOLayout io) : 
             base(device, GraphicsBindTypeFlags.Input)
         {
             IsValid = true;
@@ -38,7 +38,7 @@ namespace Molten.Graphics.DX11
                 }
 
                 // Collate vertex format elements into layout and set the correct input slot for each element.
-                elements.AddRange((format.Structure as ShaderIOStructureDX11).VertexElements);
+                elements.AddRange((format.Structure as ShaderIOLayoutDX11).VertexElements);
 
                 for (int eID = startID; eID < elements.Count; eID++)
                 {
@@ -56,7 +56,7 @@ namespace Molten.Graphics.DX11
             if (elements.Count == 0)
             {
                 VertexFormat nullFormat = device.VertexFormatCache.Get<VertexWithID>();
-                elements.Add((nullFormat.Structure as ShaderIOStructureDX11).VertexElements[0]);
+                elements.Add((nullFormat.Structure as ShaderIOLayoutDX11).VertexElements[0]);
                 IsNullBuffer = true;
             }
 

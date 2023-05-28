@@ -103,8 +103,8 @@ namespace Molten.Graphics.Vulkan
             // Populate input/output resource parameters
             foreach (SpirvEntryPoint ep in rr.EntryPoints)
             {
-                PopulateReflectionParamters(context, result, ep, ShaderIOStructureType.Input);
-                PopulateReflectionParamters(context, result, ep, ShaderIOStructureType.Output);
+                PopulateReflectionParamters(context, result, ep, ShaderIOLayoutType.Input);
+                PopulateReflectionParamters(context, result, ep, ShaderIOLayoutType.Output);
 
                 if (context.Type == ShaderType.Geometry)
                     result.GSInputPrimitive = GetGeometryTopology(ep);
@@ -297,19 +297,19 @@ namespace Molten.Graphics.Vulkan
         }
 
 
-        private unsafe void PopulateReflectionParamters(ShaderCompilerContext context, ShaderReflection result, SpirvEntryPoint ep, ShaderIOStructureType type)
+        private unsafe void PopulateReflectionParamters(ShaderCompilerContext context, ShaderReflection result, SpirvEntryPoint ep, ShaderIOLayoutType type)
         {
             List<ShaderParameterInfo> parameters;
             IReadOnlyList<SpirvVariable> variables;
 
             switch (type)
             {
-                case ShaderIOStructureType.Input:
+                case ShaderIOLayoutType.Input:
                     variables = ep.Inputs;
                     parameters = result.InputParameters;
                     break;
 
-                case ShaderIOStructureType.Output:
+                case ShaderIOLayoutType.Output:
                     variables = ep.Outputs;
                     parameters = result.OutputParameters;
                     break;

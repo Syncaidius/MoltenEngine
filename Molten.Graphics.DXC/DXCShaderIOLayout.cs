@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.Dxc
 {
-    public class DXCShaderIOStructure : ShaderIOStructure
+    public class DXCShaderIOLayout : ShaderIOLayout
     {
-        public DXCShaderIOStructure(uint elementCount) : base(elementCount) { }
+        public DXCShaderIOLayout(uint elementCount) : base(elementCount) { }
 
-        public DXCShaderIOStructure(ShaderCodeResult result, ShaderType sType, ShaderIOStructureType type) :
+        public DXCShaderIOLayout(ShaderCodeResult result, ShaderType sType, ShaderIOLayoutType type) :
             base(result, sType, type)
         { }
 
-        protected override void BuildVertexElement(ShaderCodeResult result, ShaderIOStructureType type, ShaderParameterInfo pInfo, GraphicsFormat format, int index)
+        protected override void BuildVertexElement(ShaderCodeResult result, ShaderIOLayoutType type, ShaderParameterInfo pInfo, GraphicsFormat format, int index)
         {
             //throw new NotImplementedException();
         }

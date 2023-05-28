@@ -157,8 +157,8 @@ namespace Molten.Graphics
                     if (Validate(pass, context, cResult))
                     {
                         sc.PtrShader = BuildShader(pass, epType, cResult.ByteCode, cResult.NumBytes);
-                        sc.InputStructure = BuildIO(cResult, sc.Type, ShaderIOStructureType.Input);
-                        sc.OutputStructure = BuildIO(cResult, sc.Type, ShaderIOStructureType.Output);
+                        sc.InputLayout = BuildIO(cResult, sc.Type, ShaderIOLayoutType.Input);
+                        sc.OutputLayout = BuildIO(cResult, sc.Type, ShaderIOLayoutType.Output);
                     }
                     else
                     {
@@ -234,7 +234,7 @@ namespace Molten.Graphics
             return !context.HasErrors;
         }
 
-        public abstract ShaderIOStructure BuildIO(ShaderCodeResult result, ShaderType sType, ShaderIOStructureType type);
+        public abstract ShaderIOLayout BuildIO(ShaderCodeResult result, ShaderType sType, ShaderIOLayoutType type);
 
         public abstract bool CompileSource(string entryPoint, ShaderType type, ShaderCompilerContext context, out ShaderCodeResult result);
 

@@ -31,11 +31,11 @@ namespace Molten.Graphics.DX11
             _displayManager = manager;
             _cmdDeferred = new List<GraphicsQueueDX11>();
 
-            VertexFormatCache = new VertexFormatCache<ShaderIOStructureDX11>(
-                (elementCount) => new ShaderIOStructureDX11(elementCount),
+            VertexFormatCache = new VertexFormatCache<ShaderIOLayoutDX11>(
+                (elementCount) => new ShaderIOLayoutDX11(elementCount),
                 (att, structure, index, byteOffset) =>
                 {
-                    ShaderIOStructureDX11 dxStruct = structure as ShaderIOStructureDX11;
+                    ShaderIOLayoutDX11 dxStruct = structure as ShaderIOLayoutDX11;
                     dxStruct.VertexElements[index] = new InputElementDesc()
                     {
                         SemanticName = (byte*)SilkMarshal.StringToPtr(dxStruct.Metadata[index].Name),
@@ -351,7 +351,7 @@ namespace Molten.Graphics.DX11
         /// </summary>
         protected ref ID3D11Device5* PtrRef => ref _native;
 
-        internal VertexFormatCache<ShaderIOStructureDX11> VertexFormatCache { get; }
+        internal VertexFormatCache<ShaderIOLayoutDX11> VertexFormatCache { get; }
 
         /// <inheritdoc/>
         public override GraphicsQueueDX11 Queue => _queue;

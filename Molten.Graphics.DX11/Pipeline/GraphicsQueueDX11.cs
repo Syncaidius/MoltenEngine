@@ -655,7 +655,7 @@ namespace Molten.Graphics.DX11
             }
 
             ShaderComposition vs = pass[ShaderType.Vertex];
-            VertexInputLayout input = new VertexInputLayout(DXDevice, VertexBuffers, (ID3D10Blob*)pass.InputByteCode, vs.InputStructure);
+            VertexInputLayout input = new VertexInputLayout(DXDevice, VertexBuffers, (ID3D10Blob*)pass.InputByteCode, vs.InputLayout);
             _cachedLayouts.Add(input);
 
             return input;

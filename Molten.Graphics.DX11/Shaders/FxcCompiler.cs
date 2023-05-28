@@ -132,26 +132,26 @@ namespace Molten.Graphics.DX11
                 }
             }
 
-            PopulateReflectionParamters(r, fxcReflection, ShaderIOStructureType.Input);
-            PopulateReflectionParamters(r, fxcReflection, ShaderIOStructureType.Output);
+            PopulateReflectionParamters(r, fxcReflection, ShaderIOLayoutType.Input);
+            PopulateReflectionParamters(r, fxcReflection, ShaderIOLayoutType.Output);
 
             fxcReflection.Dispose();
             return r;
         }
 
-        private void PopulateReflectionParamters(ShaderReflection reflection, FxcReflection fxcReflection, ShaderIOStructureType type)
+        private void PopulateReflectionParamters(ShaderReflection reflection, FxcReflection fxcReflection, ShaderIOLayoutType type)
         {
             uint count = 0;
             List<ShaderParameterInfo> parameters;
 
             switch (type)
             {
-                case ShaderIOStructureType.Input:
+                case ShaderIOLayoutType.Input:
                     count = fxcReflection.Desc.InputParameters;
                     parameters = reflection.InputParameters;
                     break;
 
-                case ShaderIOStructureType.Output:
+                case ShaderIOLayoutType.Output:
                     count = fxcReflection.Desc.OutputParameters;
                     parameters = reflection.OutputParameters;
                     break;
@@ -166,11 +166,11 @@ namespace Molten.Graphics.DX11
 
                 switch (type)
                 {
-                    case ShaderIOStructureType.Input:
+                    case ShaderIOLayoutType.Input:
                         fxcReflection.Ptr->GetInputParameterDesc(i, ref pDesc);
                         break;
 
-                    case ShaderIOStructureType.Output:
+                    case ShaderIOLayoutType.Output:
                         fxcReflection.Ptr->GetOutputParameterDesc(i, ref pDesc);
                         break;
                 }
@@ -252,17 +252,17 @@ namespace Molten.Graphics.DX11
             return !context.HasErrors;
         }
 
-        public override ShaderIOStructure BuildIO(ShaderCodeResult result, ShaderType sType, ShaderIOStructureType type)
+        public override ShaderIOLayout BuildIO(ShaderCodeResult result, ShaderType sType, ShaderIOLayoutType type)
         {
             List<ShaderParameterInfo> parameters;
 
             switch (type)
             {
-                case ShaderIOStructureType.Input:
+                case ShaderIOLayoutType.Input:
                     parameters = result.Reflection.InputParameters;
                     break;
 
-                case ShaderIOStructureType.Output:
+                case ShaderIOLayoutType.Output:
                     parameters = result.Reflection.OutputParameters;
                     break;
 
@@ -270,7 +270,7 @@ namespace Molten.Graphics.DX11
                     return null;
             }
 
-            return new ShaderIOStructureDX11(result, sType, type);
+            return new ShaderIOLayoutDX11(result, sType, type);
         }
 
         public override bool BuildStructure(ShaderCompilerContext context,

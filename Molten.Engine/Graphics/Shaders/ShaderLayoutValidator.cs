@@ -31,8 +31,8 @@
                 if (curStage == null)
                     continue;
 
-                ShaderIOStructure output = prevStage.OutputStructure;
-                ShaderIOStructure input = curStage.InputStructure;
+                ShaderIOLayout output = prevStage.OutputLayout;
+                ShaderIOLayout input = curStage.InputLayout;
 
                 // If the input expects anything, check compatibility. Skip compat check if input does not expect anything (length 0).
                 if (input.Metadata.Length > 0 && !output.IsCompatible(input))
@@ -49,7 +49,7 @@
                     {
                         for (int o = 0; o < output.Metadata.Length; o++)
                         {
-                            ref ShaderIOStructure.InputElementMetadata meta = ref output.Metadata[o];
+                            ref ShaderIOLayout.InputElementMetadata meta = ref output.Metadata[o];
                             string name = meta.SystemValueType != ShaderSVType.Undefined ? $"SV_{meta.SystemValueType}" : meta.Name;
                             context.AddError($"\t\t[{o}] {name} -- index: {meta.SemanticIndex}");
                         }
@@ -62,7 +62,7 @@
                     context.AddError($"\tInput -- {currentCompositionType}:");
                     for (int o = 0; o < input.Metadata.Length; o++)
                     {
-                        ref ShaderIOStructure.InputElementMetadata meta = ref input.Metadata[o];
+                        ref ShaderIOLayout.InputElementMetadata meta = ref input.Metadata[o];
                         string name = meta.SystemValueType != ShaderSVType.Undefined ? $"SV_{meta.SystemValueType}" : meta.Name;
                         context.AddError($"\t\t[{o}] {name} -- index: {meta.SemanticIndex}");
                     }
