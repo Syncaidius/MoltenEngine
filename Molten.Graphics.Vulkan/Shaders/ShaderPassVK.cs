@@ -3,7 +3,7 @@ using Silk.NET.Vulkan;
 
 namespace Molten.Graphics.Vulkan
 {
-    internal unsafe class MaterialPassVK : HlslPass
+    internal unsafe class ShaderPassVK : HlslPass
     {
         static readonly ShaderType[] _stageOrder = new ShaderType[] {
             ShaderType.Vertex,
@@ -32,7 +32,7 @@ namespace Molten.Graphics.Vulkan
         DynamicStateVK _dynamicState;
         InputAssemblyStateVK _inputState;
 
-        internal MaterialPassVK(HlslShader material, string name = null) : 
+        internal ShaderPassVK(HlslShader material, string name = null) : 
             base(material, name)
         {
             _info = new GraphicsPipelineCreateInfo();
