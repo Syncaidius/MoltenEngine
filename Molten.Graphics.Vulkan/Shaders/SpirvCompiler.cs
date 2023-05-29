@@ -89,7 +89,7 @@ namespace Molten.Graphics.Vulkan
                 }
             }*/
 
-            SpirvReflectionFlags spirvFlags = SpirvReflectionFlags.LogDebug;
+            SpirvReflectionFlags spirvFlags = SpirvReflectionFlags.LogDebug | SpirvReflectionFlags.NoSafeCopy;
             SpirvReflectionResult rr = _reflector.Reflect(byteCode->GetBufferPointer(), byteCode->GetBufferSize(), spirvFlags);
             ShaderReflection result = new ShaderReflection();
 
