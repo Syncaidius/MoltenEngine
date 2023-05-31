@@ -22,6 +22,7 @@ namespace Molten.Graphics.Vulkan
             if (!r.Check(Queue.VKDevice, ()=> "Failed to create command buffer pool"))
                 return;
 
+            _pool = pool;
             IsTransient = (flags & CommandPoolCreateFlags.TransientBit) == CommandPoolCreateFlags.TransientBit;
             _allocations = new List<CommandPoolAllocation>();
         }

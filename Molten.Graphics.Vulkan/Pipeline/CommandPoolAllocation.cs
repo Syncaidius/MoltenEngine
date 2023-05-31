@@ -20,8 +20,8 @@ namespace Molten.Graphics.Vulkan
             info.CommandPool = pool.Native;
             info.CommandBufferCount = 1;
 
-            CommandBuffer* cbs = EngineUtil.AllocArray<CommandBuffer>(count);
-            Result r = pool.Queue.VK.AllocateCommandBuffers(pool.Queue.VKDevice, null, cbs);
+            _ptrBuffers = EngineUtil.AllocArray<CommandBuffer>(count);
+            Result r = pool.Queue.VK.AllocateCommandBuffers(pool.Queue.VKDevice, &info, _ptrBuffers);
             if (!r.Check(pool.Queue.VKDevice, () => "Failed to allocate command buffers"))
                 _freeCount = 0;
 
