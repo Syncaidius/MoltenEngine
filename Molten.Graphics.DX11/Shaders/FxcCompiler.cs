@@ -254,22 +254,6 @@ namespace Molten.Graphics.DX11
 
         public override ShaderIOLayout BuildIO(ShaderCodeResult result, ShaderType sType, ShaderIOLayoutType type)
         {
-            List<ShaderParameterInfo> parameters;
-
-            switch (type)
-            {
-                case ShaderIOLayoutType.Input:
-                    parameters = result.Reflection.InputParameters;
-                    break;
-
-                case ShaderIOLayoutType.Output:
-                    parameters = result.Reflection.OutputParameters;
-                    break;
-
-                default:
-                    return null;
-            }
-
             return new ShaderIOLayoutDX11(result, sType, type);
         }
 
@@ -352,7 +336,7 @@ namespace Molten.Graphics.DX11
         protected bool HasConstantBuffer(ShaderCompilerContext context,
     HlslShader shader, string bufferName, string[] varNames)
         {
-            foreach (ShaderConstantBuffer buffer in shader.ConstBuffers)
+            foreach (ConstantBufferDX11 buffer in shader.ConstBuffers)
             {
                 if (buffer == null)
                     continue;
@@ -472,17 +456,17 @@ namespace Molten.Graphics.DX11
             shader.Resources[info.BindPoint] = obj;
         }
 
-        private unsafe ShaderConstantBuffer GetConstantBuffer(ShaderCompilerContext context,
+        private unsafe ConstantBufferDX11 GetConstantBuffer(ShaderCompilerContext context,
             HlslShader shader, ConstantBufferInfo info)
         {
-            ShaderConstantBuffer cBuffer = new ShaderConstantBuffer(shader.Device as DeviceDX11, info);
+            ConstantBufferDX11 cBuffer = new ConstantBufferDX11(shader.Device as DeviceDX11, info);
             string localName = cBuffer.BufferName;
 
             if (cBuffer.BufferName == "$Globals")
                 localName += $"_{shader.Name}";
 
             // Duplication checks.
-            if (context.TryGetResource(localName, out ShaderConstantBuffer existing))
+            if (context.TryGetResource(localName, out ConstantBufferDX11 existing))
             {
                 // Check for duplicates
                 if (existing != null)

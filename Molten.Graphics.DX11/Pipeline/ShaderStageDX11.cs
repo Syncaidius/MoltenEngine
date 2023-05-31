@@ -30,7 +30,7 @@ namespace Molten.Graphics.DX11
                 for (int i = 0; i < composition.ConstBufferIds.Count; i++)
                 {
                     uint slotID = composition.ConstBufferIds[i];
-                    ConstantBuffers[slotID].Value = composition.Pass.Parent.ConstBuffers[slotID] as ShaderConstantBuffer;
+                    ConstantBuffers[slotID].Value = composition.Pass.Parent.ConstBuffers[slotID] as ConstantBufferDX11;
                 }
 
                 // Apply pass resources to slots
@@ -81,9 +81,9 @@ namespace Molten.Graphics.DX11
         internal GraphicsSlotGroup<GraphicsResource> Resources { get; }
 
         /// <summary>
-        /// Gets the slots for binding <see cref="ShaderConstantBuffer"/> to the current <see cref="ContextShaderStage{T}"/>/
+        /// Gets the slots for binding <see cref="ConstantBufferDX11"/> to the current <see cref="ContextShaderStage{T}"/>/
         /// </summary>
-        internal GraphicsSlotGroup<ShaderConstantBuffer> ConstantBuffers { get; }
+        internal GraphicsSlotGroup<ConstantBufferDX11> ConstantBuffers { get; }
 
         /// <summary>
         /// Gets the shader bind slot for the current <see cref="ContextShaderStage{T}"/>

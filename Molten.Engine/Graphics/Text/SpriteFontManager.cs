@@ -47,14 +47,20 @@ namespace Molten.Graphics
             _renderData.OnPostRender += _renderData_OnPostRender;
             _camera = new RenderCamera(RenderCameraMode.Orthographic)
             {
-                Surface = _renderer.Device.CreateSurface((uint)PageSize, (uint)PageSize, arraySize: 1, allowMipMapGen: true, name: "Sprite Font Sheet"),
                 Flags = RenderCameraFlags.DoNotClear,
                 Name = "Sprite Font Camera",
                 BackgroundColor = Color.Transparent,
             };
 
-            _camera.Surface.Clear(GraphicsPriority.Immediate, Color.Transparent);
+            CreateSurface(1);
             _renderData.AddObject(_camera);
+        }
+
+        private void CreateSurface(uint arraySize)
+        {
+            _camera.Surface?.Dispose();
+            _camera.Surface = _renderer.Device.CreateSurface((uint)PageSize, (uint)PageSize, arraySize: arraySize, allowMipMapGen: true, name: "Sprite Font Sheet");
+            _camera.Surface.Clear(GraphicsPriority.Immediate, Color.Transparent);
         }
 
         private void OnDraw(SpriteBatcher sb)
@@ -65,13 +71,7 @@ namespace Molten.Graphics
             {
                 uint newArraySize = (uint)_pages.Count;
                 _rtTransfer = _camera.Surface;
-                _camera.Surface = _renderer.Device.CreateSurface(
-                    (uint)PageSize,
-                    (uint)PageSize,
-                    arraySize: newArraySize,
-                    allowMipMapGen: true);
-                _camera.Surface.Clear(GraphicsPriority.Immediate, Color.Transparent);
-
+                CreateSurface(newArraySize);
                 RectangleF rtBounds = new RectangleF(0, 0, PageSize, PageSize);
                 for(uint i = 0; i < _rtTransfer.ArraySize; i++)
                     sb.Draw(rtBounds, rtBounds, Color.White, _rtTransfer, null, i, i);

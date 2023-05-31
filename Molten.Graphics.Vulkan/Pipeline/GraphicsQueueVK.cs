@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using System.Globalization;
-using Silk.NET.Vulkan;
+﻿using Silk.NET.Vulkan;
 using Buffer = Silk.NET.Vulkan.Buffer;
 using Semaphore = Silk.NET.Vulkan.Semaphore;
 
@@ -39,7 +37,11 @@ namespace Molten.Graphics.Vulkan
                 CommandBufferLevel.Primary;
 
             CommandBufferBeginInfo beginInfo = new CommandBufferBeginInfo(StructureType.CommandBufferBeginInfo);
-            beginInfo.Flags = CommandBufferUsageFlags.OneTimeSubmitBit;
+            beginInfo.Flags = CommandBufferUsageFlags.None;
+
+            if(flags.Has(GraphicsCommandListFlags.SingleSubmit))
+                beginInfo.Flags |= CommandBufferUsageFlags.OneTimeSubmitBit;
+
             _cmd = _poolFrame.Allocate(level, Device.Renderer.Frame.BranchCount++, flags);
             Device.Renderer.Frame.Track(_cmd);
             _vk.BeginCommandBuffer(_cmd, &beginInfo);
@@ -48,6 +50,7 @@ namespace Molten.Graphics.Vulkan
         public override GraphicsCommandList End()
         {
             base.End();
+
             _vk.EndCommandBuffer(_cmd);
             return _cmd;
         }
@@ -149,6 +152,11 @@ namespace Molten.Graphics.Vulkan
         internal unsafe void MemoryBarrier(PipelineStageFlags srcFlags, PipelineStageFlags destFlags, MemoryBarrier* barrier, uint barrierCount = 1)
         {
             _vk.CmdPipelineBarrier(_cmd, srcFlags, destFlags, DependencyFlags.None, barrierCount, barrier, 0, null, 0, null);
+        }
+
+        internal unsafe void ClearImage(Image image, ImageLayout layout, Color color, ImageSubresourceRange* pRanges, uint numRanges)
+        {
+            _vk.CmdClearColorImage(_cmd, image, layout, *(ClearColorValue*)&color, numRanges, pRanges);
         }
 
         internal bool HasFlags(CommandSetCapabilityFlags flags)

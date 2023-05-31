@@ -8,7 +8,7 @@
         /// <summary>The size of the variable's data in bytes.</summary>
         internal uint SizeOf;
 
-        internal ShaderConstantVariable(ShaderConstantBuffer parent, string name)
+        internal ShaderConstantVariable(ConstantBufferDX11 parent, string name)
         {
             ParentBuffer = parent;
             Name = name;
@@ -29,6 +29,6 @@
         internal abstract void Write(byte* pDest);
 
         /// <summary>Gets the shader buffer which owns the variable.</summary>
-        internal ShaderConstantBuffer ParentBuffer { get; private set; }
+        internal ConstantBufferDX11 ParentBuffer { get; private set; }
     }
 }

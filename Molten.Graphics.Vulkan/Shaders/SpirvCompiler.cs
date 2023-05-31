@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Molten.Graphics.Dxc;
 using Silk.NET.Core.Native;
@@ -295,7 +293,6 @@ namespace Molten.Graphics.Vulkan
                         throw new ArgumentException($"GetVariableType() encountered an unknown UInt size: {type.NumBytes}");
             }
         }
-
 
         private unsafe void PopulateReflectionParamters(ShaderCompilerContext context, ShaderReflection result, SpirvEntryPoint ep, ShaderIOLayoutType type)
         {

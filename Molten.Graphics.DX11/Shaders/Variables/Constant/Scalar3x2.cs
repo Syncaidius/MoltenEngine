@@ -5,7 +5,7 @@
     {
         Matrix3x2F _value;
 
-        public ScalarFloat3x2Variable(ShaderConstantBuffer parent, string name)
+        public ScalarFloat3x2Variable(ConstantBufferDX11 parent, string name)
             : base(parent, name)
         {
             SizeOf = sizeof(float) * (3 * 2);

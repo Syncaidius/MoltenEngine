@@ -10,7 +10,7 @@
         uint _expectedElements;
         bool _isDirty;
 
-        public ScalarFloat4x4ArrayVariable(ShaderConstantBuffer parent, uint expectedElements, string name)
+        public ScalarFloat4x4ArrayVariable(ConstantBufferDX11 parent, uint expectedElements, string name)
             : base(parent, name)
         {
             _expectedElements = expectedElements;

@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.DX11
 {
-    internal unsafe class CBufferGroupBinder : GraphicsGroupBinder<ShaderConstantBuffer>
+    internal unsafe class CBufferGroupBinder : GraphicsGroupBinder<ConstantBufferDX11>
     {
         ShaderStageDX11 _stage;
 
@@ -11,7 +11,7 @@ namespace Molten.Graphics.DX11
             _stage = stage;
         }
 
-        public override void Bind(GraphicsSlotGroup<ShaderConstantBuffer> grp, uint startIndex, uint endIndex, uint numChanged)
+        public override void Bind(GraphicsSlotGroup<ConstantBufferDX11> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             int nChanged = (int)numChanged;
             ID3D11Buffer** cBuffers = stackalloc ID3D11Buffer*[nChanged];
@@ -19,7 +19,7 @@ namespace Molten.Graphics.DX11
             uint* cNumConstants = stackalloc uint[nChanged];
 
             uint sid = startIndex;
-            ShaderConstantBuffer cb = null;
+            ConstantBufferDX11 cb = null;
 
             for (uint i = 0; i < numChanged; i++)
             {
@@ -41,14 +41,14 @@ namespace Molten.Graphics.DX11
             _stage.SetConstantBuffers(startIndex, numChanged, cBuffers);
         }
 
-        public override void Bind(GraphicsSlot<ShaderConstantBuffer> slot, ShaderConstantBuffer value)
+        public override void Bind(GraphicsSlot<ConstantBufferDX11> slot, ConstantBufferDX11 value)
         {
             ID3D11Buffer** buffers = stackalloc ID3D11Buffer*[1];
             buffers[0] = (ID3D11Buffer*)slot.BoundValue.Handle;
             _stage.SetConstantBuffers(slot.SlotIndex, 1, buffers);
         }
 
-        public override void Unbind(GraphicsSlotGroup<ShaderConstantBuffer> grp, uint startIndex, uint endIndex, uint numChanged)
+        public override void Unbind(GraphicsSlotGroup<ConstantBufferDX11> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             ID3D11Buffer** buffers = stackalloc ID3D11Buffer*[(int)numChanged];
 
@@ -58,7 +58,7 @@ namespace Molten.Graphics.DX11
             _stage.SetConstantBuffers(startIndex, numChanged, buffers);
         }
 
-        public override void Unbind(GraphicsSlot<ShaderConstantBuffer> slot, ShaderConstantBuffer value)
+        public override void Unbind(GraphicsSlot<ConstantBufferDX11> slot, ConstantBufferDX11 value)
         {
             ID3D11Buffer** buffers = stackalloc ID3D11Buffer*[1];
             buffers[0] = null;

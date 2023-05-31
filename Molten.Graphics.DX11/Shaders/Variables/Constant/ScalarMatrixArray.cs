@@ -10,7 +10,7 @@
         uint _expectedElements;
         Array _value;
 
-        internal ScalarMatrixArray(ShaderConstantBuffer parent, uint rows, uint columns, uint expectedElements, string name) : 
+        internal ScalarMatrixArray(ConstantBufferDX11 parent, uint rows, uint columns, uint expectedElements, string name) : 
             base(parent, name)
         {
             _components = columns * rows;

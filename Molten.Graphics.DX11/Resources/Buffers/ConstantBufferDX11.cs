@@ -1,11 +1,10 @@
 ﻿using System.Text;
 using Molten.Utility;
 using Silk.NET.Core.Native;
-using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics.DX11
 {
-    internal unsafe class ShaderConstantBuffer : BufferDX11, IConstantBuffer
+    internal unsafe class ConstantBufferDX11 : BufferDX11, IConstantBuffer
     {
         internal D3DCBufferType Type;
         internal ShaderConstantVariable[] Variables;
@@ -14,7 +13,7 @@ namespace Molten.Graphics.DX11
         internal int Hash;
         byte* _constData;
 
-        internal ShaderConstantBuffer(DeviceDX11 device, ConstantBufferInfo desc)
+        internal ConstantBufferDX11(DeviceDX11 device, ConstantBufferInfo desc)
             : base(device, GraphicsBufferType.Constant, GraphicsResourceFlags.NoShaderAccess | GraphicsResourceFlags.CpuWrite, 1, desc.Size, null, 0)
         {
             _varLookup = new Dictionary<string, ShaderConstantVariable>();

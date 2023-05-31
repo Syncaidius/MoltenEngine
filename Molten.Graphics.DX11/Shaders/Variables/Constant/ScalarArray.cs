@@ -8,7 +8,7 @@
 
         Array _value;
 
-        public ScalarArray(ShaderConstantBuffer parent, uint expectedElements, string name)
+        public ScalarArray(ConstantBufferDX11 parent, uint expectedElements, string name)
             : base(parent, name)
         {
             SizeOf = expectedElements * _stride;

@@ -8,7 +8,7 @@ namespace Molten.Graphics.DX11
         uint _expectedElements;
         T* _value;
 
-        internal ScalarVariable(ShaderConstantBuffer parent, uint rows, uint columns, string name) : 
+        internal ScalarVariable(ConstantBufferDX11 parent, uint rows, uint columns, string name) : 
             base(parent, name)
         {
             _expectedElements = columns * rows;

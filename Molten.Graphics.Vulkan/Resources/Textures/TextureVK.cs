@@ -158,7 +158,7 @@ namespace Molten.Graphics.Vulkan
             }
         }
 
-        private void Transition(GraphicsQueueVK cmd, ImageLayout oldLayout, ImageLayout newLayout, GraphicsFormat newFormat, uint newMipMapCount, uint newArraySize)
+        internal void Transition(GraphicsQueueVK cmd, ImageLayout oldLayout, ImageLayout newLayout, GraphicsFormat newFormat, uint newMipMapCount, uint newArraySize)
         {
             ImageMemoryBarrier barrier = new ImageMemoryBarrier(StructureType.ImageMemoryBarrier)
             {
@@ -170,8 +170,14 @@ namespace Molten.Graphics.Vulkan
                 SubresourceRange = _viewDesc.SubresourceRange,
             };
 
-            barrier.SubresourceRange.LevelCount = newMipMapCount;
-            barrier.SubresourceRange.LayerCount = newArraySize;
+            barrier.SubresourceRange = new ImageSubresourceRange()
+            {
+                LevelCount = newMipMapCount,
+                LayerCount = newArraySize,
+                AspectMask = ImageAspectFlags.ColorBit,
+                BaseArrayLayer = 0,
+                BaseMipLevel = 0
+            };
 
             PipelineStageFlags srcFlags;
             PipelineStageFlags destFlags;
@@ -192,7 +198,7 @@ namespace Molten.Graphics.Vulkan
             }
             else
             {
-                throw new GraphicsResourceException(this, "Unsupported image layout transition.");
+                throw new GraphicsResourceException(this, $"Unsupported image layout transition from '{oldLayout}' to '{newLayout}'.");
             }
 
             cmd.MemoryBarrier(srcFlags, destFlags, &barrier);
@@ -242,6 +248,8 @@ namespace Molten.Graphics.Vulkan
         }
 
         public override unsafe void* Handle => _handle;
+
+        internal unsafe Image* ImageHandle => (Image*)_handle->Ptr;
 
         public override unsafe void* SRV => _view;
 

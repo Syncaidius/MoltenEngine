@@ -10,7 +10,7 @@
         uint _expectedElements;
         bool _isDirty = false;
 
-        public ScalarFloat3x3ArrayVariable(ShaderConstantBuffer parent, uint expectedElements, string name)
+        public ScalarFloat3x3ArrayVariable(ConstantBufferDX11 parent, uint expectedElements, string name)
             : base(parent, name)
         {
             _expectedElements = expectedElements;

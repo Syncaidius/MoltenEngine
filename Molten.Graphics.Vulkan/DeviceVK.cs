@@ -345,7 +345,8 @@ namespace Molten.Graphics.Vulkan
             uint mipCount = 1, uint arraySize = 1, 
             AntiAliasLevel aaLevel = AntiAliasLevel.None, bool allowMipMapGen = false, string name = null)
         {
-            throw new NotImplementedException();
+            TextureDimensions dim = new TextureDimensions(width, height, 1, mipCount, arraySize);
+            return new RenderSurface2DVK(this, dim, aaLevel, MSAAQuality.Default, format, flags, allowMipMapGen, name);
         }
 
         public override INativeSurface CreateFormSurface(string formTitle, string formName, uint mipCount = 1)

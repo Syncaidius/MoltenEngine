@@ -291,28 +291,13 @@ namespace Molten.Graphics.Dxc
 
         public override ShaderIOLayout BuildIO(ShaderCodeResult result, ShaderType sType, ShaderIOLayoutType type)
         {
-            List<ShaderParameterInfo> parameters;
-
-            switch (type)
-            {
-                case ShaderIOLayoutType.Input:
-                    parameters = result.Reflection.InputParameters;
-                    break;
-
-                case ShaderIOLayoutType.Output:
-                    parameters = result.Reflection.OutputParameters;
-                    break;
-
-                default:
-                    return null;
-            }
-
             return new DXCShaderIOLayout(result, sType, type);
         }
 
         public override bool BuildStructure(ShaderCompilerContext context, HlslShader shader, ShaderCodeResult result, ShaderComposition composition)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            return false;
         }
 
         protected IDxcUtils* Utils => _utils;
