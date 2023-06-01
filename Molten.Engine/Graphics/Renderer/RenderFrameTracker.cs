@@ -17,27 +17,36 @@ namespace Molten.Graphics
 
         public class TrackedFrame
         {
-            public GraphicsCommandList[] Branches;
-
+            /// <summary>
+            /// Gets the <see cref="GraphicsBuffer"/> used for staging during the current frame.
+            /// </summary>
             public GraphicsBuffer StagingBuffer { get; internal set; }
 
+            /// <summary>
+            /// Gets the fence to wait for at the end of the current frame or start of the next one.
+            /// </summary>
             public GraphicsFence Fence;
 
+            /// <summary>
+            /// Gets the internal frame ID.
+            /// </summary>
             internal ulong FrameID;
+
+            GraphicsCommandList[] _branches;
 
             internal TrackedFrame()
             {
-                Branches = new GraphicsCommandList[INITIAL_BRANCH_COUNT];
+                _branches = new GraphicsCommandList[INITIAL_BRANCH_COUNT];
             }
 
             public void Track(GraphicsCommandList cmd)
             {
-                if (cmd.BranchIndex == Branches.Length)
-                    Array.Resize(ref Branches, Branches.Length + INITIAL_BRANCH_COUNT);
+                if (cmd.BranchIndex == _branches.Length)
+                    Array.Resize(ref _branches, _branches.Length + INITIAL_BRANCH_COUNT);
 
-                GraphicsCommandList last = Branches[cmd.BranchIndex];
+                GraphicsCommandList last = _branches[cmd.BranchIndex];
                 cmd.Previous = last;
-                Branches[cmd.BranchIndex] = cmd;
+                _branches[cmd.BranchIndex] = cmd;
             }
 
             internal void Reset()
@@ -46,9 +55,9 @@ namespace Molten.Graphics
                 Fence = null;
 
                 // Free all command lists in the frame.
-                for (int i = 0; i < Branches.Length; i++)
+                for (int i = 0; i < _branches.Length; i++)
                 {
-                    GraphicsCommandList q = Branches[i];
+                    GraphicsCommandList q = _branches[i];
                     while (q != null)
                     {
                         GraphicsCommandList prev = q.Previous;
@@ -57,7 +66,7 @@ namespace Molten.Graphics
                     }
                 }
 
-                Array.Clear(Branches);
+                Array.Clear(_branches);
             }
 
             internal void Dispose()
