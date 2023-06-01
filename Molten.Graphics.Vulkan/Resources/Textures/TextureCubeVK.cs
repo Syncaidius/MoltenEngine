@@ -22,6 +22,8 @@ namespace Molten.Graphics.Vulkan
 
             imgInfo.Flags |= ImageCreateFlags.CreateCubeCompatibleBit;
             imgInfo.ArrayLayers *= 6;
+
+            viewInfo.ViewType = CubeCount == 1 ? ImageViewType.TypeCube : ImageViewType.TypeCubeArray;
         }
 
         public uint CubeCount { get; }

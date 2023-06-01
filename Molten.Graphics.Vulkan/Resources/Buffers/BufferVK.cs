@@ -19,7 +19,7 @@ namespace Molten.Graphics.Vulkan
             uint initialBytes) :
             base(device, stride, numElements, flags, type)
         {
-            _handle = EngineUtil.Alloc<ResourceHandleVK>();
+            _handle = ResourceHandleVK.AllocateNew<Buffer>();
 
             MemoryPropertyFlags memFlags = BuildDescription(usageFlags);
             InitializeBuffer(memFlags, initialData, initialBytes);
@@ -55,8 +55,6 @@ namespace Molten.Graphics.Vulkan
 
         private void InitializeBuffer(MemoryPropertyFlags memFlags, void* initialData, uint initialBytes)
         {
-            _handle->Ptr = EngineUtil.Alloc<Buffer>();
-
             DeviceVK device = Device as DeviceVK;
             Result r = device.VK.CreateBuffer(device, in _desc, null, (Buffer*)_handle->Ptr);
             if (!r.Check(device))
@@ -90,7 +88,7 @@ namespace Molten.Graphics.Vulkan
                 device.VK.DestroyBuffer(device, *(Buffer*)_handle->Ptr, null);
                 device.VK.FreeMemory(device, _handle->Memory, null);
 
-                EngineUtil.Free(ref _handle->Ptr);
+                _handle->Dispose();
                 EngineUtil.Free(ref _handle);
                 EngineUtil.Free(ref _desc.PQueueFamilyIndices);
             }

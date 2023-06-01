@@ -20,6 +20,7 @@ namespace Molten.Graphics.Vulkan
             //  -- Transition back to the original layout once we're done.
 
             GraphicsQueueVK vkCmd = cmd as GraphicsQueueVK;
+            Surface.Apply(cmd);
 
             vkCmd.Begin(GraphicsCommandListFlags.SingleSubmit);
             Surface.Transition(vkCmd, ImageLayout.Undefined, ImageLayout.TransferDstOptimal, Surface.ResourceFormat, Surface.MipMapCount, Surface.ArraySize);

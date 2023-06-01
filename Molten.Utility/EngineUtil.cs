@@ -90,6 +90,16 @@ namespace Molten
             return (T*)Alloc((nuint)sizeof(T));
         }
 
+        /// <summary>
+        /// Clears/zeroes the number of bytes required to store the given type at the specified pointer address.
+        /// </summary>
+        /// <typeparam name="T">The type to clear memory for.</typeparam>
+        /// <param name="ptr">The pointer to the memory that needs to cleared.</param>
+        public static void Clear<T>(T* ptr) where T : unmanaged
+        {
+            NativeMemory.Clear(ptr, (nuint)sizeof(T));
+        }
+
         public static T* AllocAligned<T>() where T : unmanaged
         {
             nuint sizeOf = (nuint)sizeof(T);

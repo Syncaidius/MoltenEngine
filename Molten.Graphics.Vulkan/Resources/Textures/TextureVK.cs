@@ -15,8 +15,7 @@ namespace Molten.Graphics.Vulkan
             AntiAliasLevel aaLevel, MSAAQuality sampleQuality, GraphicsFormat format, GraphicsResourceFlags flags, bool allowMipMapGen, string name) : 
             base(device, type, dimensions, aaLevel, sampleQuality, format, flags, allowMipMapGen, name)
         {
-            _handle = EngineUtil.Alloc<ResourceHandleVK>();
-            _handle->Ptr = EngineUtil.Alloc<Image>();
+            _handle = ResourceHandleVK.AllocateNew<Image>();
             _view = EngineUtil.Alloc<ImageView>();
         }
 
@@ -99,18 +98,10 @@ namespace Molten.Graphics.Vulkan
                     throw new GraphicsResourceException(this, "A linear-tiled texture must have only source and/or destination transfer bits set. Any other usage flags are invalid.");
             }
 
-            if (_desc.ImageType == 0)
-                throw new GraphicsResourceException(this, "Image type not set during image creation");
-
-            if (_viewDesc.ViewType == 0)
-                throw new GraphicsResourceException(this, "View type not set during image-view creation");
-
-            Image img = new Image();
-            Result r = device.VK.CreateImage(device, _desc, null, &img);
+            Image* img = _handle->As<Image>();
+            Result r = device.VK.CreateImage(device, _desc, null, img);
             if (r.Check(device, () => "Failed to create image resource"))
                 return;
-
-            _handle->Set(img);
 
             MemoryRequirements memRequirements;
             device.VK.GetImageMemoryRequirements(device, *(Image*)_handle->Ptr, &memRequirements);
@@ -209,7 +200,8 @@ namespace Molten.Graphics.Vulkan
             if (IsDisposed)
                 return;
 
-            if (((Image*)_handle->Ptr)->Handle == 0)
+            Image* ptr = _handle->As<Image>();
+            if (ptr->Handle == 0)
                 CreateImage();
 
             base.OnApply(cmd);
@@ -238,7 +230,8 @@ namespace Molten.Graphics.Vulkan
         {
             DestroyResources();
             EngineUtil.Free(ref _view);
-            EngineUtil.Free(ref _handle->Ptr);
+
+            _handle->Dispose();
             EngineUtil.Free(ref _handle);
         }
 
@@ -249,7 +242,7 @@ namespace Molten.Graphics.Vulkan
 
         public override unsafe void* Handle => _handle;
 
-        internal unsafe Image* ImageHandle => (Image*)_handle->Ptr;
+        internal unsafe Image* ImageHandle => _handle->As<Image>();
 
         public override unsafe void* SRV => _view;
 
