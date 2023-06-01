@@ -90,9 +90,7 @@ namespace Molten.Graphics
 
             OnInitializeRenderer(settings);
 
-            // Setup tracking of frame buffer size
-            _tracker = new RenderFrameTracker(this);
-
+            _tracker = new RenderFrameTracker(this, 5.5);
             SpriteBatch = new SpriteBatcher(this, 3000, 20);
             LoadDefaultShaders();
 

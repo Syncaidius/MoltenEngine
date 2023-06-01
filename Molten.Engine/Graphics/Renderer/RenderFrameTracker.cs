@@ -9,8 +9,6 @@ namespace Molten.Graphics
 {
     public class RenderFrameTracker : IDisposable
     {
-        const double MAX_STAGING_BUFFER_MEGABYTES = 5.5;
-
         public delegate void FrameBufferSizeChangedHandler(uint oldSize, uint newSize);
 
         public event FrameBufferSizeChangedHandler OnFrameBufferSizeChanged;
@@ -75,9 +73,17 @@ namespace Molten.Graphics
         TrackedFrame[] _frames;
         uint _frameIndex;
         uint _newFrameBufferSize;
+        uint _maxStagingSize;
 
-        internal RenderFrameTracker(RenderService renderer)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="renderer">The <see cref="RenderService"/> to bind the tracker to.</param>
+        /// <param name="maxStagingSizeMB">The maximum size of a frame staging buffer, in megabytes.</param>
+        internal RenderFrameTracker(RenderService renderer, double maxStagingSizeMB)
         {
+            _maxStagingSize = (uint)ByteMath.FromMegabytes(maxStagingSizeMB);
+
             SettingValue<BackBufferMode> bufferingMode = renderer.Settings.Graphics.BufferingMode;
             _newFrameBufferSize = Math.Max(1, (uint)bufferingMode.Value);
             Queue = renderer.Device.Queue;
@@ -105,7 +111,7 @@ namespace Molten.Graphics
                 if (_frames == null || _frames.Length < CurrentFrameBufferSize)
                 {
                     Array.Resize(ref _frames, (int)CurrentFrameBufferSize);
-                    uint bufferBytes = (uint)ByteMath.FromMegabytes(MAX_STAGING_BUFFER_MEGABYTES);
+                    uint bufferBytes = _maxStagingSize;
                     for (int i = 0; i < _frames.Length; i++)
                     {
                         if (_frames[i] == null)
@@ -170,5 +176,10 @@ namespace Molten.Graphics
         /// Gets the current frame index. The value will be between 0 and <see cref="GraphicsSettings.BufferingMode"/> - 1, from <see cref="GraphicsDevice.Settings"/>.
         /// </summary>
         public uint FrameIndex => _frameIndex;
+
+        /// <summary>
+        /// Gets the maximum size of a frame's staging buffer, in bytes.
+        /// </summary>
+        public uint MaxStagingBufferSize => _maxStagingSize;
     }
 }
