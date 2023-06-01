@@ -56,6 +56,6 @@ namespace Molten.Graphics.DX11
 
         internal DeviceDX11 NativeDevice { get; private set; }
 
-        public override FxcCompiler Compiler => _shaderCompiler;
+        protected override ShaderCompiler Compiler => _shaderCompiler;
     }
 }

@@ -227,7 +227,8 @@ namespace Molten.Graphics.Vulkan
         /// </summary>
         internal DeviceVK NativeDevice { get; private set; }
 
-        public override DxcCompiler Compiler => _shaderCompiler;
+        /// <inheritdoc/>
+        protected override DxcCompiler Compiler => _shaderCompiler;
 
         internal VersionVK ApiVersion { get; }
     }

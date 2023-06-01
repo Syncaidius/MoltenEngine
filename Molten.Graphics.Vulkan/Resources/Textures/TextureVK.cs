@@ -100,7 +100,7 @@ namespace Molten.Graphics.Vulkan
 
             Image* img = _handle->As<Image>();
             Result r = device.VK.CreateImage(device, _desc, null, img);
-            if (r.Check(device, () => "Failed to create image resource"))
+            if (!r.Check(device, () => "Failed to create image resource"))
                 return;
 
             MemoryRequirements memRequirements;
@@ -111,12 +111,14 @@ namespace Molten.Graphics.Vulkan
                 throw new GraphicsResourceException(this, "Failed to allocate memory for image resource");
 
             _handle->Memory = _memory;
+            _viewDesc.Image = *img;
+
             r = device.VK.BindImageMemory(device, *(Image*)_handle->Ptr, _memory.Handle, 0);
-            if (r.Check(device, () => "Failed to bind image memory"))
+            if (!r.Check(device, () => "Failed to bind image memory"))
                 return;
 
             r = device.VK.CreateImageView(device, _viewDesc, null, _view);
-            if (r.Check(device, () => "Failed to create image view"))
+            if (!r.Check(device, () => "Failed to create image view"))
                 return;
 
             // Can we write directly to image memory?

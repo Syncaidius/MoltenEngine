@@ -386,9 +386,12 @@ namespace Molten.Graphics
         /// </summary>
         public OverlayProvider Overlay { get; }
 
-        public SurfaceManager Surfaces { get; }
+        internal SurfaceManager Surfaces { get; }
 
-        public abstract ShaderCompiler Compiler { get; }
+        /// <summary>
+        /// Gets the <see cref="ShaderCompiler"/> that is bound to the current <see cref="RenderService"/>.
+        /// </summary>
+        protected internal abstract ShaderCompiler Compiler { get; }
 
         internal SpriteBatcher SpriteBatch { get; private set; }
 
@@ -397,6 +400,9 @@ namespace Molten.Graphics
         /// </summary>
         internal SpriteFontManager Fonts { get; private set; }
 
+        /// <summary>
+        /// Gets the tracked resources for the current frame.
+        /// </summary>
         public RenderFrameTracker.TrackedFrame Frame => _tracker.Frame;
     }
 }

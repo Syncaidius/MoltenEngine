@@ -51,6 +51,6 @@ namespace Molten.Graphics.DX12
 
         internal DeviceBuilderDX12 Builder { get; private set; }
 
-        public override DxcCompiler Compiler { get; }
+        protected override DxcCompiler Compiler { get; }
     }
 }
