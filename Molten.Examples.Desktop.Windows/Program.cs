@@ -4,7 +4,7 @@ using Molten.Graphics.DX11;
 using Molten.Graphics.Vulkan;
 using Molten.Input;
 
-namespace Molten.Examples // Note: actual namespace depends on the project name.
+namespace Molten.Examples
 {
     internal class Program
     {

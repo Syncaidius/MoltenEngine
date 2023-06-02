@@ -1,4 +1,5 @@
-﻿using Silk.NET.Vulkan;
+﻿using System.Xml.Linq;
+using Silk.NET.Vulkan;
 using Buffer = Silk.NET.Vulkan.Buffer;
 using Semaphore = Silk.NET.Vulkan.Semaphore;
 
@@ -269,15 +270,73 @@ namespace Molten.Graphics.Vulkan
 
         protected override unsafe void CopyResource(GraphicsResource src, GraphicsResource dest)
         {
-            switch (src) {
-                case GraphicsBuffer buffer:
-                    Span<BufferCopy> copy = stackalloc BufferCopy[] { new BufferCopy(0, 0, src.SizeInBytes) };
-                    _vk.CmdCopyBuffer(_cmd, *(Buffer*)src.Handle, *(Buffer*)dest.Handle, copy);
-                    break;
+            ResourceHandleVK* srcHandle = (ResourceHandleVK*)src.Handle;
+            ResourceHandleVK* destHandle = (ResourceHandleVK*)dest.Handle;
 
-                case GraphicsTexture tex:
-                    // _vk.CmdCopyImage();
-                    break;
+            if (src is GraphicsBuffer)
+            {
+                Buffer* srcBuffer = srcHandle->As<Buffer>();
+
+                if (dest is GraphicsBuffer)
+                {
+                    Buffer* destBuffer = destHandle->As<Buffer>();
+                    Span<BufferCopy> copy = stackalloc BufferCopy[] {
+                        new BufferCopy(0, 0, src.SizeInBytes)
+                    };
+                    _vk.CmdCopyBuffer(_cmd, *srcBuffer, *destBuffer, copy);
+                }
+                else if (dest is GraphicsTexture destTex)
+                {
+                    Image* destImg = destHandle->As<Image>();
+                    Offset3D offset = new Offset3D(0, 0, 0);
+                    Extent3D extent = new Extent3D(destTex.Width, destTex.Height, destTex.Depth);
+
+                    // TODO set the image aspect flags based on texture type. e.g. is DepthTextureVK or standard TextureVK/surface.
+
+                    ImageSubresourceLayers layers = new ImageSubresourceLayers(ImageAspectFlags.ColorBit, 0, 0, 1);
+                    Span<BufferImageCopy> regions = stackalloc BufferImageCopy[] {
+                        new BufferImageCopy(0, 0, src.SizeInBytes, layers, offset, extent)
+                    };
+
+                    _vk.CmdCopyBufferToImage(_cmd, *srcBuffer, *destImg, ImageLayout.TransferDstOptimal, regions);
+                }
+            }
+            else if (src is GraphicsTexture srcTex)
+            {
+                Image* srcImg = srcHandle->As<Image>();
+                Offset3D srcOffset = new Offset3D(0, 0, 0);
+
+                // TODO set the image aspect flags based on texture type. e.g. is DepthTextureVK or standard TextureVK/surface.
+                ImageSubresourceLayers srcLayers = new ImageSubresourceLayers(ImageAspectFlags.ColorBit, 0, 0, 1);
+                Extent3D srcExtent = new Extent3D(srcTex.Width, srcTex.Height, srcTex.Depth);
+
+                if (dest is GraphicsBuffer)
+                {
+                    Buffer* destBuffer = destHandle->As<Buffer>();
+                    Span<BufferImageCopy> regions = stackalloc BufferImageCopy[] {
+                        new BufferImageCopy(0, 0, src.SizeInBytes, srcLayers, srcOffset, srcExtent)
+                    };
+
+                    _vk.CmdCopyImageToBuffer(_cmd, *srcImg, ImageLayout.TransferSrcOptimal, *destBuffer, regions);
+                }
+                else if (dest is GraphicsTexture destTex)
+                {
+                    Image* destImg = destHandle->As<Image>();
+                    Offset3D destOffset = new Offset3D(0, 0, 0);
+
+                    // TODO set the image aspect flags based on texture type. e.g. is DepthTextureVK or standard TextureVK/surface.
+
+                    ImageSubresourceLayers destLayers = new ImageSubresourceLayers(ImageAspectFlags.ColorBit, 0, 0, 1);
+                    Span<ImageCopy> regions = stackalloc ImageCopy[] {
+                        new ImageCopy(srcLayers, srcOffset, destLayers, destOffset, srcExtent),
+                    };
+
+                    _vk.CmdCopyImage(_cmd, *srcImg, ImageLayout.TransferSrcOptimal, *destImg, ImageLayout.TransferDstOptimal, regions);
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException($"Unsupported copy resource type '{src.GetType().Name}'");
             }
         }
 

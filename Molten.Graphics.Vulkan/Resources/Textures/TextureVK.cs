@@ -144,6 +144,12 @@ namespace Molten.Graphics.Vulkan
             }
             else // Direct writing not allowed. Use a staging buffer.
             {
+                //device.Renderer.Frame.StagingBuffer.SetData(GraphicsPriority.Immediate, task.Data)
+                // TODO copy data to staging buffer
+                // TODO copy staging data to texture
+                // TODO this needs to happen at the start of the next frame. If it happens immediately then the thread which requested creation will interfere
+                //      with rendering. This is because the staging buffer may be in use by the GPU when the CPU tries to write to it
+                //      .
                 throw new NotImplementedException("Requires per-frame staging buffers to be implemented in the renderer");
                 // TODO Will need to make use of vkBufferImageCopy - A form of resource region
                 //      Image must have TRANSFER_DST_BIT set
