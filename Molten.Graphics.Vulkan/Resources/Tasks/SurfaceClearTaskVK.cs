@@ -23,7 +23,7 @@ namespace Molten.Graphics.Vulkan
             Surface.Apply(cmd);
 
             vkCmd.Begin(GraphicsCommandListFlags.SingleSubmit);
-            Surface.Transition(vkCmd, ImageLayout.Undefined, ImageLayout.TransferDstOptimal, Surface.ResourceFormat, Surface.MipMapCount, Surface.ArraySize);
+            Surface.Transition(vkCmd, ImageLayout.Undefined, ImageLayout.TransferDstOptimal);
 
             ImageSubresourceRange range = new ImageSubresourceRange
             {
@@ -35,7 +35,7 @@ namespace Molten.Graphics.Vulkan
             };
 
             vkCmd.ClearImage(*Surface.ImageHandle, ImageLayout.TransferDstOptimal, Color, &range, 1);
-            Surface.Transition(vkCmd, ImageLayout.TransferDstOptimal, ImageLayout.ReadOnlyOptimalKhr, Surface.ResourceFormat, Surface.MipMapCount, Surface.ArraySize);
+            Surface.Transition(vkCmd, ImageLayout.TransferDstOptimal, ImageLayout.ColorAttachmentOptimal);
             vkCmd.Submit(GraphicsCommandListFlags.None); // We'll run all commands up to this image clear.
 
             // Clear Surface via 

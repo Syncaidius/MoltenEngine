@@ -110,7 +110,8 @@ where B : GraphicsSlotBinder<T>, new()
         }
 
         /// <summary>
-        /// Submits any unsubmitted commands in the current <see cref="GraphicsQueue"/> to the GPU. A new command segment is started with the specified <paramref name="flags"/>
+        /// Submits any unsubmitted commands in the current <see cref="GraphicsQueue"/> to the GPU. 
+        /// A new command segment is started with the specified <paramref name="flags"/>, unless the <see cref="GraphicsCommandListFlags.Last"/> flag is set.
         /// </summary>
         /// <param name="flags">The flags to apply to the next command segment.</param>
         /// <exception cref="InvalidOperationException"></exception>
