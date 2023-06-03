@@ -72,6 +72,7 @@
         }
 
         /// <summary>Retrieves data from a <see cref="GraphicsBuffer"/>.</summary>
+        /// <param name="priority">The priority of the operation</param>
         /// <param name="destination">The destination array. Must be big enough to contain the retrieved data.</param>
         /// <param name="startIndex">The start index within the destination array at which to place the retrieved data.</param>
         /// <param name="count">The number of elements to retrieve</param>
@@ -93,22 +94,6 @@
                 DestIndex = startIndex,
                 Count = count,
                 MapType = GraphicsMapType.Read,
-                CompletionCallback = completionCallback,
-            });
-        }
-
-        /// <summary>Copies all the data in the current <see cref="GraphicsBuffer"/> to the destination <see cref="GraphicsBuffer"/>.</summary>
-        /// <param name="priority">The priority of the operation</param>
-        /// <param name="destination">The <see cref="GraphicsBuffer"/> to copy to.</param>
-        /// <param name="completionCallback">A callback to invoke once the operation is completed.</param>
-        public void CopyTo(GraphicsPriority priority, GraphicsBuffer destination, Action<GraphicsResource> completionCallback = null)
-        {
-            if (destination.SizeInBytes < SizeInBytes)
-                throw new GraphicsResourceException(this, "The destination buffer is not large enough.");
-
-            QueueTask(priority, new ResourceCopyTask()
-            {
-                Destination = destination,
                 CompletionCallback = completionCallback,
             });
         }

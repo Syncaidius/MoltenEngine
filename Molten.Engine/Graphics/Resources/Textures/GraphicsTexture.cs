@@ -298,34 +298,16 @@ namespace Molten.Graphics
 
         protected abstract void OnSetSize();
 
-        public void CopyTo(GraphicsPriority priority, GraphicsTexture destination, Action<GraphicsResource> completeCallback = null)
-        {
-            if (ResourceFormat != destination.ResourceFormat)
-                throw new ResourceCopyException(this, destination, "The source and destination texture formats do not match.");
-
-            if (!destination.Flags.Has(GraphicsResourceFlags.GpuWrite))
-                throw new ResourceCopyException(this, destination, "Cannoy copy to a buffer that does not have GPU-write permission.");
-
-            // Validate dimensions.
-            if (destination.Width != Width ||
-                destination.Height != Height ||
-                destination.Depth != Depth)
-                throw new ResourceCopyException(this, destination, "The source and destination textures must have the same dimensions.");
-
-            QueueTask(priority, new ResourceCopyTask()
-            {
-                Destination = destination,
-                CompletionCallback = completeCallback,
-            });
-        }
-
         public void CopyTo(GraphicsPriority priority,
             uint sourceLevel, uint sourceSlice,
             GraphicsTexture destination, uint destLevel, uint destSlice,
             Action<GraphicsResource> completeCallback = null)
         {
+            if (!Flags.Has(GraphicsResourceFlags.GpuRead))
+                throw new ResourceCopyException(this, destination, "The current texture cannot be copied from because the GraphicsResourceFlags.GpuRead flag was not set.");
+
             if (!destination.Flags.Has(GraphicsResourceFlags.GpuWrite))
-                throw new ResourceCopyException(this, destination, "Cannoy copy to a buffer that does not have GPU-write permission.");
+                throw new ResourceCopyException(this, destination, "The destination texture cannot be copied to because the GraphicsResourceFlags.GpuWrite flag was not set.");
 
             if (ResourceFormat != destination.ResourceFormat)
                 throw new ResourceCopyException(this, destination, "The source and destination texture formats do not match.");

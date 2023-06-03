@@ -12,18 +12,11 @@
         event TextureHandler OnResize;
 
         /// <summary>
-        /// Generates any missing mip-maps for a texture, so long as it's creation flags included <see cref="TextureFlags.AllowMipMapGeneration"/>.
+        /// Generates any missing mip-maps for a texture, if allowed.
         /// </summary>
         /// <param name="priority">The priority of the copy operation.</param>
-        void GenerateMipMaps(GraphicsPriority priority, Action<GraphicsResource> completionCallback = null);
-
-        /// <summary>
-        /// Copies the current texture to the destination texture. Both textures must be of the same format and dimensions.
-        /// </summary>
-        /// <param name="priority">The priority of the copy operation.</param>
-        /// <param name="destination">The destination texture.</param>
         /// <param name="completeCallback">A callback to run once the operation has completed.</param>
-        void CopyTo(GraphicsPriority priority, GraphicsTexture destination, Action<GraphicsResource> completeCallback = null);
+        void GenerateMipMaps(GraphicsPriority priority, Action<GraphicsResource> completeCallback = null);
 
         /// <summary>
         /// Copies the current texture to the destination texture. Both texture levels must be of the same format and dimensions.

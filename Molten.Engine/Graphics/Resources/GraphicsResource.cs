@@ -53,6 +53,39 @@ namespace Molten.Graphics
             }
         }
 
+        public void CopyTo(GraphicsPriority priority, GraphicsResource destination, Action<GraphicsResource> completeCallback = null)
+        {
+            if (!Flags.Has(GraphicsResourceFlags.GpuRead))
+                throw new ResourceCopyException(this, destination, "Source resource must have the GraphicsResourceFlags.GpuRead flag set.");
+
+            if (!destination.Flags.Has(GraphicsResourceFlags.GpuWrite))
+                throw new ResourceCopyException(this, destination, "Destination resource must have the GraphicsResourceFlags.GpuWrite flag set.");
+
+            // If copying between two images, do a format and bounds check
+            if (this is GraphicsTexture srcTex && destination is GraphicsTexture destTex)
+            {
+                // Validate dimensions.
+                if (destTex.Width != srcTex.Width ||
+                    destTex.Height != srcTex.Height ||
+                    destTex.Depth != srcTex.Depth)
+                    throw new ResourceCopyException(this, destination, "The source and destination textures must have the same dimensions.");
+
+                if (ResourceFormat != destination.ResourceFormat)
+                    throw new ResourceCopyException(this, destination, "The source and destination texture formats do not match.");
+            }
+            else if (this is GraphicsBuffer srcBuffer && destination is GraphicsBuffer destBuffer)
+            {
+                if (destination.SizeInBytes < SizeInBytes)
+                    throw new GraphicsResourceException(this, "The destination buffer is not large enough.");
+            }
+
+            QueueTask(priority, new ResourceCopyTask()
+            {
+                Destination = destination,
+                CompletionCallback = completeCallback,
+            });
+        }
+
         /// <summary>Applies any pending changes to the resource, from the specified priority queue.</summary>
         /// <param name="cmd">The graphics queue to use when process changes.</param>
         protected void ApplyChanges(GraphicsQueue cmd)
