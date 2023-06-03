@@ -270,6 +270,12 @@ namespace Molten.Graphics.Vulkan
 
         protected override unsafe void CopyResource(GraphicsResource src, GraphicsResource dest)
         {
+            if(!src.Flags.Has(GraphicsResourceFlags.GpuRead))
+                throw new GraphicsResourceException(src, "Source resource must have the GraphicsResourceFlags.GpuRead flag set.");
+
+            if(!dest.Flags.Has(GraphicsResourceFlags.GpuWrite))
+                throw new GraphicsResourceException(dest, "Destination resource must have the GraphicsResourceFlags.GpuWrite flag set.");
+
             ResourceHandleVK* srcHandle = (ResourceHandleVK*)src.Handle;
             ResourceHandleVK* destHandle = (ResourceHandleVK*)dest.Handle;
 
