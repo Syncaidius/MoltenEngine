@@ -130,7 +130,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public void CopyTo(GraphicsPriority priority, GraphicsTexture destination, Action<GraphicsResource> completeCallback)
+        public void CopyTo(GraphicsPriority priority, GraphicsResource destination, Action<GraphicsResource> completeCallback)
         {
             throw new NotImplementedException();
         }

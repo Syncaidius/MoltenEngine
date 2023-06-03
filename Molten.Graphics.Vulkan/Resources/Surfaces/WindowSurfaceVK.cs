@@ -256,6 +256,8 @@ namespace Molten.Graphics.Vulkan
             SwapchainKHR* swapChains = stackalloc SwapchainKHR[] { _swapChain };
             uint* scIndices = stackalloc uint[] { Device.Renderer.BackBufferIndex }; // Back-buffer index for each presented swap-chain.
 
+            // Get the last semaphore of each command list branch in the current frame.
+            // These semaphores will be waited on before presenting the swap-chain.
             uint semaphoreCount = Device.Renderer.Frame.BranchCount;
             Semaphore* semaphores = stackalloc Semaphore[(int)semaphoreCount];
             for (uint i = 0; i < semaphoreCount; i++)
