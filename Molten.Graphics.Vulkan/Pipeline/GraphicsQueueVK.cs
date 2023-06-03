@@ -239,27 +239,37 @@ namespace Molten.Graphics.Vulkan
         public override unsafe void BeginEvent(string label)
         {
             RendererVK renderer = Device.Renderer as RendererVK;
-
             byte* ptrString = EngineUtil.StringToPtr(label, Encoding.UTF8);
             DebugUtilsLabelEXT lbl = new DebugUtilsLabelEXT(pLabelName: ptrString);
-
             float* ptrColor = stackalloc float[] { 1f, 1f, 1f, 1f };
-            NativeMemory.Copy(&ptrColor, lbl.Color, sizeof(float) * 4);
 
+            NativeMemory.Copy(&ptrColor, lbl.Color, sizeof(float) * 4);
             renderer.DebugLayer.Module.CmdBeginDebugUtilsLabel(_cmd, &lbl);
             _eventLabelStack.Push(lbl);
         }
 
         public unsafe override void EndEvent()
         {
+            RendererVK renderer = Device.Renderer as RendererVK;
             DebugUtilsLabelEXT lbl = _eventLabelStack.Pop();
+
+            renderer.DebugLayer.Module.CmdEndDebugUtilsLabel(_cmd);
+
             EngineUtil.Free(ref lbl.PLabelName);
         }
 
-        public override void SetMarker(string label)
+        public unsafe override void SetMarker(string label)
         {
-            BeginEvent(label);
-            EndEvent();
+            RendererVK renderer = Device.Renderer as RendererVK;
+            byte* ptrString = EngineUtil.StringToPtr(label, Encoding.UTF8);
+            DebugUtilsLabelEXT lbl = new DebugUtilsLabelEXT(pLabelName: ptrString);
+            float* ptrColor = stackalloc float[] { 1f, 1f, 1f, 1f };
+
+            NativeMemory.Copy(&ptrColor, lbl.Color, sizeof(float) * 4);
+            renderer.DebugLayer.Module.CmdBeginDebugUtilsLabel(_cmd, &lbl);
+            renderer.DebugLayer.Module.CmdEndDebugUtilsLabel(_cmd);
+
+            EngineUtil.Free(ref ptrString);
         }
 
         protected override unsafe ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, GraphicsMapType mapType)
