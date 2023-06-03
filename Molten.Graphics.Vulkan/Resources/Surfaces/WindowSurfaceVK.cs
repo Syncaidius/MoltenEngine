@@ -200,7 +200,7 @@ namespace Molten.Graphics.Vulkan
             DeviceVK device = Device as DeviceVK;
             SurfaceFormatKHR[] supportedFormats = (Device.Renderer as RendererVK).Enumerate<SurfaceFormatKHR>((count, items) =>
             {
-                return extSurface.GetPhysicalDeviceSurfaceFormats(device.Adapter, Native, count, items);
+                return extSurface.GetPhysicalDeviceSurfaceFormats(device, Native, count, items);
             }, "surface format");
 
             Format vkFormat = format.ToApi();

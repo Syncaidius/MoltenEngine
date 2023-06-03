@@ -142,13 +142,6 @@ namespace Molten.Graphics.Vulkan
                     }
                 }
             }
-            else
-            {
-                if (!Flags.Has(GraphicsResourceFlags.GpuWrite))
-                    throw new GraphicsResourceException(this, "Unable to prepare immutable texture data. The texture does not have the GraphicsResourceFlags.GpuWrite flag set.");
-
-                // We'll leave the data transfer up to the queued TextureSetTask since we don't have direct (HostVisible) access to the image memory.
-            }
         }
 
         internal void Transition(GraphicsQueueVK cmd, ImageLayout oldLayout, ImageLayout newLayout, GraphicsFormat newFormat, uint newMipMapCount, uint newArraySize)
@@ -175,26 +168,31 @@ namespace Molten.Graphics.Vulkan
             PipelineStageFlags srcFlags;
             PipelineStageFlags destFlags;
 
-            if (oldLayout == ImageLayout.Undefined && newLayout == ImageLayout.TransferDstOptimal)
-            {
-                barrier.SrcAccessMask = AccessFlags.None;
-                barrier.DstAccessMask = AccessFlags.TransferWriteBit;
-                srcFlags = PipelineStageFlags.TopOfPipeBit;
-                destFlags = PipelineStageFlags.TransferBit;
-            }
-            else if (oldLayout == ImageLayout.TransferDstOptimal && newLayout == ImageLayout.ReadOnlyOptimal)
-            {
-                barrier.SrcAccessMask = AccessFlags.TransferWriteBit;
-                barrier.DstAccessMask = AccessFlags.ShaderReadBit;
-                srcFlags = PipelineStageFlags.TransferBit;
-                destFlags = PipelineStageFlags.FragmentShaderBit;
-            }
-            else
-            {
-                throw new GraphicsResourceException(this, $"Unsupported image layout transition from '{oldLayout}' to '{newLayout}'.");
-            }
+            (barrier.SrcAccessMask, srcFlags) = SetTransitionBarrier(oldLayout);
+            (barrier.DstAccessMask, destFlags) = SetTransitionBarrier(newLayout);
 
             cmd.MemoryBarrier(srcFlags, destFlags, &barrier);
+        }
+
+        protected (AccessFlags, PipelineStageFlags) SetTransitionBarrier(ImageLayout layout)
+        {
+            switch (layout)
+            {
+                default:
+                    throw new GraphicsResourceException(this, $"Unsupported transition image layout '{layout}'.");
+
+                case ImageLayout.Undefined:
+                    return (AccessFlags.None, PipelineStageFlags.TopOfPipeBit);
+
+                case ImageLayout.TransferDstOptimal:
+                    return (AccessFlags.TransferWriteBit, PipelineStageFlags.TransferBit);
+
+                case ImageLayout.ReadOnlyOptimal:
+                    return (AccessFlags.ShaderReadBit, PipelineStageFlags.FragmentShaderBit);
+
+                case ImageLayout.ColorAttachmentOptimal:
+                    return (AccessFlags.ColorAttachmentReadBit, PipelineStageFlags.FragmentShaderBit);
+            }
         }
 
         protected override void OnApply(GraphicsQueue cmd)
