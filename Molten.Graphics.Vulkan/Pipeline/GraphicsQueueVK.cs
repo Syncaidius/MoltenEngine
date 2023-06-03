@@ -1,5 +1,4 @@
-﻿using System.Xml.Linq;
-using Silk.NET.Vulkan;
+﻿using Silk.NET.Vulkan;
 using Buffer = Silk.NET.Vulkan.Buffer;
 using Semaphore = Silk.NET.Vulkan.Semaphore;
 

@@ -142,18 +142,12 @@ namespace Molten.Graphics.Vulkan
                     }
                 }
             }
-            else // Direct writing not allowed. Use a staging buffer.
+            else
             {
-                //device.Renderer.Frame.StagingBuffer.SetData(GraphicsPriority.Immediate, task.Data)
-                // TODO copy data to staging buffer
-                // TODO copy staging data to texture
-                // TODO this needs to happen at the start of the next frame. If it happens immediately then the thread which requested creation will interfere
-                //      with rendering. This is because the staging buffer may be in use by the GPU when the CPU tries to write to it
-                //      .
-                throw new NotImplementedException("Requires per-frame staging buffers to be implemented in the renderer");
-                // TODO Will need to make use of vkBufferImageCopy - A form of resource region
-                //      Image must have TRANSFER_DST_BIT set
-                //      Buffer must have TRANSFER_SRC_BIT set
+                if (!Flags.Has(GraphicsResourceFlags.GpuWrite))
+                    throw new GraphicsResourceException(this, "Unable to prepare immutable texture data. The texture does not have the GraphicsResourceFlags.GpuWrite flag set.");
+
+                // We'll leave the data transfer up to the queued TextureSetTask since we don't have direct (HostVisible) access to the image memory.
             }
         }
 

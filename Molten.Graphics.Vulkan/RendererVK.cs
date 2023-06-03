@@ -3,7 +3,6 @@ using System.Runtime.InteropServices;
 using Molten.Graphics.Dxc;
 using Silk.NET.Core;
 using Silk.NET.Core.Native;
-using Silk.NET.Direct3D.Compilers;
 using Silk.NET.GLFW;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
