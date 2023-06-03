@@ -258,7 +258,8 @@ namespace Molten.Graphics.Vulkan
 
         public override void SetMarker(string label)
         {
-            throw new NotImplementedException();
+            BeginEvent(label);
+            EndEvent();
         }
 
         protected override unsafe ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, GraphicsMapType mapType)
