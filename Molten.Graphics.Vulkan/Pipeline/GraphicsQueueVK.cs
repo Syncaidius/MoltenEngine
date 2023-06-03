@@ -1,4 +1,6 @@
-﻿using Silk.NET.Vulkan;
+﻿using System.Runtime.InteropServices;
+using System.Text;
+using Silk.NET.Vulkan;
 using Buffer = Silk.NET.Vulkan.Buffer;
 using Semaphore = Silk.NET.Vulkan.Semaphore;
 
@@ -12,6 +14,8 @@ namespace Molten.Graphics.Vulkan
         CommandPoolVK _poolTransient;
         CommandListVK _cmd;
 
+        Stack<DebugUtilsLabelEXT> _eventLabelStack;
+
         internal GraphicsQueueVK(RendererVK renderer, DeviceVK device, uint familyIndex, Queue queue, uint queueIndex, SupportedCommandSet set) :
             base(device)
         {
@@ -24,6 +28,7 @@ namespace Molten.Graphics.Vulkan
             Native = queue;
             Set = set;
 
+            _eventLabelStack = new Stack<DebugUtilsLabelEXT>();
             _poolFrame = new CommandPoolVK(this, CommandPoolCreateFlags.ResetCommandBufferBit, 1);
             _poolTransient = new CommandPoolVK(this, CommandPoolCreateFlags.ResetCommandBufferBit | CommandPoolCreateFlags.TransientBit, 5);
         }
@@ -231,14 +236,24 @@ namespace Molten.Graphics.Vulkan
             throw new NotImplementedException();
         }
 
-        public override void BeginEvent(string label)
+        public override unsafe void BeginEvent(string label)
         {
-            throw new NotImplementedException();
+            RendererVK renderer = Device.Renderer as RendererVK;
+
+            byte* ptrString = EngineUtil.StringToPtr(label, Encoding.UTF8);
+            DebugUtilsLabelEXT lbl = new DebugUtilsLabelEXT(pLabelName: ptrString);
+
+            float* ptrColor = stackalloc float[] { 1f, 1f, 1f, 1f };
+            NativeMemory.Copy(&ptrColor, lbl.Color, sizeof(float) * 4);
+
+            renderer.DebugLayer.Module.CmdBeginDebugUtilsLabel(_cmd, &lbl);
+            _eventLabelStack.Push(lbl);
         }
 
-        public override void EndEvent()
+        public unsafe override void EndEvent()
         {
-            throw new NotImplementedException();
+            DebugUtilsLabelEXT lbl = _eventLabelStack.Pop();
+            EngineUtil.Free(ref lbl.PLabelName);
         }
 
         public override void SetMarker(string label)

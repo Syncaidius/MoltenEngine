@@ -59,7 +59,7 @@ namespace Molten.Graphics.Vulkan
             if (settings.EnableDebugLayer.Value == true)
             {
                 _instanceLoader.AddLayer("VK_LAYER_KHRONOS_validation");
-                _instanceLoader.AddExtension<ExtDebugUtils>(SetupDebugMessenger, (ext) =>
+                DebugLayer = _instanceLoader.AddExtension<ExtDebugUtils>(SetupDebugMessenger, (ext) =>
                 {
                     // Dispose of debug messenger handle.
                     if (_debugMessengerHandle != null)
@@ -203,6 +203,8 @@ namespace Molten.Graphics.Vulkan
         /// Gets the underlying <see cref="Vk"/> API instance.
         /// </summary>
         internal Vk VK { get; }
+
+        internal VulkanExtension<ExtDebugUtils> DebugLayer { get; private set; }
 
         /// <summary>
         /// Gets the underlying <see cref="Glfw"/> API instance.

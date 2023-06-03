@@ -68,13 +68,15 @@ namespace Molten.Graphics.Vulkan
         /// <typeparam name="E">The type of extension module to load.</typeparam>
         /// <param name="loadCallback">A callback to invoke when the module is loaded.</param>
         /// <param name="destroyCallback">A callback to invoke when the module is disposed and destroyed.</param>
-        internal void AddExtension<E>(Action<E> loadCallback = null, Action<E> destroyCallback = null)
+        internal VulkanExtension<E> AddExtension<E>(Action<E> loadCallback = null, Action<E> destroyCallback = null)
             where E : NativeExtension<Vk>
         {
             VulkanExtension<E> ext = new VulkanExtension<E>(loadCallback, destroyCallback);
             string extName = GetNativeExtensionName<E>();
             if(!_bind.Extensions.ContainsKey(extName))
                 _bind.Extensions.Add(extName, ext);
+
+            return ext;
         }
 
         /// <summary>
