@@ -402,5 +402,10 @@ namespace Molten.Graphics
         /// Gets the tracked resources for the current frame.
         /// </summary>
         public RenderFrameTracker.TrackedFrame Frame => _tracker.Frame;
+
+        /// <summary>
+        /// Gets the current frame index. The value will be between 0 and <see cref="GraphicsSettings.BufferingMode"/> - 1, from <see cref="GraphicsDevice.Settings"/>.
+        /// </summary>
+        public uint BackBufferIndex => _tracker.BackBufferIndex;
     }
 }

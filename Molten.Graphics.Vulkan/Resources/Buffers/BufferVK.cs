@@ -94,7 +94,7 @@ namespace Molten.Graphics.Vulkan
             }
         }
 
-        protected override void OnApply(GraphicsQueue cmd) { }
+        protected override void OnApply(GraphicsQueue queue) { }
 
         public override unsafe void* Handle => _handle;
 

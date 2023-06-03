@@ -115,6 +115,6 @@ namespace Molten.Graphics.Vulkan
             EngineUtil.Free(ref _info.PStages);
         }
 
-        protected override void OnApply(GraphicsQueue cmd) { }
+        protected override void OnApply(GraphicsQueue queue) { }
     }
 }

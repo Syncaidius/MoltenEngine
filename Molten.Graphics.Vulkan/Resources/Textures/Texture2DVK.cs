@@ -23,7 +23,7 @@ namespace Molten.Graphics.Vulkan
         {
         }
 
-        protected override void SetCreateInfo(ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo)
+        protected override void SetCreateInfo(DeviceVK device, ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo)
         {
             imgInfo.ImageType = ImageType.Type2D;
             viewInfo.ViewType = ArraySize == 1 ? ImageViewType.Type2D : ImageViewType.Type2DArray;

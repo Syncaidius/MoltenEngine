@@ -1,4 +1,5 @@
-﻿using Silk.NET.Vulkan;
+﻿using Silk.NET.Direct3D.Compilers;
+using Silk.NET.Vulkan;
 
 namespace Molten.Graphics.Vulkan
 {
@@ -19,16 +20,9 @@ namespace Molten.Graphics.Vulkan
             _view = EngineUtil.Alloc<ImageView>();
         }
 
-        protected virtual void CreateImage()
+        protected void CreateImage()
         {
             DeviceVK device = Device as DeviceVK;
-
-            // Does the memory need to be host-visible?
-            MemoryPropertyFlags memFlags = MemoryPropertyFlags.None;
-            if (Flags.Has(GraphicsResourceFlags.CpuRead) || Flags.Has(GraphicsResourceFlags.CpuWrite))
-                memFlags |= MemoryPropertyFlags.HostCoherentBit | MemoryPropertyFlags.HostVisibleBit;
-            else
-                memFlags |= MemoryPropertyFlags.DeviceLocalBit;
 
             ImageUsageFlags flags = ImageUsageFlags.None;
             if (Flags.Has(GraphicsResourceFlags.GpuRead))
@@ -74,7 +68,7 @@ namespace Molten.Graphics.Vulkan
             _viewDesc.SubresourceRange.LayerCount = ArraySize;
             _viewDesc.Flags = ImageViewCreateFlags.None;
 
-            SetCreateInfo(ref _desc, ref _viewDesc);
+            SetCreateInfo(device, ref _desc, ref _viewDesc);
 
             // Creation of images with tiling VK_IMAGE_TILING_LINEAR may not be supported unless other parameters meet all of the constraints
             if (_desc.Tiling == ImageTiling.Linear)
@@ -98,22 +92,34 @@ namespace Molten.Graphics.Vulkan
                     throw new GraphicsResourceException(this, "A linear-tiled texture must have only source and/or destination transfer bits set. Any other usage flags are invalid.");
             }
 
-            Image* img = _handle->As<Image>();
+            OnCreateImage(device, _handle, ref _desc, ref _viewDesc);
+        }
+
+        protected unsafe virtual void OnCreateImage(DeviceVK device, ResourceHandleVK* handle, ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo)
+        {
+            // Does the memory need to be host-visible?
+            MemoryPropertyFlags memFlags = MemoryPropertyFlags.None;
+            if (Flags.Has(GraphicsResourceFlags.CpuRead) || Flags.Has(GraphicsResourceFlags.CpuWrite))
+                memFlags |= MemoryPropertyFlags.HostCoherentBit | MemoryPropertyFlags.HostVisibleBit;
+            else
+                memFlags |= MemoryPropertyFlags.DeviceLocalBit;
+
+            Image* img = handle->As<Image>();
             Result r = device.VK.CreateImage(device, _desc, null, img);
             if (!r.Check(device, () => "Failed to create image resource"))
                 return;
 
             MemoryRequirements memRequirements;
-            device.VK.GetImageMemoryRequirements(device, *(Image*)_handle->Ptr, &memRequirements);
+            device.VK.GetImageMemoryRequirements(device, *(Image*)handle->Ptr, &memRequirements);
             _memory = device.Memory.Allocate(ref memRequirements, memFlags);
 
-            if(_memory == null)
+            if (_memory == null)
                 throw new GraphicsResourceException(this, "Failed to allocate memory for image resource");
 
-            _handle->Memory = _memory;
+            handle->Memory = _memory;
             _viewDesc.Image = *img;
 
-            r = device.VK.BindImageMemory(device, *(Image*)_handle->Ptr, _memory.Handle, 0);
+            r = device.VK.BindImageMemory(device, *(Image*)handle->Ptr, _memory.Handle, 0);
             if (!r.Check(device, () => "Failed to bind image memory"))
                 return;
 
@@ -126,7 +132,7 @@ namespace Molten.Graphics.Vulkan
             {
                 // TODO Add a vulkan-specific MapResource() method that maps the entire resource in 1 call.
                 //      We can then write each TextureSetTask to one stream via offsets.
-                for(uint a = 0; a < ArraySize; a++)
+                for (uint a = 0; a < ArraySize; a++)
                 {
                     for (uint m = 0; m < MipMapCount; m++)
                     {
@@ -200,7 +206,7 @@ namespace Molten.Graphics.Vulkan
             }
         }
 
-        protected override void OnApply(GraphicsQueue cmd)
+        protected override void OnApply(GraphicsQueue queue)
         {
             if (IsDisposed)
                 return;
@@ -209,15 +215,15 @@ namespace Molten.Graphics.Vulkan
             if (ptr->Handle == 0)
                 CreateImage();
 
-            base.OnApply(cmd);
+            base.OnApply(queue);
         }
 
-        protected override void OnGenerateMipMaps(GraphicsQueue cmd)
+        protected override void OnGenerateMipMaps(GraphicsQueue queue)
         {
             throw new NotImplementedException();
         }
 
-        protected abstract void SetCreateInfo(ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo);
+        protected abstract void SetCreateInfo(DeviceVK device, ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo);
 
         private void DestroyResources()
         {

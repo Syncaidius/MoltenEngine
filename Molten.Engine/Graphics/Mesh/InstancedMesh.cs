@@ -57,10 +57,10 @@
             _instanceBuffer.SetData(GraphicsPriority.Apply, data, startIndex, count, true, 0, Renderer.Frame.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
-        protected override void OnApply(GraphicsQueue cmd)
+        protected override void OnApply(GraphicsQueue queue)
         {
-            base.OnApply(cmd);
-            cmd.VertexBuffers[1].Value = _instanceBuffer;
+            base.OnApply(queue);
+            queue.VertexBuffers[1].Value = _instanceBuffer;
         }
 
         protected override void OnPostDraw(GraphicsQueue cmd)

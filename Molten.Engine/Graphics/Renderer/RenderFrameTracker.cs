@@ -77,6 +77,8 @@ namespace Molten.Graphics
             }
 
             public uint BranchCount { get; set; }
+
+            public GraphicsCommandList this[uint index] => _branches[index];
         }
 
         TrackedFrame[] _frames;
@@ -184,7 +186,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the current frame index. The value will be between 0 and <see cref="GraphicsSettings.BufferingMode"/> - 1, from <see cref="GraphicsDevice.Settings"/>.
         /// </summary>
-        public uint FrameIndex => _frameIndex;
+        public uint BackBufferIndex => _frameIndex;
 
         /// <summary>
         /// Gets the maximum size of a frame's staging buffer, in bytes.

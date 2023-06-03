@@ -72,35 +72,35 @@
             _iBuffer.SetData(GraphicsPriority.Apply, data, startIndex, count, IsDiscard, 0, Renderer.Frame.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
-        protected virtual void OnApply(GraphicsQueue cmd)
+        protected virtual void OnApply(GraphicsQueue queue)
         {
-            cmd.IndexBuffer.Value = _iBuffer;
+            queue.IndexBuffer.Value = _iBuffer;
         }
 
-        protected virtual void OnPostDraw(GraphicsQueue cmd)
+        protected virtual void OnPostDraw(GraphicsQueue queue)
         {
-            cmd.IndexBuffer.Value = null;
+            queue.IndexBuffer.Value = null;
         }
 
-        protected virtual void OnDraw(GraphicsQueue cmd)
+        protected virtual void OnDraw(GraphicsQueue queue)
         {
             if(_iBuffer != null)
-                cmd.DrawIndexed(Shader, IndexCount);
+                queue.DrawIndexed(Shader, IndexCount);
             else
-                cmd.Draw(Shader, VertexCount);
+                queue.Draw(Shader, VertexCount);
         }
 
-        protected override sealed void OnRender(GraphicsQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
+        protected override sealed void OnRender(GraphicsQueue queue, RenderService renderer, RenderCamera camera, ObjectRenderData data)
         {
             if (Shader == null)
                 return;
 
-            OnApply(cmd);
+            OnApply(queue);
             ApplyResources(Shader);
             Shader.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
             Shader.Object.World.Value = data.RenderTransform;
-            OnDraw(cmd);
-            OnPostDraw(cmd);
+            OnDraw(queue);
+            OnPostDraw(queue);
         }
 
         public virtual void Dispose()
@@ -181,10 +181,10 @@
             _vb.SetData(GraphicsPriority.Apply, data, startIndex, count, IsDiscard, 0, Renderer.Frame.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
-        protected override void OnApply(GraphicsQueue cmd)
+        protected override void OnApply(GraphicsQueue queue)
         {
-            base.OnApply(cmd);
-            cmd.VertexBuffers[0].Value = _vb;
+            base.OnApply(queue);
+            queue.VertexBuffers[0].Value = _vb;
         }
 
         protected override void OnPostDraw(GraphicsQueue cmd)

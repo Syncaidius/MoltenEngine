@@ -31,6 +31,6 @@ namespace Molten.Graphics.Vulkan
             Desc.Dispose();
         }
 
-        protected override void OnApply(GraphicsQueue cmd) { }
+        protected override void OnApply(GraphicsQueue queue) { }
     }
 }

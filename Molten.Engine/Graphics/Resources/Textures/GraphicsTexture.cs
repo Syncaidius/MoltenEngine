@@ -354,7 +354,7 @@ namespace Molten.Graphics
             });
         }
 
-        protected internal abstract void OnGenerateMipMaps(GraphicsQueue cmd);
+        protected internal abstract void OnGenerateMipMaps(GraphicsQueue queue);
 
         /// <summary>Gets whether or not the texture is using a supported block-compressed format.</summary>
         public bool IsBlockCompressed { get; protected set; }

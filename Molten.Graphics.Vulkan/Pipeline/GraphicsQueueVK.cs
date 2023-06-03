@@ -6,7 +6,7 @@ using Semaphore = Silk.NET.Vulkan.Semaphore;
 
 namespace Molten.Graphics.Vulkan
 {
-    internal class GraphicsQueueVK : GraphicsQueue
+    public class GraphicsQueueVK : GraphicsQueue
     {
         DeviceVK _device;
         Vk _vk;

@@ -7,7 +7,7 @@ using Queue = Silk.NET.Vulkan.Queue;
 
 namespace Molten.Graphics.Vulkan
 {
-    internal unsafe class DeviceVK : GraphicsDevice
+    public unsafe class DeviceVK : GraphicsDevice
     {
         public event DisplayOutputChanged OnOutputActivated;
         public event DisplayOutputChanged OnOutputDeactivated;

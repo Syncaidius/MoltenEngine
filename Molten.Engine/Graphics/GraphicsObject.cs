@@ -13,14 +13,14 @@
         /// <summary>
         /// Invoked when the current <see cref="GraphicsObject"/> should apply any changes before being bound to a GPU context.
         /// </summary>
-        /// <param name="cmd">The <see cref="GraphicsQueue"/> that the current <see cref="GraphicsObject"/> is to be bound to.</param>
-        public void Apply(GraphicsQueue cmd)
+        /// <param name="queue">The <see cref="GraphicsQueue"/> that the current <see cref="GraphicsObject"/> is to be bound to.</param>
+        public void Apply(GraphicsQueue queue)
         {
-            LastUsedFrameID = cmd.Profiler.FrameID;
-            OnApply(cmd);
+            LastUsedFrameID = queue.Profiler.FrameID;
+            OnApply(queue);
         }
 
-        protected abstract void OnApply(GraphicsQueue cmd);
+        protected abstract void OnApply(GraphicsQueue queue);
 
         protected override sealed void OnDispose()
         {

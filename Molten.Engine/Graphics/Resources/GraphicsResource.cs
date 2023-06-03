@@ -125,9 +125,9 @@ namespace Molten.Graphics
             return false;
         }
 
-        protected override void OnApply(GraphicsQueue cmd)
+        protected override void OnApply(GraphicsQueue queue)
         {
-            ApplyChanges(cmd);
+            ApplyChanges(queue);
             _applyTaskQueue.Clear();
         }
 

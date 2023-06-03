@@ -3,6 +3,7 @@ using Silk.NET.GLFW;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
 using Image = Silk.NET.Vulkan.Image;
+using Semaphore = Silk.NET.Vulkan.Semaphore;
 
 namespace Molten.Graphics.Vulkan
 {
@@ -40,7 +41,6 @@ namespace Molten.Graphics.Vulkan
         uint _curChainSize;
 
         ColorSpaceKHR _colorSpace = ColorSpaceKHR.SpaceSrgbNonlinearKhr;
-        Format _format;
 
         KhrSwapchain _extSwapChain;
 
@@ -55,12 +55,9 @@ namespace Molten.Graphics.Vulkan
             _mode = presentMode;
         }
 
-        protected override void CreateImage()
+        protected override unsafe void OnCreateImage(DeviceVK device, ResourceHandleVK* handle, ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo)
         {
-            DeviceVK device = Device as DeviceVK;
-            _format = ResourceFormat.ToApi();
             RendererVK renderer = Device.Renderer as RendererVK;
-
             KhrSurface extSurface = renderer.GetInstanceExtension<KhrSurface>();
             if (extSurface == null)
             {
@@ -78,6 +75,12 @@ namespace Molten.Graphics.Vulkan
             renderer.GLFW.WindowHint(WindowHintClientApi.ClientApi, ClientApi.NoApi);
             renderer.GLFW.WindowHint(WindowHintBool.Resizable, true);
             _window = renderer.GLFW.CreateWindow((int)Width, (int)Height, _title, null, null);
+
+            if(_window == null)
+            {
+                renderer.Log.Error($"Failed to create {Width} x {Height} window for WindowSurfaceVK");
+                return;
+            }
 
             VkHandle instanceHandle = new VkHandle(renderer.Instance->Handle);
             VkNonDispatchableHandle surfaceHandle = new VkNonDispatchableHandle();
@@ -109,12 +112,25 @@ namespace Molten.Graphics.Vulkan
             _mode = ValidatePresentMode(extSurface, _mode);
             ValidateBackBufferSize();
 
-            // TODO Set properties for swapchain image in SetCreateInfo() override 
-            base.CreateImage();
-
             r = CreateSwapChain();
-            if (r.Check(renderer))
-                _backBuffer = GetBackBufferImages();
+            if (!r.Check(renderer, () => "Failed to create swapchain"))
+                return;
+
+            Image[] images = renderer.Enumerate<Image>((count, items) =>
+            {
+                return _extSwapChain.GetSwapchainImages(device, _swapChain, count, items);
+            }, "Swapchain image");
+
+            _backBuffer = new BackBuffer[images.Length];
+
+            for (int i = 0; i < images.Length; i++)
+            {
+                _backBuffer[i].Texture = images[i];
+                viewInfo.Image = images[i];
+                r = renderer.VK.CreateImageView(device, viewInfo, null, out _backBuffer[i].View);
+                if (!r.Check(device, () => $"Failed to create image view for back-buffer image {i}"))
+                    break;
+            }
         }
 
         private Result CreateSwapChain()
@@ -148,51 +164,6 @@ namespace Molten.Graphics.Vulkan
             createInfo.OldSwapchain = _swapChain;
 
             return _extSwapChain.CreateSwapchain(device, &createInfo, null, out _swapChain);
-        }
-
-        private BackBuffer[] GetBackBufferImages()
-        {
-            DeviceVK device = Device as DeviceVK;
-            RendererVK renderer = Device.Renderer as RendererVK;
-
-            Image[] images = renderer.Enumerate<Image>((count, items) =>
-            {
-                return _extSwapChain.GetSwapchainImages(device, _swapChain, count, items);
-            }, "Swapchain image");
-
-            BackBuffer[] buffer = new BackBuffer[images.Length];
-            ImageViewCreateInfo createInfo = new ImageViewCreateInfo()
-            {
-                SType = StructureType.ImageCreateInfo,
-                ViewType = ImageViewType.Type2D,
-                Format = _format,
-                Components = new ComponentMapping()
-                {
-                    R = ComponentSwizzle.Identity,
-                    G = ComponentSwizzle.Identity,
-                    B = ComponentSwizzle.Identity,
-                    A = ComponentSwizzle.Identity
-                },
-                SubresourceRange = new ImageSubresourceRange()
-                {
-                    AspectMask = ImageAspectFlags.ColorBit,
-                    BaseMipLevel = 0,
-                    LevelCount = 0,
-                    BaseArrayLayer = 0,
-                    LayerCount = 1, // Number of array slices
-                },
-            };
-
-            for (int i = 0; i < images.Length; i++)
-            {
-                buffer[i].Texture = images[i];
-                createInfo.Image = images[i];
-                Result r = renderer.VK.CreateImageView(device, &createInfo, null, out buffer[i].View);
-                if (!r.Check(device, () => $"Failed to create image view for back-buffer image {i}"))
-                    break;
-            }
-
-            return buffer;
         }
 
         private bool IsFormatSupported(KhrSurface extSurface, GraphicsFormat format, ColorSpaceKHR colorSpace)
@@ -271,11 +242,41 @@ namespace Molten.Graphics.Vulkan
 
             if (_window != null)
                 (Device.Renderer as RendererVK).GLFW.DestroyWindow(_window);
+
+            base.OnGraphicsRelease();
         }
 
         public void Present()
         {
-            throw new NotImplementedException();
+            OnApply(Device.Queue);
+
+            if (_swapChain.Handle == 0)
+                return;
+
+            SwapchainKHR* swapChains = stackalloc SwapchainKHR[] { _swapChain };
+            uint* scIndices = stackalloc uint[] { Device.Renderer.BackBufferIndex }; // Back-buffer index for each presented swap-chain.
+
+            uint semaphoreCount = Device.Renderer.Frame.BranchCount;
+            Semaphore* semaphores = stackalloc Semaphore[(int)semaphoreCount];
+            for (uint i = 0; i < semaphoreCount; i++)
+            {
+                CommandListVK vkCmd = Device.Renderer.Frame[i] as CommandListVK;
+                semaphores[i] = vkCmd.Semaphore.Ptr;
+            }
+
+            PresentInfoKHR presentInfoKHR = new PresentInfoKHR()
+            {
+                SType = StructureType.PresentInfoKhr,
+                WaitSemaphoreCount = semaphoreCount,
+                PWaitSemaphores = semaphores,
+                SwapchainCount = 1,
+                PSwapchains = swapChains,
+                PImageIndices = scIndices,
+                PResults = null,
+            };
+
+            Queue cmdQueue = (Device as DeviceVK).Queue.Native;
+            _extSwapChain.QueuePresent(cmdQueue, &presentInfoKHR);
         }
 
         public void Dispatch(Action callback)

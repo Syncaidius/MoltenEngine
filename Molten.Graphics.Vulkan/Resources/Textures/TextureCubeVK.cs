@@ -16,9 +16,9 @@ namespace Molten.Graphics.Vulkan
             CubeCount = cubeCount;
         }
 
-        protected override void SetCreateInfo(ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo)
+        protected override void SetCreateInfo(DeviceVK device, ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo)
         {
-            base.SetCreateInfo(ref imgInfo, ref  viewInfo);
+            base.SetCreateInfo(device, ref imgInfo, ref  viewInfo);
 
             imgInfo.Flags |= ImageCreateFlags.CreateCubeCompatibleBit;
             imgInfo.ArrayLayers *= 6;
