@@ -16,6 +16,6 @@
         DepthFormat DepthFormat { get; }
 
         /// <summary>Gets the viewport that defines the renderable area of the render target.</summary>
-        Viewport Viewport { get; }
+        ViewportF Viewport { get; }
     }
 }

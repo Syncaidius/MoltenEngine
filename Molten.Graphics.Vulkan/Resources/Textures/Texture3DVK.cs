@@ -11,8 +11,16 @@ namespace Molten.Graphics.Vulkan
     {
         public Texture3DVK(GraphicsDevice device, 
             TextureDimensions dimensions, GraphicsFormat format, 
-            GraphicsResourceFlags flags, bool allowMipMapGen, string name) : 
-            base(device, GraphicsTextureType.Texture3D, dimensions, AntiAliasLevel.None, MSAAQuality.Default, format, flags, allowMipMapGen, name)
+            GraphicsResourceFlags flags, bool allowMipMapGen, string name, bool isSurface = false) : 
+            base(device, 
+                isSurface ? GraphicsTextureType.Texture3D : GraphicsTextureType.Surface3D, 
+                dimensions, 
+                AntiAliasLevel.None, 
+                MSAAQuality.Default, 
+                format, 
+                flags, 
+                allowMipMapGen, 
+                name)
         {
         }
 

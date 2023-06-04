@@ -164,6 +164,12 @@ namespace Molten.Graphics.Vulkan
             _vk.CmdClearColorImage(_cmd, image, layout, *(ClearColorValue*)&color, numRanges, pRanges);
         }
 
+        internal unsafe void ClearDepthImage(Image image, ImageLayout layout, float depthValue, uint stencilValue, ImageSubresourceRange* pRanges, uint numRanges)
+        {
+            ClearDepthStencilValue values = new ClearDepthStencilValue(depthValue, stencilValue);
+            _vk.CmdClearDepthStencilImage(_cmd, image, layout, &values, numRanges, pRanges);
+        }
+
         internal bool HasFlags(CommandSetCapabilityFlags flags)
         {
             return (Flags & flags) == flags;

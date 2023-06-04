@@ -10,7 +10,7 @@ namespace Molten.Graphics.DX11
         ID3D11DepthStencilView* _readOnlyView;
         DepthStencilViewDesc _depthDesc;
         DepthFormat _depthFormat;
-        Viewport _vp;
+        ViewportF _vp;
 
         /// <summary>
         /// 
@@ -35,13 +35,13 @@ namespace Molten.Graphics.DX11
             MSAAQuality msaa = MSAAQuality.Default,
             bool allowMipMapGen = false,
             string name = "surface")
-            : base(device, width, height, flags, GraphicsFormat.R24G8_Typeless, mipCount, arraySize, aaLevel, msaa, allowMipMapGen, name)
+            : base(device, width, height, flags, format.ToGraphicsFormat(), mipCount, arraySize, aaLevel, msaa, allowMipMapGen, name)
         {
             _depthFormat = format;
             _desc.ArraySize = arraySize;
-            _desc.Format = GetFormat().ToApi();
+            _desc.Format = format.ToGraphicsFormat().ToApi();
             _depthDesc = new DepthStencilViewDesc();
-            _depthDesc.Format = GetDSVFormat().ToApi();
+            _depthDesc.Format = format.ToDepthViewFormat().ToApi();
 
             name = name ?? "surface";
             Name = $"depth_{name}";
@@ -90,31 +90,7 @@ namespace Molten.Graphics.DX11
 
         private void UpdateViewport()
         {
-            _vp = new Viewport(0, 0, (int)_desc.Width, (int)_desc.Height);
-        }
-
-        private GraphicsFormat GetFormat()
-        {
-            switch (_depthFormat)
-            {
-                default:
-                case DepthFormat.R24G8_Typeless:
-                    return GraphicsFormat.R24G8_Typeless;
-                case DepthFormat.R32_Typeless:
-                    return GraphicsFormat.R32_Typeless;
-            }
-        }
-
-        private GraphicsFormat GetDSVFormat()
-        {
-            switch (_depthFormat)
-            {
-                default:
-                case DepthFormat.R24G8_Typeless:
-                    return GraphicsFormat.D24_UNorm_S8_UInt;
-                case DepthFormat.R32_Typeless:
-                    return GraphicsFormat.D32_Float;
-            }
+            _vp = new ViewportF(0, 0, _desc.Width, _desc.Height);
         }
 
         private DsvFlag GetReadOnlyFlags()
@@ -203,6 +179,6 @@ namespace Molten.Graphics.DX11
         public DepthFormat DepthFormat => _depthFormat;
 
         /// <summary>Gets the viewport of the <see cref="DepthSurfaceDX11"/>.</summary>
-        public Viewport Viewport => _vp;
+        public ViewportF Viewport => _vp;
     }
 }

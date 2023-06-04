@@ -9,18 +9,29 @@ namespace Molten.Graphics.Vulkan
 {
     public class Texture2DVK : TextureVK, ITexture2D
     {
-        public Texture2DVK(GraphicsDevice device, TextureDimensions dimensions,
+        internal Texture2DVK(GraphicsDevice device, GraphicsTextureType type, TextureDimensions dimensions,
             AntiAliasLevel aaLevel, MSAAQuality sampleQuality, GraphicsFormat format,
             GraphicsResourceFlags flags, bool allowMipMapGen, string name) :
-            base(device, GraphicsTextureType.Texture2D, dimensions, aaLevel, sampleQuality, format, flags, allowMipMapGen, name)
+            base(device, 
+                type, 
+                dimensions, 
+                aaLevel, 
+                sampleQuality, 
+                format, flags, 
+                allowMipMapGen,
+                name)
         {
-        }
+            // Validate that only a 2D texture type was provided.
+            switch (type)
+            {
+                default:
+                    throw new NotSupportedException("The specified texture type is not a 2D texture type.");
 
-        protected Texture2DVK(GraphicsDevice device, GraphicsTextureType type, TextureDimensions dimensions,
-            AntiAliasLevel aaLevel, MSAAQuality sampleQuality, GraphicsFormat format,
-            GraphicsResourceFlags flags, bool allowMipMapGen, string name) :
-            base(device, type, dimensions, aaLevel, sampleQuality, format, flags, allowMipMapGen, name)
-        {
+                case GraphicsTextureType.Texture2D:
+                case GraphicsTextureType.Surface2D:
+                case GraphicsTextureType.TextureCube:
+                    return;
+            }
         }
 
         protected override void SetCreateInfo(DeviceVK device, ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo)

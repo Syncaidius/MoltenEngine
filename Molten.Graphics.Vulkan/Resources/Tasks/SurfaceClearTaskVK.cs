@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Silk.NET.Vulkan;
+﻿using Silk.NET.Vulkan;
 
 namespace Molten.Graphics.Vulkan
 {
@@ -13,14 +8,14 @@ namespace Molten.Graphics.Vulkan
 
         public Color Color;
 
-        public unsafe bool Process(GraphicsQueue cmd, GraphicsResource resource)
+        public unsafe bool Process(GraphicsQueue queue, GraphicsResource resource)
         {
             // TODO Implement proper handling of barrier transitions.
             //  -- Transition from the current layout to the one we need.
             //  -- Transition back to the original layout once we're done.
 
-            GraphicsQueueVK vkCmd = cmd as GraphicsQueueVK;
-            Surface.Apply(cmd);
+            GraphicsQueueVK vkCmd = queue as GraphicsQueueVK;
+            Surface.Apply(queue);
 
             vkCmd.Begin(GraphicsCommandListFlags.SingleSubmit);
             Surface.Transition(vkCmd, ImageLayout.Undefined, ImageLayout.TransferDstOptimal);
