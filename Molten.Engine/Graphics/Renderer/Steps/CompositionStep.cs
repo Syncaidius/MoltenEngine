@@ -40,11 +40,12 @@
             GraphicsQueue cmd = renderer.Device.Queue;
 
             context.CompositionSurface.Clear(GraphicsPriority.Immediate, camera.BackgroundColor);
-            cmd.ResetRenderSurfaces();
-            cmd.SetRenderSurface(context.CompositionSurface, 0);
-            cmd.DepthSurface.Value = null;
-            cmd.SetViewports(camera.Surface.Viewport);
-            cmd.SetScissorRectangle((Rectangle)vpBounds);
+            cmd.State.Surfaces.Reset();
+            cmd.State.Surfaces[0].Value = context.CompositionSurface;
+            cmd.State.DepthSurface.Value = null;
+
+            cmd.State.Viewports.Reset(camera.Surface.Viewport);
+            cmd.State.ScissorRects.Reset((Rectangle)vpBounds);
 
             _valLighting.Value = _surfaceLighting;
             _valEmissive.Value = _surfaceEmissive;

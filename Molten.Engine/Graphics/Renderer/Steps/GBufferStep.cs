@@ -10,12 +10,13 @@
             IRenderSurface2D sNormals = renderer.Surfaces[MainSurfaceType.Normals];
             IRenderSurface2D sEmissive = renderer.Surfaces[MainSurfaceType.Emissive];
 
-            GraphicsQueue cmd = renderer.Device.Queue;
+            GraphicsQueue queue = renderer.Device.Queue;
 
-            cmd.SetRenderSurface(sScene, 0);
-            cmd.SetRenderSurface(sNormals, 1);
-            cmd.SetRenderSurface(sEmissive, 2);
-            cmd.DepthSurface.Value = renderer.Surfaces.GetDepth();
+            queue.State.Surfaces.Reset();
+            queue.State.Surfaces[0].Value = sScene;
+            queue.State.Surfaces[1].Value = sNormals;
+            queue.State.Surfaces[2].Value = sEmissive;
+            queue.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
 
             if (context.Layer.Renderables.Count == 0)
                 return;
@@ -23,11 +24,11 @@
             SetShaderCommon(renderer.FxStandardMesh, camera, sScene);
             SetShaderCommon(renderer.FxStandardMesh_NoNormalMap, camera, sScene);
 
-            cmd.SetViewports(camera.Surface.Viewport);
+            queue.State.Viewports.Reset(camera.Surface.Viewport);
 
-            cmd.Begin();
-            renderer.RenderSceneLayer(cmd, context.Layer, camera);
-            cmd.End();
+            queue.Begin();
+            renderer.RenderSceneLayer(queue, context.Layer, camera);
+            queue.End();
         }
 
         private void SetShaderCommon(HlslShader shader, RenderCamera camera, IRenderSurface2D gBufferScene)

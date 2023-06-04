@@ -32,13 +32,14 @@ namespace Molten.Graphics
             IRenderSurface2D _surfaceLighting = renderer.Surfaces[MainSurfaceType.Lighting];
             IDepthStencilSurface sDepth = renderer.Surfaces.GetDepth();
 
-            GraphicsQueue cmd = renderer.Device.Queue;
+            GraphicsQueue queue = renderer.Device.Queue;
 
             _surfaceLighting.Clear(GraphicsPriority.Immediate, context.Scene.AmbientLightColor);
-            cmd.ResetRenderSurfaces();
-            cmd.SetRenderSurface(_surfaceLighting, 0);
-            cmd.DepthSurface.Value = sDepth;
-            RenderPointLights(renderer, cmd, camera, context.Scene, sDepth);
+            queue.State.Surfaces.Reset();
+            queue.State.Surfaces[0].Value = _surfaceLighting;
+            queue.State.DepthSurface.Value = sDepth;
+
+            RenderPointLights(renderer, queue, camera, context.Scene, sDepth);
         }
 
         private void RenderPointLights(RenderService renderer, GraphicsQueue cmd, RenderCamera camera, SceneRenderData scene, IDepthStencilSurface dsSurface)

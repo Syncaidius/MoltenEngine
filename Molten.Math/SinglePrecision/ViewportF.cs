@@ -28,7 +28,7 @@ namespace Molten
     /// <summary>
     /// Defines the viewport dimensions using float coordinates for (X,Y,Width,Height).
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    [StructLayout(LayoutKind.Explicit)]
     [Serializable]
     public struct ViewportF : IEquatable<ViewportF>
     {
@@ -36,36 +36,48 @@ namespace Molten
         /// Position of the pixel coordinate of the upper-left corner of the viewport.
         /// </summary>
         [DataMember]
+        [FieldOffset(0)]
         public float X;
 
         /// <summary>
         /// Position of the pixel coordinate of the upper-left corner of the viewport.
         /// </summary>
         [DataMember]
+        [FieldOffset(4)]
         public float Y;
 
         /// <summary>
-        /// Width dimension of the viewport.
+        /// The size/dimensions of the viewport. Maps directly to <see cref="Width"/> and <see cref="Height"/> in memory.
+        /// </summary>
+        [FieldOffset(8)]
+        public Vector2F Size;
+
+        /// <summary>
+        /// Width dimension of the viewport. Maps directly to <see cref="Size"/>.X in memory.
         /// </summary>
         [DataMember]
+        [FieldOffset(8)]
         public float Width;
 
         /// <summary>
-        /// Height dimension of the viewport.
+        /// Height dimension of the viewport. Maps directly to <see cref="Size"/>.Y in memory.
         /// </summary>
         [DataMember]
+        [FieldOffset(12)]
         public float Height;
 
         /// <summary>
         /// Gets or sets the minimum depth of the clip volume.
         /// </summary>
         [DataMember]
+        [FieldOffset(16)]
         public float MinDepth;
 
         /// <summary>
         /// Gets or sets the maximum depth of the clip volume.
         /// </summary>
         [DataMember]
+        [FieldOffset(20)]
         public float MaxDepth;
 
         /// <summary>

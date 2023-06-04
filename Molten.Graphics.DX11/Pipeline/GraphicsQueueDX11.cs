@@ -17,13 +17,6 @@ namespace Molten.Graphics.DX11
         ///  this method does not modify the currently bound render-target views (RTVs) and also does not modify depth-stencil view (DSV).
         /// </summary>
         internal const uint D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL = 0xffffffff;
- 
-        Rectangle[] _scissorRects;
-        bool _scissorRectsDirty;
-
-        ViewportF[] _viewports;
-        bool _viewportsDirty;
-        ViewportF[] _nullViewport;
 
         ShaderStageDX11[] _shaderStages;
         ShaderCSStage _cs;
@@ -65,15 +58,10 @@ namespace Molten.Graphics.DX11
             _debugAnnotation = (ID3DUserDefinedAnnotation*)ptrDebug;
 
             uint maxRTs = Device.Capabilities.PixelShader.MaxOutputTargets;
-            _scissorRects = new Rectangle[maxRTs];
-            _viewports = new ViewportF[maxRTs];
-            _nullViewport = new ViewportF[1];
-
             uint maxVBuffers = Device.Capabilities.VertexBuffers.MaxSlots;
             VertexBuffers = RegisterSlotGroup<GraphicsBuffer, VertexBufferGroupBinder>(GraphicsBindTypeFlags.Input, "V-Buffer", maxVBuffers);
             IndexBuffer = RegisterSlot<GraphicsBuffer, IndexBufferBinder>(GraphicsBindTypeFlags.Input, "I-Buffer", 0);
             _vertexLayout = RegisterSlot<VertexInputLayout, InputLayoutBinder>(GraphicsBindTypeFlags.Input, "Vertex Input Layout", 0);
-            Shader = RegisterSlot<HlslShader, ShaderBinder>(GraphicsBindTypeFlags.Input, "Shader", 0);
 
             _shaderStages = new ShaderStageDX11[]
             {
@@ -94,12 +82,6 @@ namespace Molten.Graphics.DX11
             _renderUAVs = RegisterSlotGroup(GraphicsBindTypeFlags.Output, "UAV", numRenderUAVs, new UavGroupBinderOM());
 
             RTVs = EngineUtil.AllocPtrArray<ID3D11RenderTargetView1>(maxRTs);
-
-            Surfaces = RegisterSlotGroup<IRenderSurface2D, SurfaceGroupBinder>(GraphicsBindTypeFlags.Output, "Render Surface", maxRTs);
-            DepthSurface = RegisterSlot<IDepthStencilSurface, DepthSurfaceBinder>(GraphicsBindTypeFlags.Output, "Depth Surface", 0);
-
-            // Apply the surface of the graphics device's output initialally.
-            SetRenderSurfaces(null);
         }
 
         public override void Begin(GraphicsCommandListFlags flags = GraphicsCommandListFlags.None)
@@ -301,26 +283,26 @@ namespace Molten.Graphics.DX11
             bool dStateChanged = _stateRaster.Bind();
 
             // Check if scissor rects need updating
-            if (_scissorRectsDirty)
+            if (State.ScissorRects.IsDirty)
             {
-                fixed (Rectangle* ptrRect = _scissorRects)
-                    _native->RSSetScissorRects((uint)_scissorRects.Length, (Box2D<int>*)ptrRect);
+                fixed (Rectangle* ptrRect = State.ScissorRects.Items)
+                    _native->RSSetScissorRects((uint)State.ScissorRects.Length, (Box2D<int>*)ptrRect);
 
-                _scissorRectsDirty = false;
+                State.ScissorRects.IsDirty = false;
             }
 
             // Check if viewports need updating.
             // TODO Consolidate - Molten viewports are identical in memory layout to DX11 viewports.
-            if (_viewportsDirty)
+            if (State.Viewports.IsDirty)
             {
-                fixed (ViewportF* ptrViewports = _viewports)
-                    _native->RSSetViewports((uint)_viewports.Length, (Silk.NET.Direct3D11.Viewport*)ptrViewports);
+                fixed (ViewportF* ptrViewports = State.Viewports.Items)
+                    _native->RSSetViewports((uint)State.Viewports.Length, (Silk.NET.Direct3D11.Viewport*)ptrViewports);
 
-                _viewportsDirty = false;
+                State.Viewports.IsDirty = false;
             }
 
-            bool surfaceChanged = Surfaces.BindAll();
-            bool depthChanged = DepthSurface.Bind() || (_boundDepthMode != depthWriteMode);
+            bool surfaceChanged = State.Surfaces.Bind(this);
+            bool depthChanged = State.DepthSurface.Bind(this) || (_boundDepthMode != depthWriteMode);
 
             if (surfaceChanged || depthChanged)
             {
@@ -328,12 +310,12 @@ namespace Molten.Graphics.DX11
                 {
                     _numRTVs = 0;
 
-                    for (uint i = 0; i < Surfaces.SlotCount; i++)
+                    for (uint i = 0; i < State.Surfaces.Length; i++)
                     {
-                        if (Surfaces[i].BoundValue != null)
+                        if (State.Surfaces[i].BoundValue != null)
                         {
                             _numRTVs = (i + 1);
-                            RTVs[i] = (Surfaces[i].BoundValue as RenderSurface2DDX11).RTV.Ptr;
+                            RTVs[i] = (State.Surfaces[i].BoundValue as RenderSurface2DDX11).RTV.Ptr;
                         }
                         else
                         {
@@ -344,9 +326,9 @@ namespace Molten.Graphics.DX11
 
                 if (depthChanged)
                 {
-                    if (DepthSurface.BoundValue != null && depthWriteMode != GraphicsDepthWritePermission.Disabled)
+                    if (State.DepthSurface.BoundValue != null && depthWriteMode != GraphicsDepthWritePermission.Disabled)
                     {
-                        DepthSurfaceDX11 dss = DepthSurface.BoundValue as DepthSurfaceDX11;
+                        DepthSurfaceDX11 dss = State.DepthSurface.BoundValue as DepthSurfaceDX11;
                         if (depthWriteMode == GraphicsDepthWritePermission.ReadOnly)
                             DSV = dss.ReadOnlyView;
                         else
@@ -411,10 +393,10 @@ namespace Molten.Graphics.DX11
             if (!DrawInfo.Began)
                 throw new GraphicsCommandQueueException(this, $"{nameof(GraphicsQueueDX11)}: BeginDraw() must be called before calling {nameof(Draw)}()");
 
-            Shader.Value = shader;
-            bool shaderChanged = Shader.Bind();
+            State.Shader.Value = shader;
+            bool shaderChanged = State.Shader.Bind(this);
 
-            if (Shader.BoundValue == null)
+            if (State.Shader.BoundValue == null)
                 return GraphicsBindResult.NoShader;
 
             // Re-render the same material for mat.Iterations.
@@ -533,73 +515,6 @@ namespace Molten.Graphics.DX11
             return ApplyState(shader, QueueValidationMode.Compute, null);
         }
 
-        public override void SetScissorRectangle(Rectangle rect, int slot = 0)
-        {
-            _scissorRects[slot] = rect;
-            _scissorRectsDirty = true;
-        }
-
-        public override void SetScissorRectangles(params Rectangle[] rects)
-        {
-            for (int i = 0; i < rects.Length; i++)
-                _scissorRects[i] = rects[i];
-
-            // Reset any remaining scissor rectangles to whatever the first is.
-            for (int i = rects.Length; i < _scissorRects.Length; i++)
-                _scissorRects[i] = _scissorRects[0];
-
-            _scissorRectsDirty = true;
-        }
-
-        public override void SetViewport(ViewportF vp, int slot)
-        {
-            _viewports[slot] = vp;
-        }
-
-        public override void SetViewports(ViewportF vp)
-        {
-            for (int i = 0; i < _viewports.Length; i++)
-                _viewports[i] = vp;
-
-            _viewportsDirty = true;
-        }
-
-        public override void SetViewports(ViewportF[] viewports)
-        {
-            if (viewports == null)
-            {
-                IRenderSurface2D surface = null;
-                IRenderSurface2D surfaceZero = GetRenderSurface(0);
-
-                for (uint i = 0; i < _viewports.Length; i++)
-                {
-                    surface = GetRenderSurface(i);
-                    _viewports[i] = surface != null ? surface.Viewport : surfaceZero.Viewport;
-                }
-            }
-            else
-            {
-                for (int i = 0; i < viewports.Length; i++)
-                    _viewports[i] = viewports[i];
-
-                // Set remaining unset ones to whatever the first is.
-                for (int i = viewports.Length; i < _viewports.Length; i++)
-                    _viewports[i] = _viewports[0];
-            }
-
-            _viewportsDirty = true;
-        }
-
-        public override void GetViewports(ViewportF[] outArray)
-        {
-            Array.Copy(_viewports, outArray, _viewports.Length);
-        }
-
-        public override ViewportF GetViewport(int index)
-        {
-            return _viewports[index];
-        }
-
         /// <summary>Retrieves or creates a usable input layout for the provided vertex buffers and sub-effect.</summary>
         /// <returns>An instance of InputLayout.</returns>
         private VertexInputLayout GetInputLayout(HlslPass pass)
@@ -659,7 +574,7 @@ namespace Molten.Graphics.DX11
         {
             GraphicsBindResult result = GraphicsBindResult.Successful;
 
-            if (Shader == null)
+            if (State.Shader == null)
                 result |= GraphicsBindResult.MissingMaterial;
 
             return result;

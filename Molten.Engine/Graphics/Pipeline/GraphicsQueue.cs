@@ -46,18 +46,58 @@ namespace Molten.Graphics
         RenderProfiler _profiler;
         RenderProfiler _defaultProfiler;
         List<GraphicsSlot> _slots;
+        GraphicsState _state;
+
+        Stack<GraphicsState> _stateStack;
+        Stack<GraphicsState> _freeStateStack;
 
         protected GraphicsQueue(GraphicsDevice device)
         {
             DrawInfo = new BatchDrawInfo();
             Device = device;
             _slots = new List<GraphicsSlot>();
+            _state = new GraphicsState(device);
+            _stateStack = new Stack<GraphicsState>();
+            _freeStateStack = new Stack<GraphicsState>();
             _defaultProfiler = _profiler = new RenderProfiler();
         }
 
+        public void PushState(GraphicsState newest = null)
+        {
+            _stateStack.Push(_state);
+
+            if (_freeStateStack.Count > 0)
+            {
+                GraphicsState clone = _freeStateStack.Pop();
+                _state.CopyTo(clone);
+            }
+            else
+            {
+                _state = newest ?? _state.Clone();
+            }
+        }
+
+        public void PopState()
+        {
+            if (_stateStack.Count == 0)
+                throw new InvalidOperationException("There are no states to pop from the current GraphicsQueue.");
+
+            _freeStateStack.Push(_state);
+            _state = _stateStack.Pop();
+        }
+
+        public void ResetState()
+        {
+            while(_stateStack.Count > 0)
+            {
+                _freeStateStack.Push(_state);
+                _state = _stateStack.Pop();
+            }
+        }
+
         public GraphicsSlot<T> RegisterSlot<T, B>(GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex)
-where T : class, IGraphicsObject
-where B : GraphicsSlotBinder<T>, new()
+            where T : class, IGraphicsObject
+            where B : GraphicsSlotBinder<T>, new()
         {
             B binder = new B();
             return RegisterSlot(bindType, namePrefix, slotIndex, binder);
@@ -133,102 +173,6 @@ where B : GraphicsSlotBinder<T>, new()
             DrawInfo.Reset();
             return Cmd;
         }
-
-        /// <summary>Sets a list of render surfaces.</summary>
-        /// <param name="surfaces">Array containing a list of render surfaces to be set.</param>
-        public void SetRenderSurfaces(params IRenderSurface2D[] surfaces)
-        {
-            if (surfaces == null)
-                SetRenderSurfaces(null, 0);
-            else
-                SetRenderSurfaces(surfaces, (uint)surfaces.Length);
-        }
-
-        /// <summary>Sets a list of render surfaces.</summary>
-        /// <param name="surfaces">Array containing a list of render surfaces to be set.</param>
-        /// <param name="count">The number of render surfaces to set.</param>
-        public void SetRenderSurfaces(IRenderSurface2D[] surfaces, uint count)
-        {
-            if (surfaces != null)
-            {
-                for (uint i = 0; i < count; i++)
-                    Surfaces[i].Value = surfaces[i];
-            }
-            else
-            {
-                count = 0;
-            }
-
-            // Set the remaining surfaces to null.
-            for (uint i = count; i < Surfaces.SlotCount; i++)
-                Surfaces[i].Value = null;
-        }
-
-        /// <summary>Sets a render surface.</summary>
-        /// <param name="surface">The surface to be set.</param>
-        /// <param name="slot">The ID of the slot that the surface is to be bound to.</param>
-        public void SetRenderSurface(IRenderSurface2D surface, uint slot)
-        {
-            Surfaces[slot].Value = surface;
-        }
-
-        /// <summary>
-        /// Fills the provided array with a list of applied render surfaces.
-        /// </summary>
-        /// <param name="destinationArray">The array to fill with applied render surfaces.</param>
-        public void GetRenderSurfaces(IRenderSurface2D[] destinationArray)
-        {
-            if (destinationArray.Length < Surfaces.SlotCount)
-                throw new InvalidOperationException($"The destination array is too small ({destinationArray.Length}). A minimum size of {Surfaces.SlotCount} is needed.");
-
-            for (uint i = 0; i < Surfaces.SlotCount; i++)
-                destinationArray[i] = Surfaces[i].Value;
-        }
-
-        /// <summary>Returns the render surface that is bound to the requested slot ID. Returns null if the slot is empty.</summary>
-        /// <param name="slot">The ID of the slot to retrieve a surface from.</param>
-        /// <returns></returns>
-        public IRenderSurface2D GetRenderSurface(uint slot)
-        {
-            return Surfaces[slot].Value;
-        }
-
-        /// <summary>
-        /// Resets the render surfaces.
-        /// </summary>
-        public void ResetRenderSurfaces()
-        {
-            for (uint i = 0; i < Surfaces.SlotCount; i++)
-                Surfaces[i].Value = null;
-        }
-
-        public abstract void SetScissorRectangle(Rectangle rect, int slot = 0);
-
-        public abstract void SetScissorRectangles(params Rectangle[] rects);
-
-        /// <summary>
-        /// Applies the provided viewport value to the specified viewport slot.
-        /// </summary>
-        /// <param name="vp">The viewport value.</param>
-        /// <param name="slot">The viewport slot.</param>
-        public abstract void SetViewport(ViewportF vp, int slot);
-
-        /// <summary>
-        /// Applies the specified viewport to all viewport slots.
-        /// </summary>
-        /// <param name="vp">The viewport value.</param>
-        public abstract void SetViewports(ViewportF vp);
-
-        /// <summary>
-        /// Sets the provided viewports on to their respective viewport slots. <para/>
-        /// If less than the total number of viewport slots was provided, the remaining ones will be set to whatever the same value as the first viewport slot.
-        /// </summary>
-        /// <param name="viewports"></param>
-        public abstract void SetViewports(ViewportF[] viewports);
-
-        public abstract void GetViewports(ViewportF[] outArray);
-
-        public abstract ViewportF GetViewport(int index);
 
         /// <summary>
         /// Starts a new event. Must be paired with a call to <see cref="EndEvent()"/> once finished. Events can aid debugging using the API's debugging toolset, if available.
@@ -358,21 +302,14 @@ where B : GraphicsSlotBinder<T>, new()
             set => _profiler = value ?? _defaultProfiler;
         }
 
-        /// <summary>
-        /// Gets or sets the output depth surface.
-        /// </summary>
-        public GraphicsSlot<IDepthStencilSurface> DepthSurface { get; protected set; }
-
         public GraphicsSlotGroup<GraphicsBuffer> VertexBuffers { get; protected set; }
 
         public GraphicsSlot<GraphicsBuffer> IndexBuffer { get; protected set; }
 
-        public GraphicsSlot<HlslShader> Shader { get; protected set; }
-
-        public GraphicsSlotGroup<IRenderSurface2D> Surfaces { get; protected set; }
-
         protected BatchDrawInfo DrawInfo { get; }
 
         protected abstract GraphicsCommandList Cmd { get; set; }
+
+        public GraphicsState State => _state;
     }
 }

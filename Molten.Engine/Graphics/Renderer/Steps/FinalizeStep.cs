@@ -26,17 +26,18 @@
             if (!camera.HasFlags(RenderCameraFlags.DoNotClear))
                 renderer.Surfaces.ClearIfFirstUse(camera.Surface, camera.BackgroundColor);
 
-            cmd.SetRenderSurfaces(camera.Surface);
-            cmd.DepthSurface.Value = null;
-            cmd.SetViewports(camera.Surface.Viewport);
-            cmd.SetScissorRectangle((Rectangle)camera.Surface.Viewport.Bounds);
+            cmd.State.Surfaces.Reset();
+            cmd.State.Surfaces[0].Value = camera.Surface;
+            cmd.State.DepthSurface.Value = null;
+            cmd.State.Viewports.Reset(camera.Surface.Viewport);
+            cmd.State.ScissorRects.Reset((Rectangle)camera.Surface.Viewport.Bounds);
 
             // We only need scissor testing here
             IRenderSurface2D sourceSurface = context.HasComposed ? context.PreviousComposition : renderer.Surfaces[MainSurfaceType.Scene];
             RectStyle style = RectStyle.Default;
 
             cmd.Begin();
-            renderer.SpriteBatch.Draw(sourceSurface, bounds, Vector2F.Zero, camera.Surface.Viewport.Bounds.Size, 0, Vector2F.Zero, ref style, null, 0, 0);
+            renderer.SpriteBatch.Draw(sourceSurface, bounds, Vector2F.Zero, camera.Surface.Viewport.Size, 0, Vector2F.Zero, ref style, null, 0, 0);
 
             if (camera.HasFlags(RenderCameraFlags.ShowOverlay))
                 renderer.Overlay.Render(time, renderer.SpriteBatch, renderer.Profiler, context.Scene.Profiler, camera);

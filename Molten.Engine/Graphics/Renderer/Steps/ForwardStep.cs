@@ -15,10 +15,12 @@
 
             GraphicsQueue cmd = renderer.Device.Queue;
             IRenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
-            cmd.SetRenderSurface(sScene, 0);
-            cmd.DepthSurface.Value = renderer.Surfaces.GetDepth();
-            cmd.SetViewports(camera.Surface.Viewport);
-            cmd.SetScissorRectangle((Rectangle)camera.Surface.Viewport.Bounds);
+            cmd.State.Surfaces.Reset();
+            cmd.State.Surfaces[0].Value = sScene;
+            cmd.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
+
+            cmd.State.Viewports.Reset(camera.Surface.Viewport);
+            cmd.State.ScissorRects.Reset((Rectangle)camera.Surface.Viewport.Bounds);
 
             cmd.Begin();
             renderer.RenderSceneLayer(cmd, context.Layer, camera);

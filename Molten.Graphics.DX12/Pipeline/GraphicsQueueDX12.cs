@@ -71,41 +71,6 @@ namespace Molten.Graphics.DX12
             throw new NotImplementedException();
         }
 
-        public override void SetScissorRectangle(Rectangle rect, int slot = 0)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void SetScissorRectangles(params Rectangle[] rects)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void SetViewport(ViewportF vp, int slot)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void SetViewports(ViewportF vp)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void SetViewports(ViewportF[] viewports)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void GetViewports(ViewportF[] outArray)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override ViewportF GetViewport(int index)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void BeginEvent(string label)
         {
             throw new NotImplementedException();

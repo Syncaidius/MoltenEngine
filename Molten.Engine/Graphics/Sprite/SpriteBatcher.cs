@@ -578,7 +578,7 @@ namespace Molten.Graphics
                     shader.SpriteBatch.TextureSize.Value = texSize;
                 }
 
-                cmd.SetScissorRectangles(range.Clip);
+                cmd.State.ScissorRects.Reset(range.Clip);
 
                 shader.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
                 cmd.Draw(shader, range.VertexCount);
