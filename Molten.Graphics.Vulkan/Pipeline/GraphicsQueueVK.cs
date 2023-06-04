@@ -176,35 +176,9 @@ namespace Molten.Graphics.Vulkan
         }
 
         protected override void OnDispose()
-        {
-            
+        {            
             _poolFrame.Dispose();
             _poolTransient.Dispose();
-        }
-
-        public override void SetRenderSurfaces(IRenderSurface2D[] surfaces, uint count)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void SetRenderSurface(IRenderSurface2D surface, uint slot)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void GetRenderSurfaces(IRenderSurface2D[] destinationArray)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IRenderSurface2D GetRenderSurface(uint slot)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void ResetRenderSurfaces()
-        {
-            throw new NotImplementedException();
         }
 
         public override void SetScissorRectangle(Rectangle rect, int slot = 0)
@@ -373,7 +347,7 @@ namespace Molten.Graphics.Vulkan
 
         public override unsafe void CopyResourceRegion(GraphicsResource source, uint srcSubresource, ResourceRegion* sourceRegion, GraphicsResource dest, uint destSubresource, Vector3UI destStart)
         {
-
+            throw new NotImplementedException();
         }
 
         public override GraphicsBindResult Draw(HlslShader shader, uint vertexCount, uint vertexStartIndex = 0)

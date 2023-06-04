@@ -147,28 +147,60 @@ where B : GraphicsSlotBinder<T>, new()
         /// <summary>Sets a list of render surfaces.</summary>
         /// <param name="surfaces">Array containing a list of render surfaces to be set.</param>
         /// <param name="count">The number of render surfaces to set.</param>
-        public abstract void SetRenderSurfaces(IRenderSurface2D[] surfaces, uint count);
+        public void SetRenderSurfaces(IRenderSurface2D[] surfaces, uint count)
+        {
+            if (surfaces != null)
+            {
+                for (uint i = 0; i < count; i++)
+                    Surfaces[i].Value = surfaces[i];
+            }
+            else
+            {
+                count = 0;
+            }
+
+            // Set the remaining surfaces to null.
+            for (uint i = count; i < Surfaces.SlotCount; i++)
+                Surfaces[i].Value = null;
+        }
 
         /// <summary>Sets a render surface.</summary>
         /// <param name="surface">The surface to be set.</param>
         /// <param name="slot">The ID of the slot that the surface is to be bound to.</param>
-        public abstract void SetRenderSurface(IRenderSurface2D surface, uint slot);
+        public void SetRenderSurface(IRenderSurface2D surface, uint slot)
+        {
+            Surfaces[slot].Value = surface;
+        }
 
         /// <summary>
         /// Fills the provided array with a list of applied render surfaces.
         /// </summary>
         /// <param name="destinationArray">The array to fill with applied render surfaces.</param>
-        public abstract void GetRenderSurfaces(IRenderSurface2D[] destinationArray);
+        public void GetRenderSurfaces(IRenderSurface2D[] destinationArray)
+        {
+            if (destinationArray.Length < Surfaces.SlotCount)
+                throw new InvalidOperationException($"The destination array is too small ({destinationArray.Length}). A minimum size of {Surfaces.SlotCount} is needed.");
+
+            for (uint i = 0; i < Surfaces.SlotCount; i++)
+                destinationArray[i] = Surfaces[i].Value;
+        }
 
         /// <summary>Returns the render surface that is bound to the requested slot ID. Returns null if the slot is empty.</summary>
         /// <param name="slot">The ID of the slot to retrieve a surface from.</param>
         /// <returns></returns>
-        public abstract IRenderSurface2D GetRenderSurface(uint slot);
+        public IRenderSurface2D GetRenderSurface(uint slot)
+        {
+            return Surfaces[slot].Value;
+        }
 
         /// <summary>
         /// Resets the render surfaces.
         /// </summary>
-        public abstract void ResetRenderSurfaces();
+        public void ResetRenderSurfaces()
+        {
+            for (uint i = 0; i < Surfaces.SlotCount; i++)
+                Surfaces[i].Value = null;
+        }
 
         public abstract void SetScissorRectangle(Rectangle rect, int slot = 0);
 

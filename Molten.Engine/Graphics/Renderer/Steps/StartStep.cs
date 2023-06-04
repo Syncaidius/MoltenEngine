@@ -11,9 +11,7 @@
             IRenderSurface2D sEmissive = renderer.Surfaces[MainSurfaceType.Emissive];
             IDepthStencilSurface sDepth = renderer.Surfaces.GetDepth();
 
-            GraphicsQueue cmd = renderer.Device.Queue;
-
-            cmd.SetRenderSurfaces(null);
+            renderer.Device.Queue.SetRenderSurfaces(null);
             sScene.Clear(GraphicsPriority.Immediate, camera.BackgroundColor);
             sNormals.Clear(GraphicsPriority.Immediate, Color.White * 0.5f);
             sEmissive.Clear(GraphicsPriority.Immediate, Color.Black);

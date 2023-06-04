@@ -533,49 +533,6 @@ namespace Molten.Graphics.DX11
             return ApplyState(shader, QueueValidationMode.Compute, null);
         }
 
-        public override void SetRenderSurfaces(IRenderSurface2D[] surfaces, uint count)
-        {
-            if (surfaces != null)
-            {
-                for (uint i = 0; i < count; i++)
-                    Surfaces[i].Value = surfaces[i] as RenderSurface2DDX11;
-            }
-            else
-            {
-                count = 0;
-            }
-
-            // Set the remaining surfaces to null.
-            for (uint i = count; i < Surfaces.SlotCount; i++)
-                Surfaces[i].Value = null;
-        }
-
-        public override void SetRenderSurface(IRenderSurface2D surface, uint slot)
-        {
-            Surfaces[slot].Value = surface as RenderSurface2DDX11;
-        }
-
-        public override void GetRenderSurfaces(IRenderSurface2D[] destinationArray)
-        {
-            if (destinationArray.Length < Surfaces.SlotCount)
-                throw new InvalidOperationException($"The destination array is too small ({destinationArray.Length}). A minimum size of {Surfaces.SlotCount} is needed.");
-
-            for (uint i = 0; i < Surfaces.SlotCount; i++)
-                destinationArray[i] = Surfaces[i].Value;
-        }
-
-        
-        public override IRenderSurface2D GetRenderSurface(uint slot)
-        {
-            return Surfaces[slot].Value;
-        }
- 
-        public override void ResetRenderSurfaces()
-        {
-            for (uint i = 0; i < Surfaces.SlotCount; i++)
-                Surfaces[i].Value = null;
-        }
-
         public override void SetScissorRectangle(Rectangle rect, int slot = 0)
         {
             _scissorRects[slot] = rect;

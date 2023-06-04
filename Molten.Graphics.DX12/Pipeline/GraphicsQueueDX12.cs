@@ -71,31 +71,6 @@ namespace Molten.Graphics.DX12
             throw new NotImplementedException();
         }
 
-        public override void SetRenderSurfaces(IRenderSurface2D[] surfaces, uint count)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void SetRenderSurface(IRenderSurface2D surface, uint slot)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void GetRenderSurfaces(IRenderSurface2D[] destinationArray)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IRenderSurface2D GetRenderSurface(uint slot)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void ResetRenderSurfaces()
-        {
-            throw new NotImplementedException();
-        }
-
         public override void SetScissorRectangle(Rectangle rect, int slot = 0)
         {
             throw new NotImplementedException();
