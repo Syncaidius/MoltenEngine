@@ -36,7 +36,7 @@ namespace Molten.Graphics
 
             _surfaceLighting.Clear(GraphicsPriority.Immediate, context.Scene.AmbientLightColor);
             queue.State.Surfaces.Reset();
-            queue.State.Surfaces[0].Value = _surfaceLighting;
+            queue.State.Surfaces[0] = _surfaceLighting;
             queue.State.DepthSurface.Value = sDepth;
 
             RenderPointLights(renderer, queue, camera, context.Scene, sDepth);

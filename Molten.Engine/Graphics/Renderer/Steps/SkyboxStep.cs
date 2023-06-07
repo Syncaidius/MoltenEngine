@@ -42,7 +42,7 @@
             IRenderSurface2D destSurface = context.HasComposed ? context.PreviousComposition : renderer.Surfaces[MainSurfaceType.Scene];
 
             queue.State.Surfaces.Reset();
-            queue.State.Surfaces[0].Value = destSurface;
+            queue.State.Surfaces[0] = destSurface;
             queue.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
             queue.State.Viewports.Reset(camera.Surface.Viewport);
             queue.State.ScissorRects.Reset(bounds);

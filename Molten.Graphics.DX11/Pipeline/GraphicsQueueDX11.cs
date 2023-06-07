@@ -235,6 +235,9 @@ namespace Molten.Graphics.DX11
             if (pass.Topology == D3DPrimitiveTopology.D3D11PrimitiveTopologyUndefined)
                 return GraphicsBindResult.UndefinedTopology;
 
+            // Clear output merger and rebind targets later.
+            _native->OMSetRenderTargets(0, null, null);
+
             // Check topology
             if (_boundTopology != pass.Topology)
             {
@@ -310,12 +313,12 @@ namespace Molten.Graphics.DX11
                 {
                     _numRTVs = 0;
 
-                    for (uint i = 0; i < State.Surfaces.Length; i++)
+                    for (int i = 0; i < State.Surfaces.Length; i++)
                     {
-                        if (State.Surfaces[i].BoundValue != null)
+                        if (State.Surfaces.BoundValues[i] != null)
                         {
-                            _numRTVs = (i + 1);
-                            RTVs[i] = (State.Surfaces[i].BoundValue as RenderSurface2DDX11).RTV.Ptr;
+                            _numRTVs = (uint)(i + 1U);
+                            RTVs[i] = (State.Surfaces.BoundValues[i] as RenderSurface2DDX11).RTV.Ptr;
                         }
                         else
                         {
@@ -341,10 +344,10 @@ namespace Molten.Graphics.DX11
 
                     _boundDepthMode = depthWriteMode;
                 }
-
-                _native->OMSetRenderTargets(_numRTVs, (ID3D11RenderTargetView**)RTVs, DSV);
-                Profiler.Current.SurfaceBindings++;
             }
+
+            _native->OMSetRenderTargets(_numRTVs, (ID3D11RenderTargetView**)RTVs, DSV);
+            Profiler.Current.SurfaceBindings++;
 
             // Validate pipeline state.
             return Validate(mode);

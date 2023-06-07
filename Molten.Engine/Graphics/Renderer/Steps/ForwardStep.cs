@@ -15,8 +15,9 @@
 
             GraphicsQueue cmd = renderer.Device.Queue;
             IRenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
+
             cmd.State.Surfaces.Reset();
-            cmd.State.Surfaces[0].Value = sScene;
+            cmd.State.Surfaces[0] = sScene;
             cmd.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
 
             cmd.State.Viewports.Reset(camera.Surface.Viewport);

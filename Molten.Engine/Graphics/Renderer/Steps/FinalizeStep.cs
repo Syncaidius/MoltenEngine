@@ -27,7 +27,7 @@
                 renderer.Surfaces.ClearIfFirstUse(camera.Surface, camera.BackgroundColor);
 
             cmd.State.Surfaces.Reset();
-            cmd.State.Surfaces[0].Value = camera.Surface;
+            cmd.State.Surfaces[0] = camera.Surface;
             cmd.State.DepthSurface.Value = null;
             cmd.State.Viewports.Reset(camera.Surface.Viewport);
             cmd.State.ScissorRects.Reset((Rectangle)camera.Surface.Viewport.Bounds);

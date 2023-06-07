@@ -1,39 +1,69 @@
-﻿namespace Molten.Graphics
+﻿using Newtonsoft.Json.Linq;
+
+namespace Molten.Graphics
 {
     public class GraphicsStateValueGroup<T>
         where T : class, IGraphicsObject
     {
-        GraphicsStateValue<T>[] _values;
+        T[] _values;
+        T[] _boundValues;
+        uint[] _boundVersions;
 
         internal GraphicsStateValueGroup(uint capacity)
         {
-            _values = new GraphicsStateValue<T>[capacity];
-            for (int i = 0; i < _values.Length; i++)
-                _values[i] = new GraphicsStateValue<T>();
+            _values = new T[capacity];
+            _boundValues = new T[capacity];
+            _boundVersions = new uint[capacity];
         }
 
         public void CopyTo(GraphicsStateValueGroup<T> target)
         {
             for (int i = 0; i < _values.Length; i++)
-                _values[i].CopyTo(target._values[i]);
+            {
+                Array.Copy(_values, target._values, _values.Length);
+                Array.Copy(_boundValues, target._boundValues, _boundValues.Length);
+                Array.Copy(_boundVersions, target._boundVersions, _boundVersions.Length);
+            }
         }
 
         public bool Bind(GraphicsQueue queue)
         {
-            bool changed = false;
+            bool r = false;
+
             for(int i = 0; i < _values.Length; i++)
             {
-                if (_values[i].Bind(queue))
-                    changed = true;
+                if (_boundValues[i] != _values[i])
+                {
+                    _boundValues[i] = _values[i];
+                    if (_boundValues[i] != null)
+                    {
+                        _boundValues[i].Apply(queue);
+                        _boundVersions[i] = _boundValues[i].Version;
+                    }
+
+                    r = true;
+                }
+                else
+                {
+                    if (_boundValues[i] != null)
+                    {
+                        _boundValues[i].Apply(queue);
+                        if (_boundVersions[i] != _boundValues[i].Version)
+                        {
+                            _boundVersions[i] = _boundValues[i].Version;
+                            r = true;
+                        }
+                    }
+                }
             }
 
-            return changed;
+            return r;
         }
 
         public void Reset()
         {
             for(int i = 0; i < _values.Length; i++)
-                _values[i].Value = null;
+                _values[i] = null;
         }
 
         /// <summary>
@@ -41,7 +71,16 @@
         /// </summary>
         /// <param name="index">The value index.</param>
         /// <returns></returns>
-        public GraphicsStateValue<T> this[uint index] => _values[index];
+        public T this[uint index]
+        {
+            get => _values[index];
+            set => _values[index] = value;
+        }
+
+        /// <summary>
+        /// Gets a list of all bound values within the group.
+        /// </summary>
+        public IReadOnlyList<T> BoundValues => _boundValues;
 
         /// <summary>
         /// Sets a range of values within the given range.
@@ -56,11 +95,11 @@
                 if (nullRemaining)
                 {
                     for (int i = 0; i < _values.Length; i++)
-                        _values[i].Value = null;
+                        _values[i] = null;
                 }
 
                 for(int i = range.Start.Value; i < range.End.Value; i++)
-                    _values[i].Value = value[i];
+                    _values[i] = value[i];
             }
         }
 

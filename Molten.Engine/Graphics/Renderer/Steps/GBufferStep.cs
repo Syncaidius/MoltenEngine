@@ -13,9 +13,9 @@
             GraphicsQueue queue = renderer.Device.Queue;
 
             queue.State.Surfaces.Reset();
-            queue.State.Surfaces[0].Value = sScene;
-            queue.State.Surfaces[1].Value = sNormals;
-            queue.State.Surfaces[2].Value = sEmissive;
+            queue.State.Surfaces[0] = sScene;
+            queue.State.Surfaces[1] = sNormals;
+            queue.State.Surfaces[2] = sEmissive;
             queue.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
 
             if (context.Layer.Renderables.Count == 0)

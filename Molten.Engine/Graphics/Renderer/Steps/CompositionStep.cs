@@ -41,7 +41,7 @@
 
             context.CompositionSurface.Clear(GraphicsPriority.Immediate, camera.BackgroundColor);
             cmd.State.Surfaces.Reset();
-            cmd.State.Surfaces[0].Value = context.CompositionSurface;
+            cmd.State.Surfaces[0] = context.CompositionSurface;
             cmd.State.DepthSurface.Value = null;
 
             cmd.State.Viewports.Reset(camera.Surface.Viewport);
