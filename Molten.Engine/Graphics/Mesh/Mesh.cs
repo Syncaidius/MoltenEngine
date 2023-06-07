@@ -74,12 +74,12 @@
 
         protected virtual void OnApply(GraphicsQueue queue)
         {
-            queue.IndexBuffer.Value = _iBuffer;
+            queue.State.IndexBuffer.Value = _iBuffer;
         }
 
         protected virtual void OnPostDraw(GraphicsQueue queue)
         {
-            queue.IndexBuffer.Value = null;
+            queue.State.IndexBuffer.Value = null;
         }
 
         protected virtual void OnDraw(GraphicsQueue queue)

@@ -13,6 +13,13 @@ namespace Molten.Graphics
             Surfaces = new GraphicsStateValueGroup<IRenderSurface2D>(maxRTs);
             DepthSurface = new GraphicsStateValue<IDepthStencilSurface>();
             Shader = new GraphicsStateValue<HlslShader>();
+            IndexBuffer = new GraphicsStateValue<GraphicsBuffer>();
+
+            /* TODO:
+             *  - When binding a state, check for any disposed graphics objects and remove them from the state (set to null).
+             * 
+             * 
+             */
         }
 
         internal GraphicsState Clone()
@@ -52,5 +59,7 @@ namespace Molten.Graphics
         public GraphicsStateValue<IDepthStencilSurface> DepthSurface { get; }
 
         public GraphicsStateValue<HlslShader> Shader { get; }
+
+        public GraphicsStateValue<GraphicsBuffer> IndexBuffer { get; }
     }
 }

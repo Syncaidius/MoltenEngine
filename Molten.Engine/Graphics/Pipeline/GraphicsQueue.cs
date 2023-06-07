@@ -304,8 +304,6 @@ namespace Molten.Graphics
 
         public GraphicsSlotGroup<GraphicsBuffer> VertexBuffers { get; protected set; }
 
-        public GraphicsSlot<GraphicsBuffer> IndexBuffer { get; protected set; }
-
         protected BatchDrawInfo DrawInfo { get; }
 
         protected abstract GraphicsCommandList Cmd { get; set; }

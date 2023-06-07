@@ -82,7 +82,7 @@ namespace Molten.Graphics
 
             //set correct buffers and shaders
             cmd.VertexBuffers[0].Value = null;
-            cmd.IndexBuffer.Value = null;
+            cmd.State.IndexBuffer.Value = null;
             uint pointCount = scene.PointLights.ElementCount * 2;
 
             cmd.Begin();

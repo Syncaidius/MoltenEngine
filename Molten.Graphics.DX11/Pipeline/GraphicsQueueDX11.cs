@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
+using Silk.NET.DXGI;
 using Silk.NET.Maths;
 
 namespace Molten.Graphics.DX11
@@ -61,7 +62,6 @@ namespace Molten.Graphics.DX11
             uint maxRTs = Device.Capabilities.PixelShader.MaxOutputTargets;
             uint maxVBuffers = Device.Capabilities.VertexBuffers.MaxSlots;
             VertexBuffers = RegisterSlotGroup<GraphicsBuffer, VertexBufferGroupBinder>(GraphicsBindTypeFlags.Input, "V-Buffer", maxVBuffers);
-            IndexBuffer = RegisterSlot<GraphicsBuffer, IndexBufferBinder>(GraphicsBindTypeFlags.Input, "I-Buffer", 0);
 
             _shaderStages = new ShaderStageDX11[]
             {
@@ -265,9 +265,23 @@ namespace Molten.Graphics.DX11
             }
 
             bool vsChanged = stageChanged[0]; // Stage 0 is vertex buffer.
-            bool ibChanged = IndexBuffer.Bind();
+            bool ibChanged = State.IndexBuffer.Bind(this);
             bool vbChanged = VertexBuffers.BindAll();
             bool uavChanged = _renderUAVs.BindAll();
+
+            if (ibChanged)
+            {
+                if (State.IndexBuffer.BoundValue != null)
+                {
+                    IndexBufferDX11 buffer = State.IndexBuffer.BoundValue as IndexBufferDX11;
+                    uint byteOffset = 0; // TODO value.ByteOffset - May need again later for multi-part meshes.
+                    _native->IASetIndexBuffer((ID3D11Buffer*)buffer.Handle, buffer.D3DFormat, byteOffset);
+                }
+                else
+                {
+                    _native->IASetIndexBuffer(null, Format.FormatUnknown, 0);
+                }
+            }
 
             // Does the vertex input layout need updating?
             if (vbChanged || vsChanged)
@@ -628,7 +642,7 @@ namespace Molten.Graphics.DX11
 
             // If the index buffer is null, this method will always fail because 
             // it assumes it is only being called during an indexed draw call.
-            if (IndexBuffer.BoundValue == null)
+            if (State.IndexBuffer.BoundValue == null)
                 result |= GraphicsBindResult.MissingIndexSegment;
 
             return result;
