@@ -33,9 +33,9 @@ namespace Molten.Graphics.DX11
         uint _numRTVs;
         internal ID3D11DepthStencilView* DSV;
 
-        GraphicsSlot<BlendStateDX11> _stateBlend;
-        GraphicsSlot<RasterizerStateDX11> _stateRaster;
-        GraphicsSlot<DepthStateDX11> _stateDepth;
+        BlendStateDX11 _stateBlend;
+        RasterizerStateDX11 _stateRaster;
+        DepthStateDX11 _stateDepth;
         GraphicsSlotGroup<GraphicsResource> _renderUAVs;
 
         ID3D11DeviceContext4* _native;
@@ -73,10 +73,6 @@ namespace Molten.Graphics.DX11
             };
 
             _cs = new ShaderCSStage(this);
-
-            _stateBlend = RegisterSlot<BlendStateDX11, BlendBinder>(GraphicsBindTypeFlags.Input, "Blend State", 0);
-            _stateDepth = RegisterSlot<DepthStateDX11, DepthStencilBinder>(GraphicsBindTypeFlags.Input, "Depth-Stencil State", 0);
-            _stateRaster = RegisterSlot<RasterizerStateDX11, RasterizerBinder>(GraphicsBindTypeFlags.Input, "Rasterizer State", 0);
 
             uint numRenderUAVs = Device.Capabilities.VertexShader.MaxUnorderedAccessSlots;
             _renderUAVs = RegisterSlotGroup(GraphicsBindTypeFlags.Output, "UAV", numRenderUAVs, new UavGroupBinderOM());
@@ -293,14 +289,32 @@ namespace Molten.Graphics.DX11
                     _native->IASetInputLayout(_inputLayout);
             }
 
-            GraphicsDepthWritePermission depthWriteMode = pass.WritePermission;
-            _stateBlend.Value = pass.BlendState;
-            _stateDepth.Value = pass.DepthState;
-            _stateRaster.Value = pass.RasterizerState;
+            // Bind blend state
+            if (_stateBlend != pass.BlendState)
+            {
+                _stateBlend = pass.BlendState;
+                Color4 tmp = _stateBlend.BlendFactor;
+                if (_stateBlend != null)
+                    _native->OMSetBlendState(_stateBlend, (float*)&tmp, _stateBlend.BlendSampleMask);
+                else
+                    _native->OMSetBlendState(null, null, 0);
+            }
 
-            bool bStateChanged = _stateBlend.Bind();
-            bool rStateChanged = _stateDepth.Bind();
-            bool dStateChanged = _stateRaster.Bind();
+            // Bind depth-stencil state.
+            if (_stateDepth != pass.DepthState)
+            {
+                _stateDepth = pass.DepthState;
+                if (_stateDepth != null)
+                    _native->OMSetDepthStencilState(_stateDepth.NativePtr, _stateDepth.StencilReference);
+                else
+                    _native->OMSetDepthStencilState(null, 0);
+            }
+
+            if(_stateRaster != pass.RasterizerState)
+            {
+                _stateRaster = pass.RasterizerState;
+                _native->RSSetState(_stateRaster); // A null value is fine here.
+            }
 
             // Check if scissor rects need updating
             if (State.ScissorRects.IsDirty)
@@ -321,6 +335,7 @@ namespace Molten.Graphics.DX11
                 State.Viewports.IsDirty = false;
             }
 
+            GraphicsDepthWritePermission depthWriteMode = pass.WritePermission;
             bool surfaceChanged = State.Surfaces.Bind(this);
             bool depthChanged = State.DepthSurface.Bind(this) || (_boundDepthMode != depthWriteMode);
 
