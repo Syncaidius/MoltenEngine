@@ -13,16 +13,6 @@ namespace Molten.Graphics
             Surfaces = new GraphicsStateValueGroup<IRenderSurface2D>(maxRTs);
             DepthSurface = new GraphicsStateValue<IDepthStencilSurface>();
             Shader = new GraphicsStateValue<HlslShader>();
-
-            /* TODO:
-             *  - Rewrite GraphicsStateValueGroup so that it contains separate _values, _boundValues and _boundVersions arrays
-             *      - Add Get/set indexer for directly setting _values
-             *      - Add getter property named 'BoundValues' for retrieving _boundValues
-             *  - Take control of shader stage slots so that we're able to reset and re-bind resources/buffers directly.
-             *      - Aim to fix spam of on example menu:
-             *          [DX11 DEBUG] [Frame 1300] [MessageSeverityWarning] [MessageCategoryStateSetting] ID3D11DeviceContext::OMSetRenderTargets: Resource being set to OM RenderTarget slot 0 is still bound on input!
-                        [DX11 DEBUG] [Frame 1300] [MessageSeverityWarning] [MessageCategoryStateSetting] ID3D11DeviceContext::OMSetRenderTargets[AndUnorderedAccessViews]: Forcing PS shader resource slot 1 to NULL.
-             */
         }
 
         internal GraphicsState Clone()

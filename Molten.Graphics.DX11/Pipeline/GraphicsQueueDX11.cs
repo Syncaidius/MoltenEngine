@@ -1,4 +1,5 @@
-﻿using Silk.NET.Core.Native;
+﻿using Newtonsoft.Json.Linq;
+using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 using Silk.NET.Maths;
 
@@ -22,7 +23,7 @@ namespace Molten.Graphics.DX11
         ShaderCSStage _cs;
 
         D3DPrimitiveTopology _boundTopology;
-        GraphicsSlot<VertexInputLayout> _vertexLayout;
+        VertexInputLayout _inputLayout;
         List<VertexInputLayout> _cachedLayouts = new List<VertexInputLayout>();
 
         GraphicsDepthWritePermission _boundDepthMode = GraphicsDepthWritePermission.Enabled;
@@ -61,7 +62,6 @@ namespace Molten.Graphics.DX11
             uint maxVBuffers = Device.Capabilities.VertexBuffers.MaxSlots;
             VertexBuffers = RegisterSlotGroup<GraphicsBuffer, VertexBufferGroupBinder>(GraphicsBindTypeFlags.Input, "V-Buffer", maxVBuffers);
             IndexBuffer = RegisterSlot<GraphicsBuffer, IndexBufferBinder>(GraphicsBindTypeFlags.Input, "I-Buffer", 0);
-            _vertexLayout = RegisterSlot<VertexInputLayout, InputLayoutBinder>(GraphicsBindTypeFlags.Input, "Vertex Input Layout", 0);
 
             _shaderStages = new ShaderStageDX11[]
             {
@@ -272,8 +272,11 @@ namespace Molten.Graphics.DX11
             // Does the vertex input layout need updating?
             if (vbChanged || vsChanged)
             {
-                _vertexLayout.Value = GetInputLayout(pass);
-                _vertexLayout.Bind();
+                _inputLayout = GetInputLayout(pass);
+                if (_inputLayout == null || _inputLayout.IsNullBuffer)
+                    _native->IASetInputLayout(null);
+                else
+                    _native->IASetInputLayout(_inputLayout);
             }
 
             GraphicsDepthWritePermission depthWriteMode = pass.WritePermission;
@@ -633,7 +636,7 @@ namespace Molten.Graphics.DX11
 
         private GraphicsBindResult CheckInstancing()
         {
-            if (_vertexLayout.BoundValue != null && _vertexLayout.BoundValue.IsInstanced)
+            if (_inputLayout != null && _inputLayout.IsInstanced)
                 return GraphicsBindResult.Successful;
             else
                 return GraphicsBindResult.NonInstancedVertexLayout;
