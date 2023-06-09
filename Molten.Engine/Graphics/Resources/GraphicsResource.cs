@@ -7,8 +7,7 @@ namespace Molten.Graphics
         ThreadedQueue<IGraphicsResourceTask> _applyTaskQueue;
 
         protected GraphicsResource(GraphicsDevice device, GraphicsResourceFlags flags) : 
-            base(device, (flags.Has(GraphicsResourceFlags.UnorderedAccess) ? GraphicsBindTypeFlags.Output : GraphicsBindTypeFlags.None) |
-                (flags.Has(GraphicsResourceFlags.NoShaderAccess) ? GraphicsBindTypeFlags.None : GraphicsBindTypeFlags.Input))
+            base(device)
         {
             Flags = flags;
             _applyTaskQueue = new ThreadedQueue<IGraphicsResourceTask>();

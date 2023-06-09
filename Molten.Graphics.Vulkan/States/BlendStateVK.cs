@@ -7,7 +7,7 @@ namespace Molten.Graphics.Vulkan
         internal StructKey<PipelineColorBlendStateCreateInfo> Desc { get; }
 
         public BlendStateVK(GraphicsDevice device, ref ShaderPassParameters parameters) : 
-            base(device, GraphicsBindTypeFlags.Input)
+            base(device)
         {
             Desc = new StructKey<PipelineColorBlendStateCreateInfo>();
             ref PipelineColorBlendStateCreateInfo bDesc = ref Desc.Value;

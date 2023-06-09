@@ -13,7 +13,7 @@ namespace Molten.Graphics.DX11
             GraphicsStateValueGroup<GraphicsBuffer> vbSlots, 
             ID3D10Blob* vertexBytecode,
             ShaderIOLayout io) : 
-            base(device, GraphicsBindTypeFlags.Input)
+            base(device)
         {
             IsValid = true;
             _expectedFormatIDs = new ulong[vbSlots.Length];

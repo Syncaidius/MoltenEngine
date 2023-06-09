@@ -2,11 +2,9 @@
 {
     public abstract class GraphicsObject : EngineObject, IGraphicsObject
     {
-        protected GraphicsObject(GraphicsDevice device, GraphicsBindTypeFlags bindFlags)
+        protected GraphicsObject(GraphicsDevice device)
         {
             Device = device;
-            BoundTo = new List<GraphicsSlot>();
-            BindFlags = bindFlags;
             LastUsedFrameID = device.Queue.Profiler.FrameID;
         }
 
@@ -51,21 +49,6 @@
         /// update should increase this value. E.g. Resizing a texture, recompiling a shader/material, etc.
         /// </summary>
         public uint Version { get; set; }
-
-        /// <summary>
-        /// Gets a list of slots that the current <see cref="GraphicsObject"/> is bound to.
-        /// </summary>
-        public List<GraphicsSlot> BoundTo { get; }
-
-        /// <summary>
-        /// Gets the current binding ID.
-        /// </summary>
-        public uint BindID { get; set; }
-
-        /// <summary>
-        /// Gets or sets the slot bind type of the current <see cref="GraphicsObject"/>.
-        /// </summary>
-        public GraphicsBindTypeFlags BindFlags { get; set; }
 
         /// <summary>
         /// Gets the ID of the frame that the current <see cref="GraphicsObject"/> was applied.

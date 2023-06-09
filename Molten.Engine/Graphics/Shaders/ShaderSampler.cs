@@ -3,7 +3,7 @@
     public abstract class ShaderSampler : GraphicsObject
     {
         protected ShaderSampler(GraphicsDevice device, ref ShaderSamplerParameters parameters) : 
-            base(device, GraphicsBindTypeFlags.Input)
+            base(device)
         {
             IsComparisonSampler = parameters.IsComparisonSampler;
         }

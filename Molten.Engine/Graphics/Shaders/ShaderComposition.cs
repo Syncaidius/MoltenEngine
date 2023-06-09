@@ -24,7 +24,7 @@
         void* _ptrShader;
 
         internal ShaderComposition(HlslPass parentPass, ShaderType type) : 
-            base(parentPass.Device, GraphicsBindTypeFlags.Input)
+            base(parentPass.Device)
         {
             Pass = parentPass;
             Type = type;

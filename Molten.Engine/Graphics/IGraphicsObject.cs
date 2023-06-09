@@ -25,21 +25,6 @@
         string Name { get; set; }
 
         /// <summary>
-        /// Gets a list of slots that the current <see cref="GraphicsObject"/> is bound to.
-        /// </summary>
-        List<GraphicsSlot> BoundTo { get; }
-
-        /// <summary>
-        /// Gets the current binding ID.
-        /// </summary>
-        uint BindID { get; set; }
-
-        /// <summary>
-        /// Gets or sets the slot bind type of the current <see cref="GraphicsObject"/>.
-        /// </summary>
-        public GraphicsBindTypeFlags BindFlags { get; set; }
-
-        /// <summary>
         /// Gets the ID of the frame that the current <see cref="GraphicsObject"/> was applied.
         /// </summary>
         uint LastUsedFrameID { get; }

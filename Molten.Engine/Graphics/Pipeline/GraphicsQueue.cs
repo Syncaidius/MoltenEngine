@@ -45,7 +45,6 @@ namespace Molten.Graphics
 
         RenderProfiler _profiler;
         RenderProfiler _defaultProfiler;
-        List<GraphicsSlot> _slots;
         GraphicsState _state;
 
         Stack<GraphicsState> _stateStack;
@@ -55,7 +54,6 @@ namespace Molten.Graphics
         {
             DrawInfo = new BatchDrawInfo();
             Device = device;
-            _slots = new List<GraphicsSlot>();
             _state = new GraphicsState(device);
             _stateStack = new Stack<GraphicsState>();
             _freeStateStack = new Stack<GraphicsState>();
@@ -93,44 +91,6 @@ namespace Molten.Graphics
                 _freeStateStack.Push(_state);
                 _state = _stateStack.Pop();
             }
-        }
-
-        public GraphicsSlot<T> RegisterSlot<T, B>(GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex)
-            where T : class, IGraphicsObject
-            where B : GraphicsSlotBinder<T>, new()
-        {
-            B binder = new B();
-            return RegisterSlot(bindType, namePrefix, slotIndex, binder);
-        }
-
-        public GraphicsSlot<T> RegisterSlot<T>(GraphicsBindTypeFlags bindType, string namePrefix, uint slotIndex, GraphicsSlotBinder<T> binder)
-            where T : class, IGraphicsObject
-        {
-            GraphicsSlot<T> slot = new GraphicsSlot<T>(this, binder, bindType, namePrefix, slotIndex);
-            _slots.Add(slot);
-            return slot;
-        }
-
-        public GraphicsSlotGroup<T> RegisterSlotGroup<T, B>(GraphicsBindTypeFlags bindType, string namePrefix, uint numSlots)
-            where T : class, IGraphicsObject
-            where B : GraphicsGroupBinder<T>, new()
-        {
-            B binder = new B();
-            return RegisterSlotGroup(bindType, namePrefix, numSlots, binder);
-        }
-
-        public GraphicsSlotGroup<T> RegisterSlotGroup<T>(GraphicsBindTypeFlags bindType, string namePrefix, uint numSlots, GraphicsGroupBinder<T> binder)
-            where T : class, IGraphicsObject
-        {
-            GraphicsSlot<T>[] slots = new GraphicsSlot<T>[numSlots];
-            GraphicsSlotGroup<T> grp = new GraphicsSlotGroup<T>(this, binder, slots, bindType, namePrefix);
-
-            for (uint i = 0; i < numSlots; i++)
-                slots[i] = new GraphicsSlot<T>(this, grp, bindType, namePrefix, i);
-
-            _slots.AddRange(slots);
-
-            return grp;
         }
 
         /// <summary>

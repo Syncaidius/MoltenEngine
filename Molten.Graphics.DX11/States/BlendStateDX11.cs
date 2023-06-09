@@ -10,7 +10,7 @@ namespace Molten.Graphics.DX11
         ID3D11BlendState1* _native;
 
         public BlendStateDX11(DeviceDX11 device, ref ShaderPassParameters parameters) : 
-            base(device, GraphicsBindTypeFlags.Input)
+            base(device)
         {
             Desc = new StructKey<BlendDesc1>();
             ref BlendDesc1 bDesc = ref Desc.Value;

@@ -32,7 +32,7 @@ namespace Molten.Graphics
         /// <param name="parent">The parnet shader that owns this new instance of <see cref="HlslPass"/>.</param>
         /// <param name="name">The readable name to give to the <see cref="HlslPass"/>.</param>
         protected HlslPass(HlslShader parent, string name) : 
-            base(parent.Device, GraphicsBindTypeFlags.Input)
+            base(parent.Device)
         {
             Samplers = new ShaderSampler[0];
             Parent = parent;

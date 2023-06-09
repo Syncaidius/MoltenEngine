@@ -305,11 +305,6 @@ namespace Molten.Graphics
 
         public uint Version { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public List<GraphicsSlot> BoundTo => throw new NotImplementedException();
-
-        public uint BindID { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public GraphicsBindTypeFlags BindFlags { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
         public uint LastUsedFrameID => throw new NotImplementedException();
 
         public GraphicsResourceFlags Flags => throw new NotImplementedException();
@@ -321,5 +316,7 @@ namespace Molten.Graphics
         public GraphicsTextureType TextureType => throw new NotImplementedException();
 
         public TextureDimensions Dimensions => throw new NotImplementedException();
+
+        public bool IsReleased => throw new NotImplementedException();
     }
 }

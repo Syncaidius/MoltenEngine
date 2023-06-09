@@ -28,7 +28,7 @@
         public string Filename { get; }
 
         internal HlslShader(GraphicsDevice device, ShaderDefinition def, string filename = null) : 
-            base(device, GraphicsBindTypeFlags.Input)
+            base(device)
         {
             Name = def.Name;
             Description = def.Description;
