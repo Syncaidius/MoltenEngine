@@ -9,24 +9,24 @@ namespace Molten.Graphics.DX11
         ID3D11InputLayout* _native;
         ulong[] _expectedFormatIDs;
 
-        internal VertexInputLayout(DeviceDX11 device, 
-            GraphicsSlotGroup<GraphicsBuffer> vbSlots, 
+        internal VertexInputLayout(DeviceDX11 device,
+            GraphicsStateValueGroup<GraphicsBuffer> vbSlots, 
             ID3D10Blob* vertexBytecode,
             ShaderIOLayout io) : 
             base(device, GraphicsBindTypeFlags.Input)
         {
             IsValid = true;
-            _expectedFormatIDs = new ulong[vbSlots.SlotCount];
+            _expectedFormatIDs = new ulong[vbSlots.Length];
             List<InputElementDesc> elements = new List<InputElementDesc>();
             VertexFormat format = null;
 
             // Store the EOID of each expected vertext format.
-            for (uint i = 0; i < vbSlots.SlotCount; i++)
+            for (int i = 0; i < vbSlots.Length; i++)
             {
-                if (vbSlots[i].BoundValue == null)
+                if (vbSlots.BoundValues[i] == null)
                     continue;
 
-                format = vbSlots[i].BoundValue.VertexFormat;
+                format = vbSlots.BoundValues[i].VertexFormat;
 
                 /* Check if the current vertex segment's format matches 
                    the part of the shader's input structure that it's meant to represent. */
@@ -43,7 +43,7 @@ namespace Molten.Graphics.DX11
                 for (int eID = startID; eID < elements.Count; eID++)
                 {
                     InputElementDesc e = elements[eID];
-                    e.InputSlot = i; // Vertex buffer input slot.
+                    e.InputSlot = (uint)i; // Vertex buffer input slot.
                     elements[eID] = e;
 
                     IsInstanced = IsInstanced || e.InputSlotClass == InputClassification.PerInstanceData;
@@ -80,12 +80,12 @@ namespace Molten.Graphics.DX11
             else
             {
                 device.Log.Warning($"Vertex formats do not match the input layout of shader:");
-                for (uint i = 0; i < vbSlots.SlotCount; i++)
+                for (int i = 0; i < vbSlots.Length; i++)
                 {
-                    if (vbSlots[i].BoundValue == null)
+                    if (vbSlots.BoundValues[i] == null)
                         continue;
 
-                    format = vbSlots[i].BoundValue.VertexFormat;
+                    format = vbSlots.BoundValues[i].VertexFormat;
 
                     device.Log.Warning("Format - Buffer slot " + i + ": ");
                     for (int f = 0; f < format.Structure.Metadata.Length; f++)
@@ -104,11 +104,11 @@ namespace Molten.Graphics.DX11
             // Do nothing. Vertex input layouts build everything they need in the constructor.
         }
 
-        public bool IsMatch(Logger log, GraphicsSlotGroup<GraphicsBuffer> grp)
+        public bool IsMatch(Logger log, GraphicsStateValueGroup<GraphicsBuffer> grp)
         {
-            for (uint i = 0; i < grp.SlotCount; i++)
+            for (int i = 0; i < grp.Length; i++)
             {
-                VertexBufferDX11 seg = grp[i].BoundValue as VertexBufferDX11;
+                VertexBufferDX11 seg = grp.BoundValues[i] as VertexBufferDX11;
 
                 // If null vertex buffer, check if shader actually need one to be present.
                 if (seg == null)

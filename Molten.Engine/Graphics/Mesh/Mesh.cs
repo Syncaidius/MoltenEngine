@@ -184,13 +184,13 @@
         protected override void OnApply(GraphicsQueue queue)
         {
             base.OnApply(queue);
-            queue.VertexBuffers[0].Value = _vb;
+            queue.State.VertexBuffers[0] = _vb;
         }
 
         protected override void OnPostDraw(GraphicsQueue cmd)
         {
             base.OnPostDraw(cmd);
-            cmd.VertexBuffers[0].Value = null;
+            cmd.State.VertexBuffers[0] = null;
         }
 
         public override void Dispose()

@@ -42,7 +42,7 @@ namespace Molten.Graphics
             RenderPointLights(renderer, queue, camera, context.Scene, sDepth);
         }
 
-        private void RenderPointLights(RenderService renderer, GraphicsQueue cmd, RenderCamera camera, SceneRenderData scene, IDepthStencilSurface dsSurface)
+        private void RenderPointLights(RenderService renderer, GraphicsQueue queue, RenderCamera camera, SceneRenderData scene, IDepthStencilSurface dsSurface)
         {
             IRenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
             IRenderSurface2D sNormals = renderer.Surfaces[MainSurfaceType.Normals];
@@ -81,18 +81,18 @@ namespace Molten.Graphics
             };
 
             //set correct buffers and shaders
-            cmd.VertexBuffers[0].Value = null;
-            cmd.State.IndexBuffer.Value = null;
+            queue.State.VertexBuffers[0] = null;
+            queue.State.IndexBuffer.Value = null;
             uint pointCount = scene.PointLights.ElementCount * 2;
 
-            cmd.Begin();
-            cmd.Draw(_matPoint, pointCount, 0);
-            cmd.End();
+            queue.Begin();
+            queue.Draw(_matPoint, pointCount, 0);
+            queue.End();
 
             // Draw debug light volumes
-            cmd.Begin();
-            cmd.Draw(_matDebugPoint, pointCount, 0);
-            cmd.End();
+            queue.Begin();
+            queue.Draw(_matDebugPoint, pointCount, 0);
+            queue.End();
         }
     }
 }

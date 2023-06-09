@@ -92,7 +92,7 @@ namespace Molten.Graphics.DX11
                     samplers[i] = null;
             }
 
-            SetSamplers(0, (uint)_samplers.Length, samplers);
+            SetSamplers((uint)_samplers.Length, samplers);
         }
 
         private void BindResources()
@@ -109,7 +109,7 @@ namespace Molten.Graphics.DX11
                     res[i] = null;
             }
 
-            SetResources(0, (uint)_resources.Length, res);
+            SetResources((uint)_resources.Length, res);
         }
 
         private void BindConstantBuffers()
@@ -123,7 +123,7 @@ namespace Molten.Graphics.DX11
             uint* cNumConstants = stackalloc uint[count];
             ConstantBufferDX11 cb = null;
 
-            for (int i = 0; i < 14; i++)
+            for (int i = 0; i < count; i++)
             {
                 cb = _constantBuffers.BoundValues[i];
 
@@ -141,14 +141,14 @@ namespace Molten.Graphics.DX11
                 }
             }
 
-            SetConstantBuffers(0, (uint)14, cBuffers);
+            SetConstantBuffers((uint)count, cBuffers);
         }
 
-        internal abstract void SetSamplers(uint startSlot, uint numSamplers, ID3D11SamplerState** states);
+        internal abstract void SetSamplers(uint numSamplers, ID3D11SamplerState** states);
 
-        internal abstract void SetResources(uint startSlot, uint numViews, ID3D11ShaderResourceView1** views);
+        internal abstract void SetResources(uint numViews, ID3D11ShaderResourceView1** views);
 
-        internal abstract void SetConstantBuffers(uint startSlot, uint numBuffers, ID3D11Buffer** buffers);
+        internal abstract void SetConstantBuffers(uint numBuffers, ID3D11Buffer** buffers);
 
         internal abstract void SetShader(void* shader, ID3D11ClassInstance** classInstances, uint numClassInstances);
 

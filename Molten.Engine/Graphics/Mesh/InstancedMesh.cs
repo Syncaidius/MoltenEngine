@@ -60,21 +60,21 @@
         protected override void OnApply(GraphicsQueue queue)
         {
             base.OnApply(queue);
-            queue.VertexBuffers[1].Value = _instanceBuffer;
+            queue.State.VertexBuffers[1] = _instanceBuffer;
         }
 
-        protected override void OnPostDraw(GraphicsQueue cmd)
+        protected override void OnPostDraw(GraphicsQueue queue)
         {
-            base.OnPostDraw(cmd);
-            cmd.VertexBuffers[1].Value = null;
+            base.OnPostDraw(queue);
+            queue.State.VertexBuffers[1] = null;
         }
 
-        protected override void OnDraw(GraphicsQueue cmd)
+        protected override void OnDraw(GraphicsQueue queue)
         {
             if (MaxIndices > 0)
-                cmd.DrawIndexedInstanced(Shader, IndexCount, _instanceCount);
+                queue.DrawIndexedInstanced(Shader, IndexCount, _instanceCount);
             else
-                cmd.DrawInstanced(Shader, VertexCount, _instanceCount, 0, 0);
+                queue.DrawInstanced(Shader, VertexCount, _instanceCount, 0, 0);
         }
 
         protected override bool OnBatchRender(GraphicsQueue cmd, RenderService renderer, RenderCamera camera, RenderDataBatch batch)

@@ -13,13 +13,8 @@ namespace Molten.Graphics
             Surfaces = new GraphicsStateValueGroup<IRenderSurface2D>(maxRTs);
             DepthSurface = new GraphicsStateValue<IDepthStencilSurface>();
             Shader = new GraphicsStateValue<HlslShader>();
+            VertexBuffers = new GraphicsStateValueGroup<GraphicsBuffer>(Device.Capabilities.VertexBuffers.MaxSlots);
             IndexBuffer = new GraphicsStateValue<GraphicsBuffer>();
-
-            /* TODO:
-             *  - When binding a state, check for any disposed graphics objects and remove them from the state (set to null).
-             * 
-             * 
-             */
         }
 
         internal GraphicsState Clone()
@@ -43,9 +38,11 @@ namespace Molten.Graphics
             Surfaces.Reset();
             Viewports.Reset();
             ScissorRects.Reset();
+            VertexBuffers.Reset();
 
             DepthSurface.Value = null;
             Shader.Value = null;
+            IndexBuffer.Value = null;
         }
 
         public GraphicsDevice Device { get; }
@@ -59,6 +56,8 @@ namespace Molten.Graphics
         public GraphicsStateValue<IDepthStencilSurface> DepthSurface { get; }
 
         public GraphicsStateValue<HlslShader> Shader { get; }
+
+        public GraphicsStateValueGroup<GraphicsBuffer> VertexBuffers { get; }
 
         public GraphicsStateValue<GraphicsBuffer> IndexBuffer { get; }
     }

@@ -482,11 +482,11 @@ namespace Molten.Graphics
             }
         }
 
-        public void Flush(GraphicsQueue cmd, RenderCamera camera, ObjectRenderData data)
+        public void Flush(GraphicsQueue queue, RenderCamera camera, ObjectRenderData data)
         {
             if (_dataCount > 0)
             {
-                cmd.VertexBuffers[0].Value = null;
+                queue.State.VertexBuffers[0] = null;
 
                 SpriteRange t = new SpriteRange();
                 ref SpriteRange range = ref t;
@@ -519,7 +519,7 @@ namespace Molten.Graphics
                     dataID += flushCount;
 
                     if (flushCount > 0)
-                        FlushBuffer(cmd, camera, data, firstRangeID, rangeCount, firstDataID, flushCount);
+                        FlushBuffer(queue, camera, data, firstRangeID, rangeCount, firstDataID, flushCount);
                 }
             }
 

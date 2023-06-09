@@ -302,8 +302,6 @@ namespace Molten.Graphics
             set => _profiler = value ?? _defaultProfiler;
         }
 
-        public GraphicsSlotGroup<GraphicsBuffer> VertexBuffers { get; protected set; }
-
         protected BatchDrawInfo DrawInfo { get; }
 
         protected abstract GraphicsCommandList Cmd { get; set; }

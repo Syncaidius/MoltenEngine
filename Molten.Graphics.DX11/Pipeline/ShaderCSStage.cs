@@ -42,24 +42,24 @@ namespace Molten.Graphics.DX11
                         pInitialCounts[i] = 0; // TODO set initial counts. Research this more.
                     }
 
-                    SetUnorderedAccessViews(0, (uint)count, pUavs, pInitialCounts);
+                    SetUnorderedAccessViews((uint)count, pUavs, pInitialCounts);
                 }
             }
         }
 
-        internal override unsafe void SetConstantBuffers(uint startSlot, uint numBuffers, ID3D11Buffer** buffers)
+        internal override unsafe void SetConstantBuffers(uint numBuffers, ID3D11Buffer** buffers)
         {
-            Cmd.Ptr->CSSetConstantBuffers(startSlot, numBuffers, buffers);
+            Cmd.Ptr->CSSetConstantBuffers(0, numBuffers, buffers);
         }
 
-        internal override unsafe void SetResources(uint startSlot, uint numViews, ID3D11ShaderResourceView1** views)
+        internal override unsafe void SetResources(uint numViews, ID3D11ShaderResourceView1** views)
         {
-            Cmd.Ptr->CSSetShaderResources(startSlot, numViews, (ID3D11ShaderResourceView**)views);
+            Cmd.Ptr->CSSetShaderResources(0, numViews, (ID3D11ShaderResourceView**)views);
         }
 
-        internal override unsafe void SetSamplers(uint startSlot, uint numSamplers, ID3D11SamplerState** states)
+        internal override unsafe void SetSamplers(uint numSamplers, ID3D11SamplerState** states)
         {
-            Cmd.Ptr->CSSetSamplers(startSlot, numSamplers, states);
+            Cmd.Ptr->CSSetSamplers(0, numSamplers, states);
         }
 
         internal override unsafe void SetShader(void* shader, ID3D11ClassInstance** classInstances, uint numClassInstances)
@@ -67,9 +67,9 @@ namespace Molten.Graphics.DX11
             Cmd.Ptr->CSSetShader((ID3D11ComputeShader*)shader, classInstances, numClassInstances);
         }
 
-        internal unsafe void SetUnorderedAccessViews(uint startSlot, uint numUAVs, ID3D11UnorderedAccessView1** ppUnorderedAccessViews, uint* pUAVInitialCounts)
+        internal unsafe void SetUnorderedAccessViews(uint numUAVs, ID3D11UnorderedAccessView1** ppUnorderedAccessViews, uint* pUAVInitialCounts)
         {
-            Cmd.Ptr->CSSetUnorderedAccessViews(startSlot, numUAVs, (ID3D11UnorderedAccessView**)ppUnorderedAccessViews, pUAVInitialCounts);
+            Cmd.Ptr->CSSetUnorderedAccessViews(0, numUAVs, (ID3D11UnorderedAccessView**)ppUnorderedAccessViews, pUAVInitialCounts);
         }
 
     }
