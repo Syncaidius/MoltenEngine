@@ -29,14 +29,14 @@ namespace Molten.Graphics.DX11
 
         GraphicsDepthWritePermission _boundDepthMode = GraphicsDepthWritePermission.Enabled;
 
-        internal ID3D11RenderTargetView1** RTVs;
+        ID3D11RenderTargetView1** _rtvs;
         uint _numRTVs;
-        internal ID3D11DepthStencilView* DSV;
+        ID3D11DepthStencilView* _dsv;
 
         BlendStateDX11 _stateBlend;
         RasterizerStateDX11 _stateRaster;
         DepthStateDX11 _stateDepth;
-        GraphicsSlotGroup<GraphicsResource> _renderUAVs;
+        GraphicsStateValueGroup<GraphicsResource> _omUAVs;
 
         ID3D11DeviceContext4* _native;
         ID3DUserDefinedAnnotation* _debugAnnotation;
@@ -75,9 +75,8 @@ namespace Molten.Graphics.DX11
             _cs = new ShaderCSStage(this);
 
             uint numRenderUAVs = Device.Capabilities.VertexShader.MaxUnorderedAccessSlots;
-            _renderUAVs = RegisterSlotGroup(GraphicsBindTypeFlags.Output, "UAV", numRenderUAVs, new UavGroupBinderOM());
-
-            RTVs = EngineUtil.AllocPtrArray<ID3D11RenderTargetView1>(maxRTs);
+            _omUAVs = new GraphicsStateValueGroup<GraphicsResource>(numRenderUAVs);
+            _rtvs = EngineUtil.AllocPtrArray<ID3D11RenderTargetView1>(maxRTs);
         }
 
         public override void Begin(GraphicsCommandListFlags flags = GraphicsCommandListFlags.None)
@@ -241,20 +240,21 @@ namespace Molten.Graphics.DX11
                 _native->IASetPrimitiveTopology(_boundTopology);
             }
 
-            Span<bool> stageChanged = stackalloc bool[_shaderStages.Length];
+            _omUAVs.Reset();
 
+            Span<bool> stageChanged = stackalloc bool[_shaderStages.Length];
             for(int i = 0; i < _shaderStages.Length; i++)
             {
                 ShaderComposition composition = pass[_shaderStages[i].Type];
                 stageChanged[i] = _shaderStages[i].Bind(composition);
 
-                // Set the UAVs needed by each render stage
+                // Set the output-merger UAVs needed by each render stage
                 if (composition != null)
                 {
                     for (int j = 0; j < composition.UnorderedAccessIds.Count; j++)
                     {
                         uint slotID = composition.UnorderedAccessIds[j];
-                        _renderUAVs[slotID].Value = composition.Pass.Parent.UAVs[slotID]?.Resource;
+                        _omUAVs[slotID] = composition.Pass.Parent.UAVs[slotID]?.Resource;
                     }
                 }
             }
@@ -262,7 +262,23 @@ namespace Molten.Graphics.DX11
             bool vsChanged = stageChanged[0]; // Stage 0 is vertex buffer.
             bool ibChanged = State.IndexBuffer.Bind(this);
             bool vbChanged = VertexBuffers.BindAll();
-            bool uavChanged = _renderUAVs.BindAll();
+
+            bool omUavChanged = _omUAVs.Bind(this);
+            if (omUavChanged)
+            {
+                // Set unordered access resources
+                int count = _omUAVs.Length;
+                ID3D11UnorderedAccessView** pUavs = stackalloc ID3D11UnorderedAccessView*[count];
+                for (int i = 0; i < count; i++)
+                {
+                    if (_omUAVs.BoundValues[i] != null)
+                        pUavs[i] = (ID3D11UnorderedAccessView*)_omUAVs.BoundValues[i].UAV;
+                    else
+                        pUavs = null;
+                }
+
+                _native->OMGetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, null, null, 0, (uint)count, pUavs);
+            }
 
             if (ibChanged)
             {
@@ -349,11 +365,11 @@ namespace Molten.Graphics.DX11
                         if (State.Surfaces.BoundValues[i] != null)
                         {
                             _numRTVs = (uint)(i + 1U);
-                            RTVs[i] = (State.Surfaces.BoundValues[i] as RenderSurface2DDX11).RTV.Ptr;
+                            _rtvs[i] = (State.Surfaces.BoundValues[i] as RenderSurface2DDX11).RTV.Ptr;
                         }
                         else
                         {
-                            RTVs[i] = null;
+                            _rtvs[i] = null;
                         }
                     }
                 }
@@ -364,20 +380,20 @@ namespace Molten.Graphics.DX11
                     {
                         DepthSurfaceDX11 dss = State.DepthSurface.BoundValue as DepthSurfaceDX11;
                         if (depthWriteMode == GraphicsDepthWritePermission.ReadOnly)
-                            DSV = dss.ReadOnlyView;
+                            _dsv = dss.ReadOnlyView;
                         else
-                            DSV = dss.DepthView;
+                            _dsv = dss.DepthView;
                     }
                     else
                     {
-                        DSV = null;
+                        _dsv = null;
                     }
 
                     _boundDepthMode = depthWriteMode;
                 }
             }
 
-            _native->OMSetRenderTargets(_numRTVs, (ID3D11RenderTargetView**)RTVs, DSV);
+            _native->OMSetRenderTargets(_numRTVs, (ID3D11RenderTargetView**)_rtvs, _dsv);
             Profiler.Current.SurfaceBindings++;
 
             // Validate pipeline state.
@@ -679,7 +695,7 @@ namespace Molten.Graphics.DX11
             if (Type != CommandQueueType.Immediate)
                 DXDevice.RemoveDeferredContext(this);
 
-            EngineUtil.FreePtrArray(ref RTVs);
+            EngineUtil.FreePtrArray(ref _rtvs);
             _cmd.Dispose();
         }
         /// <summary>Gets the current <see cref="GraphicsQueueDX11"/> type. This value will not change during the context's life.</summary>
