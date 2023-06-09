@@ -30,7 +30,6 @@ namespace Molten.Graphics.DX11
         GraphicsDepthWritePermission _boundDepthMode = GraphicsDepthWritePermission.Enabled;
 
         ID3D11RenderTargetView1** _rtvs;
-        uint _numRTVs;
         ID3D11DepthStencilView* _dsv;
 
         BlendStateDX11 _stateBlend;
@@ -357,19 +356,12 @@ namespace Molten.Graphics.DX11
             {
                 if (surfaceChanged)
                 {
-                    _numRTVs = 0;
-
                     for (int i = 0; i < State.Surfaces.Length; i++)
                     {
                         if (State.Surfaces.BoundValues[i] != null)
-                        {
-                            _numRTVs = (uint)(i + 1U);
                             _rtvs[i] = (State.Surfaces.BoundValues[i] as RenderSurface2DDX11).RTV.Ptr;
-                        }
                         else
-                        {
                             _rtvs[i] = null;
-                        }
                     }
                 }
 
@@ -392,7 +384,7 @@ namespace Molten.Graphics.DX11
                 }
             }
 
-            _native->OMSetRenderTargets(_numRTVs, (ID3D11RenderTargetView**)_rtvs, _dsv);
+            _native->OMSetRenderTargets((uint)State.Surfaces.Length, (ID3D11RenderTargetView**)_rtvs, _dsv);
             Profiler.Current.SurfaceBindings++;
 
             // Validate pipeline state.
@@ -423,27 +415,24 @@ namespace Molten.Graphics.DX11
             ID3D11Buffer** pBuffers = stackalloc ID3D11Buffer*[count];
             uint* pStrides = stackalloc uint[count];
             uint* pOffsets = stackalloc uint[count];
-            uint p = 0;
-            VertexBufferDX11 buffer = null;
+            GraphicsBuffer buffer = null;
 
             for (int i = 0; i < count; i++)
             {
-                buffer = State.VertexBuffers.BoundValues[i] as VertexBufferDX11;
+                buffer = State.VertexBuffers.BoundValues[i];
 
                 if (buffer != null)
                 {
-                    pBuffers[p] = (ID3D11Buffer*)buffer.Handle;
-                    pStrides[p] = buffer.Stride;
-                    pOffsets[p] = 0; // buffer.ByteOffset; - May need again for multi-part meshes with sub-meshes within the same buffer.
+                    pBuffers[i] = (ID3D11Buffer*)buffer.Handle;
+                    pStrides[i] = buffer.Stride;
+                    pOffsets[i] = 0; // TODO buffer.ByteOffset; - May need again for multi-part meshes with sub-meshes within the same buffer.
                 }
                 else
                 {
-                    pBuffers[p] = null;
-                    pStrides[p] = 0;
-                    pOffsets[p] = 0;
+                    pBuffers[i] = null;
+                    pStrides[i] = 0;
+                    pOffsets[i] = 0;
                 }
-
-                p++;
             }
 
             _native->IASetVertexBuffers(0, (uint)count, pBuffers, pStrides, pOffsets);
