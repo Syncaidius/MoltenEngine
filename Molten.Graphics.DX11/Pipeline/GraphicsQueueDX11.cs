@@ -246,8 +246,7 @@ namespace Molten.Graphics.DX11
             for(int i = 0; i < _shaderStages.Length; i++)
             {
                 ShaderComposition composition = pass[_shaderStages[i].Type];
-                _shaderStages[i].Shader.Value = composition;
-                stageChanged[i] = _shaderStages[i].Bind();
+                stageChanged[i] = _shaderStages[i].Bind(composition);
 
                 // Set the UAVs needed by each render stage
                 if (composition != null)
@@ -387,8 +386,7 @@ namespace Molten.Graphics.DX11
 
         private GraphicsBindResult ApplyComputeState(ShaderPassDX11 pass)
         {
-            _cs.Shader.Value = pass[ShaderType.Compute];
-            _cs.Bind();
+            _cs.Bind(pass[ShaderType.Compute]);
 
             Vector3UI groups = DrawInfo.Custom.ComputeGroups;
             if (groups.X == 0)

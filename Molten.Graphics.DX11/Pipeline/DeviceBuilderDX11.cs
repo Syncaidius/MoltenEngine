@@ -162,7 +162,9 @@ namespace Molten.Graphics.DX11
             cap.VertexBuffers.MaxElementsPerVertex = 32;    // D3D11_STANDARD_VERTEX_ELEMENT_COUNT = 32;
             cap.VertexBuffers.MaxElements = uint.MaxValue;  // (2^32) – 1 = uint.maxValue (4,294,967,295)
 
-            cap.ConstantBuffers.MaxSlots = 15;              // D3D11_COMMONSHADER_CONSTANT_BUFFER_HW_SLOT_COUNT  = 15 (+1 for immediate constant buffer).
+            // NOTE:You can bind up to 14 constant buffers per pipeline stage (2 additional slots are reserved for internal use).
+            // https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-constants
+            cap.ConstantBuffers.MaxSlots = 14;              // D3D11_COMMONSHADER_CONSTANT_BUFFER_HW_SLOT_COUNT  = 15 (+1 for immediate constant buffer).
             cap.ConstantBuffers.MaxElements = 4096;         // D3D11_REQ_CONSTANT_BUFFER_ELEMENT_COUNT = 4096
             cap.ConstantBuffers.MaxBytes = cap.ConstantBuffers.MaxElements * (4 * sizeof(float)); // Max of four float components per element.
 

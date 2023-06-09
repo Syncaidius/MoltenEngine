@@ -49,7 +49,7 @@ namespace Molten.Graphics
         public T Value
         {
             get => _value;
-            set => _value = value;
+            set => _value = (value != null && !value.IsReleased) ? value : null;
         }
 
         public T BoundValue => _boundValue;

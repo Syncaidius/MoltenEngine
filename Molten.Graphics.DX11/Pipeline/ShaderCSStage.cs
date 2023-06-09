@@ -4,36 +4,47 @@ namespace Molten.Graphics.DX11
 {
     internal class ShaderCSStage : ShaderStageDX11
     {
+        GraphicsStateValueGroup<GraphicsResource> _uavs;
+
         public ShaderCSStage(GraphicsQueueDX11 queue) : base(queue, ShaderType.Compute)
         {
             uint uavSlots = queue.Device.Capabilities.Compute.MaxUnorderedAccessSlots;
-            UAVs = queue.RegisterSlotGroup(GraphicsBindTypeFlags.Output, "UAV", uavSlots, new UavGroupBinder(this));
+            _uavs = new GraphicsStateValueGroup<GraphicsResource>(uavSlots);
         }
 
-        internal override bool Bind()
+        protected unsafe override void OnBind(ShaderComposition c, bool shaderChanged)
         {
-            bool baseChanged = base.Bind();
-            bool uavChanged = false;
-
-            ShaderComposition composition = Shader.BoundValue;
+            _uavs.Reset();
 
             // Apply unordered acces views to slots
-            if (composition != null)
+            if (c != null)
             {
-                for (int j = 0; j < composition.UnorderedAccessIds.Count; j++)
+                for (int j = 0; j < c.UnorderedAccessIds.Count; j++)
                 {
-                    uint slotID = composition.UnorderedAccessIds[j];
-                    UAVs[slotID].Value = composition.Pass.Parent.UAVs[slotID]?.Resource;
+                    uint slotID = c.UnorderedAccessIds[j];
+                    _uavs[slotID] = c.Pass.Parent.UAVs[slotID]?.Resource;
                 }
 
-                uavChanged = UAVs.BindAll();
-            }
-            else
-            {
-                // NOTE Unbind UAVs?
-            }
+                if (_uavs.Bind(Cmd))
+                {
+                    // Set unordered access resources
+                    int count = _uavs.Length;
+                    ID3D11UnorderedAccessView1** pUavs = stackalloc ID3D11UnorderedAccessView1*[count];
+                    uint* pInitialCounts = stackalloc uint[count];
 
-            return uavChanged || baseChanged;
+                    for (int i = 0; i < count; i++)
+                    {
+                        if (_uavs.BoundValues[i] != null)
+                            pUavs[i] = (ID3D11UnorderedAccessView1*)_uavs.BoundValues[i].UAV;
+                        else
+                            pUavs[i] = null;
+
+                        pInitialCounts[i] = 0; // TODO set initial counts. Research this more.
+                    }
+
+                    SetUnorderedAccessViews(0, (uint)count, pUavs, pInitialCounts);
+                }
+            }
         }
 
         internal override unsafe void SetConstantBuffers(uint startSlot, uint numBuffers, ID3D11Buffer** buffers)
@@ -61,6 +72,5 @@ namespace Molten.Graphics.DX11
             Cmd.Ptr->CSSetUnorderedAccessViews(startSlot, numUAVs, (ID3D11UnorderedAccessView**)ppUnorderedAccessViews, pUAVInitialCounts);
         }
 
-        internal GraphicsSlotGroup<GraphicsResource> UAVs { get; }
     }
 }

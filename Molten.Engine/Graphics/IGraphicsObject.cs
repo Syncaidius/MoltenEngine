@@ -43,5 +43,10 @@
         /// Gets the ID of the frame that the current <see cref="GraphicsObject"/> was applied.
         /// </summary>
         uint LastUsedFrameID { get; }
+
+        /// <summary>
+        /// Gets whether or not the current <see cref="IGraphicsObject"/> has been successfully disposed and released by its parent <see cref="Device"/>.
+        /// </summary>
+        bool IsReleased { get; }
     }
 }

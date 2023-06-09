@@ -9,7 +9,7 @@ namespace Molten.Graphics
         T[] _boundValues;
         uint[] _boundVersions;
 
-        internal GraphicsStateValueGroup(uint capacity)
+        public GraphicsStateValueGroup(uint capacity)
         {
             _values = new T[capacity];
             _boundValues = new T[capacity];
@@ -74,7 +74,7 @@ namespace Molten.Graphics
         public T this[uint index]
         {
             get => _values[index];
-            set => _values[index] = value;
+            set => _values[index] = (value != null && !value.IsReleased) ? value : null;
         }
 
         /// <summary>
@@ -99,13 +99,13 @@ namespace Molten.Graphics
                 }
 
                 for(int i = range.Start.Value; i < range.End.Value; i++)
-                    _values[i] = value[i];
+                    _values[i] = (value[i] != null && !value[i].IsReleased) ? value[i] : null;
             }
         }
 
         /// <summary>
         /// Gets the length of the value group.
         /// </summary>
-        public uint Length => (uint)_values.Length;
+        public int Length => _values.Length;
     }
 }
