@@ -23,9 +23,7 @@
             cmd.State.Viewports.Reset(camera.Surface.Viewport);
             cmd.State.ScissorRects.Reset((Rectangle)camera.Surface.Viewport.Bounds);
 
-            cmd.Begin();
             renderer.RenderSceneLayer(cmd, context.Layer, camera);
-            cmd.End();
         }
     }
 }

@@ -90,10 +90,14 @@ namespace Molten.Graphics
 
             // TODO update this once the renderer supports running render steps in deferred context threads.
             // TODO also consider spawning extra chain contexts so they can individually 
-            renderer.Device.Queue.BeginEvent($"Step {_step.GetType().Name}");
+            GraphicsQueue queue = renderer.Device.Queue;
+            queue.BeginEvent($"Step {_step.GetType().Name}");
             _step.Render(renderer, camera, context, time);
             _completed = true;
-            renderer.Device.Queue.EndEvent();
+            queue.EndEvent();
+
+            // Push the current step's commands to the GPU.
+            queue.Submit();
 
             // Start the next steps
             for (int i = 0; i < _next.Count; i++)

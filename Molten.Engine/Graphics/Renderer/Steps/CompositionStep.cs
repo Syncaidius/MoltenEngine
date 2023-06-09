@@ -53,10 +53,8 @@
             ITexture2D sourceSurface = context.HasComposed ? context.PreviousComposition : _surfaceScene;
             RectStyle style = RectStyle.Default;
 
-            cmd.Begin();
             renderer.SpriteBatch.Draw(sourceSurface, vpBounds, Vector2F.Zero, vpBounds.Size, 0, Vector2F.Zero, ref style, _fxCompose, 0, 0);
             renderer.SpriteBatch.Flush(cmd, _orthoCamera, _dummyData);
-            cmd.End();
 
             context.SwapComposition();
         }

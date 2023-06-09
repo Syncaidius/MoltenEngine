@@ -25,10 +25,7 @@
             SetShaderCommon(renderer.FxStandardMesh_NoNormalMap, camera, sScene);
 
             queue.State.Viewports.Reset(camera.Surface.Viewport);
-
-            queue.Begin();
             renderer.RenderSceneLayer(queue, context.Layer, camera);
-            queue.End();
         }
 
         private void SetShaderCommon(HlslShader shader, RenderCamera camera, IRenderSurface2D gBufferScene)

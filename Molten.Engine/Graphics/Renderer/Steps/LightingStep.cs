@@ -85,14 +85,10 @@ namespace Molten.Graphics
             queue.State.IndexBuffer.Value = null;
             uint pointCount = scene.PointLights.ElementCount * 2;
 
-            queue.Begin();
             queue.Draw(_matPoint, pointCount, 0);
-            queue.End();
+            queue.Submit();
 
-            // Draw debug light volumes
-            queue.Begin();
             queue.Draw(_matDebugPoint, pointCount, 0);
-            queue.End();
         }
     }
 }

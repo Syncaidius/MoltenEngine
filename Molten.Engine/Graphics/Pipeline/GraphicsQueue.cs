@@ -115,7 +115,7 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="flags">The flags to apply to the next command segment.</param>
         /// <exception cref="InvalidOperationException"></exception>
-        public abstract void Submit(GraphicsCommandListFlags flags);
+        public abstract void Submit(GraphicsCommandListFlags flags = GraphicsCommandListFlags.None);
 
         /// <summary>
         /// Executes the provided <see cref="GraphicsCommandList"/> on the current <see cref="GraphicsQueue"/>.

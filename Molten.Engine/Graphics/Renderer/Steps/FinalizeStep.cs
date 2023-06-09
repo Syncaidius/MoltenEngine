@@ -36,14 +36,12 @@
             IRenderSurface2D sourceSurface = context.HasComposed ? context.PreviousComposition : renderer.Surfaces[MainSurfaceType.Scene];
             RectStyle style = RectStyle.Default;
 
-            cmd.Begin();
             renderer.SpriteBatch.Draw(sourceSurface, bounds, Vector2F.Zero, camera.Surface.Viewport.Size, 0, Vector2F.Zero, ref style, null, 0, 0);
 
             if (camera.HasFlags(RenderCameraFlags.ShowOverlay))
                 renderer.Overlay.Render(time, renderer.SpriteBatch, renderer.Profiler, context.Scene.Profiler, camera);
 
             renderer.SpriteBatch.Flush(cmd, _orthoCamera, _dummyData);
-            cmd.End();
         }
     }
 }

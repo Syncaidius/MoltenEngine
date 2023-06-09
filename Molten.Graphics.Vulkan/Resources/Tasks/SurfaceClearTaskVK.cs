@@ -31,7 +31,7 @@ namespace Molten.Graphics.Vulkan
 
             vkCmd.ClearImage(*Surface.ImageHandle, ImageLayout.TransferDstOptimal, Color, &range, 1);
             Surface.Transition(vkCmd, ImageLayout.TransferDstOptimal, ImageLayout.ColorAttachmentOptimal);
-            vkCmd.Submit(GraphicsCommandListFlags.None); // We'll run all commands up to this image clear.
+            vkCmd.Submit(); // We'll run all commands up to this image clear.
 
             // Clear Surface via 
             // TODO See: https://stackoverflow.com/questions/69915270/what-is-the-best-way-to-clear-a-vkimage-to-a-single-color

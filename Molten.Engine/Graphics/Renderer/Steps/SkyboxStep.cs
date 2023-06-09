@@ -47,10 +47,8 @@
             queue.State.Viewports.Reset(camera.Surface.Viewport);
             queue.State.ScissorRects.Reset(bounds);
 
-            queue.Begin();
             _skyboxData.RenderTransform = Matrix4F.Scaling(camera.MaxDrawDistance) * Matrix4F.CreateTranslation(camera.Position);
             _sphereMesh.Render(queue, renderer, camera, _skyboxData);
-            queue.End();
         }
 
         private void MakeSphere(uint latLines, uint longLines, out Vertex[] vertices, out uint[] indices)

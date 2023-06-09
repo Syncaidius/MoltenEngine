@@ -72,7 +72,7 @@ namespace Molten.Graphics.Vulkan
         }
 
         /// <inheritdoc/>
-        public override unsafe void Submit(GraphicsCommandListFlags flags)
+        public override unsafe void Submit(GraphicsCommandListFlags flags = GraphicsCommandListFlags.None)
         {
             if (_cmd.Level != CommandBufferLevel.Primary)
                 throw new InvalidOperationException($"Cannot submit a secondary command list directly to a command queue.");

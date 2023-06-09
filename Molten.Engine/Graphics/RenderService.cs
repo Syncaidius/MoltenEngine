@@ -57,7 +57,6 @@ namespace Molten.Graphics
         /// <param name="settings">The engine settings to apply and bind to the current <see cref="RenderService"/>.</param>
         protected override sealed void OnInitialize(EngineSettings settings)
         {
-
             DisplayManager = OnInitializeDisplayManager(settings.Graphics);
             _chain = new RenderChain(this);
 

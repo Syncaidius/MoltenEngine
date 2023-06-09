@@ -71,6 +71,7 @@ namespace Molten.Graphics
             Renderer.Surfaces.MultiSampleLevel = camera.MultiSampleLevel;
             context.Scene = sceneData;
 
+            cmd.Begin();
             cmd.BeginEvent($"Pre-Render");
             RenderChainLink stepPreRender = BuildPreRender(sceneData, camera);
             stepPreRender.Run(Renderer, camera, context, time);
@@ -99,6 +100,7 @@ namespace Molten.Graphics
             stepPostRender.Run(Renderer, camera, context, time);
             RenderChainLink.Recycle(stepPostRender);
             cmd.EndEvent();
+            cmd.Submit(GraphicsCommandListFlags.Last);
         }
 
         protected override void OnDispose()
@@ -107,7 +109,6 @@ namespace Molten.Graphics
             for (int i = 0; i < _stepList.Count; i++)
                 _stepList[i].Dispose();
         }
-
 
         internal RenderService Renderer { get; }
     }
