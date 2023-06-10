@@ -9,6 +9,12 @@ namespace Molten.Graphics
         T _boundValue;
         T _value;
         uint _boundVersion;
+        Action<T> _validation;
+
+        public GraphicsStateValue(Action<T> validation = null)
+        {
+            _validation = validation;
+        }
 
         public void CopyTo(GraphicsStateValue<T> target)
         {
@@ -24,6 +30,7 @@ namespace Molten.Graphics
                 _boundValue = _value;
                 if (_boundValue != null)
                 {
+                    _validation?.Invoke(_boundValue);
                     _boundValue.Apply(queue);
                     _boundVersion = _boundValue.Version;
                 }

@@ -8,12 +8,14 @@ namespace Molten.Graphics
         T[] _values;
         T[] _boundValues;
         uint[] _boundVersions;
+        Action<T, int> _validation;
 
-        public GraphicsStateValueGroup(uint capacity)
+        public GraphicsStateValueGroup(uint capacity, Action<T, int> validationCallback = null)
         {
             _values = new T[capacity];
             _boundValues = new T[capacity];
             _boundVersions = new uint[capacity];
+            _validation = validationCallback;
         }
 
         public void CopyTo(GraphicsStateValueGroup<T> target)
@@ -37,6 +39,7 @@ namespace Molten.Graphics
                     _boundValues[i] = _values[i];
                     if (_boundValues[i] != null)
                     {
+                        _validation?.Invoke(_boundValues[i], i);
                         _boundValues[i].Apply(queue);
                         _boundVersions[i] = _boundValues[i].Version;
                     }

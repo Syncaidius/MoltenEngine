@@ -108,7 +108,7 @@ namespace Molten.Graphics.DX11
         {
             for (int i = 0; i < grp.Length; i++)
             {
-                VertexBufferDX11 seg = grp.BoundValues[i] as VertexBufferDX11;
+                BufferDX11 seg = grp.BoundValues[i] as BufferDX11;
 
                 // If null vertex buffer, check if shader actually need one to be present.
                 if (seg == null)

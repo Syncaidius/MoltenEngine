@@ -290,9 +290,17 @@ namespace Molten.Graphics.DX11
 
         public unsafe override GraphicsBuffer CreateVertexBuffer<T>(GraphicsResourceFlags flags, uint numVertices, T[] initialData = null)
         {
-            uint numBytes = numVertices * (uint)sizeof(T);
+            uint stride = (uint)sizeof(T);
+            uint numBytes = numVertices * stride;
+            flags |= GraphicsResourceFlags.NoShaderAccess;
+            VertexFormat format = VertexFormatCache.Get<T>();
+
             fixed (T* ptr = initialData)
-                return new VertexBufferDX11<T>(this, flags | GraphicsResourceFlags.NoShaderAccess, numVertices, ptr, numBytes);
+            {
+                BufferDX11 buffer = new BufferDX11(this, GraphicsBufferType.Vertex, flags, GraphicsFormat.Unknown, stride, numVertices, ptr, numBytes);
+                buffer.SetVertexFormat(format);
+                return buffer;
+            }
         }
 
         public unsafe override GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, ushort[] initialData = null)

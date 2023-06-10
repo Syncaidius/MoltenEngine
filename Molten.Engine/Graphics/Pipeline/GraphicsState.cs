@@ -13,8 +13,18 @@ namespace Molten.Graphics
             Surfaces = new GraphicsStateValueGroup<IRenderSurface2D>(maxRTs);
             DepthSurface = new GraphicsStateValue<IDepthStencilSurface>();
             Shader = new GraphicsStateValue<HlslShader>();
-            VertexBuffers = new GraphicsStateValueGroup<GraphicsBuffer>(Device.Capabilities.VertexBuffers.MaxSlots);
-            IndexBuffer = new GraphicsStateValue<GraphicsBuffer>();
+
+            VertexBuffers = new GraphicsStateValueGroup<GraphicsBuffer>(Device.Capabilities.VertexBuffers.MaxSlots, (vb, slotID) =>
+            {
+                if (vb.BufferType != GraphicsBufferType.Vertex)
+                    throw new GraphicsResourceException(vb, $"None-vertex buffer ({vb.BufferType}) bound to vertex buffer slot ${slotID}.");
+            });
+
+            IndexBuffer = new GraphicsStateValue<GraphicsBuffer>((ib) =>
+            {
+                if (ib.BufferType != GraphicsBufferType.Index)
+                    throw new GraphicsResourceException(ib, $"None-index buffer ({ib.BufferType}) bound to index buffer slot.");
+            });
         }
 
         internal GraphicsState Clone()
