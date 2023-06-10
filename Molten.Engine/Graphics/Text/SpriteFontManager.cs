@@ -52,7 +52,9 @@ namespace Molten.Graphics
                 BackgroundColor = Color.Transparent,
             };
 
+            _renderer.Device.Queue.Begin(GraphicsCommandListFlags.SingleSubmit);
             CreateSurface(1);
+            _renderer.Device.Queue.End();
             _renderData.AddObject(_camera);
         }
 

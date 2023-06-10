@@ -57,7 +57,18 @@ namespace Molten.Graphics.Vulkan
             base.End();
 
             _vk.EndCommandBuffer(_cmd);
-            return _cmd;
+
+            if (_cmd.Flags.Has(GraphicsCommandListFlags.Deferred))
+                return _cmd;
+
+            // Use empty fence handle if the CPU doesn't need to wait for the command list to finish.
+            Fence fence = new Fence();
+            if (_cmd.Fence != null)
+                fence = (_cmd.Fence as FenceVK).Ptr;
+
+            // Submit command list and don't return the command list, as it's not deferred.
+            SubmitCommandList(_cmd, fence);
+            return null;
         }
 
         /// <inheritdoc/>
@@ -72,10 +83,17 @@ namespace Molten.Graphics.Vulkan
         }
 
         /// <inheritdoc/>
-        public override unsafe void Submit(GraphicsCommandListFlags flags = GraphicsCommandListFlags.None)
+        public override unsafe void Sync(GraphicsCommandListFlags flags = GraphicsCommandListFlags.None)
         {
             if (_cmd.Level != CommandBufferLevel.Primary)
+            {
                 throw new InvalidOperationException($"Cannot submit a secondary command list directly to a command queue.");
+            }
+            else
+            {
+                if (flags.Has(GraphicsCommandListFlags.Deferred))
+                    throw new InvalidOperationException($"An immediate/primary command list branch cannot use deferred flag during Sync() calls.");
+            }
 
             // Use empty fence handle if the CPU doesn't need to wait for the command list to finish.
             Fence fence = new Fence();
@@ -84,12 +102,25 @@ namespace Molten.Graphics.Vulkan
 
             // We're only submitting the current command buffer.
             _vk.EndCommandBuffer(_cmd);
+            SubmitCommandList(_cmd, fence);
+
+            // Allocate next command buffer
+            _cmd = _poolFrame.Allocate(_cmd.Level, _cmd.BranchIndex, flags);
+            CommandBufferBeginInfo beginInfo = new CommandBufferBeginInfo(StructureType.CommandBufferBeginInfo);
+            beginInfo.Flags = CommandBufferUsageFlags.OneTimeSubmitBit;
+
+            _vk.BeginCommandBuffer(_cmd, &beginInfo);
+            Device.Renderer.Frame.Track(_cmd);
+        }
+
+        private unsafe void SubmitCommandList(CommandListVK cmd, Fence fence)
+        {
             CommandBuffer* ptrBuffers = stackalloc CommandBuffer[] { _cmd.Ptr };
             SubmitInfo submit = new SubmitInfo(StructureType.SubmitInfo);
             submit.PCommandBuffers = ptrBuffers;
 
             // We want to wait on the previous command list's semaphore before executing this one, if any.
-            if(_cmd.Previous != null)
+            if (_cmd.Previous != null)
             {
                 Semaphore* waitSemaphores = stackalloc Semaphore[] { (_cmd.Previous as CommandListVK).Semaphore.Ptr };
                 submit.WaitSemaphoreCount = 1;
@@ -110,17 +141,6 @@ namespace Molten.Graphics.Vulkan
 
             Result r = VK.QueueSubmit(Native, 1, &submit, fence);
             r.Throw(_device, () => "Failed to submit command list");
-
-            // Allocate next command buffer
-            if (!flags.Has(GraphicsCommandListFlags.Last))
-            {
-                _cmd = _poolFrame.Allocate(CommandBufferLevel.Primary, _cmd.BranchIndex, flags);
-                CommandBufferBeginInfo beginInfo = new CommandBufferBeginInfo(StructureType.CommandBufferBeginInfo);
-                beginInfo.Flags = CommandBufferUsageFlags.OneTimeSubmitBit;
-
-                _vk.BeginCommandBuffer(_cmd, &beginInfo);
-                Device.Renderer.Frame.Track(_cmd);
-            }
         }
 
         /// <summary>

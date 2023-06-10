@@ -110,12 +110,12 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// Submits any unsubmitted commands in the current <see cref="GraphicsQueue"/> to the GPU. 
-        /// A new command segment is started with the specified <paramref name="flags"/>, unless the <see cref="GraphicsCommandListFlags.Last"/> flag is set.
+        /// Syncs or submits any unsubmitted commands in the current <see cref="GraphicsQueue"/> to the GPU. 
+        /// A new command segment is started with the specified <paramref name="flags"/>.
         /// </summary>
         /// <param name="flags">The flags to apply to the next command segment.</param>
         /// <exception cref="InvalidOperationException"></exception>
-        public abstract void Submit(GraphicsCommandListFlags flags = GraphicsCommandListFlags.None);
+        public abstract void Sync(GraphicsCommandListFlags flags = GraphicsCommandListFlags.None);
 
         /// <summary>
         /// Executes the provided <see cref="GraphicsCommandList"/> on the current <see cref="GraphicsQueue"/>.

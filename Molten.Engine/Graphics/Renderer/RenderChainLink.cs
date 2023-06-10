@@ -97,7 +97,7 @@ namespace Molten.Graphics
             queue.EndEvent();
 
             // Push the current step's commands to the GPU.
-            queue.Submit();
+            queue.Sync();
 
             // Start the next steps
             for (int i = 0; i < _next.Count; i++)

@@ -41,7 +41,7 @@ namespace Molten.Graphics.DX12
             throw new NotImplementedException();
         }
 
-        public override void Submit(GraphicsCommandListFlags flags)
+        public override void Sync(GraphicsCommandListFlags flags)
         {
             throw new NotImplementedException();
         }

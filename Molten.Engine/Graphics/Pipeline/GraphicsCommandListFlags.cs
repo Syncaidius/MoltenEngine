@@ -38,11 +38,6 @@ namespace Molten.Graphics
         /// The current command list is not submitted once <see cref="GraphicsQueue.End"/> is called.
         /// </summary>
         Deferred = 1 << 4,
-
-        /// <summary>
-        /// The current command list is the last command list to be submitted in the current command branch.
-        /// </summary>
-        Last =  1 << 5,
     }
 
     public static class GraphicsCommandListFlagsExtensions

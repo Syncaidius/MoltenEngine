@@ -110,13 +110,10 @@ namespace Molten.Graphics.DX11
             _native->ExecuteCommandList(cmd.Ptr, true);
         }
 
-        public override void Submit(GraphicsCommandListFlags flags)
+        public override void Sync(GraphicsCommandListFlags flags)
         {
             if (flags.Has(GraphicsCommandListFlags.Deferred))
                 throw new GraphicsCommandQueueException(this, "Cannot submit deferred command lists to the immediate graphics queue");
-
-            if (flags.Has(GraphicsCommandListFlags.Last))
-                End();
         }
 
         protected override unsafe ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, GraphicsMapType mapType)

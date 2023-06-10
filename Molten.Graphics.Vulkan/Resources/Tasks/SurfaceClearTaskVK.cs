@@ -17,7 +17,7 @@ namespace Molten.Graphics.Vulkan
             GraphicsQueueVK vkCmd = queue as GraphicsQueueVK;
             Surface.Apply(queue);
 
-            vkCmd.Begin(GraphicsCommandListFlags.SingleSubmit);
+            vkCmd.Sync(GraphicsCommandListFlags.SingleSubmit);
             Surface.Transition(vkCmd, ImageLayout.Undefined, ImageLayout.TransferDstOptimal);
 
             ImageSubresourceRange range = new ImageSubresourceRange
@@ -31,7 +31,7 @@ namespace Molten.Graphics.Vulkan
 
             vkCmd.ClearImage(*Surface.ImageHandle, ImageLayout.TransferDstOptimal, Color, &range, 1);
             Surface.Transition(vkCmd, ImageLayout.TransferDstOptimal, ImageLayout.ColorAttachmentOptimal);
-            vkCmd.Submit(); // We'll run all commands up to this image clear.
+            vkCmd.Sync();
 
             // Clear Surface via 
             // TODO See: https://stackoverflow.com/questions/69915270/what-is-the-best-way-to-clear-a-vkimage-to-a-single-color

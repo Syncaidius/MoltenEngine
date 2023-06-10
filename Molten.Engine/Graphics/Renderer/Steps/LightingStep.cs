@@ -86,7 +86,7 @@ namespace Molten.Graphics
             uint pointCount = scene.PointLights.ElementCount * 2;
 
             queue.Draw(_matPoint, pointCount, 0);
-            queue.Submit();
+            queue.Sync();
 
             queue.Draw(_matDebugPoint, pointCount, 0);
         }

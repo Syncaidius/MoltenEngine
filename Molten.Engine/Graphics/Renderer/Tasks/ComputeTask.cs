@@ -21,7 +21,7 @@
         {
             renderer.Device.Queue.Begin();
             renderer.Device.Queue.Dispatch(Shader, Groups);
-            renderer.Device.Queue.Submit(GraphicsCommandListFlags.Last);
+            renderer.Device.Queue.Sync();
             CompletionCallback?.Invoke();
             Recycle(this);
         }

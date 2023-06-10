@@ -100,7 +100,7 @@ namespace Molten.Graphics
             stepPostRender.Run(Renderer, camera, context, time);
             RenderChainLink.Recycle(stepPostRender);
             cmd.EndEvent();
-            cmd.Submit(GraphicsCommandListFlags.Last);
+            cmd.End();
         }
 
         protected override void OnDispose()
