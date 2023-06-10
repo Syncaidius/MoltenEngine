@@ -297,23 +297,29 @@ namespace Molten.Graphics.DX11
 
         public unsafe override GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, ushort[] initialData = null)
         {
-            uint numBytes = numIndices * sizeof(ushort);
+            uint stride = sizeof(ushort);
+            uint numBytes = numIndices * stride;
+            flags = flags | GraphicsResourceFlags.NoShaderAccess;
+
             fixed (ushort* ptr = initialData)
-                return new IndexBufferDX11(this, flags | GraphicsResourceFlags.NoShaderAccess, IndexBufferFormat.UInt16, numIndices, ptr, numIndices);
+                return new BufferDX11(this, GraphicsBufferType.Index, flags, GraphicsFormat.R16_UInt, stride, numIndices, ptr, numIndices);
         }
 
         public unsafe override GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, uint[] initialData = null)
         {
-            uint numBytes = numIndices * sizeof(uint);
+            uint stride = sizeof(uint);
+            uint numBytes = numIndices * stride;
+            flags |= GraphicsResourceFlags.NoShaderAccess;
+
             fixed (uint* ptr = initialData)
-                return new IndexBufferDX11(this, flags | GraphicsResourceFlags.NoShaderAccess, IndexBufferFormat.UInt32, numIndices, ptr, numIndices);
+                return new BufferDX11(this, GraphicsBufferType.Index, flags, GraphicsFormat.R32_UInt, stride, numIndices, ptr, numIndices);
         }
 
         public unsafe override GraphicsBuffer CreateStructuredBuffer<T>(GraphicsResourceFlags flags, uint numElements, T[] initialData = null)
         {
             uint numBytes = numElements * sizeof(uint);
             fixed (T* ptr = initialData)
-                return new BufferDX11(this, GraphicsBufferType.Structured, flags, (uint)sizeof(T), numElements, ptr, numBytes);
+                return new BufferDX11(this, GraphicsBufferType.Structured, flags, GraphicsFormat.Unknown, (uint)sizeof(T), numElements, ptr, numBytes);
         }
 
         public override GraphicsBuffer CreateStagingBuffer(bool allowRead, bool allowWrite, uint byteCapacity)
@@ -325,7 +331,8 @@ namespace Molten.Graphics.DX11
             if (allowWrite)
                 flags |= GraphicsResourceFlags.CpuWrite;
 
-            return new BufferDX11(this, GraphicsBufferType.Staging, flags | GraphicsResourceFlags.GpuWrite | GraphicsResourceFlags.NoShaderAccess, 1, byteCapacity, null, 0);
+            flags |= GraphicsResourceFlags.GpuWrite | GraphicsResourceFlags.NoShaderAccess;
+            return new BufferDX11(this, GraphicsBufferType.Staging, flags, GraphicsFormat.Unknown, 1, byteCapacity, null, 0);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

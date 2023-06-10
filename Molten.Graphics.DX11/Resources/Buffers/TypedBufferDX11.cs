@@ -6,16 +6,16 @@ namespace Molten.Graphics.DX11
 {
     /// <summary>A typed, structured buffer. This is the application-equivilent of a typed Buffer and RWBuffer in HLSL. </summary>
     /// <typeparam name="T"></typeparam>
-    internal unsafe class TypedBuffer : BufferDX11
+    internal unsafe class TypedBufferDX11 : BufferDX11
     {
-        /// <summary>Creates a new instance of <see cref="TypedBuffer"/>.</summary>
+        /// <summary>Creates a new instance of <see cref="TypedBufferDX11"/>.</summary>
         /// <param name="device">The graphics device to bind the buffer to.</param>
         /// <param name="format">The format of the typed buffer. Only UInt32, Int32 and Float are allowed.</param>
         /// <param name="numElements"></param>
         /// <param name="shaderResource"></param>
         /// <param name="flags"></param>
         /// <param name="unorderedAccess">If true, the buffer is given Read-Write access and a UAV is created for it. This is known as an RWStructuredBuffer in HLSL.</param>
-        public TypedBuffer(
+        internal TypedBufferDX11(
             DeviceDX11 device, 
             GraphicsResourceFlags flags, 
             TypedBufferFormat format,
@@ -24,6 +24,7 @@ namespace Molten.Graphics.DX11
             uint initialBytes)
             : base(device, GraphicsBufferType.Structured,
                   flags,
+                  GraphicsFormat.Unknown,
                   format switch
                   {
                       TypedBufferFormat.UInt32 => sizeof(uint),

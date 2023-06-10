@@ -279,7 +279,7 @@ namespace Molten.Graphics.DX11
             {
                 if (State.IndexBuffer.BoundValue != null)
                 {
-                    IndexBufferDX11 buffer = State.IndexBuffer.BoundValue as IndexBufferDX11;
+                    BufferDX11 buffer = State.IndexBuffer.BoundValue as BufferDX11;
                     uint byteOffset = 0; // TODO value.ByteOffset - May need again later for multi-part meshes.
                     _native->IASetIndexBuffer((ID3D11Buffer*)buffer.Handle, buffer.D3DFormat, byteOffset);
                 }

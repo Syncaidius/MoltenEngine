@@ -16,11 +16,11 @@
         protected Mesh(RenderService renderer, GraphicsResourceFlags mode, ushort maxVertices, uint maxIndices, ushort[] initialIndices = null) :
             base(renderer)
         {
-            IndexFormat = maxIndices > 0 ? IndexBufferFormat.UInt16 : IndexBufferFormat.None;
+            IndexFormat = maxIndices > 0 ? GraphicsIndexFormat.UInt16 : GraphicsIndexFormat.None;
             MaxVertices = maxVertices;
             IsDiscard = mode.IsDiscard();
 
-            if (IndexFormat != IndexBufferFormat.None)
+            if (IndexFormat != GraphicsIndexFormat.None)
             {
                 _iBuffer = Renderer.Device.CreateIndexBuffer(mode, maxIndices, initialIndices);
 
@@ -40,11 +40,11 @@
         protected Mesh(RenderService renderer, GraphicsResourceFlags mode, uint maxVertices, uint maxIndices, uint[] initialIndices = null) :
             base(renderer)
         {
-            IndexFormat = maxIndices > 0 ? IndexBufferFormat.UInt32 : IndexBufferFormat.None;
+            IndexFormat = maxIndices > 0 ? GraphicsIndexFormat.UInt32 : GraphicsIndexFormat.None;
             MaxVertices = maxVertices;
             MaxIndices = maxIndices;
 
-            if (IndexFormat != IndexBufferFormat.None)
+            if (IndexFormat != GraphicsIndexFormat.None)
             {
                 _iBuffer = Renderer.Device.CreateIndexBuffer(mode, maxIndices, initialIndices);
 
@@ -126,7 +126,7 @@
 
         public uint IndexCount { get; set; }
 
-        public IndexBufferFormat IndexFormat { get; }
+        public GraphicsIndexFormat IndexFormat { get; }
 
         /// <summary>
         /// Gets or sets the material that should be used when rendering the current <see cref="Mesh"/>.

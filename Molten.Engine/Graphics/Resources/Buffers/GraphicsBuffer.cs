@@ -152,11 +152,5 @@
         /// <para>This property is only set if the current <see cref="BufferType"/> is <see cref="GraphicsBufferType.Vertex"/>.</para>
         /// </summary>
         public VertexFormat VertexFormat { get; protected set; }
-
-        /// <summary>
-        /// Gets the <see cref="IndexBufferFormat"/> of the current <see cref="GraphicsBuffer"/>.
-        /// <para>This property is only set if the current <see cref="BufferType"/> is <see cref="GraphicsBufferType.Index"/>.</para>
-        /// </summary>
-        public IndexBufferFormat IndexFormat { get; protected set; }
     }
 }

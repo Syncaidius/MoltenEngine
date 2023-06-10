@@ -26,12 +26,14 @@ namespace Molten.Graphics.DX11
         internal BufferDX11(DeviceDX11 device,
             GraphicsBufferType type,
             GraphicsResourceFlags flags,
+            GraphicsFormat format,
             uint stride,
             uint numElements,
             void* initialData,
             uint initialBytes) : base(device, stride, numElements, flags | GraphicsResourceFlags.GpuRead, type)
         {
-            ResourceFormat = GraphicsFormat.Unknown;
+            ResourceFormat = format;
+            D3DFormat = format.ToApi();
             NativeSRV = new SRView(this);
             NativeUAV = new UAView(this);
 
@@ -170,5 +172,7 @@ namespace Molten.Graphics.DX11
 
         /// <inheritdoc/>
         public override GraphicsFormat ResourceFormat { get; protected set; }
+
+        internal Format D3DFormat { get; }
     }
 }

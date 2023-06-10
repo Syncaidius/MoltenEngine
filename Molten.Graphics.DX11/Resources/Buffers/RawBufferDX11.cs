@@ -14,13 +14,13 @@ namespace Molten.Graphics.DX11
         /// <param name="numElements"></param>
         /// <param name="shaderResource"></param>
         /// <param name="unorderedAccess">If true, the buffer is given Read-Write access and a UAV is created for it. This is known as an RWStructuredBuffer in HLSL.</param>
-        public RawBufferDX11(
+        internal RawBufferDX11(
             DeviceDX11 device,
             GraphicsResourceFlags flags,
             uint numElements,
             void* initialData,
             uint initialBytes)
-            : base(device, GraphicsBufferType.ByteAddress, flags, sizeof(uint), numElements, initialData, initialBytes)
+            : base(device, GraphicsBufferType.ByteAddress, flags, GraphicsFormat.Unknown, sizeof(uint), numElements, initialData, initialBytes)
         {
             
         }
