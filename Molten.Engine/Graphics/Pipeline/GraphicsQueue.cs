@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     public abstract class GraphicsQueue : EngineObject
     {
@@ -43,13 +41,12 @@ namespace Molten.Graphics
             }
         }
 
+        Stack<RenderProfiler> _profilerStack;
         RenderProfiler _profiler;
         GraphicsState _state;
 
         Stack<GraphicsState> _stateStack;
         Stack<GraphicsState> _freeStateStack;
-
-        Stack<RenderProfiler> _profilerStack;
 
         protected GraphicsQueue(GraphicsDevice device)
         {

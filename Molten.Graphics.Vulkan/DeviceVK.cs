@@ -59,8 +59,8 @@ namespace Molten.Graphics.Vulkan
             else
             {
                 PhysicalDeviceProperties2 p2 = new PhysicalDeviceProperties2(StructureType.PhysicalDeviceProperties2);
-                p = p2.Properties;
                 _manager.Renderer.VK.GetPhysicalDeviceProperties2(Adapter, &p2);
+                p = p2.Properties;
 
 #if DEBUG
                 _manager.CapBuilder.LogAdditionalProperties(_manager.Renderer.Log, &p2);
