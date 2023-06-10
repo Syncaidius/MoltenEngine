@@ -87,7 +87,7 @@ namespace Molten.Graphics
                 CopyResourceCount = 0;
             }
 
-            public void Accumulate(Snapshot other)
+            public void Accumulate(Snapshot other, bool accumulateTime = true)
             {
                 DrawCalls += other.DrawCalls;
                 SlotBindings += other.SlotBindings;
@@ -97,13 +97,15 @@ namespace Molten.Graphics
                 PrimitiveCount += other.PrimitiveCount;
                 BufferBindings += other.BufferBindings;
                 ShaderBindings += other.ShaderBindings;
-                Time += other.Time;
                 MapDiscardCount += other.MapDiscardCount;
                 MapNoOverwriteCount += other.MapNoOverwriteCount;
                 MapReadWriteCount += other.MapReadWriteCount;
                 UpdateSubresourceCount += other.UpdateSubresourceCount;
                 CopySubresourceCount += other.CopySubresourceCount;
                 CopyResourceCount += other.CopyResourceCount;
+
+                if(accumulateTime)
+                    Time += other.Time;
             }
         }
 
@@ -137,9 +139,9 @@ namespace Molten.Graphics
                 _snapshots[i].Clear();
         }
 
-        public void Accumulate(Snapshot data)
+        public void Accumulate(Snapshot data, bool accumulateTime)
         {
-            Current.Accumulate(data);
+            Current.Accumulate(data, accumulateTime);
         }
 
         public void Begin()

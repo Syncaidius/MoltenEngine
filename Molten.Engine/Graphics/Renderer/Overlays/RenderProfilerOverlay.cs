@@ -27,7 +27,7 @@
                 if (_lastFrameID != frame.FrameID)
                     _fpsGraph.Add(time.FPS);
 
-                sb.DrawString(font, "[FRAME]", textPos, _colText);
+                sb.DrawString(font, "[LAST FRAME]", textPos, _colText);
                 textPos.X += 5;
                 DrawStats(time, sb, font, frame, ref textPos, lineHeight);
                 textPos.X -= 5;

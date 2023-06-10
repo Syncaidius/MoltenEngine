@@ -125,6 +125,7 @@ namespace Molten.Graphics
 
             _tracker.StartFrame();
             Profiler.Begin();
+            Device.Queue.Profiler.Begin();
             Device.DisposeMarkedObjects();
 
             if (_requestedMultiSampleLevel != MsaaLevel)
@@ -181,7 +182,7 @@ namespace Molten.Graphics
 
                 Device.Queue.BeginEvent("Draw Scene");
                 sceneData.PreRenderInvoke(this);
-                sceneData.Profiler.Begin();
+                Device.Queue.PushProfiler(sceneData.Profiler);
 
                 // Sort cameras into ascending order-depth.
                 sceneData.Cameras.Sort((a, b) =>
@@ -199,16 +200,12 @@ namespace Molten.Graphics
                     if (camera.Skip)
                         continue;
 
-                    Device.Queue.Profiler = camera.Profiler;
-                    camera.Profiler.Begin();
+                    Device.Queue.PushProfiler(camera.Profiler);
                     _chain.Render(sceneData, camera, time);
-                    camera.Profiler.End(time);
-                    Profiler.Accumulate(camera.Profiler.Previous);
-                    sceneData.Profiler.Accumulate(camera.Profiler.Previous);
-                    Device.Queue.Profiler = null;
+                    Device.Queue.PopProfiler(time);
                 }
 
-                sceneData.Profiler.End(time);
+                Device.Queue.PopProfiler(time);
                 sceneData.PostRenderInvoke(this);
                 Device.Queue.EndEvent();
             }
@@ -223,6 +220,9 @@ namespace Molten.Graphics
             });
 
             ProcessTasks(RenderTaskPriority.EndOfFrame);
+
+            Device.Queue.Profiler.End(time);
+            Profiler.Accumulate(Device.Queue.Profiler.Previous, false);
             Profiler.End(time);
             _tracker.EndFrame();
         }

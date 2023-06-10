@@ -44,11 +44,12 @@ namespace Molten.Graphics
         }
 
         RenderProfiler _profiler;
-        RenderProfiler _defaultProfiler;
         GraphicsState _state;
 
         Stack<GraphicsState> _stateStack;
         Stack<GraphicsState> _freeStateStack;
+
+        Stack<RenderProfiler> _profilerStack;
 
         protected GraphicsQueue(GraphicsDevice device)
         {
@@ -57,7 +58,9 @@ namespace Molten.Graphics
             _state = new GraphicsState(device);
             _stateStack = new Stack<GraphicsState>();
             _freeStateStack = new Stack<GraphicsState>();
-            _defaultProfiler = _profiler = new RenderProfiler();
+
+            _profilerStack = new Stack<RenderProfiler>();
+            _profiler = new RenderProfiler();
         }
 
         public void PushState(GraphicsState newest = null)
@@ -82,6 +85,34 @@ namespace Molten.Graphics
 
             _freeStateStack.Push(_state);
             _state = _stateStack.Pop();
+        }
+
+        /// <summary>
+        /// Pushes the specified <see cref="RenderProfiler"/> onto the current <see cref="GraphicsQueue"/> and begins profiling.
+        /// </summary>
+        /// <param name="profiler"></param>
+        public void PushProfiler(RenderProfiler profiler)
+        {
+            _profilerStack.Push(_profiler);
+            _profiler = profiler;
+            _profiler.Begin();
+        }
+
+        /// <summary>
+        /// Ends the current profiler run and pops it from the current <see cref="GraphicsQueue"/>.
+        /// </summary>
+        /// <param name="time"></param>
+        /// <exception cref="InvalidOperationException"></exception>
+        public void PopProfiler(Timing time)
+        {
+            if (_profilerStack.Count == 0)
+                throw new InvalidOperationException("There are no profilers left to pop from the current GraphicsQueue.");
+
+            RenderProfiler prev = _profiler;
+            _profiler = _profilerStack.Pop();
+
+            prev.End(time);
+            _profiler.Accumulate(prev.Previous, false);
         }
 
         public void ResetState()
@@ -218,7 +249,7 @@ namespace Molten.Graphics
             uint instanceStartIndex = 0);
 
         /// <summary>Draw indexed, non-instanced primitives.</summary>
-        /// <param name="shader">The <see cref="Shader"/> to apply when drawing.</param>
+        /// <param name="shader">The <see cref="HlslShader"/> to apply when drawing.</param>
         /// <param name="vertexIndexOffset">A value added to each index before reading from the vertex buffer.</param>
         /// <param name="indexCount">The number of indices to be drawn.</param>
         /// <param name="startIndex">The index to start drawing from.</param>
@@ -228,7 +259,7 @@ namespace Molten.Graphics
             uint startIndex = 0);
 
         /// <summary>Draw indexed, instanced primitives.</summary>
-        /// <param name="shader">The <see cref="Shader"/> to apply when drawing.</param>
+        /// <param name="shader">The <see cref="HlslShader"/> to apply when drawing.</param>
         /// <param name="indexCountPerInstance">The expected number of indices per instance.</param>
         /// <param name="instanceCount">The expected number of instances.</param>
         /// <param name="startIndex">The start index.</param>
@@ -255,12 +286,8 @@ namespace Molten.Graphics
         /// </summary>
         public GraphicsDevice Device { get; }
 
-        /// <summary>Gets the profiler bound to the current <see cref="GraphicsQueue"/>. Contains statistics for this context alone.</summary>
-        public RenderProfiler Profiler
-        {
-            get => _profiler;
-            set => _profiler = value ?? _defaultProfiler;
-        }
+        /// <summary>Gets the profiler that is currently bound to the current <see cref="GraphicsQueue"/>. Contains statistics for this context alone.</summary>
+        public RenderProfiler Profiler => _profiler;
 
         protected BatchDrawInfo DrawInfo { get; }
 
