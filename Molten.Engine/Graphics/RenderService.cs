@@ -1,5 +1,4 @@
-﻿using System.Data;
-using Molten.Collections;
+﻿using Molten.Collections;
 using Molten.Graphics.Overlays;
 using Molten.Threading;
 
@@ -37,7 +36,6 @@ namespace Molten.Graphics
 
             Surfaces = new SurfaceManager(this);
             Overlay = new OverlayProvider();
-            Log.WriteLine("Acquiring render chain");
         }
 
         protected override ThreadingMode OnStart(ThreadManager threadManager)
