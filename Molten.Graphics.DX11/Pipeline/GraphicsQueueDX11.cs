@@ -36,11 +36,10 @@ namespace Molten.Graphics.DX11
         RasterizerStateDX11 _stateRaster;
         DepthStateDX11 _stateDepth;
         GraphicsStateValueGroup<GraphicsResource> _omUAVs;
+        CommandListDX11 _cmd;
 
         ID3D11DeviceContext4* _native;
         ID3DUserDefinedAnnotation* _debugAnnotation;
-
-        CommandListDX11 _cmd;
 
         internal GraphicsQueueDX11(DeviceDX11 device, ID3D11DeviceContext4* context) :
             base(device)
