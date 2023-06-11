@@ -20,7 +20,6 @@ namespace Molten.Graphics.Vulkan
             {
                 DepthValue = depthValue,
                 StencilValue = stencilValue,
-                Surface = this,
             });
         }
 

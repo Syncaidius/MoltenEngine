@@ -4,8 +4,6 @@ namespace Molten.Graphics.Vulkan
 {
     internal struct SurfaceClearTaskVK : IGraphicsResourceTask
     {
-        public RenderSurface2DVK Surface;
-
         public Color Color;
 
         public unsafe bool Process(GraphicsQueue queue, GraphicsResource resource)
@@ -14,23 +12,26 @@ namespace Molten.Graphics.Vulkan
             //  -- Transition from the current layout to the one we need.
             //  -- Transition back to the original layout once we're done.
 
+            RenderSurface2DVK surface = resource as RenderSurface2DVK;
             GraphicsQueueVK vkCmd = queue as GraphicsQueueVK;
-            Surface.Apply(queue);
+            surface.Apply(queue);
 
+            ResourceHandleVK* test = (ResourceHandleVK*)resource.Handle;
+            Image* img = test->As<Image>();
             vkCmd.Sync(GraphicsCommandListFlags.SingleSubmit);
-            Surface.Transition(vkCmd, ImageLayout.Undefined, ImageLayout.TransferDstOptimal);
+            surface.Transition(vkCmd, ImageLayout.Undefined, ImageLayout.TransferDstOptimal);
 
             ImageSubresourceRange range = new ImageSubresourceRange
             {
                 AspectMask = ImageAspectFlags.ColorBit,
                 BaseArrayLayer = 0,
-                LayerCount = Surface.ArraySize,
+                LayerCount = surface.ArraySize,
                 BaseMipLevel = 0,
-                LevelCount = Surface.MipMapCount,
+                LevelCount = surface.MipMapCount,
             };
 
-            vkCmd.ClearImage(*Surface.ImageHandle, ImageLayout.TransferDstOptimal, Color, &range, 1);
-            Surface.Transition(vkCmd, ImageLayout.TransferDstOptimal, ImageLayout.ColorAttachmentOptimal);
+            vkCmd.ClearImage(*surface.ImageHandle, ImageLayout.TransferDstOptimal, Color, &range, 1);
+            surface.Transition(vkCmd, ImageLayout.TransferDstOptimal, ImageLayout.ColorAttachmentOptimal);
             vkCmd.Sync();
 
             // Clear Surface via 

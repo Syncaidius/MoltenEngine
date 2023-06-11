@@ -32,7 +32,6 @@ namespace Molten.Graphics.Vulkan
             QueueTask(priority, new SurfaceClearTaskVK()
             {
                 Color = color,
-                Surface = this,
             });
         }
 

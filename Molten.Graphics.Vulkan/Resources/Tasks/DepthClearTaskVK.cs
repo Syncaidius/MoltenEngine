@@ -4,8 +4,6 @@ namespace Molten.Graphics.Vulkan
 {
     internal struct DepthClearTaskVK : IGraphicsResourceTask
     {
-        public DepthSurfaceVK Surface;
-
         public float DepthValue;
 
         public uint StencilValue;
@@ -16,23 +14,24 @@ namespace Molten.Graphics.Vulkan
             //  -- Transition from the current layout to the one we need.
             //  -- Transition back to the original layout once we're done.
 
+            DepthSurfaceVK surface = resource as DepthSurfaceVK;
             GraphicsQueueVK vkCmd = queue as GraphicsQueueVK;
-            Surface.Apply(queue);
-
+            surface.Apply(queue);
+            
             vkCmd.Sync(GraphicsCommandListFlags.SingleSubmit);
-            Surface.Transition(vkCmd, ImageLayout.Undefined, ImageLayout.TransferDstOptimal);
+            surface.Transition(vkCmd, ImageLayout.Undefined, ImageLayout.TransferDstOptimal);
 
             ImageSubresourceRange range = new ImageSubresourceRange
             {
                 AspectMask = ImageAspectFlags.ColorBit,
                 BaseArrayLayer = 0,
-                LayerCount = Surface.ArraySize,
+                LayerCount = surface.ArraySize,
                 BaseMipLevel = 0,
-                LevelCount = Surface.MipMapCount,
+                LevelCount = surface.MipMapCount,
             };
 
-            vkCmd.ClearDepthImage(*Surface.ImageHandle, ImageLayout.TransferDstOptimal, DepthValue, StencilValue, &range, 1);
-            Surface.Transition(vkCmd, ImageLayout.TransferDstOptimal, ImageLayout.ColorAttachmentOptimal);
+            vkCmd.ClearDepthImage(*surface.ImageHandle, ImageLayout.TransferDstOptimal, DepthValue, StencilValue, &range, 1);
+            surface.Transition(vkCmd, ImageLayout.TransferDstOptimal, ImageLayout.ColorAttachmentOptimal);
             vkCmd.Sync();
 
             return true;

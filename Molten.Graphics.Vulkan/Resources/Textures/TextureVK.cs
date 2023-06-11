@@ -141,7 +141,7 @@ namespace Molten.Graphics.Vulkan
 
         internal void Transition(GraphicsQueueVK cmd, ImageLayout oldLayout, ImageLayout newLayout, GraphicsFormat newFormat, uint newMipMapCount, uint newArraySize)
         {
-            ImageMemoryBarrier barrier = new ImageMemoryBarrier(StructureType.ImageMemoryBarrier)
+            ImageMemoryBarrier barrier = new ImageMemoryBarrier()
             {
                 OldLayout = oldLayout,
                 NewLayout = newLayout,

@@ -22,29 +22,11 @@ namespace Molten.Graphics.Vulkan
         {
             ResourceHandleVK* handle = EngineUtil.Alloc<ResourceHandleVK>();
             EngineUtil.Clear(handle);
-            handle->Allocate<T>();
+
+            handle->_ptr = EngineUtil.Alloc<T>();
+            EngineUtil.Clear((T*)handle->_ptr);
+
             return handle;
-        }
-
-        /// <summary>
-        /// Allocates memory to fit the specified type and stores its pointer in <see cref="Ptr"/>.
-        /// </summary>
-        /// <typeparam name="T">The type for which to allocate memory.</typeparam>
-        /// <exception cref="InvalidOperationException"></exception>
-        /// <exception cref="ObjectDisposedException"></exception>
-        internal T* Allocate<T>()
-            where T : unmanaged
-        {
-            if(_allocated)
-                throw new InvalidOperationException("Cannot allocate a resource handle that has already been allocated.");
-
-            if(IsDisposed)
-                throw new ObjectDisposedException("Cannot allocate a disposed ResourceHandleVK.");
-
-            _allocated = true;
-            _ptr = EngineUtil.Alloc<T>();
-            EngineUtil.Clear((T*)_ptr);
-            return (T*)_ptr;
         }
 
         /// <summary>
@@ -63,11 +45,7 @@ namespace Molten.Graphics.Vulkan
             if(IsDisposed)
                 throw new ObjectDisposedException("The current ResourceHandleVK is already disposed.");
 
-            if (_allocated)
-            {
-                EngineUtil.Free(ref _ptr);
-                _allocated = false;
-            }
+            EngineUtil.Free(ref _ptr);
         }
 
 

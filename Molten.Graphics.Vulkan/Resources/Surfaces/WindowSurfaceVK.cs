@@ -43,8 +43,9 @@ namespace Molten.Graphics.Vulkan
         ColorSpaceKHR _colorSpace = ColorSpaceKHR.SpaceSrgbNonlinearKhr;
 
         KhrSwapchain _extSwapChain;
+        KhrSurface _extSurface;
 
-        internal unsafe WindowSurfaceVK(DeviceVK device, string title, TextureDimensions dimensions,
+        internal unsafe WindowSurfaceVK(GraphicsDevice device, string title, TextureDimensions dimensions,
             GraphicsResourceFlags flags = GraphicsResourceFlags.None,
             GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm,
             PresentModeKHR presentMode = PresentModeKHR.MailboxKhr,
@@ -58,58 +59,39 @@ namespace Molten.Graphics.Vulkan
         protected override unsafe void OnCreateImage(DeviceVK device, ResourceHandleVK* handle, ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo)
         {
             RendererVK renderer = Device.Renderer as RendererVK;
-            KhrSurface extSurface = renderer.GetInstanceExtension<KhrSurface>();
-            if (extSurface == null)
+
+            _extSurface = _extSurface ?? renderer.GetInstanceExtension<KhrSurface>();
+            if (_extSurface == null)
             {
                 renderer.Log.Error($"VK_KHR_surface extension is unsupported. Unable to initialize WindowSurfaceVK");
                 return;
             }
 
-            _extSwapChain = device.GetExtension<KhrSwapchain>();
+            _extSwapChain = _extSwapChain ?? device.GetExtension<KhrSwapchain>();
             if (_extSwapChain == null)
             {
                 renderer.Log.Error($"VK_KHR_swapchain extension is unsupported. Unable to initialize WindowSurfaceVK");
                 return;
             }
 
-            renderer.GLFW.WindowHint(WindowHintClientApi.ClientApi, ClientApi.NoApi);
-            renderer.GLFW.WindowHint(WindowHintBool.Resizable, true);
-            _window = renderer.GLFW.CreateWindow((int)Width, (int)Height, _title, null, null);
+            Result r = CreateSurface(device, renderer, (int)Width, (int)Height);
+            if (r != Result.Success)
+                return;
 
-            if(_window == null)
+            if (!IsFormatSupported(_extSurface, ResourceFormat, _colorSpace))
             {
-                renderer.Log.Error($"Failed to create {Width} x {Height} window for WindowSurfaceVK");
+                renderer.Log.Error($"Surface format '{ResourceFormat}' with a '{_colorSpace}' color-space is not supported");
                 return;
             }
 
-            VkHandle instanceHandle = new VkHandle(renderer.Instance->Handle);
-            VkNonDispatchableHandle surfaceHandle = new VkNonDispatchableHandle();
-
-            Result r = (Result)renderer.GLFW.CreateWindowSurface(instanceHandle, _window, null, &surfaceHandle);
-            if (!r.Check(renderer))
-                return;
-
-            Native = new SurfaceKHR(surfaceHandle.Handle);
             _presentQueue = renderer.NativeDevice.FindPresentQueue(this);
-
             if (_presentQueue == null)
             {
                 renderer.Log.Error($"No command queue found to present window surface");
                 return;
             }
 
-            // Check surface capabilities
-            r = extSurface.GetPhysicalDeviceSurfaceCapabilities(device.Adapter, Native, out _cap);
-            if (!r.Check(renderer))
-                return;
-
-            if (!IsFormatSupported(extSurface, ResourceFormat, _colorSpace))
-            {
-                renderer.Log.Error($"Surface format '{ResourceFormat}' with a '{_colorSpace}' color-space is not supported");
-                return;
-            }
-
-            _mode = ValidatePresentMode(extSurface, _mode);
+            _mode = ValidatePresentMode(_extSurface, _mode);
             ValidateBackBufferSize();
 
             r = CreateSwapChain();
@@ -131,6 +113,44 @@ namespace Molten.Graphics.Vulkan
                 if (!r.Check(device, () => $"Failed to create image view for back-buffer image {i}"))
                     break;
             }
+        }
+
+        private Result CreateSurface(DeviceVK device, RendererVK renderer, int width, int height)
+        {
+            // Dispose of old surface
+            if (Native.Handle != 0)
+            {
+                renderer.GLFW.DestroyWindow(_window);
+                _extSurface.DestroySurface(*renderer.Instance, Native, null);
+
+                _window = null;
+                Native = new SurfaceKHR();
+            }
+
+            renderer.GLFW.WindowHint(WindowHintClientApi.ClientApi, ClientApi.NoApi);
+            renderer.GLFW.WindowHint(WindowHintBool.Resizable, true);
+            _window = renderer.GLFW.CreateWindow(width, height, _title, null, null);
+
+            if (_window == null)
+            {
+                renderer.Log.Error($"Failed to create {width} x {height} window for WindowSurfaceVK");
+                return Result.ErrorInitializationFailed;
+            }
+
+            VkHandle instanceHandle = new VkHandle(renderer.Instance->Handle);
+            VkNonDispatchableHandle surfaceHandle = new VkNonDispatchableHandle();
+
+            Result r = (Result)renderer.GLFW.CreateWindowSurface(instanceHandle, _window, null, &surfaceHandle);
+            if (!r.Check(renderer))
+                return r;
+
+            Native = new SurfaceKHR(surfaceHandle.Handle);
+
+            // Retrieve/update surface capabilities
+            r = _extSurface.GetPhysicalDeviceSurfaceCapabilities(device.Adapter, Native, out _cap);
+            r.Check(renderer);
+
+            return r;
         }
 
         private Result CreateSwapChain()
@@ -214,14 +234,6 @@ namespace Molten.Graphics.Vulkan
                 _curChainSize = uint.Clamp(_curChainSize, _cap.MinImageCount, _cap.MaxImageCount);
             else
                 _curChainSize = uint.Max(_cap.MinImageCount, _curChainSize);
-        }
-
-        protected override void ValidateDimensions(ref TextureDimensions dimensions)
-        {
-            base.ValidateDimensions(ref dimensions);
-
-            dimensions.Width = uint.Clamp(dimensions.Width, _cap.MinImageExtent.Width, _cap.MaxImageExtent.Width);
-            dimensions.Height = uint.Clamp(dimensions.Height, _cap.MinImageExtent.Height, _cap.MaxImageExtent.Height);
         }
 
         protected override void OnGraphicsRelease()
