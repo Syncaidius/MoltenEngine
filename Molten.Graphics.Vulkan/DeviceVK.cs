@@ -284,6 +284,7 @@ namespace Molten.Graphics.Vulkan
 
         internal void FreeFence(FenceVK fence)
         {
+            fence.Reset();
             _freeFences.Push(fence);
         }
 

@@ -29,6 +29,13 @@ namespace Molten.Graphics.Vulkan
             return handle;
         }
 
+        internal void SetValue<T>(T ptr)
+            where T : unmanaged
+        {
+            T* tPtr = (T*)_ptr;
+            tPtr[0] = ptr;
+        }
+
         /// <summary>
         /// Returns the underlying <see cref="Ptr"/> as a pointer to the specified type.
         /// </summary>

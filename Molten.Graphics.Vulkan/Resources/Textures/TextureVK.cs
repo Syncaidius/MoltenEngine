@@ -176,6 +176,9 @@ namespace Molten.Graphics.Vulkan
                 default:
                     throw new GraphicsResourceException(this, $"Unsupported transition image layout '{layout}'.");
 
+                case ImageLayout.PresentSrcKhr:
+                    return (AccessFlags.ColorAttachmentWriteBit, PipelineStageFlags.None);
+
                 case ImageLayout.Undefined:
                     return (AccessFlags.None, PipelineStageFlags.TopOfPipeBit);
 

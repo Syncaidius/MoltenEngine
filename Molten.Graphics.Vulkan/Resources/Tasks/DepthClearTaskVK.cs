@@ -31,7 +31,7 @@ namespace Molten.Graphics.Vulkan
             };
 
             vkCmd.ClearDepthImage(*surface.ImageHandle, ImageLayout.TransferDstOptimal, DepthValue, StencilValue, &range, 1);
-            surface.Transition(vkCmd, ImageLayout.TransferDstOptimal, ImageLayout.ColorAttachmentOptimal);
+            surface.Transition(vkCmd, ImageLayout.TransferDstOptimal, ImageLayout.DepthAttachmentOptimal);
             vkCmd.Sync();
 
             return true;

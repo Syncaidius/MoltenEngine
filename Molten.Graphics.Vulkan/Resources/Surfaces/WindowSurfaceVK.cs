@@ -11,13 +11,13 @@ namespace Molten.Graphics.Vulkan
     {
         struct BackBuffer
         {
-            internal Image Texture;
+            internal Image Image;
 
             internal ImageView View;
 
             internal BackBuffer(Image texture, ImageView view)
             {
-                Texture = texture;
+                Image = texture;
                 View = view;
             }
         }
@@ -44,8 +44,9 @@ namespace Molten.Graphics.Vulkan
 
         KhrSwapchain _extSwapChain;
         KhrSurface _extSurface;
+        FenceVK _frameFence;
 
-        internal unsafe WindowSurfaceVK(GraphicsDevice device, string title, TextureDimensions dimensions,
+        internal unsafe WindowSurfaceVK(DeviceVK device, string title, TextureDimensions dimensions,
             GraphicsResourceFlags flags = GraphicsResourceFlags.None,
             GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm,
             PresentModeKHR presentMode = PresentModeKHR.MailboxKhr,
@@ -54,6 +55,7 @@ namespace Molten.Graphics.Vulkan
         {
             _title = title;
             _mode = presentMode;
+            _frameFence = device.GetFence();
         }
 
         protected override unsafe void OnCreateImage(DeviceVK device, ResourceHandleVK* handle, ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo)
@@ -107,7 +109,7 @@ namespace Molten.Graphics.Vulkan
 
             for (int i = 0; i < images.Length; i++)
             {
-                _backBuffer[i].Texture = images[i];
+                _backBuffer[i].Image = images[i];
                 viewInfo.Image = images[i];
                 r = renderer.VK.CreateImageView(device, viewInfo, null, out _backBuffer[i].View);
                 if (!r.Check(device, () => $"Failed to create image view for back-buffer image {i}"))
@@ -239,6 +241,8 @@ namespace Molten.Graphics.Vulkan
         protected override void OnGraphicsRelease()
         {
             DeviceVK device = Device as DeviceVK;
+            device.FreeFence(_frameFence);
+
             if (_swapChain.Handle != 0)
             {
                 // Clean up image view handles
@@ -265,8 +269,23 @@ namespace Molten.Graphics.Vulkan
             if (_swapChain.Handle == 0)
                 return;
 
+            DeviceVK device = Device as DeviceVK;
+
+            uint imageIndex = 0;
+            Result r = _extSwapChain.AcquireNextImage(device, _swapChain, ulong.MaxValue, new Semaphore(), _frameFence, &imageIndex);
+            if (!r.Check(device, () => "Failed to acquire next swapchain image"))
+                return;
+
+            if (!_frameFence.Wait())
+                return;
+
+            ResourceHandleVK* rHandle = (ResourceHandleVK*)Handle;
+            rHandle->SetValue(_backBuffer[imageIndex].Image);
+
+            int swapChainCount = 1; // TODO expand once we support multiple swapchains. May need moving to DeviceVK/GraphicsDevice.
             SwapchainKHR* swapChains = stackalloc SwapchainKHR[] { _swapChain };
-            uint* scIndices = stackalloc uint[] { Device.Renderer.BackBufferIndex }; // Back-buffer index for each presented swap-chain.
+            uint* scIndices = stackalloc uint[] { imageIndex }; // Back-buffer index for each presented swap-chain.
+            Result* pResults = stackalloc Result[swapChainCount];
 
             // Get the last semaphore of each command list branch in the current frame.
             // These semaphores will be waited on before presenting the swap-chain.
@@ -283,14 +302,21 @@ namespace Molten.Graphics.Vulkan
                 SType = StructureType.PresentInfoKhr,
                 WaitSemaphoreCount = semaphoreCount,
                 PWaitSemaphores = semaphores,
-                SwapchainCount = 1,
+                SwapchainCount = (uint)swapChainCount,
                 PSwapchains = swapChains,
                 PImageIndices = scIndices,
-                PResults = null,
+                PResults = pResults,
             };
 
-            Queue cmdQueue = (Device as DeviceVK).Queue.Native;
-            _extSwapChain.QueuePresent(cmdQueue, &presentInfoKHR);
+            Transition(device.Queue, ImageLayout.Undefined, ImageLayout.PresentSrcKhr);
+
+            Queue cmdQueue = device.Queue.Native;
+            r = _extSwapChain.QueuePresent(cmdQueue, &presentInfoKHR);
+            if (!r.Check(device, () => $"Failed to present {swapChainCount} swapchains."))
+            {
+                for (int i = 0; i < swapChainCount; i++)
+                    pResults[i].Check(device, () => $"\tSwapchain {i} failed to present.");
+            }
         }
 
         public void Dispatch(Action callback)
