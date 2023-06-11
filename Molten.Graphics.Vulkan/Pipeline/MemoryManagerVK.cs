@@ -52,6 +52,8 @@ namespace Molten.Graphics.Vulkan
         {
             for (int i = 0; i < _heaps.Length; i++)
             {
+                // TODO Prioritize host-visible if the device supports ReBAR, as this allows direct CPU access to avoid copy/transfers.
+
                 MemoryAllocationVK mem = _heaps[i].Allocate(ref requirements, flags);
                 if (mem != null)
                     return mem;

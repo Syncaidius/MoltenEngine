@@ -125,9 +125,9 @@ namespace Molten.Graphics
                     if (Area != null)
                     {
                         RectangleUI rect = Area.Value;
-                        uint areaPitch = Stride * rect.Width;
+                        uint rowPitch = Stride * rect.Width;
                         ResourceRegion region = new ResourceRegion(rect.X, rect.Y, 0, rect.Right, rect.Bottom, 1);
-                        cmd.UpdateResource(resource, subLevel, region, ptrData, areaPitch, NumBytes);
+                        cmd.UpdateResource(resource, subLevel, region, ptrData, rowPitch, NumBytes);
                     }
                     else
                     {

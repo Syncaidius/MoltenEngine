@@ -143,7 +143,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the resource flags that provided given when the current <see cref="GraphicsResource"/> was created.
         /// </summary>
-        public GraphicsResourceFlags Flags { get; }
+        public GraphicsResourceFlags Flags { get; protected set; }
 
         internal GraphicsStream Stream { get; set; }
 

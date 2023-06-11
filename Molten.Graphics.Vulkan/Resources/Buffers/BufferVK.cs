@@ -14,26 +14,29 @@ namespace Molten.Graphics.Vulkan
             GraphicsResourceFlags flags,
             BufferUsageFlags usageFlags,
             uint stride,
-            uint numElements,
-            void* initialData,
-            uint initialBytes) :
+            uint numElements) :
             base(device, stride, numElements, flags, type)
         {
             _handle = ResourceHandleVK.AllocateNew<Buffer>();
-
-            MemoryPropertyFlags memFlags = BuildDescription(usageFlags);
-            InitializeBuffer(memFlags, initialData, initialBytes);
+            InitializeBuffer(usageFlags);
         }
 
-        private MemoryPropertyFlags BuildDescription(BufferUsageFlags usage)
+        private void InitializeBuffer(BufferUsageFlags usage)
         {
             MemoryPropertyFlags memFlags = MemoryPropertyFlags.None;
 
             // Does the memory need to be host-visible?
-            if(Flags.Has(GraphicsResourceFlags.CpuRead) || Flags.Has(GraphicsResourceFlags.CpuWrite))
+            if (Flags.Has(GraphicsResourceFlags.CpuRead) || Flags.Has(GraphicsResourceFlags.CpuWrite))
+            {
+                // In Vulkan, the CPU either has read AND write access, or none at all.
+                // If either of the CPU access flags were provided, we need to add both.
+                Flags |= GraphicsResourceFlags.CpuRead | GraphicsResourceFlags.CpuWrite;
                 memFlags |= MemoryPropertyFlags.HostCoherentBit | MemoryPropertyFlags.HostVisibleBit;
+            }
             else
+            {
                 memFlags |= MemoryPropertyFlags.DeviceLocalBit;
+            }
 
             if (Flags.Has(GraphicsResourceFlags.None))
                 usage |= BufferUsageFlags.TransferSrcBit;
@@ -50,11 +53,6 @@ namespace Molten.Graphics.Vulkan
             _desc.PQueueFamilyIndices[0] = (Device.Queue as GraphicsQueueVK).Index;
             _desc.QueueFamilyIndexCount = 1;
 
-            return memFlags;
-        }
-
-        private void InitializeBuffer(MemoryPropertyFlags memFlags, void* initialData, uint initialBytes)
-        {
             DeviceVK device = Device as DeviceVK;
             Result r = device.VK.CreateBuffer(device, in _desc, null, (Buffer*)_handle->Ptr);
             if (!r.Check(device))
@@ -62,21 +60,15 @@ namespace Molten.Graphics.Vulkan
 
             MemoryRequirements memRequirements;
             device.VK.GetBufferMemoryRequirements(device, *(Buffer*)_handle->Ptr, &memRequirements);
-           _memory = device.Memory.Allocate(ref memRequirements, memFlags);
+            _memory = device.Memory.Allocate(ref memRequirements, memFlags);
             if (_memory == null)
                 throw new GraphicsResourceException(this, "Unable to allocate memory for buffer.");
 
             _handle->Memory = _memory;
+            _handle->MemoryFlags = memFlags;
             r = device.VK.BindBufferMemory(device, *(Buffer*)_handle->Ptr, _handle->Memory, 0);
             if (!r.Check(device))
                 return;
-
-            // Write initial data to buffer
-            if(initialData != null && initialBytes > 0)
-            {
-                using (GraphicsStream stream = device.Queue.MapResource(this, 0, 0, GraphicsMapType.Write))
-                    stream.Write(initialData, initialBytes);
-            }
         }
 
         protected override void OnGraphicsRelease()

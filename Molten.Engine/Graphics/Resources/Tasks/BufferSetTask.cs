@@ -20,12 +20,21 @@
 
         internal Action CompletionCallback;
 
-        internal GraphicsBuffer Staging;
-
         public bool Process(GraphicsQueue cmd, GraphicsResource resource)
         {
-            using(GraphicsStream stream = cmd.MapResource(resource, 0, ByteOffset, MapType))
-                stream.WriteRange(Data, DataStartIndex, ElementCount);
+            if (resource.Flags.Has(GraphicsResourceFlags.CpuWrite))
+            {
+                using (GraphicsStream stream = cmd.MapResource(resource, 0, ByteOffset, MapType))
+                    stream.WriteRange(Data, DataStartIndex, ElementCount);
+            }
+            else
+            {
+                GraphicsBuffer staging = cmd.Device.Renderer.Frame.StagingBuffer;
+                using (GraphicsStream stream = cmd.MapResource(staging, 0, ByteOffset, GraphicsMapType.Write))
+                    stream.WriteRange(Data, DataStartIndex, ElementCount);
+
+                cmd.CopyResource(staging, resource);
+            }
 
             CompletionCallback?.Invoke();
             return false;

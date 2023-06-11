@@ -69,7 +69,7 @@
                 throw new InvalidOperationException($"Mesh is not indexed. Must be created with index format that isn't IndexBufferFormat.None.");
 
             IndexCount = count;
-            _iBuffer.SetData(GraphicsPriority.Apply, data, startIndex, count, IsDiscard, 0, Renderer.Frame.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
+            _iBuffer.SetData(GraphicsPriority.Apply, data, startIndex, count, IsDiscard, 0);
         }
 
         protected virtual void OnApply(GraphicsQueue queue)
@@ -178,7 +178,7 @@
         public void SetVertices(T[] data, uint startIndex, uint count)
         {
             VertexCount = count;
-            _vb.SetData(GraphicsPriority.Apply, data, startIndex, count, IsDiscard, 0, Renderer.Frame.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
+            _vb.SetData(GraphicsPriority.Apply, data, startIndex, count, IsDiscard, 0);
         }
 
         protected override void OnApply(GraphicsQueue queue)

@@ -10,6 +10,8 @@ namespace Molten.Graphics.Vulkan
 
         public DeviceMemory Memory;
 
+        public MemoryPropertyFlags MemoryFlags;
+
         /// <summary>
         /// Allocates a resource handle for the specified type.
         /// </summary>

@@ -301,48 +301,52 @@ namespace Molten.Graphics.Vulkan
         /// <inheritdoc/>
         public override GraphicsBuffer CreateVertexBuffer<T>(GraphicsResourceFlags mode, uint numVertices, T[] initialData = null)
         {
-            uint stride = (uint)sizeof(T);
-            uint initialBytes = initialData != null ? (uint)initialData.Length * stride : 0;
+            BufferVK buffer = new BufferVK(this, GraphicsBufferType.Vertex, mode, BufferUsageFlags.VertexBufferBit, (uint)sizeof(T), numVertices);
 
-            fixed (T* ptrData = initialData)
-                return new BufferVK(this, GraphicsBufferType.Vertex, mode, BufferUsageFlags.VertexBufferBit, stride, numVertices, ptrData, initialBytes);
+            if (initialData != null)
+                buffer.SetData(GraphicsPriority.Apply, initialData, false);
+
+            return buffer;
         }
 
         /// <inheritdoc/>
         public override GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags mode, uint numIndices, ushort[] initialData = null)
         {
-            uint stride = sizeof(ushort);
-            uint initialBytes = initialData != null ? (uint)initialData.Length * stride : 0;
+            BufferVK buffer = new BufferVK(this, GraphicsBufferType.Index, mode, BufferUsageFlags.VertexBufferBit, sizeof(ushort), numIndices);
 
-            fixed (ushort* ptrData = initialData)
-                return new BufferVK(this, GraphicsBufferType.Index, mode, BufferUsageFlags.VertexBufferBit, stride, numIndices, ptrData, initialBytes);
+            if (initialData != null)
+                buffer.SetData(GraphicsPriority.Apply, initialData, false);
+
+            return buffer;
         }
 
         /// <inheritdoc/>
         public override GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags mode, uint numIndices, uint[] initialData = null)
         {
-            uint stride = sizeof(uint);
-            uint initialBytes = initialData != null ? (uint)initialData.Length * stride : 0;
+            BufferVK buffer = new BufferVK(this, GraphicsBufferType.Index, mode, BufferUsageFlags.IndexBufferBit, sizeof(uint), numIndices);
 
-            fixed(uint* ptrData = initialData)
-                return new BufferVK(this, GraphicsBufferType.Index, mode, BufferUsageFlags.IndexBufferBit, stride, numIndices, ptrData, initialBytes);
+            if (initialData != null)
+                buffer.SetData(GraphicsPriority.Apply, initialData, false);
+
+            return buffer;
         }
 
         /// <inheritdoc/>
         public override GraphicsBuffer CreateStructuredBuffer<T>(GraphicsResourceFlags flags, uint numElements, T[] initialData = null)
         {
-            uint stride = (uint)sizeof(T);
-            uint totalBytes = stride * numElements;
+            BufferVK buffer =  new BufferVK(this, GraphicsBufferType.Structured, flags, BufferUsageFlags.None, (uint)sizeof(T), numElements);
 
-            fixed(T* ptrData = initialData)
-                return new BufferVK(this, GraphicsBufferType.Structured, flags, BufferUsageFlags.None, stride, numElements, ptrData, totalBytes);
+            if(initialData != null)
+                buffer.SetData(GraphicsPriority.Apply, initialData, false);
+
+            return buffer;
         }
 
         /// <inheritdoc/>
         public override GraphicsBuffer CreateStagingBuffer(bool allowCpuRead, bool allowCpuWrite, uint byteCapacity)
         {
-            return new BufferVK(this, GraphicsBufferType.Staging, GraphicsResourceFlags.CpuRead | GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.GpuWrite,
-                BufferUsageFlags.None, 1, byteCapacity, null, 0);
+            GraphicsResourceFlags flags = GraphicsResourceFlags.CpuRead | GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.GpuWrite;
+            return new BufferVK(this, GraphicsBufferType.Staging, flags, BufferUsageFlags.None, 1, byteCapacity);
         }
 
         public override INativeSurface CreateControlSurface(string controlTitle, string controlName, uint mipCount = 1)

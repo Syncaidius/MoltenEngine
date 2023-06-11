@@ -18,6 +18,11 @@ namespace Molten.Graphics.Vulkan
         {
             _handle = ResourceHandleVK.AllocateNew<Image>();
             _view = EngineUtil.Alloc<ImageView>();
+
+            // In Vulkan, the CPU either has read AND write access, or none at all.
+            // If either of the CPU access flags were provided, we need to add both.
+            if(Flags.Has(GraphicsResourceFlags.CpuRead) || Flags.Has(GraphicsResourceFlags.CpuWrite))
+                Flags |= GraphicsResourceFlags.CpuRead | GraphicsResourceFlags.CpuWrite;
         }
 
         protected void CreateImage()
@@ -117,6 +122,7 @@ namespace Molten.Graphics.Vulkan
                 throw new GraphicsResourceException(this, "Failed to allocate memory for image resource");
 
             handle->Memory = _memory;
+            handle->MemoryFlags = memFlags;
             _viewDesc.Image = *img;
 
             r = device.VK.BindImageMemory(device, *(Image*)handle->Ptr, _memory.Handle, 0);
@@ -126,28 +132,6 @@ namespace Molten.Graphics.Vulkan
             r = device.VK.CreateImageView(device, _viewDesc, null, _view);
             if (!r.Check(device, () => "Failed to create image view"))
                 return;
-
-            // Can we write directly to image memory?
-            if (memFlags.Has(MemoryPropertyFlags.HostVisibleBit))
-            {
-                // TODO Add a vulkan-specific MapResource() method that maps the entire resource in 1 call.
-                //      We can then write each TextureSetTask to one stream via offsets.
-                for (uint a = 0; a < ArraySize; a++)
-                {
-                    for (uint m = 0; m < MipMapCount; m++)
-                    {
-                        if (!DequeueTaskIfType(out TextureSetTask task))
-                            throw new GraphicsResourceException(this, "Immutable texture SetData() was not called or did not provide enough data.");
-
-                        if (task.MipLevel != m || task.ArrayIndex != a)
-                            throw new GraphicsResourceException(this, "The provided immutable texture subresource data was not correctly ordered.");
-
-                        uint subIndex = (a * MipMapCount) + m;
-                        using (GraphicsStream stream = Device.Queue.MapResource(this, subIndex, 0, GraphicsMapType.Write))
-                            stream.WriteRange(task.Data, task.NumBytes);
-                    }
-                }
-            }
         }
 
         internal void Transition(GraphicsQueueVK cmd, ImageLayout oldLayout, ImageLayout newLayout)
