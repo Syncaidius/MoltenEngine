@@ -53,6 +53,7 @@ namespace Molten.Graphics
             {
                 FrameID = 0;
                 Fence = null;
+                BranchCount = 0;
 
                 // Free all command lists in the frame.
                 for (int i = 0; i < _branches.Length; i++)
@@ -125,13 +126,10 @@ namespace Molten.Graphics
                     uint bufferBytes = _maxStagingSize;
                     for (int i = 0; i < _frames.Length; i++)
                     {
-                        if (_frames[i] == null)
+                        _frames[i] = _frames[i] ?? new TrackedFrame()
                         {
-                            _frames[i] = new TrackedFrame()
-                            {
-                                StagingBuffer = Queue.Device.CreateStagingBuffer(true, true, bufferBytes),
-                            };
-                        }
+                            StagingBuffer = Queue.Device.CreateStagingBuffer(true, true, bufferBytes),
+                        };
                     }
                 }
             }
