@@ -131,7 +131,7 @@
         {
 #if DEBUG
             if (DrawInfo.Began)
-                throw new GraphicsCommandQueueException(this, $"{nameof(GraphicsCommandList)}: EndDraw() must be called before the next BeginDraw() call.");
+                throw new GraphicsCommandQueueException(this, $"{nameof(GraphicsCommandList)}: End() must be called before the next Begin() call.");
 #endif
 
             DrawInfo.Began = true; 
