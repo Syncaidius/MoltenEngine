@@ -12,12 +12,35 @@ namespace Molten.Graphics.Vulkan
         internal BufferVK(GraphicsDevice device,
             GraphicsBufferType type,
             GraphicsResourceFlags flags,
-            BufferUsageFlags usageFlags,
             uint stride,
             uint numElements) :
             base(device, stride, numElements, flags, type)
         {
             _handle = ResourceHandleVK.AllocateNew<Buffer>();
+
+            BufferUsageFlags usageFlags = BufferUsageFlags.None;
+
+            if (Flags.Has(GraphicsResourceFlags.None))
+                usageFlags |= BufferUsageFlags.TransferSrcBit;
+
+            if (Flags.Has(GraphicsResourceFlags.GpuWrite))
+                usageFlags |= BufferUsageFlags.TransferDstBit;
+
+            switch (type)
+            {
+                case GraphicsBufferType.Vertex:
+                    usageFlags |= BufferUsageFlags.VertexBufferBit;
+                    break;
+
+                case GraphicsBufferType.Index:
+                    usageFlags |= BufferUsageFlags.IndexBufferBit;
+                    break;
+
+                case GraphicsBufferType.Staging: // Staging buffers always require CPU write access.
+                    flags |= GraphicsResourceFlags.CpuWrite;
+                    break;
+            }
+
             InitializeBuffer(usageFlags);
         }
 
@@ -37,12 +60,6 @@ namespace Molten.Graphics.Vulkan
             {
                 memFlags |= MemoryPropertyFlags.DeviceLocalBit;
             }
-
-            if (Flags.Has(GraphicsResourceFlags.None))
-                usage |= BufferUsageFlags.TransferSrcBit;
-
-            if (Flags.Has(GraphicsResourceFlags.GpuWrite))
-                usage |= BufferUsageFlags.TransferDstBit;
 
             _desc.SType = StructureType.BufferCreateInfo;
             _desc.Usage = usage;

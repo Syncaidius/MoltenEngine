@@ -288,59 +288,22 @@ namespace Molten.Graphics.DX11
             return new ShaderSamplerDX11(this, ref parameters);
         }
 
-        public unsafe override GraphicsBuffer CreateVertexBuffer<T>(GraphicsResourceFlags flags, uint numVertices, T[] initialData = null)
+        protected override GraphicsBuffer CreateBuffer<T>(GraphicsBufferType type, GraphicsResourceFlags flags, GraphicsFormat format, uint numElements, T[] initialData)
         {
             uint stride = (uint)sizeof(T);
-            uint numBytes = numVertices * stride;
-            flags |= GraphicsResourceFlags.NoShaderAccess;
-            VertexFormat format = VertexFormatCache.Get<T>();
+            uint initialBytes = initialData != null ? (uint)initialData.Length * stride : 0;
 
-            fixed (T* ptr = initialData)
+            BufferDX11 buffer = null;
+            fixed(T* ptrData = initialData)
+                buffer = new BufferDX11(this, type, flags, format, stride, numElements, ptrData, initialBytes);
+
+            if(type == GraphicsBufferType.Vertex)
             {
-                BufferDX11 buffer = new BufferDX11(this, GraphicsBufferType.Vertex, flags, GraphicsFormat.Unknown, stride, numVertices, ptr, numBytes);
-                buffer.SetVertexFormat(format);
-                return buffer;
+                VertexFormat vf = VertexFormatCache.Get<T>();
+                buffer.SetVertexFormat(vf);
             }
-        }
 
-        public unsafe override GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, ushort[] initialData = null)
-        {
-            uint stride = sizeof(ushort);
-            uint numBytes = numIndices * stride;
-            flags = flags | GraphicsResourceFlags.NoShaderAccess;
-
-            fixed (ushort* ptr = initialData)
-                return new BufferDX11(this, GraphicsBufferType.Index, flags, GraphicsFormat.R16_UInt, stride, numIndices, ptr, numIndices);
-        }
-
-        public unsafe override GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, uint[] initialData = null)
-        {
-            uint stride = sizeof(uint);
-            uint numBytes = numIndices * stride;
-            flags |= GraphicsResourceFlags.NoShaderAccess;
-
-            fixed (uint* ptr = initialData)
-                return new BufferDX11(this, GraphicsBufferType.Index, flags, GraphicsFormat.R32_UInt, stride, numIndices, ptr, numIndices);
-        }
-
-        public unsafe override GraphicsBuffer CreateStructuredBuffer<T>(GraphicsResourceFlags flags, uint numElements, T[] initialData = null)
-        {
-            uint numBytes = numElements * sizeof(uint);
-            fixed (T* ptr = initialData)
-                return new BufferDX11(this, GraphicsBufferType.Structured, flags, GraphicsFormat.Unknown, (uint)sizeof(T), numElements, ptr, numBytes);
-        }
-
-        public override GraphicsBuffer CreateStagingBuffer(bool allowRead, bool allowWrite, uint byteCapacity)
-        {
-            GraphicsResourceFlags flags = GraphicsResourceFlags.None;
-            if (allowRead)
-                flags |= GraphicsResourceFlags.CpuRead;
-
-            if (allowWrite)
-                flags |= GraphicsResourceFlags.CpuWrite;
-
-            flags |= GraphicsResourceFlags.GpuWrite | GraphicsResourceFlags.NoShaderAccess;
-            return new BufferDX11(this, GraphicsBufferType.Staging, flags, GraphicsFormat.Unknown, 1, byteCapacity, null, 0);
+            return buffer;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

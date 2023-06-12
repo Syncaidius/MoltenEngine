@@ -48,27 +48,7 @@ namespace Molten.Graphics.DX12
             throw new NotImplementedException();
         }
 
-        public override GraphicsBuffer CreateVertexBuffer<T>(GraphicsResourceFlags flags, uint numVertices, T[] initialData = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, ushort[] initialData)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, uint[] initialData = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override GraphicsBuffer CreateStructuredBuffer<T>(GraphicsResourceFlags flags, uint numElements, T[] initialData = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override GraphicsBuffer CreateStagingBuffer(bool canRead, bool canWrite, uint byteCapacity)
+        protected override GraphicsBuffer CreateBuffer<T>(GraphicsBufferType type, GraphicsResourceFlags flags, GraphicsFormat format, uint numElements, T[] initialData)
         {
             throw new NotImplementedException();
         }

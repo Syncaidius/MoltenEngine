@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Molten.Collections;
 using Molten.IO;
@@ -171,14 +172,18 @@ namespace Molten.Graphics
 
         protected abstract HlslPass OnCreateShaderPass(HlslShader shader, string name);
 
-        public GraphicsBuffer CreateVertexBuffer<T>(T[] data, GraphicsResourceFlags flags = GraphicsResourceFlags.None)
+        public GraphicsBuffer CreateVertexBuffer<T>(GraphicsResourceFlags flags, uint vertexCapacity, T[] initialData = null)
             where T : unmanaged, IVertexType
         {
-            return CreateVertexBuffer(flags, (uint)data.Length, data);
-        }
+            flags |= GraphicsResourceFlags.NoShaderAccess;
+            GraphicsBuffer buffer = CreateBuffer(GraphicsBufferType.Vertex, flags, GraphicsFormat.Unknown, vertexCapacity, initialData);
 
-        public abstract GraphicsBuffer CreateVertexBuffer<T>(GraphicsResourceFlags flags, uint numVertices, T[] initialData = null)
-            where T : unmanaged, IVertexType;
+            // TODO: Standardize vertex format cache.
+            /*VertexFormat format = VertexFormatCache.Get<T>();
+            buffer.SetVertexFormat(format);*/
+
+            return buffer;
+        }
 
         public GraphicsBuffer CreateIndexBuffer(ushort[] data, GraphicsResourceFlags flags = GraphicsResourceFlags.None)
         {
@@ -190,9 +195,16 @@ namespace Molten.Graphics
             return CreateIndexBuffer(flags, (uint)data.Length, data);
         }
 
-        public abstract GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, ushort[] initialData);
+        public GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint indexCapacity, ushort[] initialData)
+        {
+            return CreateBuffer(GraphicsBufferType.Index, flags, GraphicsFormat.R16_UInt, indexCapacity, initialData);
+        }
 
-        public abstract GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint numIndices, uint[] initialData = null);
+        public GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint indexCapacity, uint[] initialData = null)
+        {
+            flags |= GraphicsResourceFlags.NoShaderAccess;
+            return CreateBuffer(GraphicsBufferType.Index, flags, GraphicsFormat.R32_UInt, indexCapacity, initialData);
+        }
 
         public GraphicsBuffer CreateStructuredBuffer<T>(T[] data, GraphicsResourceFlags flags = GraphicsResourceFlags.None)
             where T : unmanaged
@@ -200,10 +212,27 @@ namespace Molten.Graphics
             return CreateStructuredBuffer(flags, (uint)data.Length, data);
         }
 
-        public abstract GraphicsBuffer CreateStructuredBuffer<T>(GraphicsResourceFlags flags, uint numElements, T[] initialData = null)
-            where T : unmanaged;
+        public GraphicsBuffer CreateStructuredBuffer<T>(GraphicsResourceFlags flags, uint elementCapacity, T[] initialData = null)
+            where T : unmanaged
+        {
+            return CreateBuffer(GraphicsBufferType.Structured, flags, GraphicsFormat.Unknown, elementCapacity, initialData);
+        }
 
-        public abstract GraphicsBuffer CreateStagingBuffer(bool allowCpuRead, bool allowCpuWrite, uint byteCapacity);
+        public GraphicsBuffer CreateStagingBuffer(bool allowCpuRead, bool allowCpuWrite, uint byteCapacity)
+        {
+            GraphicsResourceFlags flags = GraphicsResourceFlags.GpuWrite | GraphicsResourceFlags.NoShaderAccess;
+
+            if (allowCpuRead)
+                flags |= GraphicsResourceFlags.CpuRead;
+
+            if (allowCpuWrite)
+                flags |= GraphicsResourceFlags.CpuWrite;
+
+            return CreateBuffer<byte>(GraphicsBufferType.Staging, flags, GraphicsFormat.Unknown, byteCapacity, null);
+        }
+
+        protected abstract GraphicsBuffer CreateBuffer<T>(GraphicsBufferType type, GraphicsResourceFlags flags, GraphicsFormat format, 
+            uint numElements, T[] initialData) where T : unmanaged;
 
         /// <summary>
         /// Loads an embedded shader from the target assembly. If an assembly is not provided, the current renderer's assembly is used instead.
