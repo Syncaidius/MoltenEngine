@@ -24,8 +24,8 @@ namespace Molten.Graphics.DX11
         ShaderCSStage _cs;
 
         D3DPrimitiveTopology _boundTopology;
-        VertexInputLayout _inputLayout;
-        List<VertexInputLayout> _cachedLayouts = new List<VertexInputLayout>();
+        VertexInputLayoutDX11 _inputLayout;
+        List<VertexInputLayoutDX11> _cachedLayouts = new List<VertexInputLayoutDX11>();
 
         GraphicsDepthWritePermission _boundDepthMode = GraphicsDepthWritePermission.Enabled;
 
@@ -585,17 +585,17 @@ namespace Molten.Graphics.DX11
 
         /// <summary>Retrieves or creates a usable input layout for the provided vertex buffers and sub-effect.</summary>
         /// <returns>An instance of InputLayout.</returns>
-        private VertexInputLayout GetInputLayout(HlslPass pass)
+        private VertexInputLayoutDX11 GetInputLayout(HlslPass pass)
         {
             // Retrieve layout list or create new one if needed.
-            foreach (VertexInputLayout l in _cachedLayouts)
+            foreach (VertexInputLayoutDX11 l in _cachedLayouts)
             {
                 if (l.IsMatch(Device.Log, State.VertexBuffers))
                     return l;
             }
 
             ShaderComposition vs = pass[ShaderType.Vertex];
-            VertexInputLayout input = new VertexInputLayout(DXDevice, State.VertexBuffers, (ID3D10Blob*)pass.InputByteCode, vs.InputLayout);
+            VertexInputLayoutDX11 input = new VertexInputLayoutDX11(DXDevice, State.VertexBuffers, (ID3D10Blob*)pass.InputByteCode, vs.InputLayout);
             _cachedLayouts.Add(input);
 
             return input;

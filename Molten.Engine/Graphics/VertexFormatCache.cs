@@ -6,9 +6,7 @@ using Molten.Comparers;
 namespace Molten.Graphics
 {
     /// <summary>An object type which stores objects against <see cref="Type"/> keys.</summary>
-    /// <typeparam name="IO">The <see cref="Type"/> of <see cref="ShaderIOLayout"/> to use when initializing new <see cref="VertexFormat"/> instances..</typeparam>
-    public class VertexFormatCache<IO> : EngineObject
-        where  IO : ShaderIOLayout
+    public class VertexFormatCache : EngineObject
     {
         public delegate ShaderIOLayout VertexFormatNewStructureCallback(uint elementCount);
 

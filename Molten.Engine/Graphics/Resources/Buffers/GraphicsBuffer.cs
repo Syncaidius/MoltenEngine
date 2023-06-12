@@ -146,6 +146,6 @@
         /// Gets the vertex format of the current <see cref="GraphicsBuffer"/>, if any.
         /// <para>This property is only set if the current <see cref="BufferType"/> is <see cref="GraphicsBufferType.Vertex"/>.</para>
         /// </summary>
-        public VertexFormat VertexFormat { get; protected set; }
+        public VertexFormat VertexFormat { get; internal set; }
     }
 }

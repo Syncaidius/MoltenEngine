@@ -4,12 +4,12 @@ using Silk.NET.Direct3D11;
 namespace Molten.Graphics.DX11
 {
     /// <summary>A helper class that safely wraps InputLayout.</summary>
-    internal unsafe class VertexInputLayout : GraphicsObject
+    internal unsafe class VertexInputLayoutDX11 : GraphicsObject
     {
         ID3D11InputLayout* _native;
         ulong[] _expectedFormatIDs;
 
-        internal VertexInputLayout(DeviceDX11 device,
+        internal VertexInputLayoutDX11(DeviceDX11 device,
             GraphicsStateValueGroup<GraphicsBuffer> vbSlots, 
             ID3D10Blob* vertexBytecode,
             ShaderIOLayout io) : 
@@ -55,7 +55,7 @@ namespace Molten.Graphics.DX11
             // Check if there are actually any elements. If not, use the default placeholder vertex type.
             if (elements.Count == 0)
             {
-                VertexFormat nullFormat = device.VertexFormatCache.Get<VertexWithID>();
+                VertexFormat nullFormat = device.VertexCache.Get<VertexWithID>();
                 elements.Add((nullFormat.Structure as ShaderIOLayoutDX11).VertexElements[0]);
                 IsNullBuffer = true;
             }
@@ -139,7 +139,7 @@ namespace Molten.Graphics.DX11
             SilkUtil.ReleasePtr(ref _native);
         }
 
-        public static implicit operator ID3D11InputLayout*(VertexInputLayout resource)
+        public static implicit operator ID3D11InputLayout*(VertexInputLayoutDX11 resource)
         {
             return resource.NativePtr;
         }
@@ -151,7 +151,7 @@ namespace Molten.Graphics.DX11
         public bool IsInstanced { get; }
 
         /// <summary>
-        /// Gets whether the current <see cref="VertexInputLayout"/> can represent a null vertex buffer. e.g. Contains SV_VertexID as the only vertex element.
+        /// Gets whether the current <see cref="VertexInputLayoutDX11"/> can represent a null vertex buffer. e.g. Contains SV_VertexID as the only vertex element.
         /// </summary>
         public bool IsNullBuffer { get; }
 

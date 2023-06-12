@@ -1,6 +1,4 @@
-﻿using System;
-using System.Reflection;
-using System.Runtime.CompilerServices;
+﻿using System.Reflection;
 using Molten.Collections;
 using Molten.IO;
 
@@ -177,10 +175,7 @@ namespace Molten.Graphics
         {
             flags |= GraphicsResourceFlags.NoShaderAccess;
             GraphicsBuffer buffer = CreateBuffer(GraphicsBufferType.Vertex, flags, GraphicsFormat.Unknown, vertexCapacity, initialData);
-
-            // TODO: Standardize vertex format cache.
-            /*VertexFormat format = VertexFormatCache.Get<T>();
-            buffer.SetVertexFormat(format);*/
+            buffer.VertexFormat = VertexCache.Get<T>();
 
             return buffer;
         }
@@ -333,5 +328,10 @@ namespace Molten.Graphics
         /// Gets the capabilities of the current <see cref="GraphicsDevice"/>.
         /// </summary>
         public GraphicsCapabilities Capabilities { get; protected set; }
+
+        /// <summary>
+        /// Gets the vertex format cache which stores <see cref="VertexFormat"/> instances to help avoid the need to generate multiple instances of the same formats.
+        /// </summary>
+        public VertexFormatCache VertexCache { get; protected init; }
     }
 }

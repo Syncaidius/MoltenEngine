@@ -31,7 +31,7 @@ namespace Molten.Graphics.DX11
             _displayManager = manager;
             _cmdDeferred = new List<GraphicsQueueDX11>();
 
-            VertexFormatCache = new VertexFormatCache<ShaderIOLayoutDX11>(
+            VertexCache = new VertexFormatCache(
                 (elementCount) => new ShaderIOLayoutDX11(elementCount),
                 (att, structure, index, byteOffset) =>
                 {
@@ -155,7 +155,7 @@ namespace Molten.Graphics.DX11
             _queue.Dispose();
 
             // TODO dispose of all bound IGraphicsResource
-            VertexFormatCache.Dispose();
+            VertexCache.Dispose();
 
             if (_debug != null)
             {
@@ -295,15 +295,7 @@ namespace Molten.Graphics.DX11
 
             BufferDX11 buffer = null;
             fixed(T* ptrData = initialData)
-                buffer = new BufferDX11(this, type, flags, format, stride, numElements, ptrData, initialBytes);
-
-            if(type == GraphicsBufferType.Vertex)
-            {
-                VertexFormat vf = VertexFormatCache.Get<T>();
-                buffer.SetVertexFormat(vf);
-            }
-
-            return buffer;
+                return new BufferDX11(this, type, flags, format, stride, numElements, ptrData, initialBytes);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -329,7 +321,6 @@ namespace Molten.Graphics.DX11
         /// </summary>
         protected ref ID3D11Device5* PtrRef => ref _native;
 
-        internal VertexFormatCache<ShaderIOLayoutDX11> VertexFormatCache { get; }
 
         /// <inheritdoc/>
         public override GraphicsQueueDX11 Queue => _queue;

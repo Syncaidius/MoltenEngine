@@ -41,11 +41,6 @@ namespace Molten.Graphics.DX11
             device.ProcessDebugLayerMessages();
         }
 
-        internal void SetVertexFormat(VertexFormat format)
-        {
-            VertexFormat = format;
-        }
-
         /// <summary>
         /// Initializes the current instance of <see cref="BufferDX11"/>.
         /// </summary>
