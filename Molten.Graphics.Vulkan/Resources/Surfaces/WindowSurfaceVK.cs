@@ -281,6 +281,8 @@ namespace Molten.Graphics.Vulkan
             if (!_frameFence.Wait())
                 return;
 
+            _frameFence.Reset();
+
             ResourceHandleVK* rHandle = (ResourceHandleVK*)Handle;
             rHandle->SetValue(_backBuffer[imageIndex].Image);
 

@@ -191,6 +191,9 @@ namespace Molten.Graphics.Vulkan
 
                 case ImageLayout.ColorAttachmentOptimal:
                     return (AccessFlags.ColorAttachmentReadBit, PipelineStageFlags.FragmentShaderBit);
+
+                case ImageLayout.DepthAttachmentOptimal:
+                    return (AccessFlags.DepthStencilAttachmentReadBit, PipelineStageFlags.FragmentShaderBit);
             }
         }
 
