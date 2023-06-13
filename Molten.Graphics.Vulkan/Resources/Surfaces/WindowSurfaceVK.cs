@@ -42,8 +42,8 @@ namespace Molten.Graphics.Vulkan
 
         internal unsafe WindowSurfaceVK(DeviceVK device, string title, TextureDimensions dimensions,
             GraphicsResourceFlags flags = GraphicsResourceFlags.None,
-            GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm_SRgb,
-            PresentModeKHR presentMode = PresentModeKHR.FifoKhr,
+            GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm,
+            PresentModeKHR presentMode = PresentModeKHR.ImmediateKhr,
             string name = null) : 
             base(device, dimensions, AntiAliasLevel.None, MSAAQuality.Default, format, flags, false, name)
         {
@@ -201,7 +201,7 @@ namespace Molten.Graphics.Vulkan
                     // If the format already matches, we'll only accept an updated one if it also has our preferred colorspace.
                     if (bestFormat.Format != sf.Format)
                         bestFormat = sf;
-                    else if (bestFormat.ColorSpace != preferredColorSpace)
+                    else if (sf.ColorSpace == preferredColorSpace)
                         bestFormat = sf;
                 }
             }
