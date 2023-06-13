@@ -16,6 +16,7 @@ namespace Molten.Graphics
         public event TextureHandler OnResize;
 
         TextureDimensions _dimensions;
+        GraphicsFormat _format;
 
         protected GraphicsTexture(GraphicsDevice device, GraphicsTextureType type, TextureDimensions dimensions, AntiAliasLevel aaLevel, 
             MSAAQuality sampleQuality, GraphicsFormat format, GraphicsResourceFlags flags, bool allowMipMapGen, string name) 
@@ -34,12 +35,6 @@ namespace Molten.Graphics
             MultiSampleLevel = aaLevel > AntiAliasLevel.Invalid ? aaLevel : AntiAliasLevel.None;
             SampleQuality = msaaSupport != MSAASupport.NotSupported ? sampleQuality : MSAAQuality.Default;
             ResourceFormat = format;
-            IsBlockCompressed = BCHelper.GetBlockCompressed(format);
-
-            if (IsBlockCompressed)
-                SizeInBytes = BCHelper.GetBCSize(format, Width, Height, MipMapCount) * ArraySize;
-            else
-                SizeInBytes = (ResourceFormat.BytesPerPixel() * (Width * Height)) * ArraySize;
         }
 
         protected virtual void ValidateDimensions(ref TextureDimensions dimensions) { }
@@ -379,7 +374,7 @@ namespace Molten.Graphics
         /// </summary>
         public TextureDimensions Dimensions => _dimensions;
 
-        public override uint SizeInBytes { get; }
+        public override uint SizeInBytes { get; protected set; }
 
         /// <summary>
         /// Gets the number of samples used when sampling the texture. Anything greater than 1 is considered as multi-sampled. 
@@ -396,7 +391,23 @@ namespace Molten.Graphics
         public bool IsMipMapGenAllowed { get; }
 
         /// <inheritdoc/>
-        public override GraphicsFormat ResourceFormat { get; protected set; }
+        public override GraphicsFormat ResourceFormat
+        {
+            get => _format;
+            protected set
+            {
+                if(_format != value)
+                {
+                    _format = value;
+                    IsBlockCompressed = BCHelper.GetBlockCompressed(_format);
+
+                    if (IsBlockCompressed)
+                        SizeInBytes = BCHelper.GetBCSize(_format, Width, Height, MipMapCount) * ArraySize;
+                    else
+                        SizeInBytes = (ResourceFormat.BytesPerPixel() * (Width * Height)) * ArraySize;
+                }
+            }
+        }
 
         public GraphicsTextureType TextureType { get; }
     }

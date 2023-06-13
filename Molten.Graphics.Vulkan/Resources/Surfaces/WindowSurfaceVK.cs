@@ -14,12 +14,6 @@ namespace Molten.Graphics.Vulkan
             internal Image Image;
 
             internal ImageView View;
-
-            internal BackBuffer(Image texture, ImageView view)
-            {
-                Image = texture;
-                View = view;
-            }
         }
 
         public event WindowSurfaceHandler OnHandleChanged;
@@ -40,7 +34,7 @@ namespace Molten.Graphics.Vulkan
         string _title;
         uint _curChainSize;
 
-        ColorSpaceKHR _colorSpace = ColorSpaceKHR.SpaceSrgbNonlinearKhr;
+        SurfaceFormatKHR _surfaceFormat;
 
         KhrSwapchain _extSwapChain;
         KhrSurface _extSurface;
@@ -48,8 +42,8 @@ namespace Molten.Graphics.Vulkan
 
         internal unsafe WindowSurfaceVK(DeviceVK device, string title, TextureDimensions dimensions,
             GraphicsResourceFlags flags = GraphicsResourceFlags.None,
-            GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm,
-            PresentModeKHR presentMode = PresentModeKHR.MailboxKhr,
+            GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm_SRgb,
+            PresentModeKHR presentMode = PresentModeKHR.FifoKhr,
             string name = null) : 
             base(device, dimensions, AntiAliasLevel.None, MSAAQuality.Default, format, flags, false, name)
         {
@@ -80,13 +74,11 @@ namespace Molten.Graphics.Vulkan
             if (r != Result.Success)
                 return;
 
-            if (!IsFormatSupported(_extSurface, ResourceFormat, _colorSpace))
-            {
-                renderer.Log.Error($"Surface format '{ResourceFormat}' with a '{_colorSpace}' color-space is not supported");
-                return;
-            }
-
+            _surfaceFormat = GetPreferredFormat(_extSurface, ResourceFormat, ColorSpaceKHR.SpaceSrgbNonlinearKhr);
             _presentQueue = renderer.NativeDevice.FindPresentQueue(this);
+            imgInfo.Format = _surfaceFormat.Format;
+            ResourceFormat = imgInfo.Format.FromApi();
+
             if (_presentQueue == null)
             {
                 renderer.Log.Error($"No command queue found to present window surface");
@@ -100,17 +92,17 @@ namespace Molten.Graphics.Vulkan
             if (!r.Check(renderer, () => "Failed to create swapchain"))
                 return;
 
-            Image[] images = renderer.Enumerate<Image>((count, items) =>
+            Image[] scImages = renderer.Enumerate<Image>((count, items) =>
             {
                 return _extSwapChain.GetSwapchainImages(device, _swapChain, count, items);
             }, "Swapchain image");
 
-            _backBuffer = new BackBuffer[images.Length];
+            _backBuffer = new BackBuffer[scImages.Length];
 
-            for (int i = 0; i < images.Length; i++)
+            for (int i = 0; i < scImages.Length; i++)
             {
-                _backBuffer[i].Image = images[i];
-                viewInfo.Image = images[i];
+                _backBuffer[i].Image = scImages[i];
+                viewInfo.Image = scImages[i];
                 r = renderer.VK.CreateImageView(device, viewInfo, null, out _backBuffer[i].View);
                 if (!r.Check(device, () => $"Failed to create image view for back-buffer image {i}"))
                     break;
@@ -163,10 +155,10 @@ namespace Molten.Graphics.Vulkan
                 SType = StructureType.SwapchainCreateInfoKhr,
                 Surface = Native,
                 MinImageCount = _curChainSize,
-                ImageFormat = ResourceFormat.ToApi(),
-                ImageColorSpace = _colorSpace,
+                ImageFormat = _surfaceFormat.Format,
+                ImageColorSpace = _surfaceFormat.ColorSpace,
                 ImageExtent = new Extent2D(Width, Height),
-                ImageArrayLayers = 1,
+                ImageArrayLayers = ArraySize,
                 ImageUsage = ImageUsageFlags.ColorAttachmentBit,
             };
 
@@ -188,23 +180,33 @@ namespace Molten.Graphics.Vulkan
             return _extSwapChain.CreateSwapchain(device, &createInfo, null, out _swapChain);
         }
 
-        private bool IsFormatSupported(KhrSurface extSurface, GraphicsFormat format, ColorSpaceKHR colorSpace)
+        private SurfaceFormatKHR GetPreferredFormat(KhrSurface extSurface, GraphicsFormat preferredFormat, ColorSpaceKHR preferredColorSpace)
         {
             DeviceVK device = Device as DeviceVK;
+            Format pFormat = preferredFormat.ToApi();
+
+            // Retrieve list of all formats supported by the current DeviceVK.
             SurfaceFormatKHR[] supportedFormats = (Device.Renderer as RendererVK).Enumerate<SurfaceFormatKHR>((count, items) =>
             {
                 return extSurface.GetPhysicalDeviceSurfaceFormats(device, Native, count, items);
             }, "surface format");
 
-            Format vkFormat = format.ToApi();
 
-            for(int i = 0; i < supportedFormats.Length; i++)
+            SurfaceFormatKHR bestFormat = supportedFormats[0];
+            foreach (SurfaceFormatKHR sf in supportedFormats)
             {
-                if (supportedFormats[i].Format == vkFormat && supportedFormats[i].ColorSpace == colorSpace)
-                    return true;
+                if (pFormat == sf.Format)
+                {
+                    // Take the first format that matches our preferred one.
+                    // If the format already matches, we'll only accept an updated one if it also has our preferred colorspace.
+                    if (bestFormat.Format != sf.Format)
+                        bestFormat = sf;
+                    else if (bestFormat.ColorSpace != preferredColorSpace)
+                        bestFormat = sf;
+                }
             }
 
-            return false;
+            return bestFormat;
         }
 
         private PresentModeKHR ValidatePresentMode(KhrSurface extSurface, PresentModeKHR requested)
@@ -407,6 +409,7 @@ namespace Molten.Graphics.Vulkan
                     (Device.Renderer as RendererVK).GLFW.SetWindowTitle(_window, _title);
             }
         }
+
         public bool IsVisible { get; set; }
 
         internal SurfaceKHR Native { get; private set; }

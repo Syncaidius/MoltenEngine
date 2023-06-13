@@ -138,7 +138,7 @@ namespace Molten.Graphics
         /// <summary>
         /// The total size of the resource, in bytes.
         /// </summary>
-        public abstract uint SizeInBytes { get; }
+        public abstract uint SizeInBytes { get; protected set; }
 
         /// <summary>
         /// Gets the resource flags that provided given when the current <see cref="GraphicsResource"/> was created.

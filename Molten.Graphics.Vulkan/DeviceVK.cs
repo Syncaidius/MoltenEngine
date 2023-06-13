@@ -26,7 +26,6 @@ namespace Molten.Graphics.Vulkan
         MemoryManagerVK _memory;
         Device* _native;
 
-
         Stack<FenceVK> _freeFences;
         List<FenceVK> _fences;
 

@@ -135,7 +135,7 @@
         /// <summary>
         /// Gets the total size of the buffer, in bytes.
         /// </summary>
-        public override uint SizeInBytes { get; }
+        public override uint SizeInBytes { get; protected set; }
 
         /// <summary>
         /// Gets the type of the current <see cref="GraphicsBuffer"/>.

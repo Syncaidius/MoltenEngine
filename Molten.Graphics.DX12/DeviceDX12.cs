@@ -8,7 +8,6 @@ namespace Molten.Graphics.DX12
     internal unsafe class DeviceDX12 : DeviceDXGI
     {
         ID3D12Device10* _native;
-        IDXGIAdapter4* _adapter;
         DeviceBuilderDX12 _builder;
         GraphicsQueueDX12 _cmdDirect;
 
