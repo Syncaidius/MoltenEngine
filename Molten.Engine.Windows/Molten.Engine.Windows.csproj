@@ -37,7 +37,7 @@
 
   <ItemGroup>
     <PackageReference Include="Silk.NET.XInput" Version="2.17.1" />
-    <PackageReference Include="System.Management" Version="7.0.1" />
+    <PackageReference Include="System.Management" Version="7.0.2" />
   </ItemGroup>
 
   <ItemGroup>
