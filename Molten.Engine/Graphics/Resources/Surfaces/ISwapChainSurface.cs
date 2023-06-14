@@ -3,11 +3,6 @@
     public interface ISwapChainSurface : IRenderSurface2D
     {
         /// <summary>
-        /// Called when the <see cref="ISwapChainSurface"/> is ready to be presented.
-        /// </summary>
-        void Present();
-
-        /// <summary>
         /// Dispatches a callback to be invoked next time the <see cref="ISwapChainSurface"/> is presented on its parent render thread.
         /// </summary>
         /// <param name="callback"></param>

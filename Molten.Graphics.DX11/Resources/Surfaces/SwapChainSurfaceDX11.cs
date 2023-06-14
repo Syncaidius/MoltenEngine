@@ -86,7 +86,7 @@ namespace Molten.Graphics.DX11
             _vsync = newValue ? 1U : 0;
         }
 
-        public void Present()
+        internal void Present()
         {
             OnApply(Device.Queue);
 

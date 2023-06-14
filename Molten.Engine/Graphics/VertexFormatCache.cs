@@ -111,6 +111,9 @@ namespace Molten.Graphics
                 eCount += fieldElements[ec] != null ? 1U : 0;
 
             ShaderIOLayout structure = _newCallback(eCount);
+            if (structure == null)
+                throw new Exception("The current VertexFormatCache callback returned a null ShaderIOLayout.");
+
             uint sizeOf = 0;
             eCount = 0;
 

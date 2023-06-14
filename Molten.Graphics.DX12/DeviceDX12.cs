@@ -1,4 +1,5 @@
-﻿using Molten.Graphics.Dxgi;
+﻿using Molten.Collections;
+using Molten.Graphics.Dxgi;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
 using Silk.NET.DXGI;
@@ -35,6 +36,11 @@ namespace Molten.Graphics.DX12
         {
             _cmdDirect.Dispose();
             base.OnDispose();
+        }
+
+        protected override void OnPresent(ThreadedList<ISwapChainSurface> surfaces)
+        {
+            throw new NotImplementedException();
         }
 
         protected override ShaderSampler OnCreateSampler(ref ShaderSamplerParameters parameters)

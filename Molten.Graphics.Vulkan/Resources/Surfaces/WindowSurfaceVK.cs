@@ -1,4 +1,5 @@
 ﻿using Silk.NET.Core.Native;
+using Silk.NET.Direct3D.Compilers;
 using Silk.NET.GLFW;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
@@ -38,7 +39,6 @@ namespace Molten.Graphics.Vulkan
 
         KhrSwapchain _extSwapChain;
         KhrSurface _extSurface;
-        FenceVK _frameFence;
 
         internal unsafe WindowSurfaceVK(DeviceVK device, string title, TextureDimensions dimensions,
             GraphicsResourceFlags flags = GraphicsResourceFlags.None,
@@ -49,7 +49,7 @@ namespace Molten.Graphics.Vulkan
         {
             _title = title;
             _mode = presentMode;
-            _frameFence = device.GetFence();
+            FrameFence = device.GetFence();
         }
 
         protected override unsafe void OnCreateImage(DeviceVK device, ResourceHandleVK* handle, ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo)
@@ -112,13 +112,13 @@ namespace Molten.Graphics.Vulkan
         private Result CreateSurface(DeviceVK device, RendererVK renderer, int width, int height)
         {
             // Dispose of old surface
-            if (Native.Handle != 0)
+            if (SurfaceHandle.Handle != 0)
             {
                 renderer.GLFW.DestroyWindow(_window);
-                _extSurface.DestroySurface(*renderer.Instance, Native, null);
+                _extSurface.DestroySurface(*renderer.Instance, SurfaceHandle, null);
 
                 _window = null;
-                Native = new SurfaceKHR();
+                SurfaceHandle = new SurfaceKHR();
             }
 
             renderer.GLFW.WindowHint(WindowHintClientApi.ClientApi, ClientApi.NoApi);
@@ -138,10 +138,10 @@ namespace Molten.Graphics.Vulkan
             if (!r.Check(renderer))
                 return r;
 
-            Native = new SurfaceKHR(surfaceHandle.Handle);
+            SurfaceHandle = new SurfaceKHR(surfaceHandle.Handle);
 
             // Retrieve/update surface capabilities
-            r = _extSurface.GetPhysicalDeviceSurfaceCapabilities(device.Adapter, Native, out _cap);
+            r = _extSurface.GetPhysicalDeviceSurfaceCapabilities(device.Adapter, SurfaceHandle, out _cap);
             r.Check(renderer);
 
             return r;
@@ -153,7 +153,7 @@ namespace Molten.Graphics.Vulkan
             SwapchainCreateInfoKHR createInfo = new SwapchainCreateInfoKHR()
             {
                 SType = StructureType.SwapchainCreateInfoKhr,
-                Surface = Native,
+                Surface = SurfaceHandle,
                 MinImageCount = _curChainSize,
                 ImageFormat = _surfaceFormat.Format,
                 ImageColorSpace = _surfaceFormat.ColorSpace,
@@ -188,7 +188,7 @@ namespace Molten.Graphics.Vulkan
             // Retrieve list of all formats supported by the current DeviceVK.
             SurfaceFormatKHR[] supportedFormats = (Device.Renderer as RendererVK).Enumerate<SurfaceFormatKHR>((count, items) =>
             {
-                return extSurface.GetPhysicalDeviceSurfaceFormats(device, Native, count, items);
+                return extSurface.GetPhysicalDeviceSurfaceFormats(device, SurfaceHandle, count, items);
             }, "surface format");
 
 
@@ -214,7 +214,7 @@ namespace Molten.Graphics.Vulkan
             DeviceVK device = Device as DeviceVK;
             PresentModeKHR[] supportedModes = (Device.Renderer as RendererVK).Enumerate<PresentModeKHR>((count, items) =>
             {
-                return extSurface.GetPhysicalDeviceSurfacePresentModes(device.Adapter, Native, count, items);
+                return extSurface.GetPhysicalDeviceSurfacePresentModes(device.Adapter, SurfaceHandle, count, items);
             }, "present mode");
 
             for (int i = 0; i < supportedModes.Length; i++)
@@ -243,7 +243,8 @@ namespace Molten.Graphics.Vulkan
         protected override void OnGraphicsRelease()
         {
             DeviceVK device = Device as DeviceVK;
-            device.FreeFence(_frameFence);
+            device.FreeFence(FrameFence);
+            FrameFence = null;
 
             if (_swapChain.Handle != 0)
             {
@@ -256,7 +257,7 @@ namespace Molten.Graphics.Vulkan
             }
 
             KhrSurface extSurface = (Device.Renderer as RendererVK).GetInstanceExtension<KhrSurface>();
-            extSurface?.DestroySurface(*(Device.Renderer as RendererVK).Instance, Native, null);
+            extSurface?.DestroySurface(*(Device.Renderer as RendererVK).Instance, SurfaceHandle, null);
 
             if (_window != null)
                 (Device.Renderer as RendererVK).GLFW.DestroyWindow(_window);
@@ -264,63 +265,14 @@ namespace Molten.Graphics.Vulkan
             base.OnGraphicsRelease();
         }
 
-        public void Present()
+        internal void Prepare(GraphicsQueueVK queue, uint imageIndex)
         {
-            OnApply(Device.Queue);
-
-            if (_swapChain.Handle == 0)
-                return;
-
-            DeviceVK device = Device as DeviceVK;
-
-            uint imageIndex = 0;
-            Result r = _extSwapChain.AcquireNextImage(device, _swapChain, ulong.MaxValue, new Semaphore(), _frameFence, &imageIndex);
-            if (!r.Check(device, () => "Failed to acquire next swapchain image"))
-                return;
-
-            if (!_frameFence.Wait())
-                return;
-
-            _frameFence.Reset();
+            OnApply(queue);
 
             ResourceHandleVK* rHandle = (ResourceHandleVK*)Handle;
             rHandle->SetValue(_backBuffer[imageIndex].Image);
 
-            int swapChainCount = 1; // TODO expand once we support multiple swapchains. May need moving to DeviceVK/GraphicsDevice.
-            SwapchainKHR* swapChains = stackalloc SwapchainKHR[] { _swapChain };
-            uint* scIndices = stackalloc uint[] { imageIndex }; // Back-buffer index for each presented swap-chain.
-            Result* pResults = stackalloc Result[swapChainCount];
-
-            // Get the last semaphore of each command list branch in the current frame.
-            // These semaphores will be waited on before presenting the swap-chain.
-            uint semaphoreCount = Device.Renderer.Frame.BranchCount;
-            Semaphore* semaphores = stackalloc Semaphore[(int)semaphoreCount];
-            for (uint i = 0; i < semaphoreCount; i++)
-            {
-                CommandListVK vkCmd = Device.Renderer.Frame[i] as CommandListVK;
-                semaphores[i] = vkCmd.Semaphore.Ptr;
-            }
-
-            PresentInfoKHR presentInfoKHR = new PresentInfoKHR()
-            {
-                SType = StructureType.PresentInfoKhr,
-                WaitSemaphoreCount = semaphoreCount,
-                PWaitSemaphores = semaphores,
-                SwapchainCount = (uint)swapChainCount,
-                PSwapchains = swapChains,
-                PImageIndices = scIndices,
-                PResults = pResults,
-            };
-
-            Transition(device.Queue, ImageLayout.Undefined, ImageLayout.PresentSrcKhr);
-
-            Queue cmdQueue = device.Queue.Native;
-            r = _extSwapChain.QueuePresent(cmdQueue, &presentInfoKHR);
-            if (!r.Check(device, () => $"Failed to present {swapChainCount} swapchains."))
-            {
-                for (int i = 0; i < swapChainCount; i++)
-                    pResults[i].Check(device, () => $"\tSwapchain {i} failed to present.");
-            }
+            Transition(queue, ImageLayout.Undefined, ImageLayout.PresentSrcKhr);
         }
 
         public void Dispatch(Action callback)
@@ -414,7 +366,11 @@ namespace Molten.Graphics.Vulkan
 
         public bool IsVisible { get; set; }
 
-        internal SurfaceKHR Native { get; private set; }
+        internal SurfaceKHR SurfaceHandle { get; private set; }
+
+        internal SwapchainKHR SwapchainHandle => _swapChain;
+            
+        internal FenceVK FrameFence { get; private set; }
 
         public bool IsEnabled { get; set; }
     }

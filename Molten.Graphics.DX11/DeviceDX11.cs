@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
+using Molten.Collections;
 using Molten.Graphics.Dxgi;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
@@ -166,6 +167,15 @@ namespace Molten.Graphics.DX11
             }
 
             base.OnDispose();
+        }
+
+        protected override void OnPresent(ThreadedList<ISwapChainSurface> surfaces)
+        {
+            surfaces.For(0, (index, surface) =>
+            {
+                if (surface.IsEnabled)
+                    (surface as SwapChainSurfaceDX11).Present();
+            });
         }
 
         public override IDepthStencilSurface CreateDepthSurface(uint width, uint height, 

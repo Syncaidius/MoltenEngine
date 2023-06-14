@@ -25,6 +25,34 @@ namespace Molten.Graphics.Vulkan
             _native = f;
         }
 
+        internal unsafe static Result WaitAll(DeviceVK device, Fence* fences, int count, ulong nsTimeout)
+        {
+            return device.VK.WaitForFences(device, (uint)count, fences, true, nsTimeout);
+        }
+
+        internal unsafe static Result WaitAll(DeviceVK device, ulong nsTimeout, params FenceVK[] fences)
+        {
+            Fence* pFences = stackalloc Fence[fences.Length];
+            for (int i = 0; i < fences.Length; i++)
+                pFences[i] = fences[i];
+
+            return device.VK.WaitForFences(device, (uint)fences.Length, pFences, true, nsTimeout);
+        }
+
+        internal unsafe static Result ResetAll(DeviceVK device, Fence* fences, int count)
+        {
+            return device.VK.ResetFences(device, (uint)count, fences);
+        }
+
+        internal unsafe static Result ResetAll(DeviceVK device, params FenceVK[] fences)
+        {
+            Fence* pFences = stackalloc Fence[fences.Length];
+            for (int i = 0; i < fences.Length; i++)
+                pFences[i] = fences[i];
+
+            return device.VK.ResetFences(device, (uint)fences.Length, pFences);
+        }
+
         internal unsafe bool CheckStatus()
         {
             // See: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetFenceStatus.html

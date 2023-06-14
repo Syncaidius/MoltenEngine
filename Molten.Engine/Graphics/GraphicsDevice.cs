@@ -148,12 +148,10 @@ namespace Molten.Graphics
 
         internal void Present()
         {
-            _outputSurfaces.For(0, (index, surface) =>
-            {
-                if(surface.IsEnabled)
-                    surface.Present();
-            });
+            OnPresent(_outputSurfaces);
         }
+
+        protected abstract void OnPresent(ThreadedList<ISwapChainSurface> surfaces);
 
         /// <summary>
         /// Requests a new <see cref="ShaderSampler"/> from the current <see cref="GraphicsDevice"/>, with the implementation's default sampler settings.
@@ -346,6 +344,6 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the vertex format cache which stores <see cref="VertexFormat"/> instances to help avoid the need to generate multiple instances of the same formats.
         /// </summary>
-        public VertexFormatCache VertexCache { get; protected init; }
+        public VertexFormatCache VertexCache { get; protected set; }
     }
 }
