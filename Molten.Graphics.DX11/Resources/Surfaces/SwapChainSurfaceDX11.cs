@@ -129,6 +129,7 @@ namespace Molten.Graphics.DX11
 
         protected abstract bool OnPresent();
 
+        /// <inheritdoc/>
         public bool IsEnabled { get; set; }
     }
 }

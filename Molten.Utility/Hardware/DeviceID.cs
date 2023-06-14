@@ -1,10 +1,11 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Serialization;
 using Silk.NET.Core.Native;
 
 namespace Molten
 {
     [Serializable]
-    public struct DeviceID
+    public struct DeviceID : IEquatable<DeviceID>
     {
         [DataMember]
         public ulong ID;
@@ -17,6 +18,19 @@ namespace Molten
         public override string ToString()
         {
             return ID.ToString();
+        }
+
+        public override bool Equals([NotNullWhen(true)] object obj)
+        {
+            if(obj is DeviceID id)
+                return ID == id.ID;
+
+            return false;
+        }
+
+        public bool Equals(DeviceID other)
+        {
+            return ID == other.ID;
         }
 
         public static bool operator ==(DeviceID left, DeviceID right)

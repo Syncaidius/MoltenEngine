@@ -18,7 +18,6 @@ namespace Molten.Graphics.Vulkan
         InstanceLoaderVK _instanceLoader;
         Instance* _instance;
         DebugUtilsMessengerEXT* _debugMessengerHandle;
-        List<DeviceVK> _devices;
         SpirvCompiler _shaderCompiler;
 
         public RendererVK()
@@ -27,8 +26,6 @@ namespace Molten.Graphics.Vulkan
             GLFW = Glfw.GetApi();
             GLFW.Init();
             ApiVersion = new VersionVK(0, 1, 1, 0);
-
-            _devices = new List<DeviceVK>();
             _instanceLoader = new InstanceLoaderVK(this);
             _displayManager = new DisplayManagerVK(this);
         }
@@ -80,16 +77,31 @@ namespace Molten.Graphics.Vulkan
             return _displayManager;
         }
 
-        protected override GraphicsDevice OnInitializeDevice(GraphicsSettings settings, GraphicsManager manager)
+        protected override List<GraphicsDevice> OnInitializeDevices(GraphicsSettings settings, GraphicsManager manager)
         {
-            NativeDevice = _displayManager.SelectedDevice as DeviceVK;
+            List<GraphicsDevice> result = new List<GraphicsDevice>();
+            NativeDevice = _displayManager.PrimaryDevice as DeviceVK;
             NativeDevice.Initialize(CommandSetCapabilityFlags.Graphics);
             NativeDevice.AddExtension<KhrSwapchain>();
 
-            if (NativeDevice.Initialize())
-                _devices.Add(NativeDevice);
+            if (NativeDevice.Build())
+                result.Add(NativeDevice);
 
-            return NativeDevice;
+            // Initialize all secondary devices.
+            foreach(GraphicsDevice device in _displayManager.Devices)
+            {
+                if (device == NativeDevice)
+                    continue;
+
+                DeviceVK vkDevice = device as DeviceVK;
+                vkDevice.Initialize(CommandSetCapabilityFlags.Graphics);
+                vkDevice.AddExtension<KhrSwapchain>();
+
+                if (vkDevice.Build())
+                    result.Add(vkDevice);
+            }
+
+            return result;
         }
 
         protected override void OnInitializeRenderer(EngineSettings settings)
@@ -181,11 +193,6 @@ namespace Molten.Graphics.Vulkan
         protected override void OnDisposeBeforeRender()
         {
             _shaderCompiler.Dispose();
-
-            foreach (DeviceVK device in _devices)
-                device.Dispose();
-            _devices.Clear();
-
             _displayManager.Dispose();
             _instanceLoader.Dispose();
 
@@ -215,13 +222,6 @@ namespace Molten.Graphics.Vulkan
         /// Gets the underlying <see cref="Silk.NET.Vulkan.Instance"/>.
         /// </summary>
         internal Instance* Instance => _instance;
-
-        /// <summary>
-        /// Gets a <see cref="DeviceVK"/> by it's index. The primary <see cref="NativeDevice"/> is always at index 0, if it exists.
-        /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
-        internal DeviceVK this[int index] => _devices[index];
 
         /// <summary>
         /// Gets the main <see cref="DeviceVK"/>.

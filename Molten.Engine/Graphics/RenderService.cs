@@ -16,6 +16,7 @@ namespace Molten.Graphics
 
         RenderFrameTracker _tracker;
         RenderChain _chain;
+        List<GraphicsDevice> _devices;
 
         Dictionary<RenderTaskPriority, ThreadedQueue<RenderTask>> _tasks;
         AntiAliasLevel _requestedMultiSampleLevel = AntiAliasLevel.None;
@@ -30,6 +31,8 @@ namespace Molten.Graphics
         public RenderService()
         {
             _tasks = new Dictionary<RenderTaskPriority, ThreadedQueue<RenderTask>>();
+            _devices = new List<GraphicsDevice>();
+
             RenderTaskPriority[] priorities = Enum.GetValues<RenderTaskPriority>();
             foreach (RenderTaskPriority p in priorities)
                 _tasks[p] = new ThreadedQueue<RenderTask>();
@@ -75,13 +78,19 @@ namespace Molten.Graphics
 
             try
             {
-                Device = OnInitializeDevice(settings.Graphics, DisplayManager);
+                List<GraphicsDevice> devices = OnInitializeDevices(settings.Graphics, DisplayManager);
+                _devices.AddRange(devices);
 
-                Log.WriteLine("Initialized graphics device");
+                Device = _devices[0];
+
+                Log.WriteLine($"Initialized {_devices.Count} GPU(s):");
+                Log.WriteLine($"   Primary: {Device.Name}");
+                for(int i = 1; i < _devices.Count; i++)
+                    Log.WriteLine($"   Secondary: {_devices[i].Name}"); 
             }
             catch (Exception ex)
             {
-                Log.Error("Failed to initialize graphics device");
+                Log.Error("Failed to initialize GPU");
                 Log.Error(ex, true);
             }
 
@@ -124,7 +133,11 @@ namespace Molten.Graphics
             _tracker.StartFrame();
             Profiler.Begin();
             Device.Queue.Profiler.Begin();
-            Device.DisposeMarkedObjects();
+
+            // Handle any pending graphics-based disposals.
+            Timing timing = Thread.Timing;
+            uint framesToWait = (uint)timing.TargetUPS / 4U;
+            Device.DisposeMarkedObjects(framesToWait, timing.FrameID);
 
             if (_requestedMultiSampleLevel != MsaaLevel)
             {
@@ -304,7 +317,13 @@ namespace Molten.Graphics
         /// <param name="settings">The <see cref="GraphicsSettings"/> bound to the current engine instance.</param>
         protected abstract GraphicsManager OnInitializeDisplayManager(GraphicsSettings settings);
 
-        protected abstract GraphicsDevice OnInitializeDevice(GraphicsSettings settings, GraphicsManager manager);
+        /// <summary>
+        /// Invoked during render service initialization to allow the provisioning and initialization of any available/supported graphics devices on the host system.
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="manager"></param>
+        /// <returns></returns>
+        protected abstract List<GraphicsDevice> OnInitializeDevices(GraphicsSettings settings, GraphicsManager manager);
 
         /// <summary>
         /// Occurs when the current <see cref="RenderService"/> instance/implementation is being disposed.
@@ -321,6 +340,11 @@ namespace Molten.Graphics
             _chain.Dispose();
             SpriteBatch.Dispose();
             _tracker.Dispose();
+
+            foreach (GraphicsDevice device in _devices)
+                device.Dispose();
+
+            _devices.Clear();
 
             OnDisposeBeforeRender();
 
@@ -343,6 +367,13 @@ namespace Molten.Graphics
         /// Gets the <see cref="GraphicsDevice"/> bound to the current <see cref="RenderService"/>.
         /// </summary>
         public GraphicsDevice Device { get; private set; }
+
+        /// <summary>
+        /// Gets a <see cref="GraphicsDevice"/> by it's index. The primary <see cref="Device"/> is always at index 0, if it exists.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        internal GraphicsDevice this[int index] => _devices[index];
 
         /// <summary>
         /// Gets a list of all the scenes current attached to the renderer.

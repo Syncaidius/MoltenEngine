@@ -15,7 +15,6 @@ namespace Molten.Graphics.Vulkan
             Renderer = renderer;
             CapBuilder = new CapabilityBuilder();
             _devices = new List<DeviceVK>();
-            Devices = _devices.AsReadOnly();
             Outputs = new List<DisplayOutputVK>();
         }
 
@@ -31,9 +30,21 @@ namespace Molten.Graphics.Vulkan
                 
                 if (r.Check(Renderer))
                 {
+                    // Vulkan sometimes returns duplicate devices with the same ID.
+                    // For now we work around this by using a hashset to test device IDs.
+                    HashSet<DeviceID> deviceIDs = new HashSet<DeviceID>();
+
                     for (int i = 0; i < deviceCount; i++)
                     {
                         DeviceVK adapter = new DeviceVK(Renderer, this, devices[i], Renderer.Instance);
+
+                        if(deviceIDs.Contains(adapter.ID))
+                        {
+                            adapter.Dispose();
+                            continue;
+                        }
+                        
+                        deviceIDs.Add(adapter.ID);
                         _devices.Add(adapter);
                     }
                 }
@@ -118,7 +129,7 @@ namespace Molten.Graphics.Vulkan
         public override GraphicsDevice DefaultDevice => _defaultAdapter;
 
         /// <inheritdoc/>
-        public override GraphicsDevice SelectedDevice
+        public override GraphicsDevice PrimaryDevice
         {
             get => _selectedAdapter;
             set
@@ -145,7 +156,7 @@ namespace Molten.Graphics.Vulkan
         internal DisplayOutputVK PrimaryOutput { get; private set; }
 
         /// <inheritdoc/>
-        public override IReadOnlyList<GraphicsDevice> Devices { get; }
+        public override IReadOnlyList<GraphicsDevice> Devices => _devices;
 
         internal RendererVK Renderer { get; }
 

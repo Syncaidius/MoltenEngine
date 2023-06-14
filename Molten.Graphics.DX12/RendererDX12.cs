@@ -28,12 +28,15 @@ namespace Molten.Graphics.DX12
             return new DeviceDX12(this, _displayManager, adapter, Builder);
         }
 
-
-        protected override GraphicsDevice OnInitializeDevice(GraphicsSettings settings, GraphicsManager manager)
+        protected override List<GraphicsDevice> OnInitializeDevices(GraphicsSettings settings, GraphicsManager manager)
         {
-            NativeDevice = _displayManager.SelectedDevice as DeviceDX12;
+            List<GraphicsDevice> result = new List<GraphicsDevice>();
+            
+            NativeDevice = _displayManager.PrimaryDevice as DeviceDX12;
             NativeDevice.Initialize();
-            return NativeDevice;
+            result.Add(NativeDevice);
+
+            return result;
         }
 
         protected override void OnInitializeRenderer(EngineSettings settings)

@@ -179,7 +179,7 @@ namespace Molten.Graphics.Vulkan
             return _loader.GetExtension<E>();
         }
 
-        internal bool Initialize()
+        internal bool Build()
         {
             if (_loader.Build(_renderer.ApiVersion, Ptr))
             {
@@ -256,8 +256,10 @@ namespace Molten.Graphics.Vulkan
             while(_freeFences.Count > 0)
                 _freeFences.Pop().Dispose();   
 
-            _loader.Dispose();
-            _renderer.VK.DestroyDevice(*Ptr, null);
+            _loader?.Dispose();
+            if(Ptr != null)
+                _renderer.VK.DestroyDevice(*Ptr, null);
+
             EngineUtil.Free(ref _native);
 
             base.OnDispose();

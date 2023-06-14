@@ -22,56 +22,54 @@
             foreach (GraphicsDevice device in Devices)
                 LogAdapter(device, aID++);
 
-            GraphicsDevice preferredAdapter = ValidateAdapterSettings(settings);
+            GraphicsDevice primaryDevice = ValidateAdapterSettings(settings);
 
             // Add all preferred displays to active list
             foreach (int id in settings.DisplayOutputIds.Values)
             {
-                if (id < preferredAdapter.Outputs.Count)
-                    preferredAdapter.AddActiveOutput(preferredAdapter.Outputs[id]);
+                if (id < primaryDevice.Outputs.Count)
+                    primaryDevice.AddActiveOutput(primaryDevice.Outputs[id]);
             }
-
-            // Log preferred adapter stats
-            Log.WriteLine($"Chosen {preferredAdapter.Name}");
         }
 
         private GraphicsDevice ValidateAdapterSettings(GraphicsSettings gfxSettings)
         {
             // Does the chosen device ID from settings still match any of our detected devices?
             DeviceID selectedID = gfxSettings.AdapterID;
-            GraphicsDevice preferredAdapter = this[selectedID];
-            if (preferredAdapter == null)
+            GraphicsDevice primary = this[selectedID];
+
+            if (primary == null)
             {
-                preferredAdapter = DefaultDevice;
-                gfxSettings.AdapterID.Value = preferredAdapter.ID;
+                primary = DefaultDevice;
+                gfxSettings.AdapterID.Value = primary.ID;
                 gfxSettings.DisplayOutputIds.Values.Clear();
 
                 if (selectedID.ID != 0)
                 {
-                    if (preferredAdapter != null)
-                        Log.Warning($"Reverted adapter to {preferredAdapter.Name} ({preferredAdapter.ID}) - Previous not found ({selectedID})");
+                    if (primary != null)
+                        Log.Warning($"Reverted adapter to {primary.Name} ({primary.ID}) - Previous not found ({selectedID})");
                     else
                         Log.Warning($"No adapter available. Previous one not found ({selectedID})");
                 }
             }
 
             // Validate display count.
-            if (preferredAdapter != null)
+            if (primary != null)
             {
                 if (gfxSettings.DisplayOutputIds.Values.Count == 0 ||
-                    gfxSettings.DisplayOutputIds.Values.Count > preferredAdapter.Outputs.Count)
+                    gfxSettings.DisplayOutputIds.Values.Count > primary.Outputs.Count)
                 {
                     gfxSettings.DisplayOutputIds.Values.Clear();
                     gfxSettings.DisplayOutputIds.Values.Add(0);
                 }
             }
 
-            SelectedDevice = preferredAdapter;
+            PrimaryDevice = primary;
 
             gfxSettings.AdapterID.Apply();
             gfxSettings.DisplayOutputIds.Apply();
 
-            return preferredAdapter;
+            return primary;
         }
 
         private void LogAdapter(GraphicsDevice adapter, int index)
@@ -116,8 +114,9 @@
         /// <summary>Gets the system's default display adapter.</summary>
         public abstract GraphicsDevice DefaultDevice { get; }
 
-        /// <summary>Gets or sets the adapter currently selected for use by the engine.</summary>
-        public abstract GraphicsDevice SelectedDevice { get; set; }
+        /// <summary>Gets or sets the primary <see cref="GraphicsDevice"/>. The primary device will handle the majority of main rendering tasks, 
+        /// while minor tasks that do not directly affect render performance can be offloaded to secondary ones.</summary>
+        public abstract GraphicsDevice PrimaryDevice { get; set; }
 
         /// <summary>
         /// Gets the <see cref="GraphicsSettings"/> that the current <see cref="GraphicsManager"/> was initialized and bound to.

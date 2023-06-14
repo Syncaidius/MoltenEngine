@@ -63,15 +63,12 @@ namespace Molten.Graphics
         /// </summary>
         public abstract void RemoveAllActiveOutputs();
 
-        internal void DisposeMarkedObjects()
+        internal void DisposeMarkedObjects(uint framesToWait, ulong frameID)
         {
-            // We want to wait at least a quarter of the target FPS before deleting staging buffers.
-            Timing timing = Renderer.Thread.Timing;
-            uint framesToWait = (uint)timing.TargetUPS / 4U;
-
-            _disposals.For(_disposals.Count - 1, -1, 0, (index, obj) =>
+            // Are we disposing before the render thread has started?
+            _disposals.ForReverse(1, (index, obj) =>
             {
-                ulong age = timing.FrameID - obj.LastUsedFrameID;
+                ulong age = frameID - obj.LastUsedFrameID;
                 if (age >= framesToWait)
                 {
                     obj.GraphicsRelease();
@@ -97,7 +94,7 @@ namespace Molten.Graphics
                 return false;
             });
 
-            DisposeMarkedObjects();
+            DisposeMarkedObjects(0,0);
             Queue?.Dispose();
         }
 
@@ -177,7 +174,6 @@ namespace Molten.Graphics
 
             return result;
         }
-
 
         protected abstract ShaderSampler OnCreateSampler(ref ShaderSamplerParameters parameters);
 

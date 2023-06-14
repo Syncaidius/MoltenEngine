@@ -109,7 +109,7 @@ namespace Molten.Graphics.Dxgi
 
             // Do we still not have an adapter? Unsupported.
             if(_defaultDevice == null)
-                base.Log.Error($"No supported GPU adapter found.");
+                Log.Error($"No supported GPU adapter found.");
         }
 
         public IDXGISwapChain4* CreateSwapChain(DisplayModeDXGI mode, GraphicsSettings settings, Logger log, IUnknown* ptrDevice, IntPtr windowHandle)
@@ -162,7 +162,7 @@ namespace Molten.Graphics.Dxgi
         public override DeviceDXGI DefaultDevice => _defaultDevice;
 
         /// <inheritdoc/>
-        public override GraphicsDevice SelectedDevice
+        public override GraphicsDevice PrimaryDevice
         {
             get => _selectedAdapter;
             set

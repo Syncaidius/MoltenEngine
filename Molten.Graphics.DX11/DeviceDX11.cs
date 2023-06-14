@@ -321,7 +321,6 @@ namespace Molten.Graphics.DX11
         /// </summary>
         protected ref ID3D11Device5* PtrRef => ref _native;
 
-
         /// <inheritdoc/>
         public override GraphicsQueueDX11 Queue => _queue;
     }

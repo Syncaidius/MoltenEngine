@@ -33,11 +33,27 @@ namespace Molten.Graphics.DX11
             return new DeviceDX11(this, manager, adapter, _deviceBuilder);
         }
 
-        protected override GraphicsDevice OnInitializeDevice(GraphicsSettings settings, GraphicsManager manager)
+        protected override List<GraphicsDevice> OnInitializeDevices(GraphicsSettings settings, GraphicsManager manager)
         {
-            NativeDevice = _displayManager.SelectedDevice as DeviceDX11;
+            List<GraphicsDevice> result = new List<GraphicsDevice>();
+
+            NativeDevice = _displayManager.PrimaryDevice as DeviceDX11;
             NativeDevice.Initialize();
-            return NativeDevice;
+            result.Add(NativeDevice);
+
+            foreach(GraphicsDevice device in _displayManager.Devices)
+            {
+                DeviceDX11 dxDevice = device as DeviceDX11;
+                if (dxDevice == NativeDevice || 
+                    dxDevice.Type == GraphicsDeviceType.Cpu || 
+                    dxDevice.Type == GraphicsDeviceType.Other)
+                    continue;
+
+                dxDevice.Initialize();
+                result.Add(dxDevice);
+            }
+
+            return result;
         }
 
         protected override void OnInitializeRenderer(EngineSettings settings)
