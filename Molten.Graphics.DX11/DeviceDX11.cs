@@ -182,12 +182,12 @@ namespace Molten.Graphics.DX11
             return new ShaderPassDX11(shader, name);
         }
 
-        public override INativeSurface CreateFormSurface(string formTitle, string formName, uint mipCount = 1)
+        protected override INativeSurface OnCreateFormSurface(string formTitle, string formName, uint mipCount = 1)
         {
             return new RenderFormSurface(this, formTitle, formName, mipCount);
         }
 
-        public override INativeSurface CreateControlSurface(string formTitle, string controlName, uint mipCount = 1)
+        protected override INativeSurface OnCreateControlSurface(string formTitle, string controlName, uint mipCount = 1)
         {
             return new RenderControlSurface(this, formTitle, controlName, mipCount);
         }

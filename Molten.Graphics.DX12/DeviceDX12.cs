@@ -52,12 +52,12 @@ namespace Molten.Graphics.DX12
             throw new NotImplementedException();
         }
 
-        public override INativeSurface CreateFormSurface(string formTitle, string formName, uint mipCount = 1)
+        protected override INativeSurface OnCreateFormSurface(string formTitle, string formName, uint mipCount = 1)
         {
             throw new NotImplementedException();
         }
 
-        public override INativeSurface CreateControlSurface(string controlTitle, string controlName, uint mipCount = 1)
+        protected override INativeSurface OnCreateControlSurface(string controlTitle, string controlName, uint mipCount = 1)
         {
             throw new NotImplementedException();
         }

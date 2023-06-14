@@ -17,8 +17,8 @@ namespace Molten.Graphics
 
         long _allocatedVRAM;
         ThreadedList<GraphicsObject> _disposals;
-
         Dictionary<Type, Dictionary<StructKey, GraphicsObject>> _objectCache;
+        ThreadedList<ISwapChainSurface> _outputSurfaces;
 
         /// <summary>
         /// Creates a new instance of <see cref="GraphicsDevice"/>.
@@ -30,6 +30,8 @@ namespace Molten.Graphics
             Renderer = renderer;
             Manager = manager;
             Log = renderer.Log;
+
+            _outputSurfaces = new ThreadedList<ISwapChainSurface>();
             _disposals = new ThreadedList<GraphicsObject>();
             _objectCache = new Dictionary<Type, Dictionary<StructKey, GraphicsObject>>();
         }
@@ -88,6 +90,13 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
+            // Dispose of any registered output services.
+            _outputSurfaces.For(0, (index, surface) =>
+            {
+                surface.Dispose();
+                return false;
+            });
+
             DisposeMarkedObjects();
             Queue?.Dispose();
         }
@@ -138,6 +147,15 @@ namespace Molten.Graphics
         public void DeallocateVRAM(long bytes)
         {
             Interlocked.Add(ref _allocatedVRAM, -bytes);
+        }
+
+        internal void Present()
+        {
+            _outputSurfaces.For(0, (index, surface) =>
+            {
+                if(surface.IsEnabled)
+                    surface.Present();
+            });
         }
 
         /// <summary>

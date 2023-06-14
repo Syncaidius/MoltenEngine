@@ -210,12 +210,7 @@ namespace Molten.Graphics
 
             Surfaces.ResetFirstCleared();
 
-            // Present all output surfaces
-            OutputSurfaces.For(0, (index, surface) =>
-            {
-                surface.Present();
-                return false;
-            });
+            Device.Present();
 
             ProcessTasks(RenderTaskPriority.EndOfFrame);
 
@@ -323,13 +318,6 @@ namespace Molten.Graphics
         {
             base.OnDispose();
 
-            // Dispose of any registered output services.
-            OutputSurfaces.For(0, (index, surface) =>
-            {
-                surface.Dispose();
-                return false;
-            });
-
             _chain.Dispose();
             SpriteBatch.Dispose();
             _tracker.Dispose();
@@ -355,11 +343,6 @@ namespace Molten.Graphics
         /// Gets the <see cref="GraphicsDevice"/> bound to the current <see cref="RenderService"/>.
         /// </summary>
         public GraphicsDevice Device { get; private set; }
-
-        /// <summary>
-        /// Gets a list of all the output <see cref="ISwapChainSurface"/> instances attached to the renderer. These are automatically presented to the graphics device by the renderer, if active.
-        /// </summary>
-        public ThreadedList<ISwapChainSurface> OutputSurfaces { get; } = new ThreadedList<ISwapChainSurface>();
 
         /// <summary>
         /// Gets a list of all the scenes current attached to the renderer.

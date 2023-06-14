@@ -248,7 +248,7 @@ namespace Molten.Examples
             if (_chkNativeWindow.IsChecked)
             {
                 binding.NativeWindow = Engine.Renderer.Device.CreateFormSurface(selected.Text, selected.Text.Replace(" ", ""));
-                Engine.Renderer.OutputSurfaces.Add(binding.NativeWindow);
+
                 HookWindow(binding.NativeWindow);
 
                 binding.NativeWindow.OnClose += (nativeSurface) =>
@@ -257,7 +257,6 @@ namespace Molten.Examples
                     if (_exampleBindings.TryRemove(example, out ExampleBindings binding))
                     {
                         _examples.Remove(example);
-                        Engine.Renderer.OutputSurfaces.Remove(binding.NativeWindow);
                         example.MainScene.Dispose();
                     }
                 };

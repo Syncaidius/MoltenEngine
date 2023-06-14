@@ -9,19 +9,47 @@
         public abstract IDepthStencilSurface CreateDepthSurface(uint width, uint height, DepthFormat format = DepthFormat.R24G8_Typeless,
             GraphicsResourceFlags flags = GraphicsResourceFlags.GpuWrite,
             uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, bool allowMipMapGen = false, string name = null);
+        
+        /// <summary>Creates a form with a surface which can be rendered on to.</summary>
+        /// <param name="formTitle">The title of the form.</param>
+        /// <param name="formName">The internal name of the form.</param>
+        /// <param name="mipCount">The number of mip map levels of the form surface.</param>
+        /// <param name="enabled">Whether or not the form is enabled for presentation.</param>
+        /// <returns></returns>
+        public INativeSurface CreateFormSurface(string formTitle, string formName, uint mipCount = 1, bool enabled = true)
+        {
+            INativeSurface surface = OnCreateFormSurface(formTitle, formName, mipCount);
+            surface.IsEnabled = enabled;
+            _outputSurfaces.Add(surface);
+            return surface;
+        }
+
+        /// <summary>Creates a GUI control with a surface which can be rendered on to.</summary>
+        /// <param name="controlTitle">The title of the form.</param>
+        /// <param name="controlName">The internal name of the control.</param>
+        /// <param name="mipCount">The number of mip map levels of the form surface.</param>
+        /// <param name="enabled">Whether or not the control is enabled for presentation.</param>
+        /// <returns></returns>
+        public INativeSurface CreateControlSurface(string controlTitle, string controlName, uint mipCount = 1, bool enabled = true)
+        {
+            INativeSurface surface = OnCreateControlSurface(controlTitle, controlName, mipCount);
+            surface.IsEnabled = enabled;
+            _outputSurfaces.Add(surface);
+            return surface;
+        }
 
         /// <summary>Creates a form with a surface which can be rendered on to.</summary>
         /// <param name="formTitle">The title of the form.</param>
         /// <param name="formName">The internal name of the form.</param>
         /// <param name="mipCount">The number of mip map levels of the form surface.</param>
         /// <returns></returns>
-        public abstract INativeSurface CreateFormSurface(string formTitle, string formName, uint mipCount = 1);
+        protected abstract INativeSurface OnCreateFormSurface(string formTitle, string formName, uint mipCount = 1);
 
         /// <summary>Creates a GUI control with a surface which can be rendered on to.</summary>
         /// <param name="controlTitle">The title of the form.</param>
         /// <param name="controlName">The internal name of the control.</param>
         /// <param name="mipCount">The number of mip map levels of the form surface.</param>
         /// <returns></returns>
-        public abstract INativeSurface CreateControlSurface(string controlTitle, string controlName, uint mipCount = 1);
+        protected abstract INativeSurface OnCreateControlSurface(string controlTitle, string controlName, uint mipCount = 1);
     }
 }

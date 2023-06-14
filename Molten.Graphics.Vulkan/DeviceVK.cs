@@ -308,7 +308,7 @@ namespace Molten.Graphics.Vulkan
             return buffer;
         }
 
-        public override INativeSurface CreateControlSurface(string controlTitle, string controlName, uint mipCount = 1)
+        protected override INativeSurface OnCreateControlSurface(string controlTitle, string controlName, uint mipCount = 1)
         {
             throw new NotImplementedException();
         }
@@ -332,7 +332,7 @@ namespace Molten.Graphics.Vulkan
             return new RenderSurface2DVK(this, dim, aaLevel, MSAAQuality.Default, format, flags, allowMipMapGen, name);
         }
 
-        public override INativeSurface CreateFormSurface(string formTitle, string formName, uint mipCount = 1)
+        protected override INativeSurface OnCreateFormSurface(string formTitle, string formName, uint mipCount = 1)
         {
             return new WindowSurfaceVK(_renderer.NativeDevice, formTitle, new TextureDimensions(1024, 800));
         }

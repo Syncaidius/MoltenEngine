@@ -415,5 +415,7 @@ namespace Molten.Graphics.Vulkan
         public bool IsVisible { get; set; }
 
         internal SurfaceKHR Native { get; private set; }
+
+        public bool IsEnabled { get; set; }
     }
 }

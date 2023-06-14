@@ -12,5 +12,11 @@
         /// </summary>
         /// <param name="callback"></param>
         void Dispatch(Action callback);
+
+        /// <summary>
+        /// Gets or sets whether or not the current <see cref="ISwapChainSurface"/> is enabled. 
+        /// If false, the current <see cref="ISwapChainSurface"/> will not be presented to its output.
+        /// </summary>
+        bool IsEnabled { get; set; }
     }
 }

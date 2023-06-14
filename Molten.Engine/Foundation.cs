@@ -95,7 +95,6 @@ namespace Molten
                         else
                             _gameWindow = _engine.Renderer.Device.CreateFormSurface(Title, "MainForm");
 
-                        _engine.Renderer.OutputSurfaces.Add(_gameWindow);
                         _gameWindow.IsVisible = true;
                         _gameWindow.OnClose += _gameWindow_OnClose;
                         break;
