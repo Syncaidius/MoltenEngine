@@ -39,6 +39,10 @@ namespace Molten.Graphics.Vulkan
                 case GraphicsBufferType.Staging: // Staging buffers always require CPU write access.
                     flags |= GraphicsResourceFlags.CpuWrite;
                     break;
+
+                case GraphicsBufferType.Constant:
+                    usageFlags |= BufferUsageFlags.UniformBufferBit;
+                    break;
             }
 
             InitializeBuffer(usageFlags);
