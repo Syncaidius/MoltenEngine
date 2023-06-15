@@ -7,31 +7,30 @@ namespace Molten.Graphics.DX11
     internal unsafe class ConstantBufferDX11 : BufferDX11, IConstantBuffer
     {
         internal D3DCBufferType Type;
-        internal ShaderConstantVariable[] Variables;
-        internal bool DirtyVariables;
-        internal Dictionary<string, ShaderConstantVariable> _varLookup;
+        internal GraphicsConstantVariable[] Variables;
+        internal Dictionary<string, GraphicsConstantVariable> _varLookup;
         internal int Hash;
         byte* _constData;
 
-        internal ConstantBufferDX11(DeviceDX11 device, ConstantBufferInfo desc)
-            : base(device, GraphicsBufferType.Constant, GraphicsResourceFlags.NoShaderAccess | GraphicsResourceFlags.CpuWrite, GraphicsFormat.Unknown, 1, desc.Size, null, 0)
+        internal ConstantBufferDX11(DeviceDX11 device, ConstantBufferInfo info)
+            : base(device, GraphicsBufferType.Constant, GraphicsResourceFlags.NoShaderAccess | GraphicsResourceFlags.CpuWrite, GraphicsFormat.Unknown, 1, info.Size, null, 0)
         {
-            _varLookup = new Dictionary<string, ShaderConstantVariable>();
-            _constData = (byte*)EngineUtil.Alloc(desc.Size);
+            _varLookup = new Dictionary<string, GraphicsConstantVariable>();
+            _constData = (byte*)EngineUtil.Alloc(info.Size);
 
             // Read sdescription data
-            BufferName = desc.Name;
-            Type = (D3DCBufferType)desc.Type;
+            BufferName = info.Name;
+            Type = (D3DCBufferType)info.Type;
 
             string hashString = BufferName;
-            uint variableCount = (uint)desc.Variables.Count;
-            Variables = new ShaderConstantVariable[variableCount];
+            uint variableCount = (uint)info.Variables.Count;
+            Variables = new GraphicsConstantVariable[variableCount];
 
             // Read all variables from the constant buffer
-            for (int c = 0; c < desc.Variables.Count; c++)
+            for (int c = 0; c < info.Variables.Count; c++)
             {
-                ConstantBufferVariableInfo variable = desc.Variables[c];
-                ShaderConstantVariable sv = GetVariable(variable, variable.Name);
+                ConstantBufferVariableInfo variable = info.Variables[c];
+                GraphicsConstantVariable sv = CreateConstantVariable(variable, variable.Name);
 
                 // Throw exception if the variable type is unsupported.
                 if (sv == null) // TODO remove this exception!
@@ -52,7 +51,7 @@ namespace Molten.Graphics.DX11
             // Generate hash for comparing constant buffers.
             byte[] hashData = StringHelper.GetBytes(hashString, Encoding.Unicode);
             Hash = HashHelper.ComputeFNV(hashData);
-            Desc.ByteWidth = desc.Size;
+            Desc.ByteWidth = info.Size;
         }
 
         protected override void OnGraphicsRelease()
@@ -64,12 +63,12 @@ namespace Molten.Graphics.DX11
         protected override void OnApply(GraphicsQueue cmd)
         {
             // Setting data via shader variabls takes precedent. All standard buffer changes (set/append) will be ignored and wiped.
-            if (DirtyVariables)
+            if (IsDirty)
             {
-                DirtyVariables = false;
+                IsDirty = false;
 
                 // Re-write all data to the variable buffer to maintain byte-ordering.
-                foreach(ShaderConstantVariable v in Variables)
+                foreach(GraphicsConstantVariable v in Variables)
                     v.Write(_constData + v.ByteOffset);
 
                 using (GraphicsStream stream = cmd.MapResource(this, 0, 0, GraphicsMapType.Discard))
@@ -81,86 +80,9 @@ namespace Molten.Graphics.DX11
             }
         }
 
-        /// <summary>Figures out what type to use for a shader variable.</summary>
-        /// <param name="t"></param>
-        /// <returns></returns>
-        private unsafe ShaderConstantVariable GetVariable(ConstantBufferVariableInfo vInfo, string name)
-        {
-            uint columns = vInfo.Type.ColumnCount;
-            uint rows = vInfo.Type.RowCount;
-            uint elementCount = vInfo.Type.Elements;
-
-            switch (vInfo.Type.Class)
-            {
-                default:
-                    if (elementCount > 0)
-                    {
-                        switch (vInfo.Type.Type)
-                        {
-                            case ShaderVariableType.Int:
-                                return new ScalarArray<int>(this, elementCount, name);
-                            case ShaderVariableType.UInt:
-                                return new ScalarArray<uint>(this, elementCount, name);
-                            case ShaderVariableType.Float:
-                                return new ScalarArray<float>(this, elementCount, name);
-                        }
-                    }
-                    else
-                    {
-                        switch (vInfo.Type.Type)
-                        {
-                            case ShaderVariableType.Int:
-                                return new ScalarVariable<int>(this, rows, columns, name);
-                            case ShaderVariableType.UInt:
-                                return new ScalarVariable<uint>(this, rows, columns, name);
-                            case ShaderVariableType.Float:
-                                return new ScalarVariable<float>(this, rows, columns, name);
-                        }
-                    }
-                    break;
-
-                case ShaderVariableClass.MatrixColumns:
-                    if (elementCount > 0)
-                    {
-                        switch (vInfo.Type.Type)
-                        {
-                            case ShaderVariableType.Float:
-                                if (columns == 4 && rows == 4)
-                                    return new ScalarFloat4x4ArrayVariable(this, elementCount, name);
-                                else if (columns == 3 && rows == 3)
-                                    return new ScalarFloat3x3ArrayVariable(this, elementCount, name);
-                                else
-                                    return new ScalarMatrixArray<float>(this, rows, columns, elementCount, name);
-
-                            default:
-                                return new ScalarMatrixArray<float>(this, rows, columns, elementCount, name);
-                        }
-                    }
-                    else
-                    {
-                        switch (vInfo.Type.Type)
-                        {
-                            case ShaderVariableType.Float:
-                                if (vInfo.Type.ColumnCount == 4 && rows == 4)
-                                    return new ScalarFloat4x4Variable(this, name);
-                                else if (vInfo.Type.ColumnCount == 2 && rows == 3)
-                                    return new ScalarFloat3x2Variable(this, name);
-                                else if (vInfo.Type.ColumnCount == 3 && rows == 3)
-                                    return new ScalarFloat3x3Variable(this, name);
-                                else
-                                    return new ScalarVariable<float>(this, rows, columns, name);
-
-                            default:
-                                return new ScalarVariable<float>(this, rows, columns, name);
-                        }
-                    }
-            }
-
-            return null;
-        }
-
-
         public string BufferName { get; }
+
+        public bool IsDirty { get; set; }
 
         internal byte* DataPtr => _constData;
     }

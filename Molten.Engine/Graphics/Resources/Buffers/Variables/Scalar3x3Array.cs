@@ -1,24 +1,23 @@
-﻿namespace Molten.Graphics.DX11
+﻿namespace Molten.Graphics
 {
     /// <summary>A shader matrix variable.</summary>
-    internal unsafe class ScalarFloat4x4ArrayVariable : ShaderConstantVariable
+    public unsafe class ScalarFloat3x3ArrayVariable : GraphicsConstantVariable
     {
-        static uint _stride = (uint)Matrix4F.SizeInBytes;
-        static Type _elementType = typeof(Matrix4F);
+        static Type _elementType = typeof(Matrix3F);
+        static uint _stride = (uint)sizeof(Matrix3F);
 
-        Matrix4F[] _value;
+        Matrix3F[] _value;
         uint _expectedElements;
-        bool _isDirty;
+        bool _isDirty = false;
 
-        public ScalarFloat4x4ArrayVariable(ConstantBufferDX11 parent, uint expectedElements, string name)
+        internal ScalarFloat3x3ArrayVariable(IConstantBuffer parent, uint expectedElements, string name)
             : base(parent, name)
         {
             _expectedElements = expectedElements;
-            _value = new Matrix4F[_expectedElements];
             SizeOf = _expectedElements * _stride;
 
             for (int i = 0; i < _value.Length; i++)
-                _value[i] = Matrix4F.Identity;
+                _value[i] = Matrix3F.Identity;
 
             _isDirty = true;
         }
@@ -27,20 +26,21 @@
 
         public override void Dispose() { }
 
-        internal override void Write(byte* pDest)
+        public override unsafe void Write(byte* pDest)
         {
-            if (_value != null)
+            if (_isDirty)
             {
-                if (_isDirty)
+                if (_value != null)
                 {
+
                     for (int i = 0; i < _value.Length; i++)
                         _value[i].Transpose();
 
                     _isDirty = false;
                 }
 
-                fixed (Matrix4F* ptrValue = _value)
-                    Buffer.MemoryCopy(ptrValue, pDest, SizeOf, SizeOf);
+                fixed (Matrix3F* ptr = _value)
+                    Buffer.MemoryCopy(ptr, pDest, SizeOf, SizeOf);
             }
             else
             {
@@ -64,7 +64,7 @@
 
                     if (eType == _elementType)
                     {
-                        Matrix4F[] val = (Matrix4F[])value;
+                        Matrix3F[] val = (Matrix3F[])value;
 
                         if (_value.Length != val.Length)
                             throw new InvalidOperationException($"Value that was set is not of the expected size ({_value.Length} elements).");

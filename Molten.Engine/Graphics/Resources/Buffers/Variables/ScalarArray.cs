@@ -1,14 +1,14 @@
-﻿namespace Molten.Graphics.DX11
+﻿namespace Molten.Graphics
 {
     /// <summary>A shader matrix variable.</summary>
-    internal unsafe class ScalarArray<T> : ShaderConstantVariable where T : unmanaged
+    public unsafe class ScalarArray<T> : GraphicsConstantVariable where T : unmanaged
     {
         static Type _elementType = typeof(T);
         static uint _stride = (uint)sizeof(T);
 
         Array _value;
 
-        public ScalarArray(ConstantBufferDX11 parent, uint expectedElements, string name)
+        internal ScalarArray(IConstantBuffer parent, uint expectedElements, string name)
             : base(parent, name)
         {
             SizeOf = expectedElements * _stride;
@@ -17,7 +17,7 @@
         public override unsafe void ValueFromPtr(void* ptr) { }
         public override void Dispose() { }
 
-        internal override void Write(byte* pDest)
+        public override void Write(byte* pDest)
         {
             if (_value != null)
                 EngineUtil.PinObject(_value, (ptr) => Buffer.MemoryCopy(ptr.ToPointer(), pDest, SizeOf, SizeOf));

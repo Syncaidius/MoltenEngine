@@ -1,11 +1,11 @@
-﻿namespace Molten.Graphics.DX11
+﻿namespace Molten.Graphics
 {
     /// <summary>A shader matrix variable.</summary>
-    internal unsafe class ScalarFloat4x4Variable : ShaderConstantVariable
+    public unsafe class ScalarFloat4x4Variable : GraphicsConstantVariable
     {
         Matrix4F _value;
 
-        public ScalarFloat4x4Variable(ConstantBufferDX11 parent, string name)
+        internal ScalarFloat4x4Variable(IConstantBuffer parent, string name)
             : base(parent, name)
         {
             SizeOf = (uint)sizeof(Matrix4F);
@@ -15,7 +15,7 @@
 
         public override void Dispose() { }
 
-        internal override void Write(byte* pDest)
+        public override void Write(byte* pDest)
         {
             ((Matrix4F*)pDest)[0] = _value;
         }

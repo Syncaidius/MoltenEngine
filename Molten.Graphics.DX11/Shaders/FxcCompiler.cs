@@ -352,7 +352,7 @@ namespace Molten.Graphics.DX11
 
                     for (int i = 0; i < buffer.Variables.Length; i++)
                     {
-                        ShaderConstantVariable variable = buffer.Variables[i];
+                        GraphicsConstantVariable variable = buffer.Variables[i];
                         string expectedName = varNames[i];
 
                         if (variable.Name != expectedName)
@@ -491,7 +491,7 @@ namespace Molten.Graphics.DX11
             else
             {
                 // Register all of the new buffer's variables
-                foreach (ShaderConstantVariable v in cBuffer.Variables)
+                foreach (GraphicsConstantVariable v in cBuffer.Variables)
                 {
                     // Check for duplicate variables
                     if (shader.Variables.ContainsKey(v.Name))

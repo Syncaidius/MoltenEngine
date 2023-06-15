@@ -1,14 +1,14 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Molten.Graphics.DX11
+namespace Molten.Graphics
 {
-    internal unsafe class ScalarVariable<T> : ShaderConstantVariable where T : unmanaged 
+    public unsafe class ScalarVariable<T> : GraphicsConstantVariable where T : unmanaged 
     {
         static uint _stride = (uint)sizeof(T);
         uint _expectedElements;
         T* _value;
 
-        internal ScalarVariable(ConstantBufferDX11 parent, uint rows, uint columns, string name) : 
+        internal ScalarVariable(IConstantBuffer parent, uint rows, uint columns, string name) : 
             base(parent, name)
         {
             _expectedElements = columns * rows;
@@ -21,7 +21,7 @@ namespace Molten.Graphics.DX11
             Buffer.MemoryCopy(ptr, _value, SizeOf, SizeOf);
         }
 
-        internal override void Write(byte* pDest)
+        public override void Write(byte* pDest)
         {
             Buffer.MemoryCopy(_value, pDest, SizeOf, SizeOf);
         }
