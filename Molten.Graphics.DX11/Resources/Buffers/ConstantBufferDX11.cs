@@ -1,15 +1,12 @@
-﻿using System.Text;
-using Molten.Utility;
-using Silk.NET.Core.Native;
+﻿using Silk.NET.Core.Native;
 
 namespace Molten.Graphics.DX11
 {
-    internal unsafe class ConstantBufferDX11 : BufferDX11, IConstantBuffer
+    internal unsafe class ConstantBufferDX11 : BufferDX11, IConstantBuffer, IEquatable<ConstantBufferDX11>
     {
         internal D3DCBufferType Type;
         internal GraphicsConstantVariable[] Variables;
         internal Dictionary<string, GraphicsConstantVariable> _varLookup;
-        internal int Hash;
         byte* _constData;
 
         internal ConstantBufferDX11(DeviceDX11 device, ConstantBufferInfo info)
@@ -22,7 +19,6 @@ namespace Molten.Graphics.DX11
             BufferName = info.Name;
             Type = (D3DCBufferType)info.Type;
 
-            string hashString = BufferName;
             uint variableCount = (uint)info.Variables.Count;
             Variables = new GraphicsConstantVariable[variableCount];
 
@@ -43,15 +39,36 @@ namespace Molten.Graphics.DX11
 
                 _varLookup.Add(sv.Name, sv);
                 Variables[c] = sv;
-
-                // Append name to hash.
-                hashString += sv.Name;
             }
 
             // Generate hash for comparing constant buffers.
-            byte[] hashData = StringHelper.GetBytes(hashString, Encoding.Unicode);
-            Hash = HashHelper.ComputeFNV(hashData);
             Desc.ByteWidth = info.Size;
+        }
+
+        public bool Equals(ConstantBufferDX11 other)
+        {
+            if (other == null)
+                throw new ArgumentNullException("other");
+
+            if (Variables.Length != other.Variables.Length)
+                return false;
+
+            for(int i = 0; i < Variables.Length; i++)
+            {
+                GraphicsConstantVariable a = Variables[i];
+                GraphicsConstantVariable b = other.Variables[i];
+
+                // If any variable is different, then the constant buffers are not equal.
+                if (a.GetType() != b.GetType() ||
+                    a.Name != b.Name ||
+                    a.ByteOffset != b.ByteOffset ||
+                    a.SizeOf != b.SizeOf)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         protected override void OnGraphicsRelease()

@@ -22,6 +22,7 @@ namespace Molten.Graphics.Vulkan
         }
 
         public string BufferName { get; }
+
         public bool IsDirty { get; set; }
     }
 }

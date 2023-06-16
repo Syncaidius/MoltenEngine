@@ -472,7 +472,7 @@ namespace Molten.Graphics.DX11
                 if (existing != null)
                 {
                     // Compare buffers. If identical, 
-                    if (existing.Hash == cBuffer.Hash)
+                    if (existing.Equals(cBuffer))
                     {
                         // Dispose of new buffer, use existing.
                         cBuffer.Dispose();
