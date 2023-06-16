@@ -318,5 +318,7 @@ namespace Molten.Graphics
         public TextureDimensions Dimensions => throw new NotImplementedException();
 
         public bool IsReleased => throw new NotImplementedException();
+
+        public bool IsEnabled { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }
 }
