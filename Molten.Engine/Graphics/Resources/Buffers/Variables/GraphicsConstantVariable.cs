@@ -14,6 +14,36 @@
             Name = name;
         }
 
+        public static bool AreEqual(GraphicsConstantVariable[] bufferA, GraphicsConstantVariable[] bufferB)
+        {
+            if (bufferA == null)
+                throw new ArgumentNullException("a");
+
+            if (bufferB == null)
+                throw new ArgumentNullException("b");
+
+
+            if (bufferA.Length != bufferB.Length)
+                return false;
+
+            for (int i = 0; i < bufferA.Length; i++)
+            {
+                GraphicsConstantVariable a = bufferA[i];
+                GraphicsConstantVariable b = bufferB[i];
+
+                // If any variable is different, then the constant buffers are not equal.
+                if (a.GetType() != b.GetType() ||
+                    a.Name != b.Name ||
+                    a.ByteOffset != b.ByteOffset ||
+                    a.SizeOf != b.SizeOf)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public abstract void ValueFromPtr(void* ptr);
 
         public abstract void Dispose();

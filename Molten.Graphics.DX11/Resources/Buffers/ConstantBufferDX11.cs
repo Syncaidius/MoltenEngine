@@ -47,28 +47,7 @@ namespace Molten.Graphics.DX11
 
         public bool Equals(ConstantBufferDX11 other)
         {
-            if (other == null)
-                throw new ArgumentNullException("other");
-
-            if (Variables.Length != other.Variables.Length)
-                return false;
-
-            for(int i = 0; i < Variables.Length; i++)
-            {
-                GraphicsConstantVariable a = Variables[i];
-                GraphicsConstantVariable b = other.Variables[i];
-
-                // If any variable is different, then the constant buffers are not equal.
-                if (a.GetType() != b.GetType() ||
-                    a.Name != b.Name ||
-                    a.ByteOffset != b.ByteOffset ||
-                    a.SizeOf != b.SizeOf)
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return GraphicsConstantVariable.AreEqual(Variables, other.Variables);
         }
 
         protected override void OnGraphicsRelease()
