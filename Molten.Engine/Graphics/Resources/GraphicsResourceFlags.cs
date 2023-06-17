@@ -69,9 +69,10 @@ namespace Molten.Graphics
 
         public static bool IsImmutable(this GraphicsResourceFlags flags)
         {
-            return !flags.Has(GraphicsResourceFlags.GpuWrite) && 
+            return (!flags.Has(GraphicsResourceFlags.GpuWrite) && 
                 !flags.Has(GraphicsResourceFlags.CpuRead) && 
-                !flags.Has(GraphicsResourceFlags.CpuWrite);
+                !flags.Has(GraphicsResourceFlags.CpuWrite)) || 
+                flags.Has(GraphicsResourceFlags.Static);
         }
 
         public static bool IsDiscard(this GraphicsResourceFlags flags)

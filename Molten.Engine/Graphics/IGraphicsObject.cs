@@ -3,12 +3,6 @@
     public interface IGraphicsObject : IDisposable
     {
         /// <summary>
-        /// Invoked when the current <see cref="GraphicsObject"/> should apply any changes before being bound to a GPU context.
-        /// </summary>
-        /// <param name="cmd">The <see cref="GraphicsQueue"/> that the current <see cref="GraphicsObject"/> is to be bound to.</param>
-        void Apply(GraphicsQueue cmd);
-
-        /// <summary>
         /// Gets the <see cref="GraphicsDevice"/> that the current <see cref="GraphicsObject"/> is bound to.
         /// </summary>
         GraphicsDevice Device { get; }
@@ -23,11 +17,6 @@
         /// Gets or sets the name of the current <see cref="IGraphicsObject"/>.
         /// </summary>
         string Name { get; set; }
-
-        /// <summary>
-        /// Gets the ID of the frame that the current <see cref="GraphicsObject"/> was applied.
-        /// </summary>
-        uint LastUsedFrameID { get; }
 
         /// <summary>
         /// Gets whether or not the current <see cref="IGraphicsObject"/> has been successfully disposed and released by its parent <see cref="Device"/>.

@@ -23,7 +23,7 @@ namespace Molten.Graphics.Vulkan
                 Flags |= GraphicsResourceFlags.CpuRead | GraphicsResourceFlags.CpuWrite;
         }
 
-        protected override void OnNextFrame(uint frameBufferIndex, ulong frameID)
+        protected override void OnNextFrame(GraphicsQueue queue, uint frameBufferIndex, ulong frameID)
         {
             throw new NotImplementedException();
         }
@@ -38,7 +38,7 @@ namespace Molten.Graphics.Vulkan
                 _handles = new ImageHandleVK[frameBufferSize];
 
                 for (uint i = 0; i < frameBufferSize; i++)
-                    _handles[i] = new ImageHandleVK();
+                    _handles[i] = new ImageHandleVK(device);
 
                 _curHandle = _handles[frameBufferIndex];
 

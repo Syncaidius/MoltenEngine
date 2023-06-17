@@ -1,6 +1,4 @@
-﻿using Silk.NET.Direct3D.Compilers;
-using Silk.NET.Vulkan;
-using Buffer = Silk.NET.Vulkan.Buffer;
+﻿using Silk.NET.Vulkan;
 
 namespace Molten.Graphics.Vulkan
 {
@@ -29,7 +27,7 @@ namespace Molten.Graphics.Vulkan
                 _handles = new BufferHandleVK[frameBufferSize];
 
                 for (uint i = 0; i < frameBufferSize; i++)
-                    _handles[i] = new BufferHandleVK();
+                    _handles[i] = new BufferHandleVK(device);
 
                 _curHandle = _handles[frameBufferIndex];
                 BufferUsageFlags usageFlags = BufferUsageFlags.None;
@@ -121,8 +119,6 @@ namespace Molten.Graphics.Vulkan
                 _handles[i].Dispose();
             }
         }
-
-        protected override void OnApply(GraphicsQueue queue) { }
 
         public override unsafe BufferHandleVK Handle => _curHandle;
 

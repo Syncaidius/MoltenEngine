@@ -5,20 +5,7 @@
         protected GraphicsObject(GraphicsDevice device)
         {
             Device = device;
-            LastUsedFrameID = device.Queue.Profiler.FrameID;
         }
-
-        /// <summary>
-        /// Invoked when the current <see cref="GraphicsObject"/> should apply any changes before being bound to a GPU context.
-        /// </summary>
-        /// <param name="queue">The <see cref="GraphicsQueue"/> that the current <see cref="GraphicsObject"/> is to be bound to.</param>
-        public void Apply(GraphicsQueue queue)
-        {
-            LastUsedFrameID = queue.Profiler.FrameID;
-            OnApply(queue);
-        }
-
-        protected abstract void OnApply(GraphicsQueue queue);
 
         protected override sealed void OnDispose()
         {
@@ -49,11 +36,6 @@
         /// update should increase this value. E.g. Resizing a texture, recompiling a shader/material, etc.
         /// </summary>
         public uint Version { get; set; }
-
-        /// <summary>
-        /// Gets the ID of the frame that the current <see cref="GraphicsObject"/> was applied.
-        /// </summary>
-        public uint LastUsedFrameID { get; private set; }
 
         /// <summary>
         /// Gets whether or not the current <see cref="GraphicsObject"/> has been successfully disposed and released by its parent <see cref="Device"/>.

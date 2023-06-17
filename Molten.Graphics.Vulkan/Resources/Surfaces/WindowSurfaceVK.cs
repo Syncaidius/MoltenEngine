@@ -52,7 +52,7 @@ namespace Molten.Graphics.Vulkan
             FrameFence = device.GetFence();
         }
 
-        protected override unsafe void OnCreateImage(DeviceVK device, ResourceHandleVK* handle, ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo)
+        protected override void CreateImage(DeviceVK device, ImageHandleVK handle, MemoryPropertyFlags memFlags)
         {
             RendererVK renderer = Device.Renderer as RendererVK;
 
@@ -269,8 +269,7 @@ namespace Molten.Graphics.Vulkan
         {
             OnApply(queue);
 
-            ResourceHandleVK* rHandle = (ResourceHandleVK*)Handle;
-            rHandle->SetValue(_backBuffer[imageIndex].Image);
+            Handle.Set(_backBuffer[imageIndex].Image);
 
             Transition(queue, ImageLayout.Undefined, ImageLayout.PresentSrcKhr);
         }

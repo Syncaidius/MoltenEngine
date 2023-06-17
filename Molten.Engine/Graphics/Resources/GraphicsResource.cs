@@ -11,14 +11,16 @@ namespace Molten.Graphics
         {
             Flags = flags;
             _applyTaskQueue = new ThreadedQueue<IGraphicsResourceTask>();
+            LastUsedFrameID = Device.Renderer.Profiler.FrameID;
         }
 
         /// <summary>
         /// Invoked when the next frame has started to give the resource a chance to prepare it's underlying memory or state.
         /// </summary>
+        /// <param name="queue">The <see cref="GraphicsQueue"/> that is performing the frame transition.</param>
         /// <param name="frameBufferIndex">The frame buffer or in-flight frame index. This will be between 0 and the back-buffer size.</param>
         /// <param name="frameID">The frame ID. This is based on a total count of frames processed so far.</param>
-        protected abstract void OnNextFrame(uint frameBufferIndex, ulong frameID);
+        protected abstract void OnNextFrame(GraphicsQueue queue, uint frameBufferIndex, ulong frameID);
 
         protected abstract void CreateResource(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID);
 
@@ -136,19 +138,32 @@ namespace Molten.Graphics
             return false;
         }
 
-        protected unsafe override void OnApply(GraphicsQueue queue)
+        /// <summary>
+        /// Invoked when the current <see cref="GraphicsObject"/> should apply any changes before being bound to a GPU context.
+        /// </summary>
+        /// <param name="queue">The <see cref="GraphicsQueue"/> that the current <see cref="GraphicsObject"/> is to be bound to.</param>
+        public void Apply(GraphicsQueue queue)
         {
+            LastUsedFrameID = Device.Renderer.Profiler.FrameID;
+            LastUsedFrameBufferIndex = Device.FrameBufferIndex;
+
+            if(LastUsedFrameBufferIndex != Device.FrameBufferIndex)
+                OnNextFrame(queue, Device.FrameBufferIndex, Device.Renderer.Profiler.FrameID);
+
             uint fbSize = Device.FrameBufferSize;
 
             // Cap frame-buffer size to 1 if the resource is static.
             if (Flags.Has(GraphicsResourceFlags.Static))
                 fbSize = 1;
-            
+
             // Check if the last known frame buffer size has changed.
-            if (KnownFrameBufferSize != fbSize || Handle == null)
+            unsafe
             {
-                CreateResource(KnownFrameBufferSize, fbSize, Device.FrameBufferIndex, Device.Renderer.Profiler.FrameID);
-                KnownFrameBufferSize = fbSize;
+                if (KnownFrameBufferSize != fbSize || Handle.Ptr == null)
+                {
+                    CreateResource(KnownFrameBufferSize, fbSize, Device.FrameBufferIndex, Device.Renderer.Profiler.FrameID);
+                    KnownFrameBufferSize = fbSize;
+                }
             }
 
             ApplyChanges(queue);
@@ -187,6 +202,19 @@ namespace Molten.Graphics
         /// </summary>
         public abstract GraphicsFormat ResourceFormat { get; protected set; }
 
+        /// <summary>
+        /// Gets the last known frame buffer size for the current <see cref="GraphicsResource"/>.
+        /// </summary>
         public uint KnownFrameBufferSize { get; protected set; }
+
+        /// <summary>
+        /// Gets the ID of the frame that the current <see cref="GraphicsResource"/> was applied.
+        /// </summary>
+        protected uint LastUsedFrameID { get; private set; }
+
+        /// <summary>
+        /// Gets the last frame buffer index that the current <see cref="GraphicsResource"/> was applied.
+        /// </summary>
+        protected uint LastUsedFrameBufferIndex { get; private set; }
     }
 }

@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     public class GraphicsStateValue<T>
-        where T : class, IGraphicsObject
+        where T : class, IGraphicsResource
     {
         T _boundValue;
         T _value;

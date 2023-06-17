@@ -288,6 +288,7 @@ namespace Molten.Graphics.Vulkan
                     Span<BufferCopy> copy = stackalloc BufferCopy[] {
                         new BufferCopy(0, 0, src.SizeInBytes)
                     };
+
                     _vk.CmdCopyBuffer(_cmd, srcHandle, dstHandle, copy);
                 }
                 else if (dest is TextureVK dstTex)

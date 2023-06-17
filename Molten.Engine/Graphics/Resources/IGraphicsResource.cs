@@ -13,6 +13,12 @@
         void CopyTo(GraphicsPriority priority, GraphicsResource destination, Action<GraphicsResource> completeCallback = null);
 
         /// <summary>
+        /// Invoked when the current <see cref="GraphicsResource"/> should apply any changes before being bound to a GPU context.
+        /// </summary>
+        /// <param name="cmd">The <see cref="GraphicsQueue"/> that the current <see cref="GraphicsResource"/> is to be bound to.</param>
+        void Apply(GraphicsQueue cmd);
+
+        /// <summary>
         /// Gets the <see cref="GraphicsResourceFlags"/> that were provided when the current <see cref="IGraphicsResource"/> was created.
         /// </summary>
         GraphicsResourceFlags Flags { get; }

@@ -3,7 +3,7 @@
 namespace Molten.Graphics
 {
     public class GraphicsStateValueGroup<T>
-        where T : class, IGraphicsObject
+        where T : class, IGraphicsResource
     {
         T[] _values;
         T[] _boundValues;
