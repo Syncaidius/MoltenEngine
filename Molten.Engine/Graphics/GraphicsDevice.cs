@@ -17,7 +17,6 @@ namespace Molten.Graphics
         /// <summary>Occurs when a connected <see cref="IDisplayOutput"/> is deactivated on the current <see cref="GraphicsDevice"/>.</summary>
         public event DisplayOutputChanged OnOutputDeactivated;
 
-
         public event FrameBufferSizeChangedHandler OnFrameBufferSizeChanged;
 
         const int INITIAL_BRANCH_COUNT = 3;
@@ -179,19 +178,21 @@ namespace Molten.Graphics
         {
             Queue.Profiler.Begin();
 
+            // TODO check if _maxStagingSize has changed due to settings. May need to resize all existing staging buffers.
+
             // Do we need to resize the number of buffered frames?
-            if (_newFrameBufferSize != CurrentFrameBufferSize)
+            if (_newFrameBufferSize != FrameBufferSize)
             {
                 // Only trigger event if resizing and not initializing. CurrentFrameBufferSize is 0 when uninitialized.
-                if (CurrentFrameBufferSize > 0)
-                    OnFrameBufferSizeChanged?.Invoke(CurrentFrameBufferSize, _newFrameBufferSize);
+                if (FrameBufferSize > 0)
+                    OnFrameBufferSizeChanged?.Invoke(FrameBufferSize, _newFrameBufferSize);
 
-                CurrentFrameBufferSize = _newFrameBufferSize;
+                FrameBufferSize = _newFrameBufferSize;
 
                 // Ensure we have enough staging buffers
-                if (_frames == null || _frames.Length < CurrentFrameBufferSize)
+                if (_frames == null || _frames.Length < FrameBufferSize)
                 {
-                    Array.Resize(ref _frames, (int)CurrentFrameBufferSize);
+                    Array.Resize(ref _frames, (int)FrameBufferSize);
                     uint bufferBytes = _maxStagingSize;
                     for (int i = 0; i < _frames.Length; i++)
                     {
@@ -210,9 +211,9 @@ namespace Molten.Graphics
             // Ensure we don't have too many tracked frames.
             // TODO Check how many full runs we've done and wait until we've done at least 2 before disposing of any tracked frames.
             //      Reset run count if buffer size is changed.
-            if (_frames.Length > CurrentFrameBufferSize)
+            if (_frames.Length > FrameBufferSize)
             {
-                for (int i = _frames.Length; i < CurrentFrameBufferSize; i++)
+                for (int i = _frames.Length; i < FrameBufferSize; i++)
                 {
                     _frames[i].Dispose();
                     _frames[i] = null;
@@ -232,7 +233,7 @@ namespace Molten.Graphics
             Queue.Profiler.End(time);
 
             _frames[_frameIndex].FrameID = Renderer.Profiler.FrameID;
-            _frameIndex = (_frameIndex + 1U) % CurrentFrameBufferSize;
+            _frameIndex = (_frameIndex + 1U) % FrameBufferSize;
         }
 
         protected abstract void OnBeginFrame(ThreadedList<ISwapChainSurface> surfaces);
@@ -438,14 +439,14 @@ namespace Molten.Graphics
         public VertexFormatCache VertexCache { get; protected set; }
 
         /// <summary>
-        /// Gets the current frame-buffer size. The value will be between 1 and <see cref="GraphicsSettings.BufferingMode"/>, from <see cref="GraphicsDevice.Settings"/>.
+        /// Gets the current frame-buffer size. The value will be between 1 and <see cref="GraphicsSettings.BufferingMode"/>, from <see cref="Settings"/>.
         /// </summary>
-        public uint CurrentFrameBufferSize { get; private set; }
+        public uint FrameBufferSize { get; private set; }
 
         /// <summary>
-        /// Gets the current frame index. The value will be between 0 and <see cref="GraphicsSettings.BufferingMode"/> - 1, from <see cref="GraphicsDevice.Settings"/>.
+        /// Gets the current frame buffer image index. The value will be between 0 and <see cref="GraphicsSettings.BufferingMode"/> - 1, from <see cref="Settings"/>.
         /// </summary>
-        public uint BackBufferIndex => _frameIndex;
+        public uint FrameBufferIndex => _frameIndex;
 
         /// <summary>
         /// Gets the maximum size of a frame's staging buffer, in bytes.

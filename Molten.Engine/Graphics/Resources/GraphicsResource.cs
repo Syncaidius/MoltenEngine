@@ -14,6 +14,15 @@ namespace Molten.Graphics
         }
 
         /// <summary>
+        /// Invoked when the next frame has started to give the resource a chance to prepare it's underlying memory or state.
+        /// </summary>
+        /// <param name="frameBufferIndex">The frame buffer or in-flight frame index. This will be between 0 and the back-buffer size.</param>
+        /// <param name="frameID">The frame ID. This is based on a total count of frames processed so far.</param>
+        protected abstract void OnNextFrame(uint frameBufferIndex, ulong frameID);
+
+        protected abstract void CreateResource(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID);
+
+        /// <summary>
         /// Queues a <see cref="IGraphicsResourceTask"/> on the current <see cref="GraphicsResource"/>.
         /// </summary>
         /// <param name="priority"></param>
@@ -89,15 +98,18 @@ namespace Molten.Graphics
         /// <param name="cmd">The graphics queue to use when process changes.</param>
         protected void ApplyChanges(GraphicsQueue cmd)
         {
+            if (IsDisposed)
+                return;
+
             if (_applyTaskQueue.Count > 0)
             {
                 IGraphicsResourceTask op = null;
-                bool invalidated = false;
+                bool altered = false;
                 while (_applyTaskQueue.TryDequeue(out op))
-                    invalidated = op.Process(cmd, this);
+                    altered = op.Process(cmd, this);
 
                 // If the resource was invalided, let the pipeline know it needs to be reapplied by incrementing version.
-                if (invalidated)
+                if (altered)
                     Version++;
             }
         }
@@ -124,10 +136,22 @@ namespace Molten.Graphics
             return false;
         }
 
-        protected override void OnApply(GraphicsQueue queue)
+        protected unsafe override void OnApply(GraphicsQueue queue)
         {
+            uint fbSize = Device.FrameBufferSize;
+
+            // Cap frame-buffer size to 1 if the resource is static.
+            if (Flags.Has(GraphicsResourceFlags.Static))
+                fbSize = 1;
+            
+            // Check if the last known frame buffer size has changed.
+            if (KnownFrameBufferSize != fbSize || Handle == null)
+            {
+                CreateResource(KnownFrameBufferSize, fbSize, Device.FrameBufferIndex, Device.Renderer.Profiler.FrameID);
+                KnownFrameBufferSize = fbSize;
+            }
+
             ApplyChanges(queue);
-            _applyTaskQueue.Clear();
         }
 
         internal void Clear()
@@ -136,7 +160,7 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// The total size of the resource, in bytes.
+        /// The total size of the resource, in bytes for the current frame.
         /// </summary>
         public abstract uint SizeInBytes { get; protected set; }
 
@@ -150,7 +174,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the underlying native resource handle.
         /// </summary>
-        public abstract unsafe void* Handle { get; }
+        public abstract GraphicsResourceHandle Handle { get; }
 
         /// <summary>Gets the native shader resource view attached to the object.</summary>
         public abstract unsafe void* SRV { get; }
@@ -162,5 +186,7 @@ namespace Molten.Graphics
         /// Gets or [protected] sets the <see cref="GraphicsFormat"/> of the resource.
         /// </summary>
         public abstract GraphicsFormat ResourceFormat { get; protected set; }
+
+        public uint KnownFrameBufferSize { get; protected set; }
     }
 }
