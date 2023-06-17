@@ -240,7 +240,8 @@ namespace Molten.Graphics.Vulkan
         protected override unsafe ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, GraphicsMapType mapType)
         {
             ResourceMap map = new ResourceMap(null, resource.SizeInBytes, resource.SizeInBytes); // TODO Calculate correct RowPitch value when mapping textures
-            Result r = _vk.MapMemory(_device, (((ResourceHandleVK*)resource.Handle)->Memory), 0, resource.SizeInBytes, 0, &map.Ptr);
+            ResourceHandleVK handle = (ResourceHandleVK)resource.Handle;
+            Result r = _vk.MapMemory(_device, handle.Memory, 0, resource.SizeInBytes, 0, &map.Ptr);
 
             if (!r.Check(_device))
                 return new ResourceMap();
@@ -250,15 +251,15 @@ namespace Molten.Graphics.Vulkan
 
         protected override unsafe void OnUnmapResource(GraphicsResource resource, uint subresource)
         {
-            _vk.UnmapMemory(_device, (((ResourceHandleVK*)resource.Handle)->Memory));
+            _vk.UnmapMemory(_device, (((ResourceHandleVK)resource.Handle).Memory));
         }
 
         protected override unsafe void UpdateResource(GraphicsResource resource, uint subresource, ResourceRegion? region, void* ptrData, uint rowPitch, uint slicePitch)
         {
-            ResourceHandleVK* handle = (ResourceHandleVK*)resource.Handle;
+            ResourceHandleVK handle = (ResourceHandleVK)resource.Handle;
 
             // Can we write directly to image memory?
-            if (handle->MemoryFlags.Has(MemoryPropertyFlags.HostVisibleBit))
+            if (handle.MemoryFlags.Has(MemoryPropertyFlags.HostVisibleBit))
             {
                 // TODO set the offset to match the provided region, writing row-by-row based on the rowPitch.
 
@@ -277,26 +278,23 @@ namespace Molten.Graphics.Vulkan
 
         protected override unsafe void CopyResource(GraphicsResource src, GraphicsResource dest)
         {
-            ResourceHandleVK* srcHandle = (ResourceHandleVK*)src.Handle;
-            ResourceHandleVK* destHandle = (ResourceHandleVK*)dest.Handle;
-
-            if (src is GraphicsBuffer)
+            if (src is BufferVK srcBuffer)
             {
-                Buffer* srcBuffer = srcHandle->As<Buffer>();
+                Buffer srcHandle = *srcBuffer.Handle.NativePtr;
 
-                if (dest is GraphicsBuffer)
+                if (dest is BufferVK dstBuffer)
                 {
-                    Buffer* destBuffer = destHandle->As<Buffer>();
+                    Buffer dstHandle = *dstBuffer.Handle.NativePtr;
                     Span<BufferCopy> copy = stackalloc BufferCopy[] {
                         new BufferCopy(0, 0, src.SizeInBytes)
                     };
-                    _vk.CmdCopyBuffer(_cmd, *srcBuffer, *destBuffer, copy);
+                    _vk.CmdCopyBuffer(_cmd, srcHandle, dstHandle, copy);
                 }
-                else if (dest is GraphicsTexture destTex)
+                else if (dest is TextureVK dstTex)
                 {
-                    Image* destImg = destHandle->As<Image>();
+                    Image dstHandle = *dstTex.Handle.NativePtr;
                     Offset3D offset = new Offset3D(0, 0, 0);
-                    Extent3D extent = new Extent3D(destTex.Width, destTex.Height, destTex.Depth);
+                    Extent3D extent = new Extent3D(dstTex.Width, dstTex.Height, dstTex.Depth);
 
                     // TODO set the image aspect flags based on texture type. e.g. is DepthTextureVK or standard TextureVK/surface.
 
@@ -305,30 +303,30 @@ namespace Molten.Graphics.Vulkan
                         new BufferImageCopy(0, 0, src.SizeInBytes, layers, offset, extent)
                     };
 
-                    _vk.CmdCopyBufferToImage(_cmd, *srcBuffer, *destImg, ImageLayout.TransferDstOptimal, regions);
+                    _vk.CmdCopyBufferToImage(_cmd, srcHandle, dstHandle, ImageLayout.TransferDstOptimal, regions);
                 }
             }
-            else if (src is GraphicsTexture srcTex)
+            else if (src is TextureVK srcTex)
             {
-                Image* srcImg = srcHandle->As<Image>();
+                Image srcHandle = *srcTex.Handle.NativePtr;
                 Offset3D srcOffset = new Offset3D(0, 0, 0);
 
                 // TODO set the image aspect flags based on texture type. e.g. is DepthTextureVK or standard TextureVK/surface.
                 ImageSubresourceLayers srcLayers = new ImageSubresourceLayers(ImageAspectFlags.ColorBit, 0, 0, 1);
                 Extent3D srcExtent = new Extent3D(srcTex.Width, srcTex.Height, srcTex.Depth);
 
-                if (dest is GraphicsBuffer)
+                if (dest is BufferVK dstBuffer)
                 {
-                    Buffer* destBuffer = destHandle->As<Buffer>();
+                    Buffer dstHandle = *dstBuffer.Handle.NativePtr;
                     Span<BufferImageCopy> regions = stackalloc BufferImageCopy[] {
                         new BufferImageCopy(0, 0, src.SizeInBytes, srcLayers, srcOffset, srcExtent)
                     };
 
-                    _vk.CmdCopyImageToBuffer(_cmd, *srcImg, ImageLayout.TransferSrcOptimal, *destBuffer, regions);
+                    _vk.CmdCopyImageToBuffer(_cmd, srcHandle, ImageLayout.TransferSrcOptimal, dstHandle, regions);
                 }
-                else if (dest is GraphicsTexture destTex)
+                else if (dest is TextureVK dstTex)
                 {
-                    Image* destImg = destHandle->As<Image>();
+                    Image dstHandle = *dstTex.Handle.NativePtr;
                     Offset3D destOffset = new Offset3D(0, 0, 0);
 
                     // TODO set the image aspect flags based on texture type. e.g. is DepthTextureVK or standard TextureVK/surface.
@@ -338,7 +336,7 @@ namespace Molten.Graphics.Vulkan
                         new ImageCopy(srcLayers, srcOffset, destLayers, destOffset, srcExtent),
                     };
 
-                    _vk.CmdCopyImage(_cmd, *srcImg, ImageLayout.TransferSrcOptimal, *destImg, ImageLayout.TransferDstOptimal, regions);
+                    _vk.CmdCopyImage(_cmd, srcHandle, ImageLayout.TransferSrcOptimal, dstHandle, ImageLayout.TransferDstOptimal, regions);
                 }
             }
             else

@@ -2,68 +2,54 @@
 
 namespace Molten.Graphics.Vulkan
 {
-    public unsafe struct ResourceHandleVK : IDisposable
+    public unsafe abstract class ResourceHandleVK: GraphicsResourceHandle
     {
-        bool _allocated;
+        bool _disposed;
 
-        public void* _ptr;
-
-        public DeviceMemory Memory;
+        internal MemoryAllocationVK Memory;
 
         public MemoryPropertyFlags MemoryFlags;
 
-        /// <summary>
-        /// Allocates a resource handle for the specified type.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        internal static ResourceHandleVK* AllocateNew<T>()
-            where T : unmanaged
+        internal ResourceHandleVK(DeviceVK device)
         {
-            ResourceHandleVK* handle = EngineUtil.Alloc<ResourceHandleVK>();
-            EngineUtil.Clear(handle);
-
-            handle->_ptr = EngineUtil.Alloc<T>();
-            EngineUtil.Clear((T*)handle->_ptr);
-
-            return handle;
-        }
-
-        internal void SetValue<T>(T ptr)
-            where T : unmanaged
-        {
-            T* tPtr = (T*)_ptr;
-            tPtr[0] = ptr;
+            Device = device;
         }
 
         /// <summary>
-        /// Returns the underlying <see cref="Ptr"/> as a pointer to the specified type.
+        /// Disposes of the current Vulkan resource handle and frees <see cref="Memory"/> if assigned.
         /// </summary>
-        /// <typeparam name="T">The type to which to convert the underlying pointer.</typeparam>
-        /// <returns></returns>
-        internal T* As<T>() 
-            where T : unmanaged
+        public override void Dispose()
         {
-            return (T*)_ptr;
-        }
-
-        public void Dispose()
-        {
-            if(IsDisposed)
+            if(_disposed)
                 throw new ObjectDisposedException("The current ResourceHandleVK is already disposed.");
 
+            _disposed = true;
+            Memory?.Free();
+        }
+
+        internal DeviceVK Device { get; }
+    }
+
+    public unsafe abstract class ResourceHandleVK<T> : ResourceHandleVK 
+        where T : unmanaged
+    {
+        T* _ptr;
+
+        internal ResourceHandleVK(DeviceVK device) :
+            base(device)
+        {
+            _ptr = EngineUtil.Alloc<T>();
+        }
+
+        /// <inheritdoc/>
+        public override void Dispose()
+        {
+            base.Dispose();
             EngineUtil.Free(ref _ptr);
         }
 
+        public override unsafe void* Ptr => _ptr;
 
-        /// <summary>
-        /// Gets whether or not the current <see cref="ResourceHandleVK"/> has been disposed.
-        /// </summary>
-        public bool IsDisposed { get; private set; }
-
-        /// <summary>
-        /// Gets the underlying pointer.
-        /// </summary>
-        public void* Ptr => _ptr;
+        internal T* NativePtr => _ptr;
     }
 }

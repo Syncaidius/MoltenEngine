@@ -16,8 +16,6 @@ namespace Molten.Graphics.Vulkan
             GraphicsQueueVK vkCmd = queue as GraphicsQueueVK;
             surface.Apply(queue);
 
-            ResourceHandleVK* test = (ResourceHandleVK*)resource.Handle;
-            Image* img = test->As<Image>();
             vkCmd.Sync(GraphicsCommandListFlags.SingleSubmit);
             surface.Transition(vkCmd, ImageLayout.Undefined, ImageLayout.TransferDstOptimal);
 
