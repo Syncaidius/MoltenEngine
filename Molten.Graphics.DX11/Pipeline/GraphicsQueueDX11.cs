@@ -173,13 +173,13 @@ namespace Molten.Graphics.DX11
             }
 
             MappedSubresource resMap = new MappedSubresource();
-            _native->Map((ID3D11Resource*)resource.Handle, subresource, map, 0, &resMap);
+            _native->Map((ResourceHandleDX11)resource.Handle, subresource, map, 0, &resMap);
             return new ResourceMap(resMap.PData, resMap.RowPitch, resMap.DepthPitch);
         }
 
         protected override void OnUnmapResource(GraphicsResource resource, uint subresource)
         {
-            _native->Unmap((ID3D11Resource*)resource.Handle, subresource);
+            _native->Unmap((ResourceHandleDX11)resource.Handle, subresource);
         }
 
         public override unsafe void CopyResourceRegion(
@@ -188,7 +188,7 @@ namespace Molten.Graphics.DX11
         {
             Box* box = (Box*)sourceRegion;
 
-            _native->CopySubresourceRegion((ID3D11Resource*)dest.Handle, destSubresource, destStart.X, destStart.Y, destStart.Z, (ID3D11Resource*)source.Handle, srcSubresource, box);
+            _native->CopySubresourceRegion((ResourceHandleDX11)dest.Handle, destSubresource, destStart.X, destStart.Y, destStart.Z, (ResourceHandleDX11)source.Handle, srcSubresource, box);
             Profiler.Current.CopySubresourceCount++;
         }
 
@@ -202,7 +202,7 @@ namespace Molten.Graphics.DX11
                 destBox = (Box*)&value;
             }
 
-            _native->UpdateSubresource((ID3D11Resource*)resource.Handle, subresource, destBox, ptrData, rowPitch, slicePitch);
+            _native->UpdateSubresource((ResourceHandleDX11)resource.Handle, subresource, destBox, ptrData, rowPitch, slicePitch);
             Profiler.Current.UpdateSubresourceCount++;
         }
 
@@ -211,10 +211,10 @@ namespace Molten.Graphics.DX11
             if (src.Handle == null)
                 src.Apply(this);
 
-            if(dest is GraphicsBuffer buffer && buffer.BufferType == GraphicsBufferType.Staging)
+            if(dest is BufferDX11 buffer && buffer.BufferType == GraphicsBufferType.Staging)
                 dest.Apply(this);
 
-            _native->CopyResource((ID3D11Resource*)dest.Handle, (ID3D11Resource*)src.Handle);
+            _native->CopyResource((ResourceHandleDX11)dest.Handle, (ResourceHandleDX11)src.Handle);
             Profiler.Current.CopyResourceCount++;
         }
 
@@ -422,7 +422,7 @@ namespace Molten.Graphics.DX11
 
                 if (buffer != null)
                 {
-                    pBuffers[i] = (ID3D11Buffer*)buffer.Handle;
+                    pBuffers[i] = ((ResourceHandleDX11<ID3D11Buffer>)buffer.Handle);
                     pStrides[i] = buffer.Stride;
                     pOffsets[i] = 0; // TODO buffer.ByteOffset; - May need again for multi-part meshes with sub-meshes within the same buffer.
                 }

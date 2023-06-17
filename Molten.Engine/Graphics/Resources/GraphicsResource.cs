@@ -147,14 +147,8 @@ namespace Molten.Graphics
             LastUsedFrameID = Device.Renderer.Profiler.FrameID;
             LastUsedFrameBufferIndex = Device.FrameBufferIndex;
 
-            if(LastUsedFrameBufferIndex != Device.FrameBufferIndex)
-                OnNextFrame(queue, Device.FrameBufferIndex, Device.Renderer.Profiler.FrameID);
-
-            uint fbSize = Device.FrameBufferSize;
-
             // Cap frame-buffer size to 1 if the resource is static.
-            if (Flags.Has(GraphicsResourceFlags.Static))
-                fbSize = 1;
+            uint fbSize = Flags.Has(GraphicsResourceFlags.Static) ? 1 : Device.FrameBufferSize;
 
             // Check if the last known frame buffer size has changed.
             unsafe
@@ -165,6 +159,9 @@ namespace Molten.Graphics
                     KnownFrameBufferSize = fbSize;
                 }
             }
+
+            if (LastUsedFrameBufferIndex != Device.FrameBufferIndex)
+                OnNextFrame(queue, Device.FrameBufferIndex, Device.Renderer.Profiler.FrameID);
 
             ApplyChanges(queue);
         }

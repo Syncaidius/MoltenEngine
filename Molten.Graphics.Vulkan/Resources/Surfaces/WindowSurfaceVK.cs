@@ -1,10 +1,8 @@
 ﻿using Silk.NET.Core.Native;
-using Silk.NET.Direct3D.Compilers;
 using Silk.NET.GLFW;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
 using Image = Silk.NET.Vulkan.Image;
-using Semaphore = Silk.NET.Vulkan.Semaphore;
 
 namespace Molten.Graphics.Vulkan
 {

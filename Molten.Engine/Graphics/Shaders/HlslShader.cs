@@ -67,8 +67,6 @@
                 return DefaultResources[slot];
         }
 
-        protected override void OnApply(GraphicsQueue queue) { }
-
         /// <summary>Gets or sets the value of a material parameter.</summary>
         /// <value>
         /// The <see cref="ShaderVariable"/>.

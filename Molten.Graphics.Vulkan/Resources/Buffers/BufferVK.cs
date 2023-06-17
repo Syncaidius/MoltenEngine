@@ -17,6 +17,11 @@ namespace Molten.Graphics.Vulkan
             base(device, stride, numElements, flags, type)
         { }
 
+        protected override void OnNextFrame(GraphicsQueue queue, uint frameBufferIndex, ulong frameID)
+        {
+            _curHandle = _handles[frameBufferIndex];
+        }
+
         protected override void CreateResource(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
         {
             DeviceVK device = Device as DeviceVK;

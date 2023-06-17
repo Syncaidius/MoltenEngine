@@ -9,7 +9,8 @@ namespace Molten.Graphics.DX11
     /// </summary>
     public unsafe class BufferDX11 : GraphicsBuffer
     {
-        ID3D11Buffer* _native;
+        ResourceHandleDX11<ID3D11Buffer>[] _handles;
+        ResourceHandleDX11<ID3D11Buffer> _curHandle;
         uint _ringPos;
         protected BufferDesc Desc;
 
@@ -32,24 +33,44 @@ namespace Molten.Graphics.DX11
             void* initialData,
             uint initialBytes) : base(device, stride, numElements, flags | GraphicsResourceFlags.GpuRead, type)
         {
+            // Use a temporary handle to pass initial buffer data.
+            _curHandle = new ResourceHandleDX11<ID3D11Buffer>(this)
+            {
+                InitialBytes = initialBytes,
+                InitialData = initialData,
+            };
+
             ResourceFormat = format;
             D3DFormat = format.ToApi();
-            NativeSRV = new SRView(this);
-            NativeUAV = new UAView(this);
 
-            InitializeBuffer(initialData, initialBytes);
+            CreateResource(LastUsedFrameBufferIndex, device.FrameBufferSize, device.FrameBufferIndex, device.Renderer.Profiler.FrameID);
             device.ProcessDebugLayerMessages();
         }
 
-        /// <summary>
-        /// Initializes the current instance of <see cref="BufferDX11"/>.
-        /// </summary>
-        /// <param name="initialDataPtr">A pointer to data that the buffer should initially be populated with.</param>
-        protected virtual void InitializeBuffer(void* initialData, uint initialBytes)
+        protected override void OnNextFrame(GraphicsQueue queue, uint frameBufferIndex, ulong frameID)
         {
-            DeviceDX11 nDevice = Device as DeviceDX11;
-            if (Flags.IsImmutable() && initialData == null)
+           _curHandle = _handles[frameBufferIndex];
+        }
+
+        protected override void CreateResource(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
+        {
+            if (Flags.IsImmutable() && _curHandle.InitialData == null)
                 throw new GraphicsResourceException(this, "Initial data cannot be null when buffer mode is Immutable.");
+
+            DeviceDX11 device = Device as DeviceDX11;
+            if (_curHandle == null)
+            {
+                _handles = new ResourceHandleDX11<ID3D11Buffer>[frameBufferSize];
+
+                for (uint i = 0; i < frameBufferSize; i++)
+                    _handles[i] = new ResourceHandleDX11<ID3D11Buffer>(this);
+
+                _curHandle = _handles[frameBufferIndex];
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
 
             Desc = new BufferDesc();
             Desc.ByteWidth = SizeInBytes;
@@ -80,27 +101,33 @@ namespace Molten.Graphics.DX11
             if (Desc.MiscFlags == (uint)ResourceMiscFlag.BufferStructured)
                 Desc.StructureByteStride = Stride;
 
-            if (initialData != null && initialBytes > 0)
+            for (int i = 0; i < _handles.Length; i++)
+                CreateResources(device, _handles[i], _curHandle);
+
+            _curHandle = _handles[frameBufferIndex];
+        }
+
+        protected virtual void CreateResources(DeviceDX11 device, ResourceHandleDX11<ID3D11Buffer> handle, ResourceHandleDX11<ID3D11Buffer> initialHandle)
+        {
+            if (initialHandle.InitialData != null && initialHandle.InitialBytes > 0)
             {
-                SubresourceData srd = new SubresourceData(initialData, initialBytes, SizeInBytes);
-                fixed(BufferDesc* pDesc = &Desc)
-                    nDevice.Ptr->CreateBuffer(pDesc, &srd, ref _native);
+                SubresourceData srd = new SubresourceData(initialHandle.InitialData, initialHandle.InitialBytes, SizeInBytes);
+                fixed (BufferDesc* pDesc = &Desc)
+                    device.Ptr->CreateBuffer(pDesc, &srd, ref handle.NativePtr);
+
+                initialHandle.InitialData = null;
+                initialHandle.InitialBytes = 0;
             }
             else
             {
                 fixed (BufferDesc* pDesc = &Desc)
-                    nDevice.Ptr->CreateBuffer(pDesc, null, ref _native);
+                    device.Ptr->CreateBuffer(pDesc, null, ref handle.NativePtr);
             }
 
-            Device.AllocateVRAM(SizeInBytes);
-            CreateResources();
-        }
-
-        protected virtual void CreateResources()
-        {
+            // Create shader resource view (SRV), if shader access is permitted.
             if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
             {
-                NativeSRV.Desc = new ShaderResourceViewDesc1()
+                handle.SRV.Desc = new ShaderResourceViewDesc1()
                 {
                     Buffer = new BufferSrv()
                     {
@@ -111,12 +138,13 @@ namespace Molten.Graphics.DX11
                     Format = Format.FormatUnknown,
                 };
 
-                NativeSRV.Create();
+                handle.SRV.Create();
             }
 
+            // Create unordered access view (UAV), if unordered access is permitted.
             if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
             {
-                NativeUAV.Desc = new UnorderedAccessViewDesc1()
+                handle.UAV.Desc = new UnorderedAccessViewDesc1()
                 {
                     Format = Format.FormatUnknown,
                     ViewDimension = UavDimension.Buffer,
@@ -127,7 +155,7 @@ namespace Molten.Graphics.DX11
                         Flags = 0, // TODO add support for append, raw and counter buffers. See: https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_buffer_uav_flag
                     }
                 };
-                NativeUAV.Create();
+                handle.UAV.Create();
             }
         }
 
@@ -144,31 +172,23 @@ namespace Molten.Graphics.DX11
         /// <inheritdoc/>
         protected override void OnGraphicsRelease()
         {
-            NativeSRV.Release();
-            NativeUAV.Release();
+            _curHandle = null;
 
-            if (Handle != null)
-            {
-                SilkUtil.ReleasePtr(ref _native);
-                Device.DeallocateVRAM(Desc.ByteWidth);
-            }
+            for(int i = 0; i < _handles.Length; i++)
+                _handles[i].Dispose();
         }
 
         /// <summary>Gets the resource usage flags associated with the buffer.</summary>
         internal ResourceMiscFlag ResourceFlags => (ResourceMiscFlag)Desc.MiscFlags;
 
         /// <inheritdoc/>
-        public override unsafe void* Handle => _native;
+        public override ResourceHandleDX11<ID3D11Buffer> Handle => _curHandle;
 
         /// <inheritdoc/>
-        public override unsafe void* SRV => NativeSRV.Ptr;
+        public override unsafe void* SRV => _curHandle.SRV.Ptr;
 
         /// <inheritdoc/>
-        public override unsafe void* UAV => NativeUAV.Ptr;
-
-        internal SRView NativeSRV { get; }
-
-        internal UAView NativeUAV { get; }
+        public override unsafe void* UAV => _curHandle.UAV.Ptr;
 
         /// <inheritdoc/>
         public override GraphicsFormat ResourceFormat { get; protected set; }
