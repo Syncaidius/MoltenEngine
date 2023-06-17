@@ -38,7 +38,12 @@ namespace Molten.Graphics.DX12
             base.OnDispose();
         }
 
-        protected override void OnPresent(ThreadedList<ISwapChainSurface> surfaces)
+        protected override void OnBeginFrame(ThreadedList<ISwapChainSurface> surfaces)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void OnEndFrame(ThreadedList<ISwapChainSurface> surfaces)
         {
             throw new NotImplementedException();
         }

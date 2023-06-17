@@ -64,5 +64,14 @@ namespace Molten
         /// <summary>Gets or sets whether to enable a renderer's debug layer, if available.</summary>
         [DataMember]
         public SettingValue<bool> EnableDebugLayer { get; }
+
+        /// <summary>
+        /// Gets or sets the size of per-frame staging buffer segments, in megabytes. 
+        /// <para>Smaller segment sizes lead to a larger number of segments per frame, which can reduce VRAM consumption at the expense of performance.
+        /// In contrast, larger segment sizes lead to smaller numbers of segments per frame, 
+        /// which can improve performance at the expense of potentially higher VRAM consumption.</para>
+        /// </summary>
+        [DataMember]
+        public double FrameStagingSize { get; set; } = 5.5;
     }
 }

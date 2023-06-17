@@ -9,13 +9,25 @@ namespace Molten.Graphics
     /// </summary>
     public abstract partial class GraphicsDevice : EngineObject
     {
+        public delegate void FrameBufferSizeChangedHandler(uint oldSize, uint newSize);
+
         /// <summary>Occurs when a connected <see cref="IDisplayOutput"/> is activated on the current <see cref="GraphicsDevice"/>.</summary>
         public event DisplayOutputChanged OnOutputActivated;
 
         /// <summary>Occurs when a connected <see cref="IDisplayOutput"/> is deactivated on the current <see cref="GraphicsDevice"/>.</summary>
         public event DisplayOutputChanged OnOutputDeactivated;
 
+
+        public event FrameBufferSizeChangedHandler OnFrameBufferSizeChanged;
+
+        const int INITIAL_BRANCH_COUNT = 3;
+
         long _allocatedVRAM;
+        GraphicsFrame[] _frames;
+        uint _frameIndex;
+        uint _newFrameBufferSize;
+        uint _maxStagingSize;
+
         ThreadedList<GraphicsObject> _disposals;
         Dictionary<Type, Dictionary<StructKey, GraphicsObject>> _objectCache;
         ThreadedList<ISwapChainSurface> _outputSurfaces;
@@ -34,6 +46,17 @@ namespace Molten.Graphics
             _outputSurfaces = new ThreadedList<ISwapChainSurface>();
             _disposals = new ThreadedList<GraphicsObject>();
             _objectCache = new Dictionary<Type, Dictionary<StructKey, GraphicsObject>>();
+
+            _maxStagingSize = (uint)ByteMath.FromMegabytes(renderer.Settings.Graphics.FrameStagingSize);
+
+            SettingValue<BackBufferMode> bufferingMode = renderer.Settings.Graphics.BufferingMode;
+            _newFrameBufferSize = Math.Max(1, (uint)bufferingMode.Value);
+            bufferingMode.OnChanged += BufferingMode_OnChanged;
+        }
+
+        private void BufferingMode_OnChanged(BackBufferMode oldValue, BackBufferMode newValue)
+        {
+            _newFrameBufferSize = Math.Max(1, (uint)newValue);
         }
 
         protected void InvokeOutputActivated(IDisplayOutput output)
@@ -87,6 +110,12 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
+            if (_frames != null)
+            {
+                for (int i = 0; i < _frames.Length; i++)
+                    _frames[i].Dispose();
+            }
+
             // Dispose of any registered output services.
             _outputSurfaces.For(0, (index, surface) =>
             {
@@ -146,12 +175,69 @@ namespace Molten.Graphics
             Interlocked.Add(ref _allocatedVRAM, -bytes);
         }
 
-        internal void Present()
+        internal void BeginFrame()
         {
-            OnPresent(_outputSurfaces);
+            Queue.Profiler.Begin();
+
+            // Do we need to resize the number of buffered frames?
+            if (_newFrameBufferSize != CurrentFrameBufferSize)
+            {
+                // Only trigger event if resizing and not initializing. CurrentFrameBufferSize is 0 when uninitialized.
+                if (CurrentFrameBufferSize > 0)
+                    OnFrameBufferSizeChanged?.Invoke(CurrentFrameBufferSize, _newFrameBufferSize);
+
+                CurrentFrameBufferSize = _newFrameBufferSize;
+
+                // Ensure we have enough staging buffers
+                if (_frames == null || _frames.Length < CurrentFrameBufferSize)
+                {
+                    Array.Resize(ref _frames, (int)CurrentFrameBufferSize);
+                    uint bufferBytes = _maxStagingSize;
+                    for (int i = 0; i < _frames.Length; i++)
+                    {
+                        _frames[i] = _frames[i] ?? new GraphicsFrame(INITIAL_BRANCH_COUNT)
+                        {
+                            StagingBuffer = CreateStagingBuffer(true, true, bufferBytes),
+                        };
+                    }
+                }
+            }
+
+            // If the oldest frame hasn't finished yet, wait for it before replacing it with a new one.
+            // This stops the CPU from getting too far ahead of the GPU.
+            _frames[_frameIndex].Reset();
+
+            // Ensure we don't have too many tracked frames.
+            // TODO Check how many full runs we've done and wait until we've done at least 2 before disposing of any tracked frames.
+            //      Reset run count if buffer size is changed.
+            if (_frames.Length > CurrentFrameBufferSize)
+            {
+                for (int i = _frames.Length; i < CurrentFrameBufferSize; i++)
+                {
+                    _frames[i].Dispose();
+                    _frames[i] = null;
+                }
+            }
         }
 
-        protected abstract void OnPresent(ThreadedList<ISwapChainSurface> surfaces);
+        internal void Begin()
+        {
+            Queue.Profiler.Begin();
+            OnBeginFrame(_outputSurfaces);
+        }
+
+        internal void EndFrame(Timing time)
+        {
+            OnEndFrame(_outputSurfaces);
+            Queue.Profiler.End(time);
+
+            _frames[_frameIndex].FrameID = Renderer.Profiler.FrameID;
+            _frameIndex = (_frameIndex + 1U) % CurrentFrameBufferSize;
+        }
+
+        protected abstract void OnBeginFrame(ThreadedList<ISwapChainSurface> surfaces);
+
+        protected abstract void OnEndFrame(ThreadedList<ISwapChainSurface> surfaces);
 
         /// <summary>
         /// Requests a new <see cref="ShaderSampler"/> from the current <see cref="GraphicsDevice"/>, with the implementation's default sampler settings.
@@ -294,6 +380,11 @@ namespace Molten.Graphics
         internal long AllocatedVRAM => _allocatedVRAM;
 
         /// <summary>
+        /// Gets the current frame on the current <see cref="GraphicsDevice"/>.
+        /// </summary>
+        public GraphicsFrame Frame => _frames[_frameIndex];
+
+        /// <summary>
         /// Gets the <see cref="Logger"/> that is bound to the current <see cref="GraphicsDevice"/> for outputting information.
         /// </summary>
         public Logger Log { get; }
@@ -345,5 +436,20 @@ namespace Molten.Graphics
         /// Gets the vertex format cache which stores <see cref="VertexFormat"/> instances to help avoid the need to generate multiple instances of the same formats.
         /// </summary>
         public VertexFormatCache VertexCache { get; protected set; }
+
+        /// <summary>
+        /// Gets the current frame-buffer size. The value will be between 1 and <see cref="GraphicsSettings.BufferingMode"/>, from <see cref="GraphicsDevice.Settings"/>.
+        /// </summary>
+        public uint CurrentFrameBufferSize { get; private set; }
+
+        /// <summary>
+        /// Gets the current frame index. The value will be between 0 and <see cref="GraphicsSettings.BufferingMode"/> - 1, from <see cref="GraphicsDevice.Settings"/>.
+        /// </summary>
+        public uint BackBufferIndex => _frameIndex;
+
+        /// <summary>
+        /// Gets the maximum size of a frame's staging buffer, in bytes.
+        /// </summary>
+        public uint MaxStagingBufferSize => _maxStagingSize;
     }
 }

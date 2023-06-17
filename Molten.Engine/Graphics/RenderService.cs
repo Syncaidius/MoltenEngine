@@ -14,7 +14,6 @@ namespace Molten.Graphics
         bool _shouldPresent;
         bool _surfaceResizeRequired;
 
-        RenderFrameTracker _tracker;
         RenderChain _chain;
         List<GraphicsDevice> _devices;
 
@@ -96,7 +95,6 @@ namespace Molten.Graphics
 
             OnInitializeRenderer(settings);
 
-            _tracker = new RenderFrameTracker(this, 5.5);
             SpriteBatch = new SpriteBatcher(this, 3000, 20);
             LoadDefaultShaders();
 
@@ -108,10 +106,12 @@ namespace Molten.Graphics
         private void ProcessTasks(RenderTaskPriority priority)
         {
             ThreadedQueue<RenderTask> queue = _tasks[priority];
+            Device.Queue.Begin();
             Device.Queue.BeginEvent($"Process '{priority}' tasks");
             while (queue.TryDequeue(out RenderTask task))
                 task.Process(this);
             Device.Queue.EndEvent();
+            Device.Queue.End();
         }
 
         /// <summary>
@@ -130,9 +130,8 @@ namespace Molten.Graphics
             if (!_shouldPresent)
                 return;
 
-            _tracker.StartFrame();
             Profiler.Begin();
-            Device.Queue.Profiler.Begin();
+            Device.BeginFrame();
 
             // Handle any pending graphics-based disposals.
             Timing timing = Thread.Timing;
@@ -221,16 +220,12 @@ namespace Molten.Graphics
                 Device.Queue.EndEvent();
             }
 
-            Surfaces.ResetFirstCleared();
-
-            Device.Present();
-
             ProcessTasks(RenderTaskPriority.EndOfFrame);
+            Device.EndFrame(time);
 
-            Device.Queue.Profiler.End(time);
+            Surfaces.ResetFirstCleared();
             Profiler.Accumulate(Device.Queue.Profiler.Previous, false);
             Profiler.End(time);
-            _tracker.EndFrame();
         }
 
         internal void RenderSceneLayer(GraphicsQueue cmd, LayerRenderData layerData, RenderCamera camera)
@@ -339,7 +334,6 @@ namespace Molten.Graphics
 
             _chain.Dispose();
             SpriteBatch.Dispose();
-            _tracker.Dispose();
 
             foreach (GraphicsDevice device in _devices)
                 device.Dispose();
@@ -364,7 +358,7 @@ namespace Molten.Graphics
         public GraphicsManager DisplayManager { get; private set; }
 
         /// <summary>
-        /// Gets the <see cref="GraphicsDevice"/> bound to the current <see cref="RenderService"/>.
+        /// Gets the primary <see cref="GraphicsDevice"/> bound to the current <see cref="RenderService"/>.
         /// </summary>
         public GraphicsDevice Device { get; private set; }
 
@@ -408,15 +402,5 @@ namespace Molten.Graphics
         /// Gets the internal <see cref="SpriteFontManager"/> bound to the current <see cref="RenderService"/>.
         /// </summary>
         internal SpriteFontManager Fonts { get; private set; }
-
-        /// <summary>
-        /// Gets the tracked resources for the current frame.
-        /// </summary>
-        public RenderFrameTracker.TrackedFrame Frame => _tracker.Frame;
-
-        /// <summary>
-        /// Gets the current frame index. The value will be between 0 and <see cref="GraphicsSettings.BufferingMode"/> - 1, from <see cref="GraphicsDevice.Settings"/>.
-        /// </summary>
-        public uint BackBufferIndex => _tracker.BackBufferIndex;
     }
 }

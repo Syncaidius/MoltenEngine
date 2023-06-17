@@ -52,9 +52,9 @@ namespace Molten.Graphics
                 BackgroundColor = Color.Transparent,
             };
 
-            _renderer.Device.Queue.Begin(GraphicsCommandListFlags.SingleSubmit);
+            //_renderer.Device.Queue.Begin(GraphicsCommandListFlags.SingleSubmit);
             CreateSurface(1);
-            _renderer.Device.Queue.End();
+            //_renderer.Device.Queue.End();
             _renderData.AddObject(_camera);
         }
 
@@ -62,7 +62,7 @@ namespace Molten.Graphics
         {
             _camera.Surface?.Dispose();
             _camera.Surface = _renderer.Device.CreateSurface((uint)PageSize, (uint)PageSize, arraySize: arraySize, allowMipMapGen: true, name: "Sprite Font Sheet");
-            _camera.Surface.Clear(GraphicsPriority.Immediate, Color.Transparent);
+            _camera.Surface.Clear(GraphicsPriority.Apply, Color.Transparent);
         }
 
         private void OnDraw(SpriteBatcher sb)

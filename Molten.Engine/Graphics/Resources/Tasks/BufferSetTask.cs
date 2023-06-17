@@ -29,7 +29,7 @@
             }
             else
             {
-                GraphicsBuffer staging = cmd.Device.Renderer.Frame.StagingBuffer;
+                GraphicsBuffer staging = cmd.Device.Frame.StagingBuffer;
                 using (GraphicsStream stream = cmd.MapResource(staging, 0, ByteOffset, GraphicsMapType.Write))
                     stream.WriteRange(Data, DataStartIndex, ElementCount);
 

@@ -28,10 +28,15 @@ namespace Molten.Graphics.Vulkan
         MemoryManagerVK _memory;
         Device* _native;
 
+        int _swapChainCount;
+        SwapchainKHR* _pSwapChains;
+        uint* _pPresentIndices; // Back-buffer index for each presented swap-chain.
+        Result* _pPresentResults;
+        Fence* _pPresentFences;
+
         Stack<FenceVK> _freeFences;
         List<FenceVK> _fences;
 
-        internal readonly Fence NullFence = new Fence(0);
         List<WindowSurfaceVK> _presentSurfaces;
 
         KhrSwapchain _extSwapChain;
@@ -303,68 +308,81 @@ namespace Molten.Graphics.Vulkan
             _freeFences.Push(fence);
         }
 
-        protected override void OnPresent(ThreadedList<ISwapChainSurface> surfaces)
+        protected override void OnBeginFrame(ThreadedList<ISwapChainSurface> surfaces)
         {
-            // Gather all of the swapchain surfaces that are enabled.
+            // Collect all enabled swapchain surfaces.
             _presentSurfaces.Clear();
             surfaces.For(0, (index, surface) =>
             {
                 if (!surface.IsEnabled)
                     return;
 
-                    WindowSurfaceVK vkSurface = surface as WindowSurfaceVK;
+                WindowSurfaceVK vkSurface = surface as WindowSurfaceVK;
                 if (vkSurface.SurfaceHandle.Handle == 0)
                     vkSurface.Prepare(Queue, 0);
 
-                 _presentSurfaces.Add(vkSurface);
+                _presentSurfaces.Add(vkSurface);
             });
 
-            int swapchainCount = _presentSurfaces.Count;
-            if(swapchainCount == 0)
+            if (_presentSurfaces.Count == 0)
                 return;
 
-            SwapchainKHR* swapChains = stackalloc SwapchainKHR[swapchainCount];
-            uint* pIndices = stackalloc uint[swapchainCount]; // Back-buffer index for each presented swap-chain.
-            Result* pResults = stackalloc Result[swapchainCount];
-            Fence* pFences = stackalloc Fence[swapchainCount];
+            // Check if our unsafe arrays need resizing.
+            if (_swapChainCount != _presentSurfaces.Count)
+            {
+                EngineUtil.Free(ref _pSwapChains);
+                EngineUtil.Free(ref _pPresentIndices);
+                EngineUtil.Free(ref _pPresentFences);
+                EngineUtil.Free(ref _pPresentResults);
+
+                _swapChainCount = _presentSurfaces.Count;
+                _pSwapChains = EngineUtil.AllocArray<SwapchainKHR>((nuint)_swapChainCount);
+                _pPresentIndices = EngineUtil.AllocArray<uint>((nuint)_swapChainCount);
+                _pPresentFences = EngineUtil.AllocArray<Fence>((nuint)_swapChainCount);
+                _pPresentResults = EngineUtil.AllocArray<Result>((nuint)_swapChainCount);
+            }
+
             Semaphore dummySemaphore = new Semaphore();
             Result r = Result.Success;
 
-            for(int i = 0; i < swapchainCount; i++)
+            for (int i = 0; i < _swapChainCount; i++)
             {
                 WindowSurfaceVK vkSurface = _presentSurfaces[i];
-                r = _extSwapChain.AcquireNextImage(this, vkSurface.SwapchainHandle, ulong.MaxValue, dummySemaphore, vkSurface.FrameFence, &pIndices[i]);
+
+                r = _extSwapChain.AcquireNextImage(this, vkSurface.SwapchainHandle, ulong.MaxValue, dummySemaphore, vkSurface.FrameFence, &_pPresentIndices[i]);
                 if (!r.Check(this, () => "Failed to acquire next swapchain image"))
                     return;
 
-                pFences[i] = vkSurface.FrameFence;
+                _pPresentFences[i] = vkSurface.FrameFence;
             }
 
             // Wait for all swapchains to become available before proceeding to present again.
-            r = FenceVK.WaitAll(this, pFences, swapchainCount, ulong.MaxValue);
-            if(!r.Check(this, () => "Failed to wait for all swapchains to become available."))
+            r = FenceVK.WaitAll(this, _pPresentFences, _swapChainCount, ulong.MaxValue);
+            if (!r.Check(this, () => "Failed to wait for all swapchains to become available."))
                 return;
 
-            r = FenceVK.ResetAll(this, pFences, swapchainCount);
-            if(!r.Check(this, () => "Failed to reset all swapchains."))
+            r = FenceVK.ResetAll(this, _pPresentFences, _swapChainCount);
+            if (!r.Check(this, () => "Failed to reset all swapchains."))
                 return;
+        }
 
+        protected override void OnEndFrame(ThreadedList<ISwapChainSurface> surfaces)
+        {
             // Get the last semaphore of each command list branch in the current frame.
             // QueuePresent() will wait for these semaphores to be signaled before presenting.
-            uint semaphoreCount = Renderer.Frame.BranchCount;
+            uint semaphoreCount = Frame.BranchCount;
             Semaphore* semaphores = stackalloc Semaphore[(int)semaphoreCount];
             for (uint i = 0; i < semaphoreCount; i++)
             {
-                CommandListVK vkCmd = Renderer.Frame[i] as CommandListVK;
+                CommandListVK vkCmd = Frame[i] as CommandListVK;
                 semaphores[i] = vkCmd.Semaphore.Ptr;
             }
 
-            for (int i = 0; i < swapchainCount; i++)
+            for (int i = 0; i < _swapChainCount; i++)
             {
                 WindowSurfaceVK vkSurface = _presentSurfaces[i];
-                swapChains[i] = vkSurface.SwapchainHandle;
-
-                vkSurface.Prepare(Queue, pIndices[i]);
+                vkSurface.Prepare(Queue, _pPresentIndices[i]);
+                _pSwapChains[i] = vkSurface.SwapchainHandle;
             }
 
             PresentInfoKHR presentInfoKHR = new PresentInfoKHR()
@@ -372,18 +390,18 @@ namespace Molten.Graphics.Vulkan
                 SType = StructureType.PresentInfoKhr,
                 WaitSemaphoreCount = semaphoreCount,
                 PWaitSemaphores = semaphores,
-                SwapchainCount = (uint)swapchainCount,
-                PSwapchains = swapChains,
-                PImageIndices = pIndices,
-                PResults = pResults,
+                SwapchainCount = (uint)_swapChainCount,
+                PSwapchains = _pSwapChains,
+                PImageIndices = _pPresentIndices,
+                PResults = _pPresentResults,
             };
 
             Queue cmdQueue = Queue.Native;
-            r = _extSwapChain.QueuePresent(cmdQueue, &presentInfoKHR);
-            if (!r.Check(this, () => $"Failed to present {swapchainCount} swapchains:"))
+            Result r = _extSwapChain.QueuePresent(cmdQueue, &presentInfoKHR);
+            if (!r.Check(this, () => $"Failed to present {_swapChainCount} swapchains:"))
             {
-                for (int i = 0; i < swapchainCount; i++)
-                    pResults[i].Check(this, () => $"   Swapchain {i} - {surfaces[i].Name}");
+                for (int i = 0; i < _swapChainCount; i++)
+                    _pPresentResults[i].Check(this, () => $"   Swapchain {i} - {surfaces[i].Name}");
             }
         }
 

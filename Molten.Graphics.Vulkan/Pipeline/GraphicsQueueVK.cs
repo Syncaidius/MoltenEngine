@@ -47,8 +47,8 @@ namespace Molten.Graphics.Vulkan
             if(flags.Has(GraphicsCommandListFlags.SingleSubmit))
                 beginInfo.Flags |= CommandBufferUsageFlags.OneTimeSubmitBit;
 
-            _cmd = _poolFrame.Allocate(level, Device.Renderer.Frame.BranchCount++, flags);
-            Device.Renderer.Frame.Track(_cmd);
+            _cmd = _poolFrame.Allocate(level, Device.Frame.BranchCount++, flags);
+            Device.Frame.Track(_cmd);
             _vk.BeginCommandBuffer(_cmd, &beginInfo);
         }
 
@@ -110,7 +110,7 @@ namespace Molten.Graphics.Vulkan
             beginInfo.Flags = CommandBufferUsageFlags.OneTimeSubmitBit;
 
             _vk.BeginCommandBuffer(_cmd, &beginInfo);
-            Device.Renderer.Frame.Track(_cmd);
+            Device.Frame.Track(_cmd);
         }
 
         private unsafe void SubmitCommandList(CommandListVK cmd, Fence fence)
@@ -268,10 +268,10 @@ namespace Molten.Graphics.Vulkan
             else
             {
                 // Use a staging buffer to transfer the data to the provided resource instead.
-                using (GraphicsStream stream = MapResource(Device.Renderer.Frame.StagingBuffer, 0, 0, GraphicsMapType.Write))
+                using (GraphicsStream stream = MapResource(Device.Frame.StagingBuffer, 0, 0, GraphicsMapType.Write))
                     stream.WriteRange(ptrData, slicePitch);
 
-                CopyResource(Device.Renderer.Frame.StagingBuffer, resource);
+                CopyResource(Device.Frame.StagingBuffer, resource);
             }
         }
 

@@ -169,7 +169,12 @@ namespace Molten.Graphics.DX11
             base.OnDispose();
         }
 
-        protected override void OnPresent(ThreadedList<ISwapChainSurface> surfaces)
+        protected override void OnBeginFrame(ThreadedList<ISwapChainSurface> surfaces)
+        {
+            
+        }
+
+        protected override void OnEndFrame(ThreadedList<ISwapChainSurface> surfaces)
         {
             surfaces.For(0, (index, surface) =>
             {

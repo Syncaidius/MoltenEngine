@@ -91,7 +91,7 @@ namespace Molten.Graphics.DX11
 
                 _native->FinishCommandList(false, &ptrCmd);
                 _cmd = new CommandListDX11(this, ptrCmd);
-                Device.Renderer.Frame.Track(_cmd);
+                Device.Frame.Track(_cmd);
 
                 if (_cmd.Flags.Has(GraphicsCommandListFlags.CpuSyncable))
                     _cmd.Fence = new GraphicsOpenFence();
