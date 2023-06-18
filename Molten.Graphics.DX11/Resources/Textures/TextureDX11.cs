@@ -148,7 +148,7 @@ namespace Molten.Graphics.DX11
                 _handles[i].Dispose();
         }
 
-        protected override void OnResizeResource()
+        protected override void OnResizeResource(in TextureDimensions dimensions)
         {
             UpdateDescription(Width, Height, Depth, Math.Max(1, MipMapCount), Math.Max(1, ArraySize), DxgiFormat);
             CreateTexture(true);

@@ -15,7 +15,7 @@ namespace Molten.Examples
             EngineSettings settings = new EngineSettings();
             settings.Graphics.EnableDebugLayer.Value = true;
             settings.Graphics.VSync.Value = true;
-            settings.Graphics.BufferingMode.Value = BackBufferMode.Double;
+            settings.Graphics.FrameBufferMode.Value = FrameBufferMode.Double;
 
             _browser = new ExampleBrowser<RendererDX11, WinInputService, AudioServiceAL>("Example Browser");
             _browser.Start(settings, true);

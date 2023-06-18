@@ -8,13 +8,6 @@ namespace Molten.Graphics.Vulkan
 {
     internal unsafe class WindowSurfaceVK : RenderSurface2DVK, INativeSurface
     {
-        struct BackBuffer
-        {
-            internal Image Image;
-
-            internal ImageView View;
-        }
-
         public event WindowSurfaceHandler OnHandleChanged;
         public event WindowSurfaceHandler OnParentChanged;
         public event WindowSurfaceHandler OnClose;
@@ -28,7 +21,6 @@ namespace Molten.Graphics.Vulkan
         PresentModeKHR _mode;
         SurfaceCapabilitiesKHR _cap;
         SwapchainKHR _swapChain;
-        BackBuffer[] _backBuffer;
 
         string _title;
         uint _curChainSize;
@@ -50,8 +42,8 @@ namespace Molten.Graphics.Vulkan
             FrameFence = device.GetFence();
         }
 
-        protected override void CreateImage(DeviceVK device, ImageHandleVK handle, MemoryPropertyFlags memFlags)
-        {
+        protected override void CreateImages(DeviceVK device, ImageHandleVK[] handles, MemoryPropertyFlags memFlags, ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo)
+        { 
             RendererVK renderer = Device.Renderer as RendererVK;
 
             _extSurface = _extSurface ?? renderer.GetInstanceExtension<KhrSurface>();
@@ -95,13 +87,14 @@ namespace Molten.Graphics.Vulkan
                 return _extSwapChain.GetSwapchainImages(device, _swapChain, count, items);
             }, "Swapchain image");
 
-            _backBuffer = new BackBuffer[scImages.Length];
+            if (scImages.Length != handles.Length)
+                throw new InvalidOperationException("The number of swap-chain images did not match the current buffering mode.");
 
-            for (int i = 0; i < scImages.Length; i++)
+            for (int i = 0; i < handles.Length; i++)
             {
-                _backBuffer[i].Image = scImages[i];
+                handles[i].NativePtr[0] = scImages[i];
                 viewInfo.Image = scImages[i];
-                r = renderer.VK.CreateImageView(device, viewInfo, null, out _backBuffer[i].View);
+                r = renderer.VK.CreateImageView(device, viewInfo, null, handles[i].ViewPtr);
                 if (!r.Check(device, () => $"Failed to create image view for back-buffer image {i}"))
                     break;
             }
@@ -226,8 +219,8 @@ namespace Molten.Graphics.Vulkan
 
         private void ValidateBackBufferSize()
         {
-            BackBufferMode mode = Device.Renderer.Settings.Graphics.BufferingMode;
-            if (mode == BackBufferMode.Default)
+            FrameBufferMode mode = Device.Renderer.Settings.Graphics.FrameBufferMode;
+            if (mode == FrameBufferMode.Default)
                 _curChainSize = _cap.MinImageCount + 1;
             else
                 _curChainSize = (uint)mode;
@@ -244,31 +237,26 @@ namespace Molten.Graphics.Vulkan
             device.FreeFence(FrameFence);
             FrameFence = null;
 
+            base.OnGraphicsRelease();
+
             if (_swapChain.Handle != 0)
-            {
-                // Clean up image view handles
-                for (int i = 0; i < _backBuffer.Length; i++)
-                    (Device.Renderer as RendererVK).VK.DestroyImageView(device, _backBuffer[i].View, null);
+                _extSwapChain.DestroySwapchain(device, _swapChain, null);
 
-                KhrSwapchain extSwapchain = device.GetExtension<KhrSwapchain>();
-                extSwapchain?.DestroySwapchain(device, _swapChain, null);
-            }
-
-            KhrSurface extSurface = (Device.Renderer as RendererVK).GetInstanceExtension<KhrSurface>();
-            extSurface?.DestroySurface(*(Device.Renderer as RendererVK).Instance, SurfaceHandle, null);
+            _extSurface.DestroySurface(*(Device.Renderer as RendererVK).Instance, SurfaceHandle, null);
 
             if (_window != null)
                 (Device.Renderer as RendererVK).GLFW.DestroyWindow(_window);
 
-            base.OnGraphicsRelease();
+        }
+
+        protected override void OnNextFrame(GraphicsQueue queue, uint imageIndex, ulong frameID)
+        {
+            // We don't want to do anything here as handle-switching happens as part of presentation.
         }
 
         internal void Prepare(GraphicsQueueVK queue, uint imageIndex)
         {
-            OnApply(queue);
-
-            Handle.Set(_backBuffer[imageIndex].Image);
-
+            SetHandle(imageIndex);
             Transition(queue, ImageLayout.Undefined, ImageLayout.PresentSrcKhr);
         }
 

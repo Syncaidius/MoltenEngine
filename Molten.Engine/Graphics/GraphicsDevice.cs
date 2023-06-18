@@ -48,12 +48,12 @@ namespace Molten.Graphics
 
             _maxStagingSize = (uint)ByteMath.FromMegabytes(renderer.Settings.Graphics.FrameStagingSize);
 
-            SettingValue<BackBufferMode> bufferingMode = renderer.Settings.Graphics.BufferingMode;
+            SettingValue<FrameBufferMode> bufferingMode = renderer.Settings.Graphics.FrameBufferMode;
             _newFrameBufferSize = Math.Max(1, (uint)bufferingMode.Value);
             bufferingMode.OnChanged += BufferingMode_OnChanged;
         }
 
-        private void BufferingMode_OnChanged(BackBufferMode oldValue, BackBufferMode newValue)
+        private void BufferingMode_OnChanged(FrameBufferMode oldValue, FrameBufferMode newValue)
         {
             _newFrameBufferSize = Math.Max(1, (uint)newValue);
         }
@@ -442,12 +442,12 @@ namespace Molten.Graphics
         public VertexFormatCache VertexCache { get; protected set; }
 
         /// <summary>
-        /// Gets the current frame-buffer size. The value will be between 1 and <see cref="GraphicsSettings.BufferingMode"/>, from <see cref="Settings"/>.
+        /// Gets the current frame-buffer size. The value will be between 1 and <see cref="GraphicsSettings.FrameBufferMode"/>, from <see cref="Settings"/>.
         /// </summary>
         public uint FrameBufferSize { get; private set; }
 
         /// <summary>
-        /// Gets the current frame buffer image index. The value will be between 0 and <see cref="GraphicsSettings.BufferingMode"/> - 1, from <see cref="Settings"/>.
+        /// Gets the current frame buffer image index. The value will be between 0 and <see cref="GraphicsSettings.FrameBufferMode"/> - 1, from <see cref="Settings"/>.
         /// </summary>
         public uint FrameBufferIndex => _frameIndex;
 

@@ -13,29 +13,36 @@ namespace Molten.Graphics.Vulkan
         ImageHandleVK _curHandle;
 
         protected TextureVK(GraphicsDevice device, GraphicsTextureType type, TextureDimensions dimensions,
-            AntiAliasLevel aaLevel, MSAAQuality sampleQuality, GraphicsFormat format, GraphicsResourceFlags flags, bool allowMipMapGen, string name) : 
+            AntiAliasLevel aaLevel, MSAAQuality sampleQuality, GraphicsFormat format, GraphicsResourceFlags flags, bool allowMipMapGen, string name) :
             base(device, type, dimensions, aaLevel, sampleQuality, format, flags, allowMipMapGen, name)
-        {
-
-            // In Vulkan, the CPU either has read AND write access, or none at all.
-            // If either of the CPU access flags were provided, we need to add both.
-            if(Flags.Has(GraphicsResourceFlags.CpuRead) || Flags.Has(GraphicsResourceFlags.CpuWrite))
-                Flags |= GraphicsResourceFlags.CpuRead | GraphicsResourceFlags.CpuWrite;
-        }
+        { }
 
         protected override void OnNextFrame(GraphicsQueue queue, uint frameBufferIndex, ulong frameID)
         {
-            throw new NotImplementedException();
+            SetHandle(frameBufferIndex);
         }
 
-        protected override void OnCreateResource(uint frameBufferSize, uint frameBufferIndex, ulong frameID)
+        protected void SetHandle(uint index)
         {
+            _curHandle = _handles[index];
+        }
+
+        protected override sealed void OnCreateResource(uint frameBufferSize, uint frameBufferIndex, ulong frameID)
+        {
+            // In Vulkan, the CPU either has read AND write access, or none at all.
+            // If either of the CPU access flags were provided, we need to add both.
+            if (Flags.Has(GraphicsResourceFlags.CpuRead) || Flags.Has(GraphicsResourceFlags.CpuWrite))
+                Flags |= GraphicsResourceFlags.CpuRead | GraphicsResourceFlags.CpuWrite;
+
             DeviceVK device = Device as DeviceVK;
 
             _handles = new ImageHandleVK[frameBufferSize];
 
+            // Don't allocate memory for Image handles if the texture is a swapchain surface.
+            // Swapchain image creation/disposal is controlled entirely by the underlying Vulkan implementation.
+            bool allocImagePtr = !(this is ISwapChainSurface);
             for (uint i = 0; i < frameBufferSize; i++)
-                _handles[i] = new ImageHandleVK(device);
+                _handles[i] = new ImageHandleVK(device, allocImagePtr);
 
             _curHandle = _handles[frameBufferIndex];
 
@@ -114,8 +121,33 @@ namespace Molten.Graphics.Vulkan
             else
                 memFlags |= MemoryPropertyFlags.DeviceLocalBit;
 
-            for (int i = 0; i < frameBufferSize; i++)
-                CreateImage(device, _handles[i], memFlags);
+            CreateImages(device, _handles, memFlags, ref _info, ref _viewInfo);
+        }
+
+        protected virtual void CreateImages(DeviceVK device, ImageHandleVK[] handles, MemoryPropertyFlags memFlags, ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo)
+        {
+            for (int i = 0; i < handles.Length; i++)
+            {
+                ImageHandleVK handle = handles[i];
+                Result r = device.VK.CreateImage(device, _info, null, handle.NativePtr);
+                if (!r.Check(device, () => "Failed to create image resource"))
+                    return;
+                MemoryRequirements memRequirements;
+                device.VK.GetImageMemoryRequirements(device, *handle.NativePtr, &memRequirements);
+                handle.Memory = device.Memory.Allocate(ref memRequirements, memFlags);
+
+                if (handle.Memory == null)
+                    throw new GraphicsResourceException(this, "Failed to allocate memory for image resource");
+
+                _viewInfo.Image = *handle.NativePtr;
+                r = device.VK.BindImageMemory(device, *handle.NativePtr, handle.Memory, 0);
+                if (!r.Check(device, () => "Failed to bind image memory"))
+                    return;
+
+                r = device.VK.CreateImageView(device, _viewInfo, null, handle.ViewPtr);
+                if (!r.Check(device, () => "Failed to create image view"))
+                    return;
+            }
         }
 
         protected override void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
@@ -123,26 +155,9 @@ namespace Molten.Graphics.Vulkan
             throw new NotImplementedException();
         }
 
-        protected virtual void CreateImage(DeviceVK device, ImageHandleVK handle, MemoryPropertyFlags memFlags)
+        protected override void OnResizeResource(in TextureDimensions dimensions)
         {
-            Result r = device.VK.CreateImage(device, _info, null, handle.NativePtr);
-            if (!r.Check(device, () => "Failed to create image resource"))
-                return;
-            MemoryRequirements memRequirements;
-            device.VK.GetImageMemoryRequirements(device, *handle.NativePtr, &memRequirements);
-            handle.Memory = device.Memory.Allocate(ref memRequirements, memFlags);
-
-            if (handle.Memory == null)
-                throw new GraphicsResourceException(this, "Failed to allocate memory for image resource");
-
-            _viewInfo.Image = *handle.NativePtr;
-            r = device.VK.BindImageMemory(device, *handle.NativePtr, handle.Memory, 0);
-            if (!r.Check(device, () => "Failed to bind image memory"))
-                return;
-
-            r = device.VK.CreateImageView(device, _viewInfo, null, handle.ViewPtr);
-            if (!r.Check(device, () => "Failed to create image view"))
-                return;
+            throw new NotImplementedException();
         }
 
         internal void Transition(GraphicsQueueVK cmd, ImageLayout oldLayout, ImageLayout newLayout)
@@ -217,22 +232,10 @@ namespace Molten.Graphics.Vulkan
 
         protected override void OnGraphicsRelease()
         {
-            DeviceVK device = Device as DeviceVK;
             for (int i = 0; i < KnownFrameBufferSize; i++)
-            {
-                if (_handles[i].ViewPtr != null)
-                    device.VK.DestroyImageView(device, *_handles[i].ViewPtr, null);
-
-                if (_handles[i].NativePtr != null)
-                    device.VK.DestroyImage(device, *_handles[i].NativePtr, null);
-
                 _handles[i].Dispose();
-            }
-        }
 
-        protected override void OnResizeResource()
-        {
-            throw new NotImplementedException();
+            _curHandle = null;
         }
 
         public override ImageHandleVK Handle => _curHandle;

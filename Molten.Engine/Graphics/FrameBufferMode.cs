@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    public enum BackBufferMode
+    public enum FrameBufferMode
     {
         Default = 0,
 

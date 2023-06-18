@@ -6,8 +6,8 @@ namespace Molten.Graphics.Vulkan
     {
         internal ImageView* _ptrView;
 
-        internal ImageHandleVK(DeviceVK device) :
-            base(device)
+        internal ImageHandleVK(DeviceVK device, bool allocateImagePtr) :
+            base(device, allocateImagePtr)
         {
             _ptrView = EngineUtil.Alloc<ImageView>();
         }
@@ -21,12 +21,12 @@ namespace Molten.Graphics.Vulkan
                 EngineUtil.Free(ref _ptrView);
             }
 
-            if (Ptr != null)
+            if (Ptr != null && !IsAllocated)
                 Device.VK.DestroyImage(Device, *NativePtr, null);
 
             base.Dispose();
         }
 
-        public ImageView* ViewPtr => _ptrView;
+        public ref ImageView* ViewPtr => ref _ptrView;
     }
 }

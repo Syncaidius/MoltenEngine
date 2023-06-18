@@ -28,26 +28,33 @@ namespace Molten.Graphics.Vulkan
         internal DeviceVK Device { get; }
     }
 
-    public unsafe abstract class ResourceHandleVK<T> : ResourceHandleVK 
+    public unsafe abstract class ResourceHandleVK<T> : ResourceHandleVK
         where T : unmanaged
     {
         T* _ptr;
 
-        internal ResourceHandleVK(DeviceVK device) :
+        protected ResourceHandleVK(DeviceVK device, bool allocate) :
             base(device)
         {
-            _ptr = EngineUtil.Alloc<T>();
+            IsAllocated = allocate;
+
+            if (IsAllocated)
+                _ptr = EngineUtil.Alloc<T>();
         }
 
         /// <inheritdoc/>
         public override void Dispose()
         {
             base.Dispose();
-            EngineUtil.Free(ref _ptr);
+
+            if (IsAllocated)
+                EngineUtil.Free(ref _ptr);
         }
 
         public override unsafe void* Ptr => _ptr;
 
-        internal T* NativePtr => _ptr;
+        internal ref T* NativePtr => ref _ptr;
+
+        protected bool IsAllocated { get; set; }
     }
 }
