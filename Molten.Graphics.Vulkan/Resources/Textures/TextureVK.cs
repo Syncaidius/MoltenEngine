@@ -6,8 +6,8 @@ namespace Molten.Graphics.Vulkan
 {
     public unsafe abstract class TextureVK : GraphicsTexture
     {
-        ImageCreateInfo _desc;
-        ImageViewCreateInfo _viewDesc;
+        ImageCreateInfo _info;
+        ImageViewCreateInfo _viewInfo;
 
         ImageHandleVK[] _handles;
         ImageHandleVK _curHandle;
@@ -52,58 +52,58 @@ namespace Molten.Graphics.Vulkan
             if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
                 flags |= ImageUsageFlags.SampledBit;
 
-            _desc = new ImageCreateInfo(StructureType.ImageCreateInfo);
-            _desc.Extent.Width = Width;
-            _desc.Extent.Height = Height;
-            _desc.Extent.Depth = Depth;
-            _desc.MipLevels = MipMapCount;
-            _desc.ArrayLayers = ArraySize;
-            _desc.Format = ResourceFormat.ToApi();
-            _desc.Tiling = ImageTiling.Optimal;
-            _desc.InitialLayout = ImageLayout.Undefined;
-            _desc.Usage = flags;
-            _desc.SharingMode = SharingMode.Exclusive;
-            _desc.Samples = SampleCountFlags.Count1Bit;
-            _desc.Flags = ImageCreateFlags.None;
+            _info = new ImageCreateInfo(StructureType.ImageCreateInfo);
+            _info.Extent.Width = Width;
+            _info.Extent.Height = Height;
+            _info.Extent.Depth = Depth;
+            _info.MipLevels = MipMapCount;
+            _info.ArrayLayers = ArraySize;
+            _info.Format = ResourceFormat.ToApi();
+            _info.Tiling = ImageTiling.Optimal;
+            _info.InitialLayout = ImageLayout.Undefined;
+            _info.Usage = flags;
+            _info.SharingMode = SharingMode.Exclusive;
+            _info.Samples = SampleCountFlags.Count1Bit;
+            _info.Flags = ImageCreateFlags.None;
 
             // Queue properties are ignored if sharing mode is not VK_SHARING_MODE_CONCURRENT.
-            if (_desc.SharingMode == SharingMode.Concurrent)
+            if (_info.SharingMode == SharingMode.Concurrent)
             {
-                _desc.PQueueFamilyIndices = EngineUtil.AllocArray<uint>(1);
-                _desc.PQueueFamilyIndices[0] = (Device.Queue as GraphicsQueueVK).Index;
-                _desc.QueueFamilyIndexCount = 1;
+                _info.PQueueFamilyIndices = EngineUtil.AllocArray<uint>(1);
+                _info.PQueueFamilyIndices[0] = (Device.Queue as GraphicsQueueVK).Index;
+                _info.QueueFamilyIndexCount = 1;
             }
 
-            _viewDesc = new ImageViewCreateInfo(StructureType.ImageViewCreateInfo);
-            _viewDesc.Format = _desc.Format;
-            _viewDesc.SubresourceRange.AspectMask = ImageAspectFlags.ColorBit;
-            _viewDesc.SubresourceRange.BaseMipLevel = 0;
-            _viewDesc.SubresourceRange.LevelCount = MipMapCount;
-            _viewDesc.SubresourceRange.BaseArrayLayer = 0;
-            _viewDesc.SubresourceRange.LayerCount = ArraySize;
-            _viewDesc.Flags = ImageViewCreateFlags.None;
+            _viewInfo = new ImageViewCreateInfo(StructureType.ImageViewCreateInfo);
+            _viewInfo.Format = _info.Format;
+            _viewInfo.SubresourceRange.AspectMask = ImageAspectFlags.ColorBit;
+            _viewInfo.SubresourceRange.BaseMipLevel = 0;
+            _viewInfo.SubresourceRange.LevelCount = MipMapCount;
+            _viewInfo.SubresourceRange.BaseArrayLayer = 0;
+            _viewInfo.SubresourceRange.LayerCount = ArraySize;
+            _viewInfo.Flags = ImageViewCreateFlags.None;
 
-            SetCreateInfo(device, ref _desc, ref _viewDesc);
+            SetCreateInfo(device, ref _info, ref _viewInfo);
 
             // Creation of images with tiling VK_IMAGE_TILING_LINEAR may not be supported unless other parameters meet all of the constraints
-            if (_desc.Tiling == ImageTiling.Linear)
+            if (_info.Tiling == ImageTiling.Linear)
             {
                 //if (this is DepthSurfaceVK depthSurface)
                 //    throw new GraphicsResourceException(this, "A depth surface texture cannot use linear tiling mode");
 
-                if (_desc.ImageType != ImageType.Type2D)
+                if (_info.ImageType != ImageType.Type2D)
                     throw new GraphicsResourceException(this, "A non-2D texture cannot use linear tiling mode");
 
-                if (_desc.MipLevels != 1)
+                if (_info.MipLevels != 1)
                     throw new GraphicsResourceException(this, "Texture linear-tiled texture must have only 1 mip-map level.");
 
-                if (_desc.ArrayLayers != 1)
+                if (_info.ArrayLayers != 1)
                     throw new GraphicsResourceException(this, "Texture linear-tiled texture must have only 1 array layer.");
 
-                if (_desc.Samples != SampleCountFlags.Count1Bit)
+                if (_info.Samples != SampleCountFlags.Count1Bit)
                     throw new GraphicsResourceException(this, "Texture linear-tiled texture must have a sample count of 1.");
 
-                if (_desc.Usage > (ImageUsageFlags.TransferSrcBit | ImageUsageFlags.TransferDstBit))
+                if (_info.Usage > (ImageUsageFlags.TransferSrcBit | ImageUsageFlags.TransferDstBit))
                     throw new GraphicsResourceException(this, "A linear-tiled texture must have only source and/or destination transfer bits set. Any other usage flags are invalid.");
             }
 
@@ -125,7 +125,7 @@ namespace Molten.Graphics.Vulkan
 
         protected virtual void CreateImage(DeviceVK device, ImageHandleVK handle, MemoryPropertyFlags memFlags)
         {
-            Result r = device.VK.CreateImage(device, _desc, null, handle.NativePtr);
+            Result r = device.VK.CreateImage(device, _info, null, handle.NativePtr);
             if (!r.Check(device, () => "Failed to create image resource"))
                 return;
             MemoryRequirements memRequirements;
@@ -135,12 +135,12 @@ namespace Molten.Graphics.Vulkan
             if (handle.Memory == null)
                 throw new GraphicsResourceException(this, "Failed to allocate memory for image resource");
 
-            _viewDesc.Image = *handle.NativePtr;
+            _viewInfo.Image = *handle.NativePtr;
             r = device.VK.BindImageMemory(device, *handle.NativePtr, handle.Memory, 0);
             if (!r.Check(device, () => "Failed to bind image memory"))
                 return;
 
-            r = device.VK.CreateImageView(device, _viewDesc, null, handle.ViewPtr);
+            r = device.VK.CreateImageView(device, _viewInfo, null, handle.ViewPtr);
             if (!r.Check(device, () => "Failed to create image view"))
                 return;
         }
@@ -159,7 +159,7 @@ namespace Molten.Graphics.Vulkan
                 SrcQueueFamilyIndex = Vk.QueueFamilyIgnored,
                 DstQueueFamilyIndex = Vk.QueueFamilyIgnored,
                 Image = *_curHandle.NativePtr,
-                SubresourceRange = _viewDesc.SubresourceRange,
+                SubresourceRange = _viewInfo.SubresourceRange,
             };
 
             barrier.SubresourceRange = new ImageSubresourceRange()
@@ -230,7 +230,7 @@ namespace Molten.Graphics.Vulkan
             }
         }
 
-        protected override void OnSetSize()
+        protected override void OnResizeResource()
         {
             throw new NotImplementedException();
         }

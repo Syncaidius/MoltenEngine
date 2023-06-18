@@ -1,4 +1,5 @@
-﻿using Silk.NET.Core.Native;
+﻿using System.Drawing;
+using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 
@@ -63,16 +64,6 @@ namespace Molten.Graphics.DX11
 
         protected override void OnCreateResource(uint frameBufferSize, uint frameBufferIndex, ulong frameID)
         {
-            throw new NotImplementedException();
-        }
-
-        protected override void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected void CreateTexture(bool resize)
-        {
             OnPreCreate?.Invoke(this);
 
             // Dispose of old resources
@@ -101,6 +92,11 @@ namespace Molten.Graphics.DX11
             {
                 OnCreateFailed?.Invoke(this);
             }
+        }
+
+        protected override void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
+        {
+            throw new NotImplementedException();
         }
 
         protected SubresourceData* GetImmutableData(Usage usage)
@@ -148,14 +144,11 @@ namespace Molten.Graphics.DX11
 
         protected override void OnGraphicsRelease()
         {
-            _srv.Release();
-            _uav.Release();
-
-            //TrackDeallocation();
-            SilkUtil.ReleasePtr(ref _native);
+            for (int i = 0; i < _handles.Length; i++)
+                _handles[i].Dispose();
         }
 
-        protected override void OnSetSize()
+        protected override void OnResizeResource()
         {
             UpdateDescription(Width, Height, Depth, Math.Max(1, MipMapCount), Math.Max(1, ArraySize), DxgiFormat);
             CreateTexture(true);
@@ -163,28 +156,14 @@ namespace Molten.Graphics.DX11
 
         protected override void OnGenerateMipMaps(GraphicsQueue cmd)
         {
-            if (_srv.Ptr != null)
-                (cmd as GraphicsQueueDX11).Ptr->GenerateMips(_srv);
+            if (_curHandle.Ptr != null)
+                (cmd as GraphicsQueueDX11).Ptr->GenerateMips(_curHandle.SRV);
         }
 
         protected virtual void UpdateDescription(uint newWidth, uint newHeight, 
             uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat) { }
 
         protected abstract ID3D11Resource* CreateResource(bool resize);
-
-        /// <summary>Applies all pending changes to the texture. Take care when calling this method in multi-threaded code. Calling while the
-        /// GPU may be using the texture will cause unexpected behaviour.</summary>
-        /// <param name="cmd"></param>
-        protected override void OnApply(GraphicsQueue cmd)
-        {
-            if (IsDisposed)
-                return;
-
-            if(_native == null)
-                CreateTexture(false);
-
-            base.OnApply(cmd);
-        }
 
         /// <summary>Gets the format of the texture.</summary>
         public Format DxgiFormat => ResourceFormat.ToApi();
@@ -193,8 +172,8 @@ namespace Molten.Graphics.DX11
 
         public override ResourceHandleDX11<ID3D11Resource> Handle => _curHandle;
 
-        public override unsafe void* SRV => _srv.Ptr;
+        public override unsafe void* SRV => _curHandle.SRV.Ptr;
 
-        public override unsafe void* UAV => _uav.Ptr;
+        public override unsafe void* UAV => _curHandle.UAV.Ptr;
     }
 }

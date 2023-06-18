@@ -81,11 +81,15 @@ namespace Molten.Graphics
         {
             QueueTask(priority, new TextureResizeTask()
             {
-                NewWidth = newWidth,
-                NewHeight = Height,
-                NewMipMapCount = newMipMapCount,
-                NewArraySize = ArraySize,
-                NewFormat = newFormat,
+                NewFormat = newFormat != GraphicsFormat.Unknown ? newFormat : ResourceFormat,
+                NewDimensions = new TextureDimensions()
+                {
+                    Width = newWidth,
+                    Height = Height,
+                    Depth = Depth,
+                    ArraySize = ArraySize,
+                    MipMapCount = newMipMapCount > 0 ? newMipMapCount : MipMapCount,
+                },
             });
         }
 
@@ -102,12 +106,15 @@ namespace Molten.Graphics
 
             QueueTask(priority, new TextureResizeTask()
             {
-                NewWidth = newWidth,
-                NewHeight = newHeight,
-                NewDepth = Depth,
-                NewArraySize = ArraySize,
                 NewFormat = ResourceFormat,
-                NewMipMapCount = MipMapCount,
+                NewDimensions = new TextureDimensions()
+                {
+                    Width = newWidth,
+                    Height = newHeight,
+                    Depth = Depth,
+                    ArraySize = ArraySize,
+                    MipMapCount = MipMapCount,
+                },
             });
         }
 
@@ -115,30 +122,34 @@ namespace Molten.Graphics
         /// Resizes the current <see cref="GraphicsTexture"/>.
         /// </summary>
         /// <param name="priority">The priority of the resize operation.</param>
-        /// <param name="newWidth">The new width.</param>
-        /// <param name="newHeight">The new height. If the texture is 1D, height will be defaulted to 1.</param>
-        /// <param name="newDepthOrArraySize">For 3D textures, this is the new depth dimension. 
+        /// <param name="width">The new width.</param>
+        /// <param name="height">The new height. If the texture is 1D, height will be defaulted to 1.</param>
+        /// <param name="arraySize">For 3D textures, this is the new depth dimension. 
         /// For every other texture type, this is the number of array slices/layers, or the array size.
         /// <para>If set to 0, the existing <see cref="Depth"/> or <see cref="ArraySize"/> will be used.</para></param>
-        /// <param name="newMipMapCount">The number of mip-map levels per array slice/layer. If set to 0, the current <see cref="MipMapCount"/> will be used.</param>
+        /// <param name="depth">The new depth. Only applicable for 3D textures.</param>
+        /// <param name="mipMapCount">The number of mip-map levels per array slice/layer. If set to 0, the current <see cref="MipMapCount"/> will be used.</param>
         /// <param name="newFormat">The new format. If set to <see cref="GraphicsFormat.Unknown"/>, the existing format will be used.</param>
-        public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight, uint newDepthOrArraySize = 0, uint newMipMapCount = 0, GraphicsFormat newFormat = GraphicsFormat.Unknown)
+        public void Resize(GraphicsPriority priority, uint width, uint height, uint arraySize = 0, uint mipMapCount = 0, uint depth = 0, GraphicsFormat newFormat = GraphicsFormat.Unknown)
         {
             if (TextureType == GraphicsTextureType.Texture1D)
-                newHeight = 1;
+                height = 1;
+
+            if (TextureType != GraphicsTextureType.Texture3D || TextureType != GraphicsTextureType.Surface3D)
+                depth = 1;
 
             TextureResizeTask task = new TextureResizeTask()
             {
-                NewWidth = newWidth,
-                NewHeight = newHeight,
-                NewMipMapCount = newMipMapCount == 0 ? MipMapCount : newMipMapCount,
-                NewFormat = newFormat == GraphicsFormat.Unknown ? ResourceFormat : newFormat
+                NewFormat = newFormat == GraphicsFormat.Unknown ? ResourceFormat : newFormat,
+                NewDimensions = new TextureDimensions()
+                {
+                    Width = width,
+                    Height = height,
+                    ArraySize = arraySize > 0 ? arraySize : ArraySize,
+                    Depth = depth > 0 ? depth : Depth,
+                    MipMapCount = mipMapCount > 0 ? mipMapCount : MipMapCount
+                },
             };
-
-            if (TextureType == GraphicsTextureType.Texture3D)
-                task.NewDepth = newDepthOrArraySize == 0 ? Depth : newDepthOrArraySize;
-            else
-                task.NewArraySize = newDepthOrArraySize == 0 ? ArraySize : newDepthOrArraySize;
 
             QueueTask(priority, task);
         }
@@ -273,25 +284,17 @@ namespace Molten.Graphics
         internal void OnSetSize(ref TextureResizeTask task)
         {
             // Avoid resizing/recreation if nothing has actually changed.
-            if (Width == task.NewWidth &&
-                Height == task.NewHeight &&
-                Depth == task.NewDepth &&
-                MipMapCount == task.NewMipMapCount &&
-                ArraySize == task.NewArraySize &&
-                ResourceFormat == task.NewFormat)
+            if (_dimensions == task.NewDimensions && ResourceFormat == task.NewFormat)
                 return;
 
-            _dimensions.Width = Math.Max(1, task.NewWidth);
-            _dimensions.Height = Math.Max(1, task.NewHeight);
-            _dimensions.Depth = Math.Max(1, task.NewDepth);
-            _dimensions.MipMapLevels = Math.Max(1, task.NewMipMapCount);
+            _dimensions = task.NewDimensions;
             ResourceFormat = task.NewFormat;
 
-            OnSetSize();
+            OnResizeResource(in _dimensions);
             OnResize?.Invoke(this);
         }
 
-        protected abstract void OnSetSize();
+        protected abstract void OnResizeResource(in TextureDimensions dimensions);
 
         public void CopyTo(GraphicsPriority priority,
             uint sourceLevel, uint sourceSlice,
@@ -364,7 +367,7 @@ namespace Molten.Graphics
         public uint Depth => _dimensions.Depth;
 
         /// <summary>Gets the number of mip map levels in the texture.</summary>
-        public uint MipMapCount => _dimensions.MipMapLevels;
+        public uint MipMapCount => _dimensions.MipMapCount;
 
         /// <summary>Gets the number of array slices in the texture. For a cube-map, this value will a multiple of 6. For example, a cube map with 2 array elements will have 12 array slices.</summary>
         public uint ArraySize => _dimensions.ArraySize;

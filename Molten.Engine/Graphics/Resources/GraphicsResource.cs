@@ -84,7 +84,7 @@ namespace Molten.Graphics
                 if (ResourceFormat != destination.ResourceFormat)
                     throw new ResourceCopyException(this, destination, "The source and destination texture formats do not match.");
             }
-            else if (this is GraphicsBuffer srcBuffer && destination is GraphicsBuffer destBuffer)
+            else if (this is GraphicsBuffer && destination is GraphicsBuffer)
             {
                 if (destination.SizeInBytes < SizeInBytes)
                     throw new GraphicsResourceException(this, "The destination buffer is not large enough.");

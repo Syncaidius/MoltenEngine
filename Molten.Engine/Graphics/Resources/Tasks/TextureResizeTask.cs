@@ -3,15 +3,7 @@ namespace Molten.Graphics
 {
     public struct TextureResizeTask : IGraphicsResourceTask
     {
-        public uint NewWidth;
-
-        public uint NewHeight;
-
-        public uint NewDepth;
-
-        public uint NewMipMapCount;
-
-        public uint NewArraySize;
+        public TextureDimensions NewDimensions;
 
         public GraphicsFormat NewFormat;
 
