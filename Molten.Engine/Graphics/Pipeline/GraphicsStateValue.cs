@@ -50,14 +50,19 @@
             return false;
         }
 
+
+        /// <summary>
+        /// Gets the current value. This may not match <see cref="BoundValue"/> until <see cref="Bind(GraphicsQueue)"/> is called.
+        /// </summary>
         public T Value
         {
             get => _value;
             set => _value = (value != null && !value.IsReleased) ? value : null;
         }
 
+        /// <summary>
+        /// Gets the currently-bound <typeparamref name="T"/> instance.
+        /// </summary>
         public T BoundValue => _boundValue;
-
-        public uint BoundVersion => _boundVersion;
     }
 }

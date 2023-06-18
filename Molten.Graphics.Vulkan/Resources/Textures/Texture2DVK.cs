@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Silk.NET.Vulkan;
+﻿using Silk.NET.Vulkan;
 
 namespace Molten.Graphics.Vulkan
 {
@@ -32,6 +27,12 @@ namespace Molten.Graphics.Vulkan
                 case GraphicsTextureType.TextureCube:
                     return;
             }
+        }
+
+        public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight, uint newMipMapCount = 0, 
+            uint newArraySize = 0, GraphicsFormat newFormat = GraphicsFormat.Unknown)
+        {
+            Resize(priority, newWidth, newHeight, newArraySize, newMipMapCount, Depth, newFormat);
         }
 
         protected override void SetCreateInfo(DeviceVK device, ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo)

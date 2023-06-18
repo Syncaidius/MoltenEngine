@@ -7,7 +7,7 @@ namespace Molten.Graphics.DX11
         GraphicsStateValueGroup<ConstantBufferDX11> _constantBuffers;
         GraphicsStateValueGroup<GraphicsResource> _resources;
         GraphicsStateValueGroup<ShaderSamplerDX11> _samplers;
-        GraphicsStateValue<ShaderComposition> _shader;
+        GraphicsStateBasicValue<ShaderComposition> _shader;
 
         internal ShaderStageDX11(GraphicsQueueDX11 queue, ShaderType type)
         {
@@ -20,13 +20,13 @@ namespace Molten.Graphics.DX11
             _samplers = new GraphicsStateValueGroup<ShaderSamplerDX11>(cap.MaxShaderSamplers);
             _resources = new GraphicsStateValueGroup<GraphicsResource>(shaderCap.MaxInResources);
             _constantBuffers = new GraphicsStateValueGroup<ConstantBufferDX11>(cap.ConstantBuffers.MaxSlots);
-            _shader = new GraphicsStateValue<ShaderComposition>();
+            _shader = new GraphicsStateBasicValue<ShaderComposition>();
         }
 
         internal bool Bind(ShaderComposition c)
         {
             _shader.Value = c;
-            bool shaderChanged = _shader.Bind(Cmd);
+            bool shaderChanged = _shader.Bind();
             c = _shader.BoundValue;
 
             if (shaderChanged)

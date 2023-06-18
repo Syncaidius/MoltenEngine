@@ -87,9 +87,6 @@ namespace Molten.Graphics
 
         internal void DisposeMarkedObjects(uint framesToWait, ulong frameID)
         {
-            // TODO replace this with graphics device tasking. if a resource needs to be disposed,
-            // check its LastUsedFrameID to ensure it's older than the size of the frame buffer.
-
             // Are we disposing before the render thread has started?
             _disposals.ForReverse(1, (index, obj) =>
             {

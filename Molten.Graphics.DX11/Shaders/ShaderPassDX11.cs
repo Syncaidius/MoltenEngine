@@ -26,8 +26,6 @@ namespace Molten.Graphics.DX11
             Topology = parameters.Topology.ToApi();
         }
 
-        protected override void OnApply(GraphicsQueue cmd) { }
-
         internal DepthStateDX11 DepthState { get; private set; }
 
         internal RasterizerStateDX11 RasterizerState { get; private set; }

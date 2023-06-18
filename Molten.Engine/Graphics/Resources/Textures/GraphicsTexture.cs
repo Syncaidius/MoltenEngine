@@ -79,18 +79,7 @@ namespace Molten.Graphics
         /// <param name="newFormat">The new format. If set to <see cref="GraphicsFormat.Unknown"/>, the existing format will be used.</param>
         public void Resize(GraphicsPriority priority, uint newWidth, uint newMipMapCount = 0, GraphicsFormat newFormat = GraphicsFormat.Unknown)
         {
-            QueueTask(priority, new TextureResizeTask()
-            {
-                NewFormat = newFormat != GraphicsFormat.Unknown ? newFormat : ResourceFormat,
-                NewDimensions = new TextureDimensions()
-                {
-                    Width = newWidth,
-                    Height = Height,
-                    Depth = Depth,
-                    ArraySize = ArraySize,
-                    MipMapCount = newMipMapCount > 0 ? newMipMapCount : MipMapCount,
-                },
-            });
+            Resize(priority, newWidth, Height, ArraySize, newMipMapCount, Depth, newFormat);
         }
 
         /// <summary>
@@ -101,21 +90,7 @@ namespace Molten.Graphics
         /// <param name="newHeight">The new height. If the texture is 1D, height will be defaulted to 1.</param> 
         public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight)
         {
-            if( TextureType == GraphicsTextureType.Texture1D)
-                newHeight = 1;
-
-            QueueTask(priority, new TextureResizeTask()
-            {
-                NewFormat = ResourceFormat,
-                NewDimensions = new TextureDimensions()
-                {
-                    Width = newWidth,
-                    Height = newHeight,
-                    Depth = Depth,
-                    ArraySize = ArraySize,
-                    MipMapCount = MipMapCount,
-                },
-            });
+            Resize(priority, newWidth, newHeight, ArraySize, MipMapCount, Depth, ResourceFormat);
         }
 
         /// <summary>
@@ -138,7 +113,7 @@ namespace Molten.Graphics
             if (TextureType != GraphicsTextureType.Texture3D || TextureType != GraphicsTextureType.Surface3D)
                 depth = 1;
 
-            TextureResizeTask task = new TextureResizeTask()
+            QueueTask(priority, new TextureResizeTask()
             {
                 NewFormat = newFormat == GraphicsFormat.Unknown ? ResourceFormat : newFormat,
                 NewDimensions = new TextureDimensions()
@@ -149,9 +124,7 @@ namespace Molten.Graphics
                     Depth = depth > 0 ? depth : Depth,
                     MipMapCount = mipMapCount > 0 ? mipMapCount : MipMapCount
                 },
-            };
-
-            QueueTask(priority, task);
+            });
         }
 
         public unsafe void SetData<T>(GraphicsPriority priority, RectangleUI area, T* data, uint numElements, uint bytesPerPixel, uint level, uint arrayIndex = 0,

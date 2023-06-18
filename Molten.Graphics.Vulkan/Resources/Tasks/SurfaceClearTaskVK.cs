@@ -28,7 +28,7 @@ namespace Molten.Graphics.Vulkan
                 LevelCount = surface.MipMapCount,
             };
 
-            vkCmd.ClearImage(*surface.ImageHandle, ImageLayout.TransferDstOptimal, Color, &range, 1);
+            vkCmd.ClearImage(*surface.Handle.NativePtr, ImageLayout.TransferDstOptimal, Color, &range, 1);
             surface.Transition(vkCmd, ImageLayout.TransferDstOptimal, ImageLayout.ColorAttachmentOptimal);
             vkCmd.Sync();
 

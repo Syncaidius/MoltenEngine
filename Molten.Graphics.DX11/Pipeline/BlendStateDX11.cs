@@ -41,8 +41,6 @@ namespace Molten.Graphics.DX11
             device.Ptr->CreateBlendState1(Desc, ref _native);
         }
 
-        protected override void OnApply(GraphicsQueue cmd) { }
-
         protected override void OnGraphicsRelease()
         {
             SilkUtil.ReleasePtr(ref _native);

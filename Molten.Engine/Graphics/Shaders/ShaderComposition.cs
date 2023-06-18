@@ -30,8 +30,6 @@
             Type = type;
         }
 
-        protected override void OnApply(GraphicsQueue context) { }
-
         protected override void OnGraphicsRelease() { }
 
         public void* PtrShader

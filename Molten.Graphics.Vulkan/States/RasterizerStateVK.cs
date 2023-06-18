@@ -6,7 +6,7 @@ namespace Molten.Graphics.Vulkan
     {
         internal StructKey<PipelineRasterizationStateCreateInfo> Desc { get; }
 
-        public RasterizerStateVK(GraphicsDevice device, ref ShaderPassParameters parameters) : 
+        public RasterizerStateVK(GraphicsDevice device, ref ShaderPassParameters parameters) :
             base(device)
         {
             Desc = new StructKey<PipelineRasterizationStateCreateInfo>();
@@ -30,7 +30,5 @@ namespace Molten.Graphics.Vulkan
         {
             Desc.Dispose();
         }
-
-        protected override void OnApply(GraphicsQueue queue) { }
     }
 }

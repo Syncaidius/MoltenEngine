@@ -259,7 +259,7 @@ namespace Molten.Graphics.Vulkan
             ResourceHandleVK handle = (ResourceHandleVK)resource.Handle;
 
             // Can we write directly to image memory?
-            if (handle.MemoryFlags.Has(MemoryPropertyFlags.HostVisibleBit))
+            if (handle.Memory.Flags.Has(MemoryPropertyFlags.HostVisibleBit))
             {
                 // TODO set the offset to match the provided region, writing row-by-row based on the rowPitch.
 

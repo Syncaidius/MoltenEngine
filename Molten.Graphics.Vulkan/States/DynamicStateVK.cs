@@ -33,7 +33,5 @@ namespace Molten.Graphics.Vulkan
             Desc.Dispose();
             EngineUtil.Free(ref dPtr);
         }
-
-        protected override void OnApply(GraphicsQueue queue) { }
     }
 }

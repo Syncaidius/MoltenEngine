@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Silk.NET.Vulkan;
+﻿using Silk.NET.Vulkan;
 
 namespace Molten.Graphics.Vulkan
 {
@@ -22,6 +17,11 @@ namespace Molten.Graphics.Vulkan
                 allowMipMapGen, 
                 name)
         {
+        }
+
+        public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount = 0, GraphicsFormat newFormat = GraphicsFormat.Unknown)
+        {
+            Resize(priority, newWidth, newHeight, ArraySize, newMipMapCount, newDepth, newFormat);
         }
 
         protected override void SetCreateInfo(DeviceVK device, ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo)

@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.Vulkan
 {
-    public unsafe abstract class ResourceHandleVK: GraphicsResourceHandle
+    public unsafe abstract class ResourceHandleVK : GraphicsResourceHandle
     {
         bool _disposed;
 
