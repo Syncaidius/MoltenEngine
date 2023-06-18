@@ -41,5 +41,10 @@
         /// Gets whether or not the current <see cref="GraphicsObject"/> has been successfully disposed and released by its parent <see cref="Device"/>.
         /// </summary>
         public bool IsReleased { get; private set; }
+
+        /// <summary>
+        /// Gets the frame ID that the current <see cref="GraphicsObject"/> was initially marked for release.
+        /// </summary>
+        internal ulong ReleaseFrameID { get; set; }
     }
 }

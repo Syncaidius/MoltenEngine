@@ -93,7 +93,7 @@ namespace Molten.Graphics
             // Are we disposing before the render thread has started?
             _disposals.ForReverse(1, (index, obj) =>
             {
-                ulong age = frameID - obj.LastUsedFrameID;
+                ulong age = frameID - obj.ReleaseFrameID;
                 if (age >= framesToWait)
                 {
                     obj.GraphicsRelease();
@@ -102,11 +102,12 @@ namespace Molten.Graphics
             });
         }
 
-        public void MarkForRelease(GraphicsObject obj)
+        internal void MarkForRelease(GraphicsObject obj)
         {
             if (IsDisposed)
                 throw new ObjectDisposedException("GraphicsDevice has already been disposed, so it cannot mark GraphicsObject instances for release.");
 
+            obj.ReleaseFrameID = Renderer.Profiler.FrameID;
             _disposals.Add(obj);
         }
 
