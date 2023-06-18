@@ -11,7 +11,6 @@ namespace Molten.Graphics.DX11
     {
         ResourceHandleDX11<ID3D11Buffer>[] _handles;
         ResourceHandleDX11<ID3D11Buffer> _curHandle;
-        uint _ringPos;
         protected BufferDesc Desc;
 
         /// <summary>
@@ -43,7 +42,7 @@ namespace Molten.Graphics.DX11
             ResourceFormat = format;
             D3DFormat = format.ToApi();
 
-            CreateResource(LastUsedFrameBufferIndex, device.FrameBufferSize, device.FrameBufferIndex, device.Renderer.Profiler.FrameID);
+            OnCreateResource(device.FrameBufferSize, device.FrameBufferIndex, device.Renderer.Profiler.FrameID);
             device.ProcessDebugLayerMessages();
         }
 
@@ -52,25 +51,16 @@ namespace Molten.Graphics.DX11
            _curHandle = _handles[frameBufferIndex];
         }
 
-        protected override void CreateResource(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
+        protected override void OnCreateResource(uint frameBufferSize, uint frameBufferIndex, ulong frameID)
         {
+            DeviceDX11 device = Device as DeviceDX11;
+            _handles = new ResourceHandleDX11<ID3D11Buffer>[frameBufferSize];
+
+            for (uint i = 0; i < frameBufferSize; i++)
+                _handles[i] = new ResourceHandleDX11<ID3D11Buffer>(this);
+
             if (Flags.IsImmutable() && _curHandle.InitialData == null)
                 throw new GraphicsResourceException(this, "Initial data cannot be null when buffer mode is Immutable.");
-
-            DeviceDX11 device = Device as DeviceDX11;
-            if (_curHandle == null)
-            {
-                _handles = new ResourceHandleDX11<ID3D11Buffer>[frameBufferSize];
-
-                for (uint i = 0; i < frameBufferSize; i++)
-                    _handles[i] = new ResourceHandleDX11<ID3D11Buffer>(this);
-
-                _curHandle = _handles[frameBufferIndex];
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
 
             Desc = new BufferDesc();
             Desc.ByteWidth = SizeInBytes;
@@ -105,6 +95,11 @@ namespace Molten.Graphics.DX11
                 CreateResources(device, _handles[i], _curHandle);
 
             _curHandle = _handles[frameBufferIndex];
+        }
+
+        protected override void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
+        {
+            throw new NotImplementedException();
         }
 
         protected virtual void CreateResources(DeviceDX11 device, ResourceHandleDX11<ID3D11Buffer> handle, ResourceHandleDX11<ID3D11Buffer> initialHandle)

@@ -48,8 +48,8 @@ namespace Molten.Graphics
         Shared = 1 << 6,
 
         /// <summary>
-        /// This is a helper flag to tell the underlying implementation that the resource will never be written to by the CPU or GPU after its initial creation.
-        /// This gives the underlying implementation the chance to optimize the resource for read-only access.
+        /// This is a helper flag to tell the underlying implementation that the data of the resource will rarely/never change once initially set. 
+        /// This can help the underlying implementation to optimize memory usage.
         /// </summary>
         Static = 1 << 7,
 

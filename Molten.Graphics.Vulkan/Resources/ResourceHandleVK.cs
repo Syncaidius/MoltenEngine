@@ -8,8 +8,6 @@ namespace Molten.Graphics.Vulkan
 
         internal MemoryAllocationVK Memory;
 
-        public MemoryPropertyFlags MemoryFlags;
-
         internal ResourceHandleVK(DeviceVK device)
         {
             Device = device;

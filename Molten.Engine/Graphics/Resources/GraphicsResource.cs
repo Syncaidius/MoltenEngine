@@ -22,8 +22,9 @@ namespace Molten.Graphics
         /// <param name="frameID">The frame ID. This is based on a total count of frames processed so far.</param>
         protected abstract void OnNextFrame(GraphicsQueue queue, uint frameBufferIndex, ulong frameID);
 
-        protected abstract void CreateResource(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID);
+        protected abstract void OnCreateResource(uint frameBufferSize, uint frameBufferIndex, ulong frameID);
 
+        protected abstract void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID);
         /// <summary>
         /// Queues a <see cref="IGraphicsResourceTask"/> on the current <see cref="GraphicsResource"/>.
         /// </summary>
@@ -153,9 +154,13 @@ namespace Molten.Graphics
             // Check if the last known frame buffer size has changed.
             unsafe
             {
-                if (KnownFrameBufferSize != fbSize || Handle.Ptr == null)
+                if (Handle.Ptr == null)
                 {
-                    CreateResource(KnownFrameBufferSize, fbSize, Device.FrameBufferIndex, Device.Renderer.Profiler.FrameID);
+                    OnCreateResource(fbSize, Device.FrameBufferIndex, Device.Renderer.Profiler.FrameID);
+                }
+                else if (KnownFrameBufferSize != fbSize)
+                {
+                    OnFrameBufferResized(KnownFrameBufferSize, fbSize, Device.FrameBufferIndex, Device.Renderer.Profiler.FrameID);
                     KnownFrameBufferSize = fbSize;
                 }
             }

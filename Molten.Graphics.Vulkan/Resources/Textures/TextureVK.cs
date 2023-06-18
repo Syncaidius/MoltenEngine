@@ -28,102 +28,99 @@ namespace Molten.Graphics.Vulkan
             throw new NotImplementedException();
         }
 
-        protected override void CreateResource(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
+        protected override void OnCreateResource(uint frameBufferSize, uint frameBufferIndex, ulong frameID)
         {
             DeviceVK device = Device as DeviceVK;
 
-            // Check that we don't already have an image handle.
-            if (_curHandle == null)
+            _handles = new ImageHandleVK[frameBufferSize];
+
+            for (uint i = 0; i < frameBufferSize; i++)
+                _handles[i] = new ImageHandleVK(device);
+
+            _curHandle = _handles[frameBufferIndex];
+
+            ImageUsageFlags flags = ImageUsageFlags.None;
+            if (Flags.Has(GraphicsResourceFlags.GpuRead))
+                flags |= ImageUsageFlags.TransferSrcBit;
+
+            if (Flags.Has(GraphicsResourceFlags.GpuWrite))
+                flags |= ImageUsageFlags.TransferDstBit;
+
+            if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
+                flags |= ImageUsageFlags.StorageBit;
+
+            if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
+                flags |= ImageUsageFlags.SampledBit;
+
+            _desc = new ImageCreateInfo(StructureType.ImageCreateInfo);
+            _desc.Extent.Width = Width;
+            _desc.Extent.Height = Height;
+            _desc.Extent.Depth = Depth;
+            _desc.MipLevels = MipMapCount;
+            _desc.ArrayLayers = ArraySize;
+            _desc.Format = ResourceFormat.ToApi();
+            _desc.Tiling = ImageTiling.Optimal;
+            _desc.InitialLayout = ImageLayout.Undefined;
+            _desc.Usage = flags;
+            _desc.SharingMode = SharingMode.Exclusive;
+            _desc.Samples = SampleCountFlags.Count1Bit;
+            _desc.Flags = ImageCreateFlags.None;
+
+            // Queue properties are ignored if sharing mode is not VK_SHARING_MODE_CONCURRENT.
+            if (_desc.SharingMode == SharingMode.Concurrent)
             {
-                _handles = new ImageHandleVK[frameBufferSize];
-
-                for (uint i = 0; i < frameBufferSize; i++)
-                    _handles[i] = new ImageHandleVK(device);
-
-                _curHandle = _handles[frameBufferIndex];
-
-                ImageUsageFlags flags = ImageUsageFlags.None;
-                if (Flags.Has(GraphicsResourceFlags.GpuRead))
-                    flags |= ImageUsageFlags.TransferSrcBit;
-
-                if (Flags.Has(GraphicsResourceFlags.GpuWrite))
-                    flags |= ImageUsageFlags.TransferDstBit;
-
-                if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
-                    flags |= ImageUsageFlags.StorageBit;
-
-                if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
-                    flags |= ImageUsageFlags.SampledBit;
-
-                _desc = new ImageCreateInfo(StructureType.ImageCreateInfo);
-                _desc.Extent.Width = Width;
-                _desc.Extent.Height = Height;
-                _desc.Extent.Depth = Depth;
-                _desc.MipLevels = MipMapCount;
-                _desc.ArrayLayers = ArraySize;
-                _desc.Format = ResourceFormat.ToApi();
-                _desc.Tiling = ImageTiling.Optimal;
-                _desc.InitialLayout = ImageLayout.Undefined;
-                _desc.Usage = flags;
-                _desc.SharingMode = SharingMode.Exclusive;
-                _desc.Samples = SampleCountFlags.Count1Bit;
-                _desc.Flags = ImageCreateFlags.None;
-
-                // Queue properties are ignored if sharing mode is not VK_SHARING_MODE_CONCURRENT.
-                if (_desc.SharingMode == SharingMode.Concurrent)
-                {
-                    _desc.PQueueFamilyIndices = EngineUtil.AllocArray<uint>(1);
-                    _desc.PQueueFamilyIndices[0] = (Device.Queue as GraphicsQueueVK).Index;
-                    _desc.QueueFamilyIndexCount = 1;
-                }
-
-                _viewDesc = new ImageViewCreateInfo(StructureType.ImageViewCreateInfo);
-                _viewDesc.Format = _desc.Format;
-                _viewDesc.SubresourceRange.AspectMask = ImageAspectFlags.ColorBit;
-                _viewDesc.SubresourceRange.BaseMipLevel = 0;
-                _viewDesc.SubresourceRange.LevelCount = MipMapCount;
-                _viewDesc.SubresourceRange.BaseArrayLayer = 0;
-                _viewDesc.SubresourceRange.LayerCount = ArraySize;
-                _viewDesc.Flags = ImageViewCreateFlags.None;
-
-                SetCreateInfo(device, ref _desc, ref _viewDesc);
-
-                // Creation of images with tiling VK_IMAGE_TILING_LINEAR may not be supported unless other parameters meet all of the constraints
-                if (_desc.Tiling == ImageTiling.Linear)
-                {
-                    //if (this is DepthSurfaceVK depthSurface)
-                    //    throw new GraphicsResourceException(this, "A depth surface texture cannot use linear tiling mode");
-
-                    if (_desc.ImageType != ImageType.Type2D)
-                        throw new GraphicsResourceException(this, "A non-2D texture cannot use linear tiling mode");
-
-                    if (_desc.MipLevels != 1)
-                        throw new GraphicsResourceException(this, "Texture linear-tiled texture must have only 1 mip-map level.");
-
-                    if (_desc.ArrayLayers != 1)
-                        throw new GraphicsResourceException(this, "Texture linear-tiled texture must have only 1 array layer.");
-
-                    if (_desc.Samples != SampleCountFlags.Count1Bit)
-                        throw new GraphicsResourceException(this, "Texture linear-tiled texture must have a sample count of 1.");
-
-                    if (_desc.Usage > (ImageUsageFlags.TransferSrcBit | ImageUsageFlags.TransferDstBit))
-                        throw new GraphicsResourceException(this, "A linear-tiled texture must have only source and/or destination transfer bits set. Any other usage flags are invalid.");
-                }
-
-                // Does the memory need to be host-visible?
-                MemoryPropertyFlags memFlags = MemoryPropertyFlags.None;
-                if (Flags.Has(GraphicsResourceFlags.CpuRead) || Flags.Has(GraphicsResourceFlags.CpuWrite))
-                    memFlags |= MemoryPropertyFlags.HostCoherentBit | MemoryPropertyFlags.HostVisibleBit;
-                else
-                    memFlags |= MemoryPropertyFlags.DeviceLocalBit;
-
-                for(int i = 0; i < frameBufferSize; i++)
-                    CreateImage(device, _handles[i], memFlags);
+                _desc.PQueueFamilyIndices = EngineUtil.AllocArray<uint>(1);
+                _desc.PQueueFamilyIndices[0] = (Device.Queue as GraphicsQueueVK).Index;
+                _desc.QueueFamilyIndexCount = 1;
             }
-            else if (lastFrameBufferSize != frameBufferIndex)
+
+            _viewDesc = new ImageViewCreateInfo(StructureType.ImageViewCreateInfo);
+            _viewDesc.Format = _desc.Format;
+            _viewDesc.SubresourceRange.AspectMask = ImageAspectFlags.ColorBit;
+            _viewDesc.SubresourceRange.BaseMipLevel = 0;
+            _viewDesc.SubresourceRange.LevelCount = MipMapCount;
+            _viewDesc.SubresourceRange.BaseArrayLayer = 0;
+            _viewDesc.SubresourceRange.LayerCount = ArraySize;
+            _viewDesc.Flags = ImageViewCreateFlags.None;
+
+            SetCreateInfo(device, ref _desc, ref _viewDesc);
+
+            // Creation of images with tiling VK_IMAGE_TILING_LINEAR may not be supported unless other parameters meet all of the constraints
+            if (_desc.Tiling == ImageTiling.Linear)
             {
-                throw new NotImplementedException();
+                //if (this is DepthSurfaceVK depthSurface)
+                //    throw new GraphicsResourceException(this, "A depth surface texture cannot use linear tiling mode");
+
+                if (_desc.ImageType != ImageType.Type2D)
+                    throw new GraphicsResourceException(this, "A non-2D texture cannot use linear tiling mode");
+
+                if (_desc.MipLevels != 1)
+                    throw new GraphicsResourceException(this, "Texture linear-tiled texture must have only 1 mip-map level.");
+
+                if (_desc.ArrayLayers != 1)
+                    throw new GraphicsResourceException(this, "Texture linear-tiled texture must have only 1 array layer.");
+
+                if (_desc.Samples != SampleCountFlags.Count1Bit)
+                    throw new GraphicsResourceException(this, "Texture linear-tiled texture must have a sample count of 1.");
+
+                if (_desc.Usage > (ImageUsageFlags.TransferSrcBit | ImageUsageFlags.TransferDstBit))
+                    throw new GraphicsResourceException(this, "A linear-tiled texture must have only source and/or destination transfer bits set. Any other usage flags are invalid.");
             }
+
+            // Does the memory need to be host-visible?
+            MemoryPropertyFlags memFlags = MemoryPropertyFlags.None;
+            if (Flags.Has(GraphicsResourceFlags.CpuRead) || Flags.Has(GraphicsResourceFlags.CpuWrite))
+                memFlags |= MemoryPropertyFlags.HostCoherentBit | MemoryPropertyFlags.HostVisibleBit;
+            else
+                memFlags |= MemoryPropertyFlags.DeviceLocalBit;
+
+            for (int i = 0; i < frameBufferSize; i++)
+                CreateImage(device, _handles[i], memFlags);
+        }
+
+        protected override void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
+        {
+            throw new NotImplementedException();
         }
 
         protected virtual void CreateImage(DeviceVK device, ImageHandleVK handle, MemoryPropertyFlags memFlags)
@@ -138,7 +135,6 @@ namespace Molten.Graphics.Vulkan
             if (handle.Memory == null)
                 throw new GraphicsResourceException(this, "Failed to allocate memory for image resource");
 
-            handle.MemoryFlags = memFlags;
             _viewDesc.Image = *handle.NativePtr;
             r = device.VK.BindImageMemory(device, *handle.NativePtr, handle.Memory, 0);
             if (!r.Check(device, () => "Failed to bind image memory"))

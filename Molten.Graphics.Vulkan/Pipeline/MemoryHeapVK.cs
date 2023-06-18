@@ -56,7 +56,7 @@ namespace Molten.Graphics.Vulkan
                     if (!r.Check(_device))
                         return null;
 
-                    MemoryAllocationVK mem = new MemoryAllocationVK(this, requirements.Size, ref memory);
+                    MemoryAllocationVK mem = new MemoryAllocationVK(this, requirements.Size, ref memory, flags);
                     Allocated += requirements.Size;
                     _allocations.Add(mem);
                     return mem;

@@ -13,11 +13,12 @@ namespace Molten.Graphics.Vulkan
         MemoryHeapVK _heap;
         DeviceMemory _memory;
 
-        internal MemoryAllocationVK(MemoryHeapVK heap, ulong numBytes, ref DeviceMemory memory)
+        internal MemoryAllocationVK(MemoryHeapVK heap, ulong numBytes, ref DeviceMemory memory, MemoryPropertyFlags flags)
         {
             _heap = heap;
             Size = numBytes;
             _memory = memory;
+            Flags = flags;
         }
 
         internal void Free()
@@ -33,5 +34,7 @@ namespace Molten.Graphics.Vulkan
         internal ref DeviceMemory Handle => ref _memory;
 
         internal ulong Size { get; }
+
+        internal MemoryPropertyFlags Flags { get; }
     }
 }

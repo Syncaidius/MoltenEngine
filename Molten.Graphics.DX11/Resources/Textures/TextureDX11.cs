@@ -17,9 +17,8 @@ namespace Molten.Graphics.DX11
         /// <summary>Triggered if the creation of the internal texture resource has failed (resulted in a null resource).</summary>
         public event TextureEvent OnCreateFailed;
 
-        ID3D11Resource* _native;
-        SRView _srv;
-        UAView _uav;
+        ResourceHandleDX11<ID3D11Resource>[] _handles;
+        ResourceHandleDX11<ID3D11Resource> _curHandle;
 
         internal TextureDX11(GraphicsDevice device, GraphicsTextureType type, 
             TextureDimensions dimensions, 
@@ -31,8 +30,7 @@ namespace Molten.Graphics.DX11
             string name) :
             base(device, type, dimensions, aaLevel, sampleQuality, format, flags | GraphicsResourceFlags.GpuRead, allowMipMapGen, name)
         {
-            _srv = new SRView(this);
-            _uav = new UAView(this);
+            
         }
 
         protected void SetDebugName(string debugName)
@@ -56,6 +54,21 @@ namespace Molten.Graphics.DX11
                 result |= BindFlag.DepthStencil;
 
             return result;
+        }
+
+        protected override void OnNextFrame(GraphicsQueue queue, uint frameBufferIndex, ulong frameID)
+        {
+            _curHandle = _handles[frameBufferIndex];
+        }
+
+        protected override void OnCreateResource(uint frameBufferSize, uint frameBufferIndex, ulong frameID)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
+        {
+            throw new NotImplementedException();
         }
 
         protected void CreateTexture(bool resize)
@@ -178,7 +191,7 @@ namespace Molten.Graphics.DX11
 
         public GraphicsFormat DataFormat => (GraphicsFormat)DxgiFormat;
 
-        public override unsafe void* Handle => _native;
+        public override ResourceHandleDX11<ID3D11Resource> Handle => _curHandle;
 
         public override unsafe void* SRV => _srv.Ptr;
 
