@@ -105,7 +105,7 @@ namespace Molten.Graphics.DX11
             }
         }
 
-        protected override ID3D11Resource* CreateResource(bool resize)
+        protected override void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle, uint handleIndex)
         {
             SilkUtil.ReleasePtr(ref _depthView);
             SilkUtil.ReleasePtr(ref _readOnlyView);
@@ -114,13 +114,11 @@ namespace Molten.Graphics.DX11
             _desc.Height = Math.Max(1, _desc.Height);
 
             // Create render target texture
-            NativeTexture = (ID3D11Texture2D1*)base.CreateResource(resize);
+            base.CreateTexture(device, handle, handleIndex);
 
             _depthDesc.Flags = 0; // DsvFlag.None;
             SubresourceData* subData = null;
-            ID3D11Resource* res = (ID3D11Resource*)NativeTexture;
-
-            DeviceDX11 device = Device as DeviceDX11;
+            ID3D11Resource* res = handle.NativePtr;
 
             fixed(DepthStencilViewDesc* pDesc = &_depthDesc)
                 device.Ptr->CreateDepthStencilView(res, pDesc, ref _depthView);
@@ -130,13 +128,11 @@ namespace Molten.Graphics.DX11
             fixed (DepthStencilViewDesc* pDesc = &_depthDesc)
                 device.Ptr->CreateDepthStencilView(res, pDesc, ref _readOnlyView);
             _depthDesc.Flags = 0U; // (uint)DsvFlag.None;
-
-            return res;
         }
 
-        protected override void UpdateDescription(uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat)
+        protected override void UpdateDescription(TextureDimensions dimensions, GraphicsFormat newFormat)
         {
-            base.UpdateDescription(newWidth, newHeight, newDepth, newMipMapCount, newArraySize, newFormat);
+            base.UpdateDescription(dimensions, newFormat);
             UpdateViewport();
         }
 

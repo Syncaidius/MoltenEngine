@@ -33,7 +33,7 @@ namespace Molten.Graphics.DX11
             NativeSwapChain = (Device.Manager as GraphicsManagerDXGI).CreateSwapChain(mode, Device.Settings, Device.Log, (IUnknown*)nativeDevice.Ptr, controlHandle);
         }
 
-        protected override unsafe ID3D11Resource* CreateResource(bool resize)
+        protected override void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle, uint handleIndex)
         {
             RTV.Release();
 
@@ -55,19 +55,17 @@ namespace Molten.Graphics.DX11
             void* ppSurface = null;
             ID3D11Resource* res = null;
             Guid riid = ID3D11Texture2D1.Guid;
-            WinHResult hr = NativeSwapChain->GetBuffer(0, &riid, &ppSurface);
+            WinHResult hr = NativeSwapChain->GetBuffer(handleIndex, &riid, &ppSurface);
             DxgiError err = hr.ToEnum<DxgiError>();
             if (err == DxgiError.Ok)
             {
-                NativeTexture = (ID3D11Texture2D1*)ppSurface;
-
                 RTV.Desc = new RenderTargetViewDesc1()
                 {
                     Format = _swapDesc.Format,
                     ViewDimension = RtvDimension.Texture2D,
                 };
 
-                res = (ID3D11Resource*)NativeTexture;
+                res = (ID3D11Resource*)ppSurface;
                 RTV.Create(res);
                 Viewport = new ViewportF(0, 0, Width, Height);
             }
@@ -75,8 +73,6 @@ namespace Molten.Graphics.DX11
             {
                 Device.Log.Error($"Error creating resource for SwapChainSurface '{Name}': {err}");
             }
-
-            return res;
         }
 
         protected abstract void OnSwapChainMissing();

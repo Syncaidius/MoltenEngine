@@ -6,7 +6,6 @@ namespace Molten.Graphics.DX11
 {
     public unsafe class Texture2DDX11 : TextureDX11, ITexture2D
     {
-        internal ID3D11Texture2D1* NativeTexture;
         protected Texture2DDesc1 _desc;
 
         /// <summary>Creates a new instance of <see cref="Texture2DDX11"/> and uses a provided texture for its description. Note: This does not copy the contents 
@@ -57,20 +56,16 @@ namespace Molten.Graphics.DX11
             };
         }
 
-        protected override void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override unsafe ID3D11Resource* CreateResource(bool resize)
+        protected override void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle, uint handleIndex)
         {
             SubresourceData* subData = GetImmutableData(_desc.Usage);
 
+            ID3D11Texture2D1* ptrTex = null;
             fixed (Texture2DDesc1* pDesc = &_desc)
-                (Device as DeviceDX11).Ptr->CreateTexture2D1(pDesc, subData, ref NativeTexture);
+                (Device as DeviceDX11).Ptr->CreateTexture2D1(pDesc, subData, ref ptrTex);
 
             EngineUtil.Free(ref subData);
-            return (ID3D11Resource*)NativeTexture;
+            handle.NativePtr = (ID3D11Resource*)ptrTex;
         }
 
         protected override void SetSRVDescription(ref ShaderResourceViewDesc1 desc)

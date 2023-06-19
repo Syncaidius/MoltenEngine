@@ -61,22 +61,22 @@ namespace Molten.Graphics.DX11
             };
         }
 
-        protected override ID3D11Resource* CreateResource(bool resize)
+        protected override void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle)
         {
             SubresourceData* subData = GetImmutableData(_desc.Usage);
 
             fixed(Texture1DDesc* pDesc = &_desc)
                 (Device as DeviceDX11).Ptr->CreateTexture1D(pDesc, subData, ref NativeTexture);
 
-            return (ID3D11Resource*)NativeTexture;
+            handle.NativePtr = (ID3D11Resource*)NativeTexture;
         }
 
-        protected override void UpdateDescription(uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat)
+        protected override void UpdateDescription(TextureDimensions dimensions, GraphicsFormat newFormat)
         {
-            _desc.Width = newWidth;
-            _desc.ArraySize = newArraySize;
-            _desc.MipLevels = newMipMapCount;
-            _desc.Format = newFormat;
+            _desc.Width = dimensions.Width;
+            _desc.ArraySize = dimensions.ArraySize;
+            _desc.MipLevels = dimensions.MipMapCount;
+            _desc.Format = newFormat.ToApi();
         }
     }
 }

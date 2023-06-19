@@ -28,11 +28,11 @@ namespace Molten.Graphics.DX11
             };
         }
 
-        protected override ID3D11Resource* CreateResource(bool resize)
+        protected override void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle, uint handleIndex)
         {
             RTV.Release();
 
-            ID3D11Resource* resource =  base.CreateResource(resize);
+            base.CreateTexture(device, handle, handleIndex);
             SetRTVDescription(ref RTV.Desc);
 
             if (_desc.SampleDesc.Count > 1)
@@ -56,20 +56,17 @@ namespace Molten.Graphics.DX11
                 };
             }
 
-            RTV.Create(resource);
-            return resource;
+            RTV.Create();
         }
 
         protected virtual void SetRTVDescription(ref RenderTargetViewDesc1 desc) { }
 
-        protected override void UpdateDescription(uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat)
+        protected override void UpdateDescription(TextureDimensions dimensions, GraphicsFormat newFormat)
         {
-            _desc.Width = newWidth;
-            _desc.Height = newHeight;
-            _desc.Format = newFormat;
-            //_description.MipLevels = newMipMapCount; // NOTE: Do we set this on render targets?
+            base.UpdateDescription(dimensions, newFormat);
 
-            Viewport = new ViewportF(Viewport.X, Viewport.Y, newWidth, newHeight);
+            _desc.MipLevels = 1; // NOTE: Do we set this on render targets?
+            Viewport = new ViewportF(Viewport.X, Viewport.Y, dimensions.Width, dimensions.Height);
         }
 
         internal virtual void OnClear(GraphicsQueueDX11 cmd, Color color)

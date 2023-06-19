@@ -86,7 +86,7 @@ namespace Molten.Graphics.DX11
             {
                 ResourceHandleDX11<ID3D11Resource> handle = new ResourceHandleDX11<ID3D11Resource>(this);
                 _handles[i] = handle;
-                CreateTexture(device, handle);
+                CreateTexture(device, handle, i);
 
                 SetDebugName(handle.NativePtr, $"{Name}_FI{i}");
 
@@ -101,7 +101,7 @@ namespace Molten.Graphics.DX11
             }
         }
 
-        protected abstract void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle);
+        protected abstract void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle, uint handleIndex);
 
         protected override void OnResizeTexture(in TextureDimensions dimensions, GraphicsFormat format)
         {
