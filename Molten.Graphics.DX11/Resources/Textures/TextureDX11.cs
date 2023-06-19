@@ -9,17 +9,16 @@ namespace Molten.Graphics.DX11
 
     public unsafe abstract partial class TextureDX11 : GraphicsTexture
     {
-        /// <summary>Triggered right before the internal texture resource is created.</summary>
-        public event TextureEvent OnPreCreate;
-
-        /// <summary>Triggered after the internal texture resource has been created.</summary>
-        public event TextureEvent OnCreate;
-
-        /// <summary>Triggered if the creation of the internal texture resource has failed (resulted in a null resource).</summary>
-        public event TextureEvent OnCreateFailed;
-
         ResourceHandleDX11<ID3D11Resource>[] _handles;
         ResourceHandleDX11<ID3D11Resource> _curHandle;
+
+        ShaderResourceViewDesc1 _srvDesc;
+        UnorderedAccessViewDesc1 _uavDesc;
+
+        /// <summary>
+        /// A list of handles that need to be disposed once the GPU is finished with them.
+        /// </summary>
+        List<ResourceHandleDX11<ID3D11Resource>> _oldHandles;
 
         internal TextureDX11(GraphicsDevice device, GraphicsTextureType type, 
             TextureDimensions dimensions, 
@@ -31,15 +30,15 @@ namespace Molten.Graphics.DX11
             string name) :
             base(device, type, dimensions, aaLevel, sampleQuality, format, flags | GraphicsResourceFlags.GpuRead, allowMipMapGen, name)
         {
-            
+            _oldHandles = new List<ResourceHandleDX11<ID3D11Resource>>();
         }
 
-        protected void SetDebugName(string debugName)
+        protected void SetDebugName(ID3D11Resource* resource, string debugName)
         {
             if (!string.IsNullOrWhiteSpace(debugName))
             {
                 void* ptrName = (void*)SilkMarshal.StringToPtr(debugName, NativeStringEncoding.LPStr);
-                ((ID3D11Resource*)Handle)->SetPrivateData(ref RendererDX11.WKPDID_D3DDebugObjectName, (uint)debugName.Length, ptrName);
+                resource->SetPrivateData(ref RendererDX11.WKPDID_D3DDebugObjectName, (uint)debugName.Length, ptrName);
                 SilkMarshal.FreeString((nint)ptrName, NativeStringEncoding.LPStr);
             }
         }
@@ -60,38 +59,57 @@ namespace Molten.Graphics.DX11
         protected override void OnNextFrame(GraphicsQueue queue, uint frameBufferIndex, ulong frameID)
         {
             _curHandle = _handles[frameBufferIndex];
+
+            // Dispose of old texture handles from any previous resize calls.
+            uint resizeAge = (uint)(frameID - LastFrameResizedID);
+            if(resizeAge > Device.FrameBufferSize)
+            {
+                foreach(ResourceHandleDX11<ID3D11Resource> handle in _oldHandles)
+                    handle.Dispose();
+
+                _oldHandles.Clear();
+            }
         }
 
         protected override void OnCreateResource(uint frameBufferSize, uint frameBufferIndex, ulong frameID)
         {
-            OnPreCreate?.Invoke(this);
+            DeviceDX11 device = Device as DeviceDX11;
+            _handles = new ResourceHandleDX11<ID3D11Resource>[frameBufferSize];
 
-            // Dispose of old resources
-            OnDisposeForRecreation();
-            _native = CreateResource(resize);
-            SetDebugName(Name);
+            if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
+                SetSRVDescription(ref _srvDesc);
 
-            if (_native != null)
+            if(Flags.Has(GraphicsResourceFlags.UnorderedAccess))
+                SetUAVDescription(ref _srvDesc, ref _uavDesc);
+
+            for (uint i = 0; i < frameBufferSize; i++)
             {
+                ResourceHandleDX11<ID3D11Resource> handle = new ResourceHandleDX11<ID3D11Resource>(this);
+                _handles[i] = handle;
+                CreateTexture(device, handle);
+
+                SetDebugName(handle.NativePtr, $"{Name}_FI{i}");
+
                 if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
                 {
-                    SetSRVDescription(ref _srv.Desc);
-                    _srv.Create();
+                    handle.SRV.Desc = _srvDesc;
+                    handle.SRV.Create();
                 }
 
                 if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
-                {
-                    SetUAVDescription(ref _srv.Desc, ref _uav.Desc);
-                    _uav.Create();
-                }
+                    handle.UAV.Desc = _uavDesc;
+            }
+        }
 
-                Version++;
-                OnCreate?.Invoke(this);
-            }
-            else
-            {
-                OnCreateFailed?.Invoke(this);
-            }
+        protected abstract void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle);
+
+        protected override void OnResizeTexture(in TextureDimensions dimensions, GraphicsFormat format)
+        {
+            UpdateDescription(dimensions, format);
+
+            _oldHandles.AddRange(_handles);
+            OnCreateResource(Device.FrameBufferSize, Device.FrameBufferIndex, Device.Renderer.Profiler.FrameID);
+            _curHandle = _handles[Device.FrameBufferIndex];
         }
 
         protected override void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
@@ -137,21 +155,10 @@ namespace Molten.Graphics.DX11
 
         protected abstract void SetSRVDescription(ref ShaderResourceViewDesc1 desc);
 
-        protected virtual void OnDisposeForRecreation()
-        {
-            OnGraphicsRelease();
-        }
-
         protected override void OnGraphicsRelease()
         {
             for (int i = 0; i < _handles.Length; i++)
                 _handles[i].Dispose();
-        }
-
-        protected override void OnResizeResource(in TextureDimensions dimensions)
-        {
-            UpdateDescription(Width, Height, Depth, Math.Max(1, MipMapCount), Math.Max(1, ArraySize), DxgiFormat);
-            CreateTexture(true);
         }
 
         protected override void OnGenerateMipMaps(GraphicsQueue cmd)
@@ -160,10 +167,7 @@ namespace Molten.Graphics.DX11
                 (cmd as GraphicsQueueDX11).Ptr->GenerateMips(_curHandle.SRV);
         }
 
-        protected virtual void UpdateDescription(uint newWidth, uint newHeight, 
-            uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat) { }
-
-        protected abstract ID3D11Resource* CreateResource(bool resize);
+        protected abstract void UpdateDescription(TextureDimensions dimensions, GraphicsFormat newFormat);
 
         /// <summary>Gets the format of the texture.</summary>
         public Format DxgiFormat => ResourceFormat.ToApi();

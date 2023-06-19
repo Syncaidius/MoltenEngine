@@ -10,7 +10,7 @@ namespace Molten.Graphics
         public bool Process(GraphicsQueue cmd, GraphicsResource resource)
         {
             GraphicsTexture texture = resource as GraphicsTexture;
-            texture.OnSetSize(ref this);
+            texture.ResizeTexture(NewDimensions, NewFormat);
             return true;
         }
     }

@@ -462,7 +462,7 @@ namespace Molten.Graphics.DX11
                 throw new GraphicsCommandQueueException(this, $"{nameof(GraphicsQueueDX11)}: BeginDraw() must be called before calling {nameof(Draw)}()");
 
             State.Shader.Value = shader;
-            bool shaderChanged = State.Shader.Bind(this);
+            bool shaderChanged = State.Shader.Bind();
 
             if (State.Shader.BoundValue == null)
                 return GraphicsBindResult.NoShader;

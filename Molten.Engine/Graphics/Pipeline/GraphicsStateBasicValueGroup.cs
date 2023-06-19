@@ -1,28 +1,25 @@
 ﻿namespace Molten.Graphics
 {
-    public class GraphicsStateValueGroup<T>
-        where T : class, IGraphicsResource
+    public class GraphicsStateBasicValueGroup<T>
+        where T : class, IGraphicsObject
     {
         T[] _values;
         T[] _boundValues;
-        uint[] _boundVersions;
         Action<T, int> _validation;
 
-        public GraphicsStateValueGroup(uint capacity, Action<T, int> validationCallback = null)
+        public GraphicsStateBasicValueGroup(uint capacity, Action<T, int> validationCallback = null)
         {
             _values = new T[capacity];
             _boundValues = new T[capacity];
-            _boundVersions = new uint[capacity];
             _validation = validationCallback;
         }
 
-        public void CopyTo(GraphicsStateValueGroup<T> target)
+        public void CopyTo(GraphicsStateBasicValueGroup<T> target)
         {
             for (int i = 0; i < _values.Length; i++)
             {
                 Array.Copy(_values, target._values, _values.Length);
                 Array.Copy(_boundValues, target._boundValues, _boundValues.Length);
-                Array.Copy(_boundVersions, target._boundVersions, _boundVersions.Length);
             }
         }
 
@@ -36,25 +33,9 @@
                 {
                     _boundValues[i] = _values[i];
                     if (_boundValues[i] != null)
-                    {
                         _validation?.Invoke(_boundValues[i], i);
-                        _boundValues[i].Apply(queue);
-                        _boundVersions[i] = _boundValues[i].Version;
-                    }
 
                     r = true;
-                }
-                else
-                {
-                    if (_boundValues[i] != null)
-                    {
-                        _boundValues[i].Apply(queue);
-                        if (_boundVersions[i] != _boundValues[i].Version)
-                        {
-                            _boundVersions[i] = _boundValues[i].Version;
-                            r = true;
-                        }
-                    }
                 }
             }
 

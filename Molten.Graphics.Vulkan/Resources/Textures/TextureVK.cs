@@ -153,7 +153,7 @@ namespace Molten.Graphics.Vulkan
             throw new NotImplementedException();
         }
 
-        protected override void OnResizeResource(in TextureDimensions dimensions)
+        protected override void OnResizeTexture(in TextureDimensions dimensions)
         {
             throw new NotImplementedException();
         }

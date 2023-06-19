@@ -22,6 +22,7 @@ namespace Molten.Graphics
             MSAAQuality sampleQuality, GraphicsFormat format, GraphicsResourceFlags flags, bool allowMipMapGen, string name) 
             : base(device, flags)
         {
+            LastFrameResizedID = device.Renderer.Profiler.FrameID;
             IsMipMapGenAllowed = allowMipMapGen;
             ValidateFlagCombination();
 
@@ -254,20 +255,21 @@ namespace Molten.Graphics
             });
         }
 
-        internal void OnSetSize(ref TextureResizeTask task)
+        internal void ResizeTexture(in TextureDimensions newDimensions, GraphicsFormat newFormat)
         {
             // Avoid resizing/recreation if nothing has actually changed.
-            if (_dimensions == task.NewDimensions && ResourceFormat == task.NewFormat)
+            if (_dimensions == newDimensions && ResourceFormat == newFormat)
                 return;
 
-            _dimensions = task.NewDimensions;
-            ResourceFormat = task.NewFormat;
+            _dimensions = newDimensions;
+            ResourceFormat = newFormat;
 
-            OnResizeResource(in _dimensions);
+            OnResizeTexture(in newDimensions, newFormat);
+            LastFrameResizedID = Device.Renderer.Profiler.FrameID;
             OnResize?.Invoke(this);
         }
 
-        protected abstract void OnResizeResource(in TextureDimensions dimensions);
+        protected abstract void OnResizeTexture(in TextureDimensions dimensions, GraphicsFormat format);
 
         public void CopyTo(GraphicsPriority priority,
             uint sourceLevel, uint sourceSlice,
@@ -386,5 +388,11 @@ namespace Molten.Graphics
         }
 
         public GraphicsTextureType TextureType { get; }
+
+        /// <summary>
+        /// Gets the ID of the frame that the current <see cref="GraphicsTexture"/> was resized. 
+        /// If the texture was never resized then the frame ID will be the ID of the frame that the texture was created.
+        /// </summary>
+        public ulong LastFrameResizedID { get; internal set; }
     }
 }

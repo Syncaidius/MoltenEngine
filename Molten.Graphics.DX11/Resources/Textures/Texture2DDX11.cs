@@ -57,6 +57,11 @@ namespace Molten.Graphics.DX11
             };
         }
 
+        protected override void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle)
+        {
+            throw new NotImplementedException();
+        }
+
         protected override unsafe ID3D11Resource* CreateResource(bool resize)
         {
             SubresourceData* subData = GetImmutableData(_desc.Usage);
@@ -113,15 +118,20 @@ namespace Molten.Graphics.DX11
             };
         }
 
-        protected override void UpdateDescription(uint newWidth, uint newHeight, uint newDepth, 
-            uint newMipMapCount, uint newArraySize, Format newFormat)
+        protected override void UpdateDescription(TextureDimensions dimensions, GraphicsFormat newFormat)
         {
-            _desc.ArraySize = newArraySize;
-            _desc.Width = newWidth;
-            _desc.Height = newHeight;
-            _desc.MipLevels = newMipMapCount;
-            _desc.Format = newFormat;
+            _desc.Width = dimensions.Width;
+            _desc.Height = dimensions.Height;
+            _desc.ArraySize = dimensions.ArraySize;
+            _desc.MipLevels = dimensions.MipMapCount;
+            _desc.Format = newFormat.ToApi();
             _desc.TextureLayout = TextureLayout.LayoutUndefined;
+        }
+
+        public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight, uint newMipMapCount = 0,
+            uint newArraySize = 0, GraphicsFormat newFormat = GraphicsFormat.Unknown)
+        {
+            Resize(priority, newWidth, newHeight, newArraySize, newMipMapCount, Depth, newFormat);
         }
     }
 }

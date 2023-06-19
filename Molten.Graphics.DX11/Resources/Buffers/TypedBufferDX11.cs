@@ -1,4 +1,5 @@
-﻿using Silk.NET.Core.Native;
+﻿using System.Reflection.Metadata;
+using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 
@@ -49,11 +50,11 @@ namespace Molten.Graphics.DX11
             }
         }
 
-        protected override void CreateResources()
+        protected override void CreateViews(DeviceDX11 device, ResourceHandleDX11<ID3D11Buffer> handle, ResourceHandleDX11<ID3D11Buffer> initialHandle)
         {
             if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
             {
-                NativeSRV.Desc = new ShaderResourceViewDesc1()
+                handle.SRV.Desc = new ShaderResourceViewDesc1()
                 {
                     BufferEx = new BufferexSrv()
                     {
@@ -65,13 +66,13 @@ namespace Molten.Graphics.DX11
                     Format = Format.FormatUnknown,
                 };
 
-                NativeSRV.Create();
+                handle.SRV.Create();
             }
 
             // See UAV notes: https://docs.microsoft.com/en-us/windows/win32/direct3d11/overviews-direct3d-11-resources-intro#raw-views-of-buffers
             if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
             {
-                NativeUAV.Desc = new UnorderedAccessViewDesc1()
+                Handle.UAV.Desc = new UnorderedAccessViewDesc1()
                 {
                     Format = Format.FormatUnknown,
                     ViewDimension = UavDimension.Buffer,
@@ -82,7 +83,7 @@ namespace Molten.Graphics.DX11
                         Flags = 0U, // (uint)BufferUavFlag.None,
                     }
                 };
-                NativeUAV.Create();
+                Handle.UAV.Create();
             }
         }
 

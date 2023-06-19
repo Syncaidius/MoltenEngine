@@ -70,10 +70,8 @@ namespace Molten.Graphics.DX11
                 using (GraphicsStream stream = cmd.MapResource(this, 0, 0, GraphicsMapType.Discard))
                     stream.WriteRange(_constData, Desc.ByteWidth);
             }
-            else
-            {
-                ApplyChanges(cmd);
-            }
+
+            base.OnApply(cmd);
         }
 
         public string BufferName { get; }

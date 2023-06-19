@@ -99,11 +99,6 @@ namespace Molten.Graphics.DX11
             }
         }
 
-        protected override void OnApply(GraphicsQueue context)
-        {
-            // Do nothing. Vertex input layouts build everything they need in the constructor.
-        }
-
         public bool IsMatch(Logger log, GraphicsStateValueGroup<GraphicsBuffer> grp)
         {
             for (int i = 0; i < grp.Length; i++)

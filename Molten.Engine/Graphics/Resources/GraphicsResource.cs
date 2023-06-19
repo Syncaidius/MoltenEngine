@@ -99,11 +99,8 @@ namespace Molten.Graphics
 
         /// <summary>Applies any pending changes to the resource, from the specified priority queue.</summary>
         /// <param name="cmd">The graphics queue to use when process changes.</param>
-        protected void ApplyChanges(GraphicsQueue cmd)
+        protected virtual void OnApply(GraphicsQueue cmd)
         {
-            if (IsDisposed)
-                return;
-
             if (_applyTaskQueue.Count > 0)
             {
                 IGraphicsResourceTask op = null;
@@ -145,6 +142,9 @@ namespace Molten.Graphics
         /// <param name="queue">The <see cref="GraphicsQueue"/> that the current <see cref="GraphicsObject"/> is to be bound to.</param>
         public void Apply(GraphicsQueue queue)
         {
+            if (IsDisposed)
+                return;
+
             LastUsedFrameID = Device.Renderer.Profiler.FrameID;
             LastUsedFrameBufferIndex = Device.FrameBufferIndex;
 
@@ -168,7 +168,7 @@ namespace Molten.Graphics
             if (LastUsedFrameBufferIndex != Device.FrameBufferIndex)
                 OnNextFrame(queue, Device.FrameBufferIndex, Device.Renderer.Profiler.FrameID);
 
-            ApplyChanges(queue);
+            OnApply(queue);
         }
 
         internal void Clear()

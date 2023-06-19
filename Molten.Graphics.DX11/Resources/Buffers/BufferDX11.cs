@@ -1,4 +1,5 @@
-﻿using Silk.NET.Core.Native;
+﻿using System.Reflection.Metadata;
+using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 
@@ -51,7 +52,7 @@ namespace Molten.Graphics.DX11
            _curHandle = _handles[frameBufferIndex];
         }
 
-        protected override void OnCreateResource(uint frameBufferSize, uint frameBufferIndex, ulong frameID)
+        protected override sealed void OnCreateResource(uint frameBufferSize, uint frameBufferIndex, ulong frameID)
         {
             DeviceDX11 device = Device as DeviceDX11;
             _handles = new ResourceHandleDX11<ID3D11Buffer>[frameBufferSize];
@@ -92,17 +93,12 @@ namespace Molten.Graphics.DX11
                 Desc.StructureByteStride = Stride;
 
             for (int i = 0; i < _handles.Length; i++)
-                CreateResources(device, _handles[i], _curHandle);
+                CreateBuffer(device, _handles[i], _curHandle);
 
             _curHandle = _handles[frameBufferIndex];
         }
 
-        protected override void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected virtual void CreateResources(DeviceDX11 device, ResourceHandleDX11<ID3D11Buffer> handle, ResourceHandleDX11<ID3D11Buffer> initialHandle)
+        private void CreateBuffer(DeviceDX11 device, ResourceHandleDX11<ID3D11Buffer> handle, ResourceHandleDX11<ID3D11Buffer> initialHandle)
         {
             if (initialHandle.InitialData != null && initialHandle.InitialBytes > 0)
             {
@@ -119,6 +115,12 @@ namespace Molten.Graphics.DX11
                     device.Ptr->CreateBuffer(pDesc, null, ref handle.NativePtr);
             }
 
+            CreateViews(device, handle, initialHandle);
+            Version++;
+        }
+
+        protected virtual void CreateViews(DeviceDX11 device, ResourceHandleDX11<ID3D11Buffer> handle, ResourceHandleDX11<ID3D11Buffer> initialHandle)
+        {
             // Create shader resource view (SRV), if shader access is permitted.
             if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
             {
@@ -152,6 +154,11 @@ namespace Molten.Graphics.DX11
                 };
                 handle.UAV.Create();
             }
+        }
+
+        protected override void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
+        {
+            throw new NotImplementedException();
         }
 
         protected void SetDebugName(string debugName)

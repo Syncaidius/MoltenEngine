@@ -8,7 +8,7 @@ namespace Molten.Graphics.DX11
     /// </summary>
     /// <typeparam name="V">Underlying view type.</typeparam>
     /// <typeparam name="D">Underlying view description type.</typeparam>
-    internal unsafe abstract class ResourceView<V, D>
+    internal unsafe abstract class ResourceViewDX11<V, D>
         where V : unmanaged
         where D : unmanaged
     {
@@ -16,7 +16,7 @@ namespace Molten.Graphics.DX11
         D _desc;
         GraphicsResourceFlags _requiredFlags;
 
-        internal ResourceView(GraphicsResource resource, GraphicsResourceFlags requiredFlags)
+        internal ResourceViewDX11(GraphicsResource resource, GraphicsResourceFlags requiredFlags)
         {
             Resource = resource;
             Device = resource.Device as DeviceDX11;
@@ -39,7 +39,7 @@ namespace Molten.Graphics.DX11
             SilkUtil.ReleasePtr(ref _native);
 
             fixed (D* ptrDesc = &_desc)
-                OnCreateView((ID3D11Resource*)Resource.Handle, ptrDesc, ref _native);
+                OnCreateView((ID3D11Resource*)Resource.Handle.Ptr, ptrDesc, ref _native);
 
             Device.ProcessDebugLayerMessages();
             SetDebugName($"{Resource.Name}_{GetType().Name}");
@@ -69,7 +69,7 @@ namespace Molten.Graphics.DX11
 
         protected abstract void OnCreateView(ID3D11Resource* resource, D* desc, ref V* view);
 
-        public static implicit operator V*(ResourceView<V, D> view)
+        public static implicit operator V*(ResourceViewDX11<V, D> view)
         {
             return view._native;
         }

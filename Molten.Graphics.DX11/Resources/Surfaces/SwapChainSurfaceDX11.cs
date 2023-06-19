@@ -108,10 +108,10 @@ namespace Molten.Graphics.DX11
             }
         }
 
-        protected override void OnDisposeForRecreation()
+        protected override void DisposeTextureForResize()
         {
-            // Avoid calling RenderFormSurface's OnPipelineDispose implementation by skipping it. Jump straight to base.
-            // This prevents any swapchain render loops from being aborted due to disposal flags being set.
+            // Skip calling the SwapChainSurfaceDX11.OnGraphicsDispose() implementation. Jump straight to base.
+            // This prevents swapchain render loops from being aborted due to disposal flags being set.
             base.OnGraphicsRelease();
         }
 

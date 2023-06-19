@@ -74,9 +74,15 @@ namespace Molten.Graphics.DX11
         {
             QueueTask(priority, new TextureResizeTask()
             {
-                NewWidth = newWidth,
-                NewHeight = newHeight,
-                NewMipMapCount = newMipMapCount,
+                NewDimensions = new TextureDimensions()
+                {
+                    Width = newWidth,
+                    Height = newHeight,
+                    MipMapCount = newMipMapCount,
+                    ArraySize = ArraySize,
+                    Depth = Depth,
+                },
+                NewFormat = ResourceFormat,
             });
         }
 
@@ -84,9 +90,15 @@ namespace Molten.Graphics.DX11
         {
             QueueTask(priority, new TextureResizeTask()
             {
-                NewWidth = newWidth,
-                NewHeight = Height,
-                NewMipMapCount = newMipMapCount,
+                NewDimensions = new TextureDimensions()
+                {
+                    Width = newWidth,
+                    Height = Height,
+                    MipMapCount = newMipMapCount,
+                    ArraySize = ArraySize,
+                    Depth = Depth,
+                },
+                NewFormat = ResourceFormat,
             });
         }
 
