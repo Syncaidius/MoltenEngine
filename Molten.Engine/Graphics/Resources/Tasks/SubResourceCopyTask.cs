@@ -22,9 +22,8 @@
             if (DestResource.Flags.Has(GraphicsResourceFlags.GpuWrite))
                 throw new ResourceCopyException(resource, DestResource, "The destination resource must have GPU write access for writing the copied data.");
 
-            // If the current buffer is a staging buffer, initialize and apply all its pending changes.
             if (resource is GraphicsBuffer buffer && buffer.BufferType == GraphicsBufferType.Staging)
-                resource.Apply(cmd);
+                resource.EnsureResource(cmd);
 
             if (SrcRegion.HasValue)
             {

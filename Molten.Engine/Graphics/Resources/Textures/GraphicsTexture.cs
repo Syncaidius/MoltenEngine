@@ -264,12 +264,22 @@ namespace Molten.Graphics
             _dimensions = newDimensions;
             ResourceFormat = newFormat;
 
-            OnResizeTexture(in newDimensions, newFormat);
+            // Cap frame-buffer size to 1 if the resource is static.
+            uint fbSize = 1;
+            uint fbIndex = 0;
+
+            if (!Flags.Has(GraphicsResourceFlags.Static))
+            {
+                fbSize = GetMaxFrameBufferSize(Device.FrameBufferSize);
+                fbIndex = Math.Min(fbSize - 1, Device.FrameBufferIndex);
+            }
+
+            OnResizeTexture(in newDimensions, newFormat, fbSize, fbIndex, Device.Renderer.Profiler.FrameID);
             LastFrameResizedID = Device.Renderer.Profiler.FrameID;
             OnResize?.Invoke(this);
         }
 
-        protected abstract void OnResizeTexture(in TextureDimensions dimensions, GraphicsFormat format);
+        protected abstract void OnResizeTexture(in TextureDimensions dimensions, GraphicsFormat format, uint frameBufferSize, uint frameBufferIndex, ulong frameID);
 
         public void CopyTo(GraphicsPriority priority,
             uint sourceLevel, uint sourceSlice,

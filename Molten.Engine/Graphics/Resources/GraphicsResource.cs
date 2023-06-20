@@ -38,19 +38,23 @@ namespace Molten.Graphics
         protected abstract void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID);
 
         /// <summary>
-        /// Invoked when the current <see cref="GraphicsObject"/> should apply any changes before being bound to a GPU context.
+        /// Ensure the resource has been initialized.
         /// </summary>
-        /// <param name="queue">The <see cref="GraphicsQueue"/> that the current <see cref="GraphicsObject"/> is to be bound to.</param>
-        public void Apply(GraphicsQueue queue)
+        /// <param name="queue">The queue that will perform initialization, if needed.</param>
+        public void EnsureResource(GraphicsQueue queue)
         {
-            if (IsDisposed)
-                return;
-
-            LastUsedFrameID = Device.Renderer.Profiler.FrameID;
-            LastUsedFrameBufferIndex = Device.FrameBufferIndex;
+            uint fbSize = 1;
+            uint fbIndex = 0;
 
             // Cap frame-buffer size to 1 if the resource is static.
-            uint fbSize = Flags.Has(GraphicsResourceFlags.Static) ? 1 : GetMaxFrameBufferSize(Device.FrameBufferSize);
+            if (!Flags.Has(GraphicsResourceFlags.Static))
+            {
+                fbSize = GetMaxFrameBufferSize(Device.FrameBufferSize);
+                fbIndex = Math.Min(fbSize - 1, Device.FrameBufferIndex);
+            }
+
+            LastUsedFrameID = Device.Renderer.Profiler.FrameID;
+            LastUsedFrameBufferIndex = fbIndex;
 
             // Check if the last known frame buffer size has changed.
             unsafe
@@ -61,14 +65,25 @@ namespace Molten.Graphics
                 }
                 else if (KnownFrameBufferSize != fbSize)
                 {
-                    OnFrameBufferResized(KnownFrameBufferSize, fbSize, Device.FrameBufferIndex, Device.Renderer.Profiler.FrameID);
+                    OnFrameBufferResized(KnownFrameBufferSize, fbSize, fbIndex, Device.Renderer.Profiler.FrameID);
                     KnownFrameBufferSize = fbSize;
                 }
             }
 
-            if (LastUsedFrameBufferIndex != Device.FrameBufferIndex)
+            if (LastUsedFrameBufferIndex != fbIndex)
                 OnNextFrame(queue, Device.FrameBufferIndex, Device.Renderer.Profiler.FrameID);
+        }
 
+        /// <summary>
+        /// Invoked when the current <see cref="GraphicsObject"/> should apply any changes before being bound to a GPU context.
+        /// </summary>
+        /// <param name="queue">The <see cref="GraphicsQueue"/> that the current <see cref="GraphicsObject"/> is to be bound to.</param>
+        public void Apply(GraphicsQueue queue)
+        {
+            if (IsDisposed)
+                return;
+
+            EnsureResource(queue);
             OnApply(queue);
         }
 

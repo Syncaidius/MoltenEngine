@@ -38,7 +38,7 @@
                 if (ArrayIndex >= texture.ArraySize)
                     throw new ResourceCopyException(resource, Staging, "array slice must be less than the array size of the texture.");
 
-                Staging.Apply(cmd);
+                Staging.EnsureResource(cmd);
             }
             else
             {

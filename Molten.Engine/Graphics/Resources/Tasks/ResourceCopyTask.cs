@@ -8,9 +8,8 @@
 
         public unsafe bool Process(GraphicsQueue cmd, GraphicsResource resource)
         {
-            // If the current buffer is a staging buffer, initialize and apply all its pending changes.
             if (resource is GraphicsBuffer buffer && buffer.BufferType == GraphicsBufferType.Staging)
-                resource.Apply(cmd);
+                resource.EnsureResource(cmd);
 
             cmd.CopyResource(resource, Destination);
             CompletionCallback?.Invoke(resource);

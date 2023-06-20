@@ -208,11 +208,10 @@ namespace Molten.Graphics.DX11
 
         protected override void CopyResource(GraphicsResource src, GraphicsResource dest)
         {
-            if (src.Handle == null)
-                src.Apply(this);
+            src.EnsureResource(this);
 
             if(dest is BufferDX11 buffer && buffer.BufferType == GraphicsBufferType.Staging)
-                dest.Apply(this);
+                dest.EnsureResource(this);
 
             _native->CopyResource((ResourceHandleDX11)dest.Handle, (ResourceHandleDX11)src.Handle);
             Profiler.Current.CopyResourceCount++;

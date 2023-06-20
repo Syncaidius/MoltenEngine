@@ -107,22 +107,24 @@ namespace Molten.Graphics.DX11
                     handle.UAV.Create();
                 }
             }
+
+            _curHandle = _handles[frameBufferIndex];
         }
 
         protected abstract void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle, uint handleIndex);
 
-        protected override void OnResizeTexture(in TextureDimensions dimensions, GraphicsFormat format)
+        protected override void OnResizeTexture(in TextureDimensions dimensions, GraphicsFormat format, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
         {
             UpdateDescription(dimensions, format);
 
             _oldHandles.AddRange(_handles);
-            OnCreateResource(Device.FrameBufferSize, Device.FrameBufferIndex, Device.Renderer.Profiler.FrameID);
-            _curHandle = _handles[Device.FrameBufferIndex];
+            OnCreateResource(frameBufferSize, frameBufferIndex, frameID);
+            _curHandle = _handles[frameBufferIndex];
         }
 
         protected override void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
         {
-            OnResizeTexture(Dimensions, ResourceFormat);
+            OnResizeTexture(Dimensions, ResourceFormat, frameBufferSize, frameBufferIndex, frameID);
         }
 
         protected SubresourceData* GetImmutableData(Usage usage)

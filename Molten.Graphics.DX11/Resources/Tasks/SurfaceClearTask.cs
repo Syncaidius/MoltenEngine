@@ -8,6 +8,7 @@
 
         public bool Process(GraphicsQueue cmd, GraphicsResource resource)
         {
+            Surface.EnsureResource(cmd);
             Surface.OnClear(cmd as GraphicsQueueDX11, Color);
             return false;
         }
