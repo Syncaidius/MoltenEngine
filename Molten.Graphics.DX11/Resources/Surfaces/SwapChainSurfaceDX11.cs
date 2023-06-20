@@ -57,7 +57,6 @@ namespace Molten.Graphics.DX11
              *  NOTE: This means we only need 1 handle for the swap chain, as the next image is always at index 0.
              */
             void* ppSurface = null;
-            ID3D11Resource* res = null;
             Guid riid = ID3D11Texture2D1.Guid;
             WinHResult hr = NativeSwapChain->GetBuffer(handleIndex, &riid, &ppSurface);
             DxgiError err = hr.ToEnum<DxgiError>();
@@ -73,8 +72,8 @@ namespace Molten.Graphics.DX11
                     ViewDimension = RtvDimension.Texture2D,
                 };
 
-                res = (ID3D11Resource*)ppSurface;
-                rsHandle.RTV.Create(res);
+                handle.NativePtr = (ID3D11Resource*)ppSurface;
+                rsHandle.RTV.Create();
                 Viewport = new ViewportF(0, 0, Width, Height);
             }
             else
@@ -90,9 +89,14 @@ namespace Molten.Graphics.DX11
             _vsync = newValue ? 1U : 0;
         }
 
+        protected override uint GetMaxFrameBufferSize(uint frameBufferSize)
+        {
+            return 1;
+        }
+
         internal void Present()
         {
-            OnApply(Device.Queue);
+            Apply(Device.Queue);
 
             if (OnPresent() && NativeSwapChain != null)
             {

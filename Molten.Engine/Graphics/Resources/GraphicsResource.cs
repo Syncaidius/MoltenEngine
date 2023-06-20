@@ -1,4 +1,5 @@
-﻿using Molten.Collections;
+﻿using System.Runtime.CompilerServices;
+using Molten.Collections;
 
 namespace Molten.Graphics
 {
@@ -12,6 +13,16 @@ namespace Molten.Graphics
             Flags = flags;
             _applyTaskQueue = new ThreadedQueue<IGraphicsResourceTask>();
             LastUsedFrameID = Device.Renderer.Profiler.FrameID;
+        }
+
+        /// <summary>
+        /// Gives a derived resource implementation a chance to provide it's maximum supported frame-buffer size.
+        /// </summary>
+        /// <param name="frameBufferSize">The renderer's frame-buffer size.</param>
+        /// <returns></returns>
+        protected virtual uint GetMaxFrameBufferSize(uint frameBufferSize)
+        {
+            return frameBufferSize;
         }
 
         /// <summary>
@@ -39,12 +50,12 @@ namespace Molten.Graphics
             LastUsedFrameBufferIndex = Device.FrameBufferIndex;
 
             // Cap frame-buffer size to 1 if the resource is static.
-            uint fbSize = Flags.Has(GraphicsResourceFlags.Static) ? 1 : Device.FrameBufferSize;
+            uint fbSize = Flags.Has(GraphicsResourceFlags.Static) ? 1 : GetMaxFrameBufferSize(Device.FrameBufferSize);
 
             // Check if the last known frame buffer size has changed.
             unsafe
             {
-                if (Handle.Ptr == null)
+                if (Handle == null)
                 {
                     OnCreateResource(fbSize, Device.FrameBufferIndex, Device.Renderer.Profiler.FrameID);
                 }
@@ -59,6 +70,23 @@ namespace Molten.Graphics
                 OnNextFrame(queue, Device.FrameBufferIndex, Device.Renderer.Profiler.FrameID);
 
             OnApply(queue);
+        }
+
+        /// <summary>Applies any pending changes to the resource, from the specified priority queue.</summary>
+        /// <param name="cmd">The graphics queue to use when process changes.</param>
+        protected virtual void OnApply(GraphicsQueue cmd)
+        {
+            if (_applyTaskQueue.Count > 0)
+            {
+                IGraphicsResourceTask op = null;
+                bool altered = false;
+                while (_applyTaskQueue.TryDequeue(out op))
+                    altered = op.Process(cmd, this);
+
+                // If the resource was invalided, let the pipeline know it needs to be reapplied by incrementing version.
+                if (altered)
+                    Version++;
+            }
         }
 
         /// <summary>
@@ -153,23 +181,6 @@ namespace Molten.Graphics
                 Destination = destination,
                 CompletionCallback = completeCallback,
             });
-        }
-
-        /// <summary>Applies any pending changes to the resource, from the specified priority queue.</summary>
-        /// <param name="cmd">The graphics queue to use when process changes.</param>
-        protected virtual void OnApply(GraphicsQueue cmd)
-        {
-            if (_applyTaskQueue.Count > 0)
-            {
-                IGraphicsResourceTask op = null;
-                bool altered = false;
-                while (_applyTaskQueue.TryDequeue(out op))
-                    altered = op.Process(cmd, this);
-
-                // If the resource was invalided, let the pipeline know it needs to be reapplied by incrementing version.
-                if (altered)
-                    Version++;
-            }
         }
 
         internal void Clear()

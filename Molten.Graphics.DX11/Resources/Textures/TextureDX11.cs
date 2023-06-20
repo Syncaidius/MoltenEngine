@@ -102,7 +102,10 @@ namespace Molten.Graphics.DX11
                 }
 
                 if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
+                {
                     handle.UAV.Desc = _uavDesc;
+                    handle.UAV.Create();
+                }
             }
         }
 

@@ -48,18 +48,6 @@ namespace Molten.Graphics.DX11
             SetDebugName($"{Handle.Resource.Name}_{GetType().Name}");
         }
 
-        internal virtual void Create(ID3D11Resource* resource)
-        {
-            if (!Handle.Resource.Flags.Has(_requiredFlags))
-                throw new InvalidOperationException($"Cannot create UAV for resource that does not have {_requiredFlags}");
-
-            SilkUtil.ReleasePtr(ref _native);
-
-            fixed(D* ptrDesc = &_desc)
-                OnCreateView(resource, ptrDesc, ref _native);
-            SetDebugName($"{Handle.Resource.Name}_{GetType().Name}");
-        }
-
         internal void SetDebugName(string debugName)
         {
             if (!string.IsNullOrWhiteSpace(debugName))
