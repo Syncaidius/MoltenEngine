@@ -7,8 +7,8 @@ namespace Molten.Graphics.Vulkan
     {
         internal BufferView* _ptrView;
 
-        internal BufferHandleVK(DeviceVK device) :
-            base(device, true)
+        internal BufferHandleVK(GraphicsResource resource) :
+            base(resource, true)
         {
             _ptrView = EngineUtil.Alloc<BufferView>();
         }

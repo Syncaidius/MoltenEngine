@@ -25,6 +25,42 @@ namespace Molten.Graphics
         protected abstract void OnCreateResource(uint frameBufferSize, uint frameBufferIndex, ulong frameID);
 
         protected abstract void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID);
+
+        /// <summary>
+        /// Invoked when the current <see cref="GraphicsObject"/> should apply any changes before being bound to a GPU context.
+        /// </summary>
+        /// <param name="queue">The <see cref="GraphicsQueue"/> that the current <see cref="GraphicsObject"/> is to be bound to.</param>
+        public void Apply(GraphicsQueue queue)
+        {
+            if (IsDisposed)
+                return;
+
+            LastUsedFrameID = Device.Renderer.Profiler.FrameID;
+            LastUsedFrameBufferIndex = Device.FrameBufferIndex;
+
+            // Cap frame-buffer size to 1 if the resource is static.
+            uint fbSize = Flags.Has(GraphicsResourceFlags.Static) ? 1 : Device.FrameBufferSize;
+
+            // Check if the last known frame buffer size has changed.
+            unsafe
+            {
+                if (Handle.Ptr == null)
+                {
+                    OnCreateResource(fbSize, Device.FrameBufferIndex, Device.Renderer.Profiler.FrameID);
+                }
+                else if (KnownFrameBufferSize != fbSize)
+                {
+                    OnFrameBufferResized(KnownFrameBufferSize, fbSize, Device.FrameBufferIndex, Device.Renderer.Profiler.FrameID);
+                    KnownFrameBufferSize = fbSize;
+                }
+            }
+
+            if (LastUsedFrameBufferIndex != Device.FrameBufferIndex)
+                OnNextFrame(queue, Device.FrameBufferIndex, Device.Renderer.Profiler.FrameID);
+
+            OnApply(queue);
+        }
+
         /// <summary>
         /// Queues a <see cref="IGraphicsResourceTask"/> on the current <see cref="GraphicsResource"/>.
         /// </summary>
@@ -62,6 +98,28 @@ namespace Molten.Graphics
                     }
                     break;
             }
+        }
+
+        /// <summary>
+        /// Takes the next task from the task queue if it matches the specified type.
+        /// </summary>
+        /// <typeparam name="T">The type.</typeparam>
+        /// <param name="result">The task that was dequeued, if any.</param>
+        /// <returns></returns>
+        protected bool DequeueTaskIfType<T>(out T result)
+            where T : IGraphicsResourceTask
+        {
+            if (_applyTaskQueue.Count > 0 && _applyTaskQueue.IsNext<T>())
+            {
+                if (_applyTaskQueue.TryDequeue(out IGraphicsResourceTask task))
+                {
+                    result = (T)task;
+                    return true;
+                }
+            }
+
+            result = default;
+            return false;
         }
 
         public void CopyTo(GraphicsPriority priority, GraphicsResource destination, Action<GraphicsResource> completeCallback = null)
@@ -112,63 +170,6 @@ namespace Molten.Graphics
                 if (altered)
                     Version++;
             }
-        }
-
-        /// <summary>
-        /// Takes the next task from the task queue if it matches the specified type.
-        /// </summary>
-        /// <typeparam name="T">The type.</typeparam>
-        /// <param name="result">The task that was dequeued, if any.</param>
-        /// <returns></returns>
-        protected bool DequeueTaskIfType<T>(out T result)
-            where T : IGraphicsResourceTask
-        {
-            if(_applyTaskQueue.Count > 0 && _applyTaskQueue.IsNext<T>())
-            {
-                if(_applyTaskQueue.TryDequeue(out IGraphicsResourceTask task))
-                {
-                    result = (T)task;
-                    return true;
-                }
-            }
-
-            result = default;
-            return false;
-        }
-
-        /// <summary>
-        /// Invoked when the current <see cref="GraphicsObject"/> should apply any changes before being bound to a GPU context.
-        /// </summary>
-        /// <param name="queue">The <see cref="GraphicsQueue"/> that the current <see cref="GraphicsObject"/> is to be bound to.</param>
-        public void Apply(GraphicsQueue queue)
-        {
-            if (IsDisposed)
-                return;
-
-            LastUsedFrameID = Device.Renderer.Profiler.FrameID;
-            LastUsedFrameBufferIndex = Device.FrameBufferIndex;
-
-            // Cap frame-buffer size to 1 if the resource is static.
-            uint fbSize = Flags.Has(GraphicsResourceFlags.Static) ? 1 : Device.FrameBufferSize;
-
-            // Check if the last known frame buffer size has changed.
-            unsafe
-            {
-                if (Handle.Ptr == null)
-                {
-                    OnCreateResource(fbSize, Device.FrameBufferIndex, Device.Renderer.Profiler.FrameID);
-                }
-                else if (KnownFrameBufferSize != fbSize)
-                {
-                    OnFrameBufferResized(KnownFrameBufferSize, fbSize, Device.FrameBufferIndex, Device.Renderer.Profiler.FrameID);
-                    KnownFrameBufferSize = fbSize;
-                }
-            }
-
-            if (LastUsedFrameBufferIndex != Device.FrameBufferIndex)
-                OnNextFrame(queue, Device.FrameBufferIndex, Device.Renderer.Profiler.FrameID);
-
-            OnApply(queue);
         }
 
         internal void Clear()

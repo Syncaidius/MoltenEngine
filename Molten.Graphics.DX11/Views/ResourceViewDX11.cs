@@ -16,10 +16,9 @@ namespace Molten.Graphics.DX11
         D _desc;
         GraphicsResourceFlags _requiredFlags;
 
-        internal ResourceViewDX11(GraphicsResource resource, GraphicsResourceFlags requiredFlags)
+        internal ResourceViewDX11(ResourceHandleDX11 handle, GraphicsResourceFlags requiredFlags)
         {
-            Resource = resource;
-            Device = resource.Device as DeviceDX11;
+            Handle = handle;
             _requiredFlags = requiredFlags;
         }
 
@@ -27,34 +26,38 @@ namespace Molten.Graphics.DX11
 
         internal ref D Desc => ref _desc;
 
-        internal DeviceDX11 Device { get; }
-
-        internal GraphicsResource Resource { get; }
+        /// <summary>
+        /// Gets the parent <see cref="ResourceHandleDX11"/>.
+        /// </summary>
+        internal ResourceHandleDX11 Handle { get; }
 
         internal virtual void Create()
         {
-            if (!Resource.Flags.Has(_requiredFlags))
-                throw new InvalidOperationException($"Cannot create UAV for resource that does not have {_requiredFlags}");
+            if (!Handle.Resource.Flags.Has(_requiredFlags))
+                throw new InvalidOperationException($"Cannot create view for resource that does not have {_requiredFlags}");
+
+            if (Handle.Ptr == null)
+                throw new InvalidOperationException($"Cannot create view for resource with handle ptr of 0x0 (null).");
 
             SilkUtil.ReleasePtr(ref _native);
 
             fixed (D* ptrDesc = &_desc)
-                OnCreateView((ID3D11Resource*)Resource.Handle.Ptr, ptrDesc, ref _native);
+                OnCreateView((ID3D11Resource*)Handle.Ptr, ptrDesc, ref _native);
 
-            Device.ProcessDebugLayerMessages();
-            SetDebugName($"{Resource.Name}_{GetType().Name}");
+            Handle.Device.ProcessDebugLayerMessages();
+            SetDebugName($"{Handle.Resource.Name}_{GetType().Name}");
         }
 
         internal virtual void Create(ID3D11Resource* resource)
         {
-            if (!Resource.Flags.Has(_requiredFlags))
+            if (!Handle.Resource.Flags.Has(_requiredFlags))
                 throw new InvalidOperationException($"Cannot create UAV for resource that does not have {_requiredFlags}");
 
             SilkUtil.ReleasePtr(ref _native);
 
             fixed(D* ptrDesc = &_desc)
                 OnCreateView(resource, ptrDesc, ref _native);
-            SetDebugName($"{Resource.Name}_{GetType().Name}");
+            SetDebugName($"{Handle.Resource.Name}_{GetType().Name}");
         }
 
         internal void SetDebugName(string debugName)

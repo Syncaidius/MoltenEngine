@@ -62,12 +62,14 @@ namespace Molten.Graphics.DX11
             };
         }
 
-        protected override void UpdateDescription(uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat)
+        protected override void UpdateDescription(TextureDimensions dimensions, GraphicsFormat newFormat)
         {
-            _desc.Width = newWidth;
-            _desc.Height = newHeight;
-            _desc.MipLevels = newMipMapCount;
-            _desc.Format = newFormat;
+            base.UpdateDescription(dimensions, newFormat);
+
+            _desc.Width = dimensions.Width;
+            _desc.Height = dimensions.Height;
+            _desc.MipLevels = dimensions.MipMapCount;
+            _desc.Format = newFormat.ToApi();
         }
 
         public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight, uint newMipMapCount)

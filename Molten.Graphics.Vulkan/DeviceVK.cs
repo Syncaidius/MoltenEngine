@@ -94,7 +94,7 @@ namespace Molten.Graphics.Vulkan
             return _loader.HasExtension(extName);
         }
 
-        internal void Initialize(CommandSetCapabilityFlags capFlags)
+        internal void PreInitialize(CommandSetCapabilityFlags capFlags)
         {
             _native = EngineUtil.Alloc<Device>();
             _queues = new List<GraphicsQueueVK>();
@@ -189,7 +189,7 @@ namespace Molten.Graphics.Vulkan
             return _loader.GetExtension<E>();
         }
 
-        internal bool Build()
+        protected override bool OnInitialize()
         {
             if (_loader.Build(_renderer.ApiVersion, Ptr))
             {

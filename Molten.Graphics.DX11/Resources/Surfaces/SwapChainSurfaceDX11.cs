@@ -35,12 +35,10 @@ namespace Molten.Graphics.DX11
 
         protected override void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle, uint handleIndex)
         {
-            RTV.Release();
-
             // Resize the swap chain if needed.
-            if (resize && NativeSwapChain != null)
+            if (NativeSwapChain != null)
             {
-                NativeSwapChain->ResizeBuffers(Device.Settings.GetBackBufferSize(), Width, Height, GraphicsFormat.Unknown.ToApi(), 0U);
+                int result = NativeSwapChain->ResizeBuffers(Device.Settings.GetBackBufferSize(), Width, Height, GraphicsFormat.Unknown.ToApi(), 0U);
                 NativeSwapChain->GetDesc1(ref _swapDesc);
             }
             else
@@ -52,21 +50,31 @@ namespace Molten.Graphics.DX11
                 Device.Settings.VSync.OnChanged += VSync_OnChanged;
             }
 
+            /* TODO Swapchain:
+             *  Discard Mode = Only image index 0 can be accessed
+             *  Sequential/FlipS-Sequential Modes = Only image index 0 can be accesed for writing. The rest can only be accesed for reading.
+             *  
+             *  NOTE: This means we only need 1 handle for the swap chain, as the next image is always at index 0.
+             */
             void* ppSurface = null;
             ID3D11Resource* res = null;
             Guid riid = ID3D11Texture2D1.Guid;
             WinHResult hr = NativeSwapChain->GetBuffer(handleIndex, &riid, &ppSurface);
             DxgiError err = hr.ToEnum<DxgiError>();
+
+            RenderSurfaceHandleDX11 rsHandle = handle as RenderSurfaceHandleDX11;
+            rsHandle.RTV.Desc.Format = DxgiFormat;
+
             if (err == DxgiError.Ok)
             {
-                RTV.Desc = new RenderTargetViewDesc1()
+                rsHandle.RTV.Desc = new RenderTargetViewDesc1()
                 {
                     Format = _swapDesc.Format,
                     ViewDimension = RtvDimension.Texture2D,
                 };
 
                 res = (ID3D11Resource*)ppSurface;
-                RTV.Create(res);
+                rsHandle.RTV.Create(res);
                 Viewport = new ViewportF(0, 0, Width, Height);
             }
             else
@@ -104,12 +112,12 @@ namespace Molten.Graphics.DX11
             }
         }
 
-        protected override void DisposeTextureForResize()
+        /*protected override void DisposeTextureForResize()
         {
             // Skip calling the SwapChainSurfaceDX11.OnGraphicsDispose() implementation. Jump straight to base.
             // This prevents swapchain render loops from being aborted due to disposal flags being set.
             base.OnGraphicsRelease();
-        }
+        }*/
 
         public void Dispatch(Action action)
         {

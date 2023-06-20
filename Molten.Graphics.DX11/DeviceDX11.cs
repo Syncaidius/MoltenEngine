@@ -74,14 +74,14 @@ namespace Molten.Graphics.DX11
             }
         }
 
-        internal void Initialize()
+        protected override bool OnInitialize()
         {
             HResult r = _builder.CreateDevice(this, out PtrRef, out ID3D11DeviceContext4* deviceContext);
 
             if (r.IsFailure)
             {
                 Log.Error($"Failed to initialize {nameof(DeviceDX11)}. Code: {r}");
-                return;
+                return false;
             }
 
             if (Settings.EnableDebugLayer)
@@ -98,6 +98,7 @@ namespace Molten.Graphics.DX11
             }
 
             _queue = new GraphicsQueueDX11(this, deviceContext);
+            return true;
         }
 
         /// <summary>Queries the underlying texture's interface.</summary>

@@ -71,6 +71,11 @@ namespace Molten.Graphics.DX11
             }
         }
 
+        protected virtual ResourceHandleDX11<ID3D11Resource> CreateHandle()
+        {
+            return new ResourceHandleDX11<ID3D11Resource>(this);
+        }
+
         protected override void OnCreateResource(uint frameBufferSize, uint frameBufferIndex, ulong frameID)
         {
             DeviceDX11 device = Device as DeviceDX11;
@@ -84,7 +89,7 @@ namespace Molten.Graphics.DX11
 
             for (uint i = 0; i < frameBufferSize; i++)
             {
-                ResourceHandleDX11<ID3D11Resource> handle = new ResourceHandleDX11<ID3D11Resource>(this);
+                ResourceHandleDX11<ID3D11Resource> handle = CreateHandle();
                 _handles[i] = handle;
                 CreateTexture(device, handle, i);
 
@@ -114,7 +119,7 @@ namespace Molten.Graphics.DX11
 
         protected override void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
         {
-            throw new NotImplementedException();
+            OnResizeTexture(Dimensions, ResourceFormat);
         }
 
         protected SubresourceData* GetImmutableData(Usage usage)

@@ -175,12 +175,24 @@ namespace Molten.Graphics
             Interlocked.Add(ref _allocatedVRAM, -bytes);
         }
 
-        internal void BeginFrame()
+        public bool Initialize()
         {
-            Queue.Profiler.Begin();
+            if (IsInitialized)
+                throw new InvalidOperationException("Cannot initialize a GraphicsDevice that has already been initialized.");
 
-            // TODO check if _maxStagingSize has changed due to settings. May need to resize all existing staging buffers.
+            if (OnInitialize())
+            {
+                IsInitialized = true;
+                CheckFrameBufferSize();
+            }
 
+            return IsInitialized;
+        }
+
+        protected abstract bool OnInitialize();
+
+        private void CheckFrameBufferSize()
+        {
             // Do we need to resize the number of buffered frames?
             if (_newFrameBufferSize != FrameBufferSize)
             {
@@ -204,6 +216,14 @@ namespace Molten.Graphics
                     }
                 }
             }
+        }
+
+        internal void BeginFrame()
+        {
+            Queue.Profiler.Begin();
+
+            // TODO check if _maxStagingSize has changed due to settings. May need to resize all existing staging buffers.
+            CheckFrameBufferSize();
 
             // If the oldest frame hasn't finished yet, wait for it before replacing it with a new one.
             // This stops the CPU from getting too far ahead of the GPU.
@@ -453,5 +473,7 @@ namespace Molten.Graphics
         /// Gets the maximum size of a frame's staging buffer, in bytes.
         /// </summary>
         public uint MaxStagingBufferSize => _maxStagingSize;
+
+        public bool IsInitialized { get; private set; }
     }
 }

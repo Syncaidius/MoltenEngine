@@ -18,10 +18,11 @@ namespace Molten.Graphics.DX11
             return (ID3D11Resource*)handle.Ptr;
         }
 
-        internal ResourceHandleDX11(GraphicsResource resource)
+        internal ResourceHandleDX11(GraphicsResource resource) : base(resource)
         {
-            SRV = new SRViewDX11(resource);
-            UAV = new UAViewDX11(resource);
+            Device = resource.Device as DeviceDX11;
+            SRV = new SRViewDX11(this);
+            UAV = new UAViewDX11(this);
         }
 
         public override void Dispose()
@@ -33,6 +34,8 @@ namespace Molten.Graphics.DX11
         internal SRViewDX11 SRV { get; }
 
         internal UAViewDX11 UAV { get; }
+
+        internal DeviceDX11 Device { get; }
     }
 
     public unsafe class ResourceHandleDX11<T> : ResourceHandleDX11

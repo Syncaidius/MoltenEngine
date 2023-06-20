@@ -28,7 +28,7 @@ namespace Molten.Graphics.Vulkan
             _handles = new BufferHandleVK[frameBufferSize];
 
             for (uint i = 0; i < frameBufferSize; i++)
-                _handles[i] = new BufferHandleVK(device);
+                _handles[i] = new BufferHandleVK(this);
 
             _curHandle = _handles[frameBufferIndex];
             BufferUsageFlags usageFlags = BufferUsageFlags.None;

@@ -8,9 +8,9 @@ namespace Molten.Graphics.Vulkan
 
         internal MemoryAllocationVK Memory;
 
-        internal ResourceHandleVK(DeviceVK device)
+        internal ResourceHandleVK(GraphicsResource resource) : base(resource)
         {
-            Device = device;
+            Device = resource.Device as DeviceVK;
         }
 
         /// <summary>
@@ -33,8 +33,8 @@ namespace Molten.Graphics.Vulkan
     {
         T* _ptr;
 
-        protected ResourceHandleVK(DeviceVK device, bool allocate) :
-            base(device)
+        protected ResourceHandleVK(GraphicsResource resource, bool allocate) :
+            base(resource)
         {
             IsAllocated = allocate;
 

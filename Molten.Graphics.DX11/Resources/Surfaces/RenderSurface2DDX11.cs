@@ -5,6 +5,8 @@ namespace Molten.Graphics.DX11
 {
     public unsafe class RenderSurface2DDX11 : Texture2DDX11, IRenderSurface2D
     {
+        RTViewDX11[] _rtvs;
+
         internal RenderSurface2DDX11(
             GraphicsDevice device,
             uint width,
@@ -22,23 +24,27 @@ namespace Molten.Graphics.DX11
             Viewport = new ViewportF(0, 0, width, height);
 
             Name = $"Surface_{name ?? GetType().Name}";
-            RTV = new RenderTargetView(this)
-            {
-                Desc = new RenderTargetViewDesc1(DxgiFormat),
-            };
+        }
+
+        protected override ResourceHandleDX11<ID3D11Resource> CreateHandle()
+        {
+            return new RenderSurfaceHandleDX11(this);
         }
 
         protected override void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle, uint handleIndex)
         {
-            RTV.Release();
-
             base.CreateTexture(device, handle, handleIndex);
-            SetRTVDescription(ref RTV.Desc);
+
+            RenderSurfaceHandleDX11 rsHandle = handle as RenderSurfaceHandleDX11;
+            ref RenderTargetViewDesc1 desc = ref rsHandle.RTV.Desc;
+            desc.Format = DxgiFormat;
+
+            SetRTVDescription(ref desc);
 
             if (_desc.SampleDesc.Count > 1)
             {
-                RTV.Desc.ViewDimension = RtvDimension.Texture2Dmsarray;
-                RTV.Desc.Texture2DMSArray = new Tex2DmsArrayRtv
+                desc.ViewDimension = RtvDimension.Texture2Dmsarray;
+                desc.Texture2DMSArray = new Tex2DmsArrayRtv
                 {
                     ArraySize = _desc.ArraySize,
                     FirstArraySlice = 0,
@@ -46,8 +52,8 @@ namespace Molten.Graphics.DX11
             }
             else
             {
-                RTV.Desc.ViewDimension = RtvDimension.Texture2Darray;
-                RTV.Desc.Texture2DArray = new Tex2DArrayRtv1()
+                desc.ViewDimension = RtvDimension.Texture2Darray;
+                desc.Texture2DArray = new Tex2DArrayRtv1()
                 {
                     ArraySize = _desc.ArraySize,
                     MipSlice = 0,
@@ -56,7 +62,7 @@ namespace Molten.Graphics.DX11
                 };
             }
 
-            RTV.Create();
+            rsHandle.RTV.Create();
         }
 
         protected virtual void SetRTVDescription(ref RenderTargetViewDesc1 desc) { }
@@ -73,10 +79,12 @@ namespace Molten.Graphics.DX11
         {
             OnApply(cmd);
 
-            if (RTV.Ptr != null)
+            RenderSurfaceHandleDX11 rsHandle = Handle as RenderSurfaceHandleDX11;
+
+            if (rsHandle.RTV.Ptr != null)
             {
                 Color4 c4 = color;
-                cmd.Ptr->ClearRenderTargetView((ID3D11RenderTargetView*)RTV.Ptr, (float*)&c4);
+                cmd.Ptr->ClearRenderTargetView(rsHandle.RTV, (float*)&c4);
             }
         }
 
@@ -89,20 +97,7 @@ namespace Molten.Graphics.DX11
             });
         }
 
-        /// <summary>Called when the render target needs to be disposed.</summary>
-        protected override void OnGraphicsRelease()
-        {
-            RTV.Release();
-            base.OnGraphicsRelease();
-        }
-
         /// <summary>Gets the viewport that defines the default renderable area of the render target.</summary>
         public ViewportF Viewport { get; protected set; }
-
-        /// <summary>
-        /// Gets the DX11 render target view (RTV) for the current render surface.
-        /// </summary>
-        internal RenderTargetView RTV { get; }
-
     }
 }

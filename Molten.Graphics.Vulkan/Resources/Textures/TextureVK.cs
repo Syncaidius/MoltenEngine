@@ -40,7 +40,7 @@ namespace Molten.Graphics.Vulkan
             // Swapchain image creation/disposal is controlled entirely by the underlying Vulkan implementation.
             bool allocImagePtr = !(this is ISwapChainSurface);
             for (uint i = 0; i < frameBufferSize; i++)
-                _handles[i] = new ImageHandleVK(device, allocImagePtr);
+                _handles[i] = new ImageHandleVK(this, allocImagePtr);
 
             _curHandle = _handles[frameBufferIndex];
 
@@ -153,7 +153,7 @@ namespace Molten.Graphics.Vulkan
             throw new NotImplementedException();
         }
 
-        protected override void OnResizeTexture(in TextureDimensions dimensions)
+        protected override void OnResizeTexture(in TextureDimensions dimensions, GraphicsFormat format)
         {
             throw new NotImplementedException();
         }

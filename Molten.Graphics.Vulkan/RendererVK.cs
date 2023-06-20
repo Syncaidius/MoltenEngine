@@ -81,10 +81,10 @@ namespace Molten.Graphics.Vulkan
         {
             List<GraphicsDevice> result = new List<GraphicsDevice>();
             NativeDevice = _displayManager.PrimaryDevice as DeviceVK;
-            NativeDevice.Initialize(CommandSetCapabilityFlags.Graphics);
+            NativeDevice.PreInitialize(CommandSetCapabilityFlags.Graphics);
             NativeDevice.AddExtension<KhrSwapchain>();
 
-            if (NativeDevice.Build())
+            if (NativeDevice.Initialize())
                 result.Add(NativeDevice);
 
             // Initialize all secondary devices.
@@ -94,10 +94,10 @@ namespace Molten.Graphics.Vulkan
                     continue;
 
                 DeviceVK vkDevice = device as DeviceVK;
-                vkDevice.Initialize(CommandSetCapabilityFlags.Graphics);
+                vkDevice.PreInitialize(CommandSetCapabilityFlags.Graphics);
                 vkDevice.AddExtension<KhrSwapchain>();
 
-                if (vkDevice.Build())
+                if (vkDevice.Initialize())
                     result.Add(vkDevice);
             }
 

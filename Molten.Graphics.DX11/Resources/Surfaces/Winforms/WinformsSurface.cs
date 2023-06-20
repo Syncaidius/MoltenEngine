@@ -31,12 +31,12 @@ namespace Molten.Graphics.DX11
             _ctrlName = controlName;
         }
 
-        protected override void UpdateDescription(uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat)
+        protected override void UpdateDescription(TextureDimensions dimensions, GraphicsFormat newFormat)
         {
-            if (_displayMode.Width != newWidth || _displayMode.Height != newHeight)
+            if (_displayMode.Width != dimensions.Width || _displayMode.Height != dimensions.Height)
             {
-                _displayMode.Width = newWidth;
-                _displayMode.Height = newHeight;
+                _displayMode.Width = dimensions.Width;
+                _displayMode.Height = dimensions.Height;
 
                 // TODO validate display mode here. If invalid or unsupported by display, choose nearest supported.
 
@@ -45,14 +45,14 @@ namespace Molten.Graphics.DX11
                 fixed(ModeDesc1* ptrMode = &_displayMode.Description)
                     NativeSwapChain->ResizeTarget((ModeDesc*)ptrMode);
 
-                Device.Log.WriteLine($"{typeof(T)} surface '{_ctrlName}' resized to {newWidth}x{newHeight}");
+                Device.Log.WriteLine($"{typeof(T)} surface '{_ctrlName}' resized to {dimensions.Width}x{dimensions.Height}");
             }
             else
             {
                 UpdateControlMode(_control, _mode);
             }
 
-            base.UpdateDescription(newWidth, newHeight, newDepth, newMipMapCount, newArraySize, newFormat);
+            base.UpdateDescription(dimensions, newFormat);
         }
 
         protected abstract void UpdateControlMode(T control, WindowMode mode);

@@ -18,11 +18,11 @@ namespace Molten.Graphics.DX12
             _builder = deviceBuilder;
         }
 
-        internal void Initialize()
+        protected override bool OnInitialize()
         {
             HResult r = _builder.CreateDevice(this, out PtrRef);
             if (!_builder.CheckResult(r, () => $"Failed to initialize {nameof(DeviceDX12)}"))
-                return;
+                return false;
 
             CommandQueueDesc cmdDesc = new CommandQueueDesc()
             {
@@ -30,6 +30,7 @@ namespace Molten.Graphics.DX12
             };
 
             _cmdDirect = new GraphicsQueueDX12(Log, this, _builder, ref cmdDesc);
+            return true;
         }
 
         protected override void OnDispose()

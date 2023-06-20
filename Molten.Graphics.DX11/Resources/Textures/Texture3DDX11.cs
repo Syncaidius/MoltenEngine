@@ -51,7 +51,7 @@ namespace Molten.Graphics.DX11
             };
         }
 
-        protected override void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle)
+        protected override void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle, uint handleIndex)
         {
             SubresourceData* subData = null;
 

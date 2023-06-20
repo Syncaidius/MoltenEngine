@@ -27,5 +27,11 @@
         /// Gets or [protected] sets the <see cref="GraphicsFormat"/> of the resource.
         /// </summary>
         GraphicsFormat ResourceFormat { get; }
+
+
+        /// <summary>
+        /// Gets the <see cref="GraphicsResourceHandle"/> for the current <see cref="IGraphicsResource"/>.
+        /// </summary>
+        GraphicsResourceHandle Handle { get; }
     }
 }

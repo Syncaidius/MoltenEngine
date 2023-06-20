@@ -6,8 +6,8 @@ namespace Molten.Graphics.Vulkan
     {
         internal ImageView* _ptrView;
 
-        internal ImageHandleVK(DeviceVK device, bool allocateImagePtr) :
-            base(device, allocateImagePtr)
+        internal ImageHandleVK(GraphicsResource resource, bool allocateImagePtr) :
+            base(resource, allocateImagePtr)
         {
             _ptrView = EngineUtil.Alloc<ImageView>();
         }
