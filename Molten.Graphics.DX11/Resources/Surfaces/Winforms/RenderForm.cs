@@ -206,10 +206,7 @@ namespace Molten.Graphics.DX11
             base.OnResizeEnd(e);
 
             if (isUserResizing && cachedSize != Size)
-            {
                 OnUserResized(e);
-                // UpdateScreen();
-            }
 
             isUserResizing = false;
             OnResumeRendering(e);
@@ -222,7 +219,6 @@ namespace Molten.Graphics.DX11
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            // UpdateScreen();
         }
 
         /// <summary>
@@ -244,8 +240,7 @@ namespace Molten.Graphics.DX11
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void OnPauseRendering(EventArgs e)
         {
-            if (PauseRendering != null)
-                PauseRendering(this, e);
+            PauseRendering?.Invoke(this, e);
         }
 
         /// <summary>
@@ -254,8 +249,7 @@ namespace Molten.Graphics.DX11
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void OnResumeRendering(EventArgs e)
         {
-            if (ResumeRendering != null)
-                ResumeRendering(this, e);
+            ResumeRendering?.Invoke(this, e);
         }
 
         /// <summary>
@@ -264,14 +258,12 @@ namespace Molten.Graphics.DX11
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void OnUserResized(EventArgs e)
         {
-            if (UserResized != null)
-                UserResized(this, e);
+            UserResized?.Invoke(this, e);
         }
 
         private void OnMonitorChanged(EventArgs e)
         {
-            if (MonitorChanged != null)
-                MonitorChanged(this, e);
+            MonitorChanged?.Invoke(this, e);
         }
 
         /// <summary>
@@ -280,8 +272,7 @@ namespace Molten.Graphics.DX11
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void OnAppActivated(EventArgs e)
         {
-            if (AppActivated != null)
-                AppActivated(this, e);
+            AppActivated?.Invoke(this, e);
         }
 
         /// <summary>
@@ -290,8 +281,7 @@ namespace Molten.Graphics.DX11
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void OnAppDeactivated(EventArgs e)
         {
-            if (AppDeactivated != null)
-                AppDeactivated(this, e);
+            AppDeactivated?.Invoke(this, e);
         }
 
         /// <summary>
@@ -300,8 +290,7 @@ namespace Molten.Graphics.DX11
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void OnSystemSuspend(EventArgs e)
         {
-            if (SystemSuspend != null)
-                SystemSuspend(this, e);
+            SystemSuspend?.Invoke(this, e);
         }
 
         /// <summary>
@@ -310,8 +299,7 @@ namespace Molten.Graphics.DX11
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void OnSystemResume(EventArgs e)
         {
-            if (SystemResume != null)
-                SystemResume(this, e);
+            SystemResume?.Invoke(this, e);
         }
 
         /// <summary>
@@ -320,8 +308,7 @@ namespace Molten.Graphics.DX11
         /// <param name="e">The <see cref="System.ComponentModel.CancelEventArgs"/> instance containing the event data.</param>
         private void OnScreensaver(CancelEventArgs e)
         {
-            if (Screensaver != null)
-                Screensaver(this, e);
+            Screensaver?.Invoke(this, e);
         }
 
         protected override void OnClientSizeChanged(EventArgs e)
@@ -332,7 +319,6 @@ namespace Molten.Graphics.DX11
                 isSizeChangedWithoutResizeBegin = false;
                 cachedSize = Size;
                 OnUserResized(EventArgs.Empty);
-                //UpdateScreen();
             }
         }
 
@@ -372,7 +358,6 @@ namespace Molten.Graphics.DX11
                             previousWindowState = FormWindowState.Maximized;
 
                             OnUserResized(EventArgs.Empty);
-                            //UpdateScreen();
                             cachedSize = Size;
                         }
                         else if (wparam == SIZE_RESTORED)
@@ -386,9 +371,7 @@ namespace Molten.Graphics.DX11
 
                                 // Only update when cachedSize is != 0
                                 if (cachedSize != Size.Empty)
-                                {
                                     isSizeChangedWithoutResizeBegin = true;
-                                }
                             }
                             else
                                 previousWindowState = FormWindowState.Normal;

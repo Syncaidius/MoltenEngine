@@ -48,15 +48,15 @@ namespace Molten.Graphics
         Shared = 1 << 6,
 
         /// <summary>
-        /// This is a helper flag to tell the underlying implementation that the data of the resource will rarely/never change once initially set. 
-        /// This can help the underlying implementation to optimize memory usage.
+        /// Tells the underlying implementation that we want any changes to the resource to be buffered inline with the back-buffer.
+        /// <para>The amount of memory required by the resource will be multiplied by the frame-buffer size.</para>
         /// </summary>
-        Static = 1 << 7,
+        Buffered = 1 << 7,
 
         /// <summary>
         /// All of the GPU and CPU read/write flags. Generally used by staging resources.
         /// </summary>
-        AllReadWrite = (CpuRead | CpuWrite | GpuWrite),
+        AllReadWrite = (CpuRead | CpuWrite | GpuRead | GpuWrite),
     }
 
     public static class ResourceFlagsExtensions
@@ -71,8 +71,7 @@ namespace Molten.Graphics
         {
             return (!flags.Has(GraphicsResourceFlags.GpuWrite) && 
                 !flags.Has(GraphicsResourceFlags.CpuRead) && 
-                !flags.Has(GraphicsResourceFlags.CpuWrite)) || 
-                flags.Has(GraphicsResourceFlags.Static);
+                !flags.Has(GraphicsResourceFlags.CpuWrite));
         }
 
         public static bool IsDiscard(this GraphicsResourceFlags flags)

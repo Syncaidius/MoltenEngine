@@ -9,7 +9,7 @@
         public unsafe bool Process(GraphicsQueue cmd, GraphicsResource resource)
         {
             if (resource is GraphicsBuffer buffer && buffer.BufferType == GraphicsBufferType.Staging)
-                resource.EnsureResource(cmd);
+                resource.Ensure(cmd);
 
             cmd.CopyResource(resource, Destination);
             CompletionCallback?.Invoke(resource);

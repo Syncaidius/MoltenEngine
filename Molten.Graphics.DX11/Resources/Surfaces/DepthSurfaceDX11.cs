@@ -138,11 +138,6 @@ namespace Molten.Graphics.DX11
 
         internal void OnClear(GraphicsQueueDX11 cmd, ref DepthClearTask task)
         {
-            OnApply(cmd);
-
-            //if (_depthView == null)
-            //    CreateTexture(false);
-
             cmd.Ptr->ClearDepthStencilView(_depthView, (uint)task.Flags, task.DepthClearValue, task.StencilClearValue);
         }
 

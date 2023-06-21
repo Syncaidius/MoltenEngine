@@ -14,6 +14,14 @@ namespace Molten.Graphics.DX11
         ResourceHandleDX11<ID3D11Buffer> _curHandle;
         protected BufferDesc Desc;
 
+        void* _initialData;
+        uint _initialBytes;
+
+        /// <summary>
+        /// A list of handles that need to be disposed once the GPU is finished with them.
+        /// </summary>
+        List<ResourceHandleDX11<ID3D11Buffer>> _oldHandles;
+
         /// <summary>
         /// Creates a new instance of <see cref="BufferDX11"/> with the specified parameters.
         /// </summary>
@@ -33,23 +41,29 @@ namespace Molten.Graphics.DX11
             void* initialData,
             uint initialBytes) : base(device, stride, numElements, flags | GraphicsResourceFlags.GpuRead, type)
         {
-            // Use a temporary handle to pass initial buffer data.
-            _curHandle = new ResourceHandleDX11<ID3D11Buffer>(this)
-            {
-                InitialBytes = initialBytes,
-                InitialData = initialData,
-            };
+            _initialData = initialData;
+            _initialBytes = initialBytes;
+            _oldHandles = new List<ResourceHandleDX11<ID3D11Buffer>>();
 
             ResourceFormat = format;
             D3DFormat = format.ToApi();
 
-            OnCreateResource(device.FrameBufferSize, device.FrameBufferIndex, device.Renderer.Profiler.FrameID);
             device.ProcessDebugLayerMessages();
         }
 
         protected override void OnNextFrame(GraphicsQueue queue, uint frameBufferIndex, ulong frameID)
         {
-           _curHandle = _handles[frameBufferIndex];
+            _curHandle = _handles[frameBufferIndex];
+
+            // Dispose of old texture handles from any previous resize calls.
+            uint resizeAge = (uint)(frameID - LastFrameResizedID);
+            if (resizeAge > Device.FrameBufferSize)
+            {
+                foreach (ResourceHandleDX11<ID3D11Buffer> handle in _oldHandles)
+                    handle.Dispose();
+
+                _oldHandles.Clear();
+            }
         }
 
         protected override sealed void OnCreateResource(uint frameBufferSize, uint frameBufferIndex, ulong frameID)
@@ -62,7 +76,7 @@ namespace Molten.Graphics.DX11
 
             if (Flags.IsImmutable() && _curHandle.InitialData == null)
                 throw new GraphicsResourceException(this, "Initial data cannot be null when buffer mode is Immutable.");
-
+                
             Desc = new BufferDesc();
             Desc.ByteWidth = SizeInBytes;
             Desc.StructureByteStride = 0;
@@ -93,21 +107,21 @@ namespace Molten.Graphics.DX11
                 Desc.StructureByteStride = Stride;
 
             for (int i = 0; i < _handles.Length; i++)
-                CreateBuffer(device, _handles[i], _curHandle);
+                CreateBuffer(device, _handles[i]);
 
             _curHandle = _handles[frameBufferIndex];
         }
 
-        private void CreateBuffer(DeviceDX11 device, ResourceHandleDX11<ID3D11Buffer> handle, ResourceHandleDX11<ID3D11Buffer> initialHandle)
+        private void CreateBuffer(DeviceDX11 device, ResourceHandleDX11<ID3D11Buffer> handle)
         {
-            if (initialHandle.InitialData != null && initialHandle.InitialBytes > 0)
+            if (_initialData != null && _initialBytes > 0)
             {
-                SubresourceData srd = new SubresourceData(initialHandle.InitialData, initialHandle.InitialBytes, SizeInBytes);
+                SubresourceData srd = new SubresourceData(_initialData, _initialBytes, SizeInBytes);
                 fixed (BufferDesc* pDesc = &Desc)
                     device.Ptr->CreateBuffer(pDesc, &srd, ref handle.NativePtr);
 
-                initialHandle.InitialData = null;
-                initialHandle.InitialBytes = 0;
+                _initialData = null;
+                _initialBytes = 0;
             }
             else
             {
@@ -115,11 +129,13 @@ namespace Molten.Graphics.DX11
                     device.Ptr->CreateBuffer(pDesc, null, ref handle.NativePtr);
             }
 
-            CreateViews(device, handle, initialHandle);
+            CreateViews(device, handle);
+
+            _initialData = null;
             Version++;
         }
 
-        protected virtual void CreateViews(DeviceDX11 device, ResourceHandleDX11<ID3D11Buffer> handle, ResourceHandleDX11<ID3D11Buffer> initialHandle)
+        protected virtual void CreateViews(DeviceDX11 device, ResourceHandleDX11<ID3D11Buffer> handle)
         {
             // Create shader resource view (SRV), if shader access is permitted.
             if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
@@ -158,7 +174,9 @@ namespace Molten.Graphics.DX11
 
         protected override void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
         {
-            throw new NotImplementedException();
+            _oldHandles.AddRange(_handles);
+            OnCreateResource(frameBufferSize, frameBufferIndex, frameID);
+            _curHandle = _handles[frameBufferIndex];
         }
 
         protected void SetDebugName(string debugName)

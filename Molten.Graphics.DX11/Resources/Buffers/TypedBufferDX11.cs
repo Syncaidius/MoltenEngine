@@ -50,7 +50,7 @@ namespace Molten.Graphics.DX11
             }
         }
 
-        protected override void CreateViews(DeviceDX11 device, ResourceHandleDX11<ID3D11Buffer> handle, ResourceHandleDX11<ID3D11Buffer> initialHandle)
+        protected override void CreateViews(DeviceDX11 device, ResourceHandleDX11<ID3D11Buffer> handle)
         {
             if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
             {

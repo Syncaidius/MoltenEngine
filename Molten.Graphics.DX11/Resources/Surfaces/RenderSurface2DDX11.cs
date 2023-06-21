@@ -77,8 +77,6 @@ namespace Molten.Graphics.DX11
 
         internal virtual void OnClear(GraphicsQueueDX11 cmd, Color color)
         {
-            OnApply(cmd);
-
             RenderSurfaceHandleDX11 rsHandle = Handle as RenderSurfaceHandleDX11;
 
             if (rsHandle.RTV.Ptr != null)

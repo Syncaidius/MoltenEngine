@@ -191,6 +191,7 @@
             if (resource.Stream != null)
                 throw new GraphicsResourceException(resource, $"Cannot map a resource that is already mapped. Dispose of the provided {nameof(GraphicsStream)} first");
 
+            resource.Ensure(this);
             ResourceMap map = GetResourcePtr(resource, subresource, mapType);
             resource.Stream = new GraphicsStream(this, resource, ref map);
             resource.Stream.Position = offsetBytes;

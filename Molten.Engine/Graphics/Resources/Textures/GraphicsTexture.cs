@@ -268,7 +268,7 @@ namespace Molten.Graphics
             uint fbSize = 1;
             uint fbIndex = 0;
 
-            if (!Flags.Has(GraphicsResourceFlags.Static))
+            if (Flags.Has(GraphicsResourceFlags.Buffered))
             {
                 fbSize = GetMaxFrameBufferSize(Device.FrameBufferSize);
                 fbIndex = Math.Min(fbSize - 1, Device.FrameBufferIndex);
@@ -398,11 +398,5 @@ namespace Molten.Graphics
         }
 
         public GraphicsTextureType TextureType { get; }
-
-        /// <summary>
-        /// Gets the ID of the frame that the current <see cref="GraphicsTexture"/> was resized. 
-        /// If the texture was never resized then the frame ID will be the ID of the frame that the texture was created.
-        /// </summary>
-        public ulong LastFrameResizedID { get; internal set; }
     }
 }

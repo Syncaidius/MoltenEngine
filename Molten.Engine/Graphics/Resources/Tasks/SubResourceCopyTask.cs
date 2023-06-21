@@ -23,7 +23,7 @@
                 throw new ResourceCopyException(resource, DestResource, "The destination resource must have GPU write access for writing the copied data.");
 
             if (resource is GraphicsBuffer buffer && buffer.BufferType == GraphicsBufferType.Staging)
-                resource.EnsureResource(cmd);
+                resource.Ensure(cmd);
 
             if (SrcRegion.HasValue)
             {

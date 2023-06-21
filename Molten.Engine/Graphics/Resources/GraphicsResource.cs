@@ -41,13 +41,13 @@ namespace Molten.Graphics
         /// Ensure the resource has been initialized.
         /// </summary>
         /// <param name="queue">The queue that will perform initialization, if needed.</param>
-        public void EnsureResource(GraphicsQueue queue)
+        public void Ensure(GraphicsQueue queue)
         {
             uint fbSize = 1;
             uint fbIndex = 0;
 
             // Cap frame-buffer size to 1 if the resource is static.
-            if (!Flags.Has(GraphicsResourceFlags.Static))
+            if (Flags.Has(GraphicsResourceFlags.Buffered))
             {
                 fbSize = GetMaxFrameBufferSize(Device.FrameBufferSize);
                 fbIndex = Math.Min(fbSize - 1, Device.FrameBufferIndex);
@@ -61,12 +61,13 @@ namespace Molten.Graphics
             {
                 if (Handle == null)
                 {
-                    OnCreateResource(fbSize, Device.FrameBufferIndex, Device.Renderer.Profiler.FrameID);
+                    OnCreateResource(fbSize, fbIndex, Device.Renderer.Profiler.FrameID);
                 }
                 else if (KnownFrameBufferSize != fbSize)
                 {
                     OnFrameBufferResized(KnownFrameBufferSize, fbSize, fbIndex, Device.Renderer.Profiler.FrameID);
                     KnownFrameBufferSize = fbSize;
+                    LastFrameResizedID = Device.Renderer.Profiler.FrameID;
                 }
             }
 
@@ -83,7 +84,7 @@ namespace Molten.Graphics
             if (IsDisposed)
                 return;
 
-            EnsureResource(queue);
+            Ensure(queue);
             OnApply(queue);
         }
 
@@ -245,5 +246,11 @@ namespace Molten.Graphics
         /// Gets the last frame buffer index that the current <see cref="GraphicsResource"/> was applied.
         /// </summary>
         protected uint LastUsedFrameBufferIndex { get; private set; }
+
+        /// <summary>
+        /// Gets the ID of the frame that the current <see cref="GraphicsTexture"/> was resized. 
+        /// If the texture was never resized then the frame ID will be the ID of the frame that the texture was created.
+        /// </summary>
+        public ulong LastFrameResizedID { get; internal set; }
     }
 }
