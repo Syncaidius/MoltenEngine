@@ -33,6 +33,8 @@ namespace Molten.Graphics.DX11
 
         protected override void UpdateDescription(TextureDimensions dimensions, GraphicsFormat newFormat)
         {
+            base.UpdateDescription(dimensions, newFormat);
+
             if (_displayMode.Width != dimensions.Width || _displayMode.Height != dimensions.Height)
             {
                 _displayMode.Width = dimensions.Width;
