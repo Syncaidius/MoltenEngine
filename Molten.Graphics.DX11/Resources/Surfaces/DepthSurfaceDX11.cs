@@ -38,8 +38,8 @@ namespace Molten.Graphics.DX11
             : base(device, width, height, flags, format.ToGraphicsFormat(), mipCount, arraySize, aaLevel, msaa, allowMipMapGen, name)
         {
             _depthFormat = format;
-            _desc.ArraySize = arraySize;
-            _desc.Format = format.ToGraphicsFormat().ToApi();
+            Desc.ArraySize = arraySize;
+            Desc.Format = format.ToGraphicsFormat().ToApi();
             _depthDesc = new DepthStencilViewDesc();
             _depthDesc.Format = format.ToDepthViewFormat().ToApi();
 
@@ -52,7 +52,7 @@ namespace Molten.Graphics.DX11
                 _depthDesc.Flags = 0U; // DsvFlag.None;
                 _depthDesc.Texture2DMSArray = new Tex2DmsArrayDsv()
                 {
-                    ArraySize = _desc.ArraySize,
+                    ArraySize = Desc.ArraySize,
                     FirstArraySlice = 0,
                 };
             }
@@ -62,7 +62,7 @@ namespace Molten.Graphics.DX11
                 _depthDesc.Flags = 0U; //DsvFlag.None;
                 _depthDesc.Texture2DArray = new Tex2DArrayDsv()
                 {
-                    ArraySize = _desc.ArraySize,
+                    ArraySize = Desc.ArraySize,
                     FirstArraySlice = 0,
                     MipSlice = 0,
                 };
@@ -90,7 +90,7 @@ namespace Molten.Graphics.DX11
 
         private void UpdateViewport()
         {
-            _vp = new ViewportF(0, 0, _desc.Width, _desc.Height);
+            _vp = new ViewportF(0, 0, Desc.Width, Desc.Height);
         }
 
         private DsvFlag GetReadOnlyFlags()
@@ -110,8 +110,8 @@ namespace Molten.Graphics.DX11
             SilkUtil.ReleasePtr(ref _depthView);
             SilkUtil.ReleasePtr(ref _readOnlyView);
 
-            _desc.Width = Math.Max(1, _desc.Width);
-            _desc.Height = Math.Max(1, _desc.Height);
+            Desc.Width = Math.Max(1, Desc.Width);
+            Desc.Height = Math.Max(1, Desc.Height);
 
             // Create render target texture
             base.CreateTexture(device, handle, handleIndex);

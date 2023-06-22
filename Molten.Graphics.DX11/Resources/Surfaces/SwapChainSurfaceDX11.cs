@@ -27,12 +27,6 @@ namespace Molten.Graphics.DX11
             _presentParams = EngineUtil.Alloc<PresentParameters>();
         }
 
-        protected void CreateSwapChain(DisplayModeDXGI mode, bool windowed, IntPtr controlHandle)
-        {
-            DeviceDX11 nativeDevice = (Device as DeviceDX11);
-            NativeSwapChain = (Device.Manager as GraphicsManagerDXGI).CreateSwapChain(mode, Device.Settings, Device.Log, (IUnknown*)nativeDevice.Ptr, controlHandle);
-        }
-
         protected override void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle, uint handleIndex)
         {
             // Resize the swap chain if needed.
@@ -84,6 +78,14 @@ namespace Molten.Graphics.DX11
 
         protected abstract void OnSwapChainMissing();
 
+        protected void CreateSwapChain(DisplayModeDXGI mode, bool windowed, IntPtr controlHandle)
+        {
+            DeviceDX11 nativeDevice = (Device as DeviceDX11);
+            GraphicsManagerDXGI dxgiManager = Device.Manager as GraphicsManagerDXGI;
+
+            NativeSwapChain = dxgiManager.CreateSwapChain(mode, Device.Settings, Device.Log, (IUnknown*)nativeDevice.Ptr, controlHandle);
+        }
+
         private void VSync_OnChanged(bool oldValue, bool newValue)
         {
             _vsync = newValue ? 1U : 0;
@@ -115,13 +117,6 @@ namespace Molten.Graphics.DX11
                     action();
             }
         }
-
-        /*protected override void DisposeTextureForResize()
-        {
-            // Skip calling the SwapChainSurfaceDX11.OnGraphicsDispose() implementation. Jump straight to base.
-            // This prevents swapchain render loops from being aborted due to disposal flags being set.
-            base.OnGraphicsRelease();
-        }*/
 
         public void Dispatch(Action action)
         {

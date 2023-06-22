@@ -16,15 +16,6 @@ namespace Molten.Collections
                 _startVersion = list._version;
                 Reset();
             }
-            public T Current
-            {
-                get { return _list._items[_position]; }
-            }
-
-            object IEnumerator.Current
-            {
-                get { return _list._items[_position]; }
-            }
 
             public void Dispose()
             {
@@ -45,6 +36,10 @@ namespace Molten.Collections
                     throw new InvalidOperationException("Collection was modified");
                 _position = -1;
             }
+
+            public T Current => _list._items[_position];
+
+            object IEnumerator.Current => _list._items[_position];
         }
     }
 }

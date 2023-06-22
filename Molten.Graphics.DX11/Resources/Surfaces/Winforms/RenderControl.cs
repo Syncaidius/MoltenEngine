@@ -28,7 +28,7 @@ namespace Molten.Graphics.DX11
         private System.Drawing.Font fontForDesignMode;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RenderForm"/> class.
+        /// Initializes a new instance of the <see cref="RenderControl"/> class.
         /// </summary>
         public RenderControl()
         {

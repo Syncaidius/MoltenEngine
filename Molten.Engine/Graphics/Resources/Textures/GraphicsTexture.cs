@@ -30,15 +30,12 @@ namespace Molten.Graphics
             _dimensions = dimensions;
             TextureType = type;
 
-            ValidateDimensions(ref _dimensions);
             Name = string.IsNullOrWhiteSpace(name) ? $"{GetType().Name}_{Width}x{Height}" : name;
 
             MultiSampleLevel = aaLevel > AntiAliasLevel.Invalid ? aaLevel : AntiAliasLevel.None;
             SampleQuality = msaaSupport != MSAASupport.NotSupported ? sampleQuality : MSAAQuality.Default;
             ResourceFormat = format;
         }
-
-        protected virtual void ValidateDimensions(ref TextureDimensions dimensions) { }
 
         protected void InvokeOnResize()
         {

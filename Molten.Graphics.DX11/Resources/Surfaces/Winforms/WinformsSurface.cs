@@ -10,7 +10,7 @@ namespace Molten.Graphics.DX11
     {
         T _control;
         Control _parent;
-        nint _handle;
+        nint _controlHandle;
         nint? _parentHandle;
 
         protected Rectangle _bounds;
@@ -51,17 +51,15 @@ namespace Molten.Graphics.DX11
             {
                 UpdateControlMode(_control, _mode);
             }
-
-            base.UpdateDescription(dimensions, newFormat);
         }
 
         protected abstract void UpdateControlMode(T control, WindowMode mode);
 
         protected override void OnSwapChainMissing()
         {
-            CreateControl(_title, out _control, out _handle);
+            CreateControl(_title, out _control, out _controlHandle);
 
-            //set default bounds
+            // Set default bounds
             UpdateControlMode(_control, _requestedMode);
 
             ModeDesc1 modeDesc = new ModeDesc1()
@@ -74,9 +72,11 @@ namespace Molten.Graphics.DX11
                 ScanlineOrdering = ModeScanlineOrder.Progressive,
             };
 
+            Desc.Width = modeDesc.Width;
+            Desc.Height = modeDesc.Height;
+
             _displayMode = new DisplayModeDXGI(ref modeDesc);
             CreateSwapChain(_displayMode, true, _control.Handle);
-
             SubscribeToControl(_control);
 
             _control.KeyDown += (sender, args) =>
@@ -86,7 +86,8 @@ namespace Molten.Graphics.DX11
             };
 
             // Ignore all windows events
-            (Device.Manager as GraphicsManagerDXGI).DxgiFactory->MakeWindowAssociation(_control.Handle, (uint)WindowAssociationFlags.NoAltEnter);
+            GraphicsManagerDXGI manager = Device.Manager as GraphicsManagerDXGI;
+            manager.DxgiFactory->MakeWindowAssociation(_control.Handle, (uint)WindowAssociationFlags.NoAltEnter);
         }
 
         protected abstract void CreateControl(string title, out T control, out IntPtr handle);
@@ -153,13 +154,13 @@ namespace Molten.Graphics.DX11
 
             bool controlAlive = true;
 
-            if (_handle != 0U)
+            if (_controlHandle != 0U)
             {
                 // Previous code not compatible with Application.AddMessageFilter but faster then DoEvents
                 NativeMessage msg;
-                while (Win32.PeekMessage(out msg, _handle, 0, 0, 0) != 0)
+                while (Win32.PeekMessage(out msg, _controlHandle, 0, 0, 0) != 0)
                 {
-                    if (Win32.GetMessage(out msg, _handle, 0, 0) == -1)
+                    if (Win32.GetMessage(out msg, _controlHandle, 0, 0) == -1)
                         throw new InvalidOperationException($"An error happened in rendering loop while processing windows messages. Error: {Marshal.GetLastWin32Error()}");
 
                     // NCDESTROY event?
@@ -225,7 +226,7 @@ namespace Molten.Graphics.DX11
             }
         }
 
-        protected nint ControlHandle => _handle;
+        protected nint ControlHandle => _controlHandle;
 
         /// <summary>Gets or sets the mode of the output form.</summary>
         public WindowMode Mode
@@ -264,13 +265,9 @@ namespace Molten.Graphics.DX11
                     _parentHandle = value;
 
                     if (_parentHandle.HasValue && _parentHandle.Value != IntPtr.Zero)
-                    {
                         _parent = System.Windows.Forms.Control.FromHandle(_parentHandle.Value);
-                    }
                     else
-                    {
                         _parent = null;
-                    }
 
                     _propertiesDirty = true;
                 }

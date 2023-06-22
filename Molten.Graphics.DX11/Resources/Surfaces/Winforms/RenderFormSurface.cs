@@ -94,8 +94,8 @@
                 h = (uint)Control.ClientSize.Height;
             }
 
-            // (w != Width || h != Height)
-           //     Resize(GraphicsPriority.Apply, w, h);
+            if (w != Width || h != Height)
+                Resize(GraphicsPriority.Apply, w, h);
         }
 
         protected override void UpdateControlMode(RenderForm control, WindowMode newMode)

@@ -6,7 +6,7 @@ namespace Molten.Graphics.DX11
 {
     public unsafe class Texture2DDX11 : TextureDX11, ITexture2D
     {
-        protected Texture2DDesc1 _desc;
+        protected Texture2DDesc1 Desc;
 
         /// <summary>Creates a new instance of <see cref="Texture2DDX11"/> and uses a provided texture for its description. Note: This does not copy the contents 
         /// of the provided texture in to the new instance.</summary>
@@ -40,7 +40,7 @@ namespace Molten.Graphics.DX11
             string name = null)
             : base(device, GraphicsTextureType.Texture2D, new TextureDimensions(width, height, 1, mipCount, arraySize), aaLevel, msaa, format, flags, allowMipMapGen, name)
         {
-            _desc = new Texture2DDesc1()
+            Desc = new Texture2DDesc1()
             {
                 Width = Math.Max(width, 1),
                 Height = Math.Max(height, 1),
@@ -58,10 +58,10 @@ namespace Molten.Graphics.DX11
 
         protected override void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle, uint handleIndex)
         {
-            SubresourceData* subData = GetImmutableData(_desc.Usage);
+            SubresourceData* subData = GetImmutableData(Desc.Usage);
 
             ID3D11Texture2D1* ptrTex = null;
-            fixed (Texture2DDesc1* pDesc = &_desc)
+            fixed (Texture2DDesc1* pDesc = &Desc)
                 (Device as DeviceDX11).Ptr->CreateTexture2D1(pDesc, subData, ref ptrTex);
 
             EngineUtil.Free(ref subData);
@@ -70,12 +70,12 @@ namespace Molten.Graphics.DX11
 
         protected override void SetSRVDescription(ref ShaderResourceViewDesc1 desc)
         {
-            if (_desc.SampleDesc.Count > 1)
+            if (Desc.SampleDesc.Count > 1)
             {
                 desc.ViewDimension = D3DSrvDimension.D3D101SrvDimensionTexture2Dmsarray;
                 desc.Texture2DMSArray = new Tex2DmsArraySrv()
                 {
-                    ArraySize = _desc.ArraySize,
+                    ArraySize = Desc.ArraySize,
                     FirstArraySlice = 0,
                 };
             }
@@ -84,8 +84,8 @@ namespace Molten.Graphics.DX11
                 desc.ViewDimension = D3DSrvDimension.D3DSrvDimensionTexture2Darray;
                 desc.Texture2DArray = new Tex2DArraySrv1()
                 {
-                    ArraySize = _desc.ArraySize,
-                    MipLevels = _desc.MipLevels,
+                    ArraySize = Desc.ArraySize,
+                    MipLevels = Desc.MipLevels,
                     MostDetailedMip = 0,
                     FirstArraySlice = 0,
                     PlaneSlice = 0,
@@ -100,7 +100,7 @@ namespace Molten.Graphics.DX11
             
             desc.Texture2DArray = new Tex2DArrayUav1()
             {
-                ArraySize = _desc.ArraySize,
+                ArraySize = Desc.ArraySize,
                 FirstArraySlice = srvDesc.Texture2DArray.FirstArraySlice,
                 MipSlice = 0,
                 PlaneSlice = 0
@@ -109,18 +109,18 @@ namespace Molten.Graphics.DX11
             desc.Buffer = new BufferUav()
             {
                 FirstElement = 0,
-                NumElements = _desc.Width * _desc.Height * _desc.ArraySize,
+                NumElements = Desc.Width * Desc.Height * Desc.ArraySize,
             };
         }
 
         protected override void UpdateDescription(TextureDimensions dimensions, GraphicsFormat newFormat)
         {
-            _desc.Width = dimensions.Width;
-            _desc.Height = dimensions.Height;
-            _desc.ArraySize = dimensions.ArraySize;
-            _desc.MipLevels = dimensions.MipMapCount;
-            _desc.Format = newFormat.ToApi();
-            _desc.TextureLayout = TextureLayout.LayoutUndefined;
+            Desc.Width = dimensions.Width;
+            Desc.Height = dimensions.Height;
+            Desc.ArraySize = dimensions.ArraySize;
+            Desc.MipLevels = dimensions.MipMapCount;
+            Desc.Format = newFormat.ToApi();
+            Desc.TextureLayout = TextureLayout.LayoutUndefined;
         }
 
         public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight, uint newMipMapCount = 0,

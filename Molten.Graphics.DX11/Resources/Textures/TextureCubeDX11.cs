@@ -13,7 +13,7 @@ namespace Molten.Graphics.DX11
         {
             CubeCount = cubeCount;
 
-            _desc = new Texture2DDesc1()
+            Desc = new Texture2DDesc1()
             {
                 Width = width,
                 Height = height,
@@ -36,7 +36,7 @@ namespace Molten.Graphics.DX11
             desc.TextureCubeArray = new TexcubeArraySrv()
             {
                 MostDetailedMip = 0,
-                MipLevels = _desc.MipLevels,
+                MipLevels = Desc.MipLevels,
                 NumCubes = CubeCount,
                 First2DArrayFace = 0,
             };
@@ -49,7 +49,7 @@ namespace Molten.Graphics.DX11
 
             desc.Texture2DArray = new Tex2DArrayUav1()
             {
-                ArraySize = _desc.ArraySize,
+                ArraySize = Desc.ArraySize,
                 FirstArraySlice = srvDesc.Texture2DArray.FirstArraySlice,
                 MipSlice = 0,
                 PlaneSlice = 0
@@ -58,7 +58,7 @@ namespace Molten.Graphics.DX11
             desc.Buffer = new BufferUav()
             {
                 FirstElement = 0,
-                NumElements = _desc.Width * _desc.Height * _desc.ArraySize,
+                NumElements = Desc.Width * Desc.Height * Desc.ArraySize,
             };
         }
 
@@ -66,10 +66,10 @@ namespace Molten.Graphics.DX11
         {
             base.UpdateDescription(dimensions, newFormat);
 
-            _desc.Width = dimensions.Width;
-            _desc.Height = dimensions.Height;
-            _desc.MipLevels = dimensions.MipMapCount;
-            _desc.Format = newFormat.ToApi();
+            Desc.Width = dimensions.Width;
+            Desc.Height = dimensions.Height;
+            Desc.MipLevels = dimensions.MipMapCount;
+            Desc.Format = newFormat.ToApi();
         }
 
         public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight, uint newMipMapCount)
@@ -105,7 +105,7 @@ namespace Molten.Graphics.DX11
         }
 
         /// <summary>Gets information about the texture.</summary>
-        internal ref Texture2DDesc1 Description => ref _desc;
+        internal ref Texture2DDesc1 Description => ref Desc;
 
         /// <summary>Gets the number of cube maps stored in the texture. This is greater than 1 if the texture is a cube-map array.</summary>
         public uint CubeCount { get; private set; }

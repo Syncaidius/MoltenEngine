@@ -41,12 +41,12 @@ namespace Molten.Graphics.DX11
 
             SetRTVDescription(ref desc);
 
-            if (_desc.SampleDesc.Count > 1)
+            if (Desc.SampleDesc.Count > 1)
             {
                 desc.ViewDimension = RtvDimension.Texture2Dmsarray;
                 desc.Texture2DMSArray = new Tex2DmsArrayRtv
                 {
-                    ArraySize = _desc.ArraySize,
+                    ArraySize = Desc.ArraySize,
                     FirstArraySlice = 0,
                 };
             }
@@ -55,7 +55,7 @@ namespace Molten.Graphics.DX11
                 desc.ViewDimension = RtvDimension.Texture2Darray;
                 desc.Texture2DArray = new Tex2DArrayRtv1()
                 {
-                    ArraySize = _desc.ArraySize,
+                    ArraySize = Desc.ArraySize,
                     MipSlice = 0,
                     FirstArraySlice = 0,
                     PlaneSlice = 0,
@@ -71,7 +71,7 @@ namespace Molten.Graphics.DX11
         {
             base.UpdateDescription(dimensions, newFormat);
 
-            _desc.MipLevels = 1; // NOTE: Do we set this on render targets?
+            Desc.MipLevels = 1; // NOTE: Do we set this on render targets?
             Viewport = new ViewportF(Viewport.X, Viewport.Y, dimensions.Width, dimensions.Height);
         }
 

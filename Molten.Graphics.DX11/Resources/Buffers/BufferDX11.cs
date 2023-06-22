@@ -192,10 +192,13 @@ namespace Molten.Graphics.DX11
         /// <inheritdoc/>
         protected override void OnGraphicsRelease()
         {
-            _curHandle = null;
+            if (_handles != null)
+            {
+                for (int i = 0; i < _handles.Length; i++)
+                    _handles[i].Dispose();
 
-            for(int i = 0; i < _handles.Length; i++)
-                _handles[i].Dispose();
+                _curHandle = null;
+            }
         }
 
         /// <summary>Gets the resource usage flags associated with the buffer.</summary>
