@@ -23,7 +23,7 @@ namespace Molten.Graphics
         public event TextureHandler OnPreResize;
 
         public event TextureHandler OnResize;
-
+        public event WindowSurfaceHandler OnMaximize;
 
         public View TargetView { get; private set; }
 
@@ -320,5 +320,7 @@ namespace Molten.Graphics
         public bool IsReleased => throw new NotImplementedException();
 
         public bool IsEnabled { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        GraphicsResourceHandle IGraphicsResource.Handle => throw new NotImplementedException();
     }
 }
