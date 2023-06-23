@@ -33,6 +33,7 @@ namespace Molten.Graphics.DX11
 
             protected override void WndProc(ref Message m)
             {
+                _callback(ref m);
                 base.WndProc(ref m);
             }
         }
@@ -323,9 +324,11 @@ namespace Molten.Graphics.DX11
             if (_parent != null)
                 _parent.Move -= _form_Moved;
 
-            //_form.UserResized -= Control_Resized;
+            _form.Resize -= _form_Resize;
+            _form.ResizeBegin -= _form_ResizeBegin;
+            _form.ResizeEnd -= _form_ResizeEnd;
             _form.Move -= _form_Moved;
-            //_form.FormClosing -= Control_FormClosing;
+            _form.FormClosing -= _form_FormClosing;
             _form.GotFocus -= _form_GotFocus;
             _form.LostFocus -= _form_LostFocus;
 
@@ -346,8 +349,8 @@ namespace Molten.Graphics.DX11
                 return false;
             }
 
-            if (_propertiesDirty)
-            {
+            //if (_propertiesDirty)
+            //{
                 // Apply requested form size.
                 if (_pendingSize != _normalSize)
                 {
@@ -386,9 +389,9 @@ namespace Molten.Graphics.DX11
                 _form.Text = _title;
 
                 _propertiesDirty = false;
-            }
+            //}
 
-            if (NextFrame()) // TODO is NextFrame() needed?
+            if (NextFrame())
             {
                 if (IsVisible != _form.Visible)
                 {
