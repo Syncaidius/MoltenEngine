@@ -36,7 +36,6 @@ namespace Molten.Windows32
 
         public int Severity => (Value >> 31) & 1;
 
-
         public WinHResult(int hr)
         {
             Value = hr;

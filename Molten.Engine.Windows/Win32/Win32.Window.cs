@@ -2,7 +2,7 @@
 
 namespace Molten.Windows32
 {
-    public delegate void WndProcCallbackHandler(IntPtr windowHandle, WndProcMessageType msgType, uint wParam, int lParam);
+    public delegate void WndProcCallbackHandler(IntPtr windowHandle, WndMessageType msgType, uint wParam, int lParam);
 
     public static partial class Win32
     {        
@@ -142,7 +142,7 @@ namespace Molten.Windows32
                 return IntPtr.Zero;
 
             IntPtr returnCode = CallWindowProc(_wndProc, hWnd, msg, wParam, lParam);
-            WndProcMessageType msgType = (WndProcMessageType)msg;
+            WndMessageType msgType = (WndMessageType)msg;
             uint wp = (uint)(wParam & uint.MaxValue);
 
             int lp = IntPtr.Size == 8 ?
@@ -151,16 +151,16 @@ namespace Molten.Windows32
 
             switch (msgType)
             {
-                case WndProcMessageType.WM_GETDLGCODE:
+                case WndMessageType.WM_GETDLGCODE:
                     returnCode = returnCode.ToInt32() | DLGC_WANTALLKEYS;
                     break;
 
-                case WndProcMessageType.WM_IME_SETCONTEXT:
+                case WndMessageType.WM_IME_SETCONTEXT:
                     if (wp == 1)
                         ImmAssociateContext(hWnd, _hIMC);
                     break;
 
-                case WndProcMessageType.WM_INPUTLANGCHANGE:
+                case WndMessageType.WM_INPUTLANGCHANGE:
                     ImmAssociateContext(hWnd, _hIMC);
                     returnCode = 1;
                     break;

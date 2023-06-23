@@ -69,7 +69,7 @@ namespace Molten.Input
             return features;
         }
 
-        private void Manager_OnWndProcMessage(IntPtr windowHandle, WndProcMessageType msgType, uint wParam, int lParam)
+        private void Manager_OnWndProcMessage(IntPtr windowHandle, WndMessageType msgType, uint wParam, int lParam)
         {
             if (!IsEnabled)
                 return;
@@ -79,86 +79,86 @@ namespace Molten.Input
 
             switch (msgType)
             {
-                case WndProcMessageType.WM_MOUSEACTIVATE:
+                case WndMessageType.WM_MOUSEACTIVATE:
 
                     return;
 
-                case WndProcMessageType.WM_MOUSEHOVER:
+                case WndMessageType.WM_MOUSEHOVER:
                     ParseButtonMessage(WinMouseButtonFlags.None, InputAction.Hover,
                         InputActionType.None, wParam, lParam);
                     return;
 
-                case WndProcMessageType.WM_MOUSEMOVE:
+                case WndMessageType.WM_MOUSEMOVE:
                     ParseButtonMessage(WinMouseButtonFlags.None, InputAction.Moved,
                         InputActionType.None, wParam, lParam);
                     return;
 
-                case WndProcMessageType.WM_MOUSEWHEEL:
+                case WndMessageType.WM_MOUSEWHEEL:
                     ParseButtonMessage(WinMouseButtonFlags.None, InputAction.VerticalScroll,
                         InputActionType.None, wParam, lParam);
                     return;
 
-                case WndProcMessageType.WM_MOUSEHWHEEL:
+                case WndMessageType.WM_MOUSEHWHEEL:
                     ParseButtonMessage(WinMouseButtonFlags.None, InputAction.HorizontalScroll,
                         InputActionType.None, wParam, lParam);
                     return;
 
-                case WndProcMessageType.WM_LBUTTONDOWN:
+                case WndMessageType.WM_LBUTTONDOWN:
                     ParseButtonMessage(WinMouseButtonFlags.MK_LBUTTON, InputAction.Pressed,
                         InputActionType.Single, wParam, lParam);
                     return;
 
-                case WndProcMessageType.WM_LBUTTONUP:
+                case WndMessageType.WM_LBUTTONUP:
                     ParseButtonMessage(WinMouseButtonFlags.MK_LBUTTON, InputAction.Released,
                         InputActionType.Single, wParam, lParam);
                     return;
 
-                case WndProcMessageType.WM_LBUTTONDBLCLK:
+                case WndMessageType.WM_LBUTTONDBLCLK:
                     ParseButtonMessage(WinMouseButtonFlags.MK_LBUTTON, InputAction.Pressed,
                         InputActionType.Double, wParam, lParam);
                     return;
 
-                case WndProcMessageType.WM_MBUTTONDOWN:
+                case WndMessageType.WM_MBUTTONDOWN:
                     ParseButtonMessage(WinMouseButtonFlags.MK_MBUTTON, InputAction.Pressed,
                         InputActionType.Single, wParam, lParam);
                     return;
 
-                case WndProcMessageType.WM_MBUTTONUP:
+                case WndMessageType.WM_MBUTTONUP:
                     ParseButtonMessage(WinMouseButtonFlags.MK_MBUTTON, InputAction.Released,
                         InputActionType.Single, wParam, lParam);
                     return;
 
-                case WndProcMessageType.WM_MBUTTONDBLCLK:
+                case WndMessageType.WM_MBUTTONDBLCLK:
                     ParseButtonMessage(WinMouseButtonFlags.MK_MBUTTON, InputAction.Pressed,
                         InputActionType.Double, wParam, lParam);
                     return;
 
-                case WndProcMessageType.WM_RBUTTONDOWN:
+                case WndMessageType.WM_RBUTTONDOWN:
                     ParseButtonMessage(WinMouseButtonFlags.MK_RBUTTON, InputAction.Pressed,
                         InputActionType.Single, wParam, lParam);
                     return;
 
-                case WndProcMessageType.WM_RBUTTONUP:
+                case WndMessageType.WM_RBUTTONUP:
                     ParseButtonMessage(WinMouseButtonFlags.MK_RBUTTON, InputAction.Released,
                         InputActionType.Single, wParam, lParam);
                     return;
 
-                case WndProcMessageType.WM_RBUTTONDBLCLK:
+                case WndMessageType.WM_RBUTTONDBLCLK:
                     ParseButtonMessage(WinMouseButtonFlags.MK_RBUTTON, InputAction.Pressed,
                         InputActionType.Double, wParam, lParam);
                     return;
 
-                case WndProcMessageType.WM_XBUTTONDOWN:
+                case WndMessageType.WM_XBUTTONDOWN:
                     ParseButtonMessage(ParseXButton(wParam), InputAction.Pressed,
                         InputActionType.Single, wParam, lParam);
                     return;
 
-                case WndProcMessageType.WM_XBUTTONUP:
+                case WndMessageType.WM_XBUTTONUP:
                     ParseButtonMessage(ParseXButton(wParam), InputAction.Released,
                         InputActionType.Single, wParam, lParam);
                     return;
 
-                case WndProcMessageType.WM_XBUTTONDBLCLK:
+                case WndMessageType.WM_XBUTTONDBLCLK:
                     ParseButtonMessage(ParseXButton(wParam), InputAction.Pressed,
                         InputActionType.Double, wParam, lParam);
                     return;

@@ -1,6 +1,6 @@
 ﻿namespace Molten.Windows32
 {
-    public enum WndProcMessageType
+    public enum WndMessageType
     {
         /// <summary>
         /// Sent when a window is being destroyed. 
@@ -12,7 +12,19 @@
         WM_DESTROY = 0x0002,
 
         GWL_WNDPROC = -4,
+
         DLGC_WANTALLKEYS = 4,
+
+        /// <summary>
+        /// Sent to a window after its size has changed.
+        /// </summary>
+        WM_SIZE = 0x0005,
+
+        /// <summary>
+        /// Sent when a window belonging to a different application than the active window is about to be activated. 
+        /// <para>The message is sent to the application whose window is being activated and to the application whose window is being deactivated.</para>
+        /// </summary>
+        WM_ACTIVATEAPP = 0x001C,
 
         /// <summary>
         /// Ref: https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-mouseactivate
@@ -20,6 +32,11 @@
         WM_MOUSEACTIVATE = 0x0021,
 
         WM_INPUTLANGCHANGE = 0x0051,
+
+        /// <summary>
+        /// The WM_DISPLAYCHANGE message is sent to all windows when the display resolution has changed.
+        /// </summary>
+        WM_DISPLAYCHANGE = 0x007E,
 
         /// <summary>
         /// Notifies a window that its nonclient area is being destroyed. 
@@ -44,7 +61,24 @@
         WM_NCHITTEST = 0x0084,
 
         WM_GETDLGCODE = 0x0087,
+
+        WM_KEYDOWN = 0x0100,
+        WM_KEYUP = 0x0101,
+        WM_CHAR = 0x0102,
+
         WM_IME_COMPOSITION = 0x10f,
+
+        /// <summary>
+        /// A window receives this message when the user chooses a command from the Window menu (formerly known as the system or control menu) 
+        /// or when the user chooses the maximize button, minimize button, restore button, or close button.
+        /// </summary>
+        WM_SYSCOMMAND = 0x0112,
+
+        /// <summary>
+        /// Sent when a menu is active and the user presses a key that does not correspond to any mnemonic or accelerator key. 
+        /// <para>This message is sent to the window that owns the menu.</para>
+        /// </summary>
+        WM_MENUCHAR = 0x0120,
 
         /// <summary>
         /// Ref: https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-mousemove
@@ -123,15 +157,17 @@
         /// </summary>
         WM_CAPTURECHANGED = 0x0215,
 
+        /// <summary>
+        /// Notifies applications that a power-management event has occurred.
+        /// <para>See: https://learn.microsoft.com/en-us/windows/win32/power/wm-powerbroadcast</para>
+        /// </summary>
+        WM_POWERBROADCAST = 0x0218,
+
         WM_IME_SETCONTEXT = 0x0281,
 
         /// <summary>
         /// https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-mousehover
         /// </summary>
         WM_MOUSEHOVER = 0x02A1,
-
-        WM_KEYDOWN = 0x100,
-        WM_KEYUP = 0x101,
-        WM_CHAR = 0x102,
     }
 }

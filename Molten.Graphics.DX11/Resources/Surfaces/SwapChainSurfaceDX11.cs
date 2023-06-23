@@ -18,8 +18,8 @@ namespace Molten.Graphics.DX11
         ThreadedQueue<Action> _dispatchQueue;
         uint _vsync;
 
-        internal SwapChainSurfaceDX11(GraphicsDevice device, uint mipCount, GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm)
-            : base(device, 1, 1, 
+        internal SwapChainSurfaceDX11(GraphicsDevice device, uint width, uint height, uint mipCount, GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm)
+            : base(device, width, height, 
                   GraphicsResourceFlags.NoShaderAccess | GraphicsResourceFlags.None | GraphicsResourceFlags.GpuWrite,
                   format, mipCount, 1, AntiAliasLevel.None, MSAAQuality.Default)
         {
@@ -32,13 +32,14 @@ namespace Molten.Graphics.DX11
             // Resize the swap chain if needed.
             if (NativeSwapChain != null)
             {
-                int result = NativeSwapChain->ResizeBuffers(Device.Settings.GetBackBufferSize(), Width, Height, GraphicsFormat.Unknown.ToApi(), 0U);
+                FreeOldHandles(device.Renderer.Profiler.FrameID);
+                WinHResult result = NativeSwapChain->ResizeBuffers(Device.Settings.GetBackBufferSize(), Width, Height, GraphicsFormat.Unknown.ToApi(), 0U);
                 NativeSwapChain->GetDesc1(ref _swapDesc);
             }
             else
             {
                 SilkUtil.ReleasePtr(ref NativeSwapChain);
-                OnSwapChainMissing();
+                OnCreateSwapchain(ref Desc);
 
                 _vsync = Device.Settings.VSync ? 1U : 0;
                 Device.Settings.VSync.OnChanged += VSync_OnChanged;
@@ -76,7 +77,7 @@ namespace Molten.Graphics.DX11
             }
         }
 
-        protected abstract void OnSwapChainMissing();
+        protected abstract void OnCreateSwapchain(ref Texture2DDesc1 desc);
 
         protected void CreateSwapChain(DisplayModeDXGI mode, bool windowed, IntPtr controlHandle)
         {

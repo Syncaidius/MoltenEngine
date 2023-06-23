@@ -37,7 +37,7 @@ namespace Molten.Input
             return features;
         }
 
-        private void Manager_OnWndProcMessage(IntPtr windowHandle, WndProcMessageType msgType, uint wParam, int lParam)
+        private void Manager_OnWndProcMessage(IntPtr windowHandle, WndMessageType msgType, uint wParam, int lParam)
         {
             if (!IsEnabled)
                 return;
@@ -57,7 +57,7 @@ namespace Molten.Input
             {
                 switch (msgType)
                 {
-                    case WndProcMessageType.WM_CHAR:
+                    case WndMessageType.WM_CHAR:
                         if (windowHandle == forewindow)
                         {
                             state.Key = 0;
@@ -68,7 +68,7 @@ namespace Molten.Input
                         }
                         break;
 
-                    case WndProcMessageType.WM_KEYDOWN:
+                    case WndMessageType.WM_KEYDOWN:
                         state.Key = (KeyCode)(wParam & 0xFFFF);
                         state.KeyType = ValidateKeyType(wParam);
                         state.Action = InputAction.Pressed;
@@ -76,7 +76,7 @@ namespace Molten.Input
                         QueueKeyState(ref state, lParam);
                         break;
 
-                    case WndProcMessageType.WM_KEYUP:
+                    case WndMessageType.WM_KEYUP:
                         state.Key = (KeyCode)(wParam & 0xFFFF);
                         state.KeyType = ValidateKeyType(wParam);
                         state.PressTimestamp = DateTime.UtcNow;

@@ -200,12 +200,12 @@ namespace Molten.Graphics.DX11
 
         protected override INativeSurface OnCreateFormSurface(string formTitle, string formName, uint mipCount = 1)
         {
-            return new RenderFormSurface(this, formTitle, formName, mipCount);
+            return new WindowsFormSurface(this, 800, 600, 1, formTitle, formName);
         }
 
         protected override INativeSurface OnCreateControlSurface(string formTitle, string controlName, uint mipCount = 1)
         {
-            return new RenderControlSurface(this, formTitle, controlName, mipCount);
+            throw new NotImplementedException(); // return new RenderControlSurface(this, formTitle, controlName, mipCount);
         }
 
         public override IRenderSurface2D CreateSurface(uint width, uint height, 

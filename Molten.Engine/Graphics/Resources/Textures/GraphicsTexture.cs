@@ -357,7 +357,11 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the dimensions of the texture.
         /// </summary>
-        public TextureDimensions Dimensions => _dimensions;
+        public TextureDimensions Dimensions
+        {
+            get => _dimensions;
+            protected set => _dimensions = value;
+        }
 
         public override uint SizeInBytes { get; protected set; }
 

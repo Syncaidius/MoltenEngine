@@ -58,12 +58,16 @@ namespace Molten.Graphics.DX11
         protected override void OnNextFrame(GraphicsQueue queue, uint frameBufferIndex, ulong frameID)
         {
             _curHandle = _handles[frameBufferIndex];
+            FreeOldHandles(frameID);
+        }
 
+        protected void FreeOldHandles(ulong frameID)
+        {
             // Dispose of old texture handles from any previous resize calls.
             uint resizeAge = (uint)(frameID - LastFrameResizedID);
-            if(resizeAge > Device.FrameBufferSize)
+            if (resizeAge > Device.FrameBufferSize)
             {
-                foreach(ResourceHandleDX11<ID3D11Resource> handle in _oldHandles)
+                foreach (ResourceHandleDX11<ID3D11Resource> handle in _oldHandles)
                     handle.Dispose();
 
                 _oldHandles.Clear();
@@ -115,6 +119,7 @@ namespace Molten.Graphics.DX11
         protected override void OnResizeTexture(in TextureDimensions dimensions, GraphicsFormat format, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
         {
             UpdateDescription(dimensions, format);
+            Dimensions = dimensions;
 
             _oldHandles.AddRange(_handles);
             OnCreateResource(frameBufferSize, frameBufferIndex, frameID);
