@@ -11,6 +11,7 @@ namespace Molten.Graphics.Vulkan
         public event WindowSurfaceHandler OnHandleChanged;
         public event WindowSurfaceHandler OnParentChanged;
         public event WindowSurfaceHandler OnClose;
+        public event WindowSurfaceHandler OnMaximize;
         public event WindowSurfaceHandler OnMinimize;
         public event WindowSurfaceHandler OnRestore;
         public event WindowSurfaceHandler OnFocusGained;

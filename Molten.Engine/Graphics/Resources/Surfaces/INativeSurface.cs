@@ -8,7 +8,7 @@
     public interface INativeSurface : ISwapChainSurface, IWindow
     {
         /// <summary>
-        /// Occurs when the underlying native <see cref="Handle"/> has changed. Invoked by the renderer it is bound to.
+        /// Occurs when the underlying native <see cref="WindowHandle"/> has changed. Invoked by the renderer it is bound to.
         /// </summary>
         event WindowSurfaceHandler OnHandleChanged;
 
@@ -22,6 +22,9 @@
 
         /// <summary>Invoked when the current <see cref="INativeSurface"/> is minimized. Invoked by the renderer it is bound to.</summary>
         event WindowSurfaceHandler OnMinimize;
+
+        /// <summary>Invoked when the current <see cref="INativeSurface"/> is maximized. Invoked by the renderer it is bound to.</summary>
+        event WindowSurfaceHandler OnMaximize;
 
         /// <summary>Invoked when the current <see cref="INativeSurface"/> is restored. Invoked by the renderer it is bound to.</summary>
         event WindowSurfaceHandler OnRestore;

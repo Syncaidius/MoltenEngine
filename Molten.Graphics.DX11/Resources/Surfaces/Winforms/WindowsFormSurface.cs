@@ -40,6 +40,8 @@ namespace Molten.Graphics.DX11
 
         public event WindowSurfaceHandler OnClose;
 
+        public event WindowSurfaceHandler OnMaximize;
+
         public event WindowSurfaceHandler OnMinimize;
 
         public event WindowSurfaceHandler OnRestore;
@@ -65,6 +67,7 @@ namespace Molten.Graphics.DX11
         Size _pendingSize;
         Size _normalSize;
         TextureDimensions _requestedTexDim;
+        FormWindowState _prevWindowState;
 
         DisplayModeDXGI _displayMode;
         WindowMode _curMode = WindowMode.Windowed;
@@ -80,6 +83,7 @@ namespace Molten.Graphics.DX11
         {
             _title = title;
             _ctrlName = controlName;
+            _prevWindowState = FormWindowState.Normal;
         }
 
         private void WndProc(ref Message m)
@@ -87,26 +91,19 @@ namespace Molten.Graphics.DX11
             nint wparam = m.WParam;
 
             WndMessageType mType = (WndMessageType)m.Msg;
-            switch (mType)
+            /*switch (mType)
             {
                 case WndMessageType.WM_SIZE:
                     WndSizeType sizeType = (WndSizeType)wparam;
                     switch (sizeType)
                     {
-                        case WndSizeType.SIZE_MINIMIZED:
-
-                            break;
-
-                        case WndSizeType.SIZE_MAXIMIZED:
-
-                            break;
-
-                        case WndSizeType.SIZE_RESTORED:
-
+                        default:
                             break;
                     }
+
+
                     break;
-            }
+            }*/
         }
 
         protected override void OnCreateSwapchain(ref Texture2DDesc1 desc)
@@ -261,6 +258,30 @@ namespace Molten.Graphics.DX11
         private void _form_Resize(object sender, EventArgs e)
         {
             TextureDimensions dim = Dimensions;
+            FormWindowState state = _form.WindowState;
+            if (_prevWindowState != state)
+            {
+                switch (state)
+                {
+                    case FormWindowState.Normal:
+                        OnRestore?.Invoke(this);
+                        break;
+
+                    case FormWindowState.Minimized:
+                        OnMinimize?.Invoke(this);
+                        break;
+
+                    case FormWindowState.Maximized:
+                        OnMaximize?.Invoke(this);
+                        break;
+                }
+
+                _prevWindowState = state;
+            }
+
+            // Don't resize texture if minimized. It may end up with 0 dimensions, which is invalid.
+            if (state == FormWindowState.Minimized)
+                return;
 
             if (Mode == WindowMode.Borderless)
             {
@@ -349,47 +370,45 @@ namespace Molten.Graphics.DX11
                 return false;
             }
 
-            //if (_propertiesDirty)
-            //{
-                // Apply requested form size.
-                if (_pendingSize != _normalSize)
-                {
-                    if (_form.WindowState == FormWindowState.Normal)
-                    {
-                        _form.Size = _pendingSize; // Set this first so the form can provide us the actual size it will use.
-                        _normalSize = _form.Size; // Use form's actual size.
-                        _pendingSize = _normalSize;
-                    }
 
-                    _normalSize = _pendingSize;
+            // Apply requested form size.
+            if (_pendingSize != _normalSize)
+            {
+                if (_form.WindowState == FormWindowState.Normal)
+                {
+                    _form.Size = _pendingSize; // Set this first so the form can provide us the actual size it will use.
+                    _normalSize = _form.Size; // Use form's actual size.
+                    _pendingSize = _normalSize;
                 }
 
-                if (_requestedTexDim.Width != Width || _requestedTexDim.Height != Height)
-                {
-                    uint fbMax = GetMaxFrameBufferSize(Device.FrameBufferSize);
-                    uint fbIndex = Math.Min(Device.FrameBufferIndex, fbMax - 1);
-                    base.OnResizeTexture(_requestedTexDim, ResourceFormat, fbMax, fbIndex, Device.Renderer.Profiler.FrameID);
-                    InvokeOnResize();
-                }
+                _normalSize = _pendingSize;
+            }
 
-                // Update window mode.
-                if (_curMode != _requestedMode)
-                    UpdateFormMode();
+            if (_requestedTexDim.Width != Width || _requestedTexDim.Height != Height)
+            {
+                uint fbMax = GetMaxFrameBufferSize(Device.FrameBufferSize);
+                uint fbIndex = Math.Min(Device.FrameBufferIndex, fbMax - 1);
+                base.OnResizeTexture(_requestedTexDim, ResourceFormat, fbMax, fbIndex, Device.Renderer.Profiler.FrameID);
+                InvokeOnResize();
+            }
 
-                // Update parent.
-                if (_parent != _form.Parent)
-                {
-                    _form.Parent = _parent;
-                    OnNewParent();
-                    _parent.Move += _form_Moved;
-                }
+            // Update window mode.
+            if (_curMode != _requestedMode)
+                UpdateFormMode();
 
-                // Update basic form properties
-                _form.Name = _ctrlName;
-                _form.Text = _title;
+            // Update parent.
+            if (_parent != _form.Parent)
+            {
+                _form.Parent = _parent;
+                OnNewParent();
+                _parent.Move += _form_Moved;
+            }
 
-                _propertiesDirty = false;
-            //}
+            // Update basic form properties
+            _form.Name = _ctrlName;
+            _form.Text = _title;
+
+            _propertiesDirty = false;
 
             if (NextFrame())
             {
