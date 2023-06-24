@@ -1,4 +1,5 @@
-﻿using Molten.Collections;
+﻿using Microsoft.VisualBasic.Logging;
+using Molten.Collections;
 using Molten.Graphics.Dxgi;
 using Molten.Windows32;
 using Silk.NET.Core.Native;
@@ -25,6 +26,7 @@ namespace Molten.Graphics.DX11
         {
             _dispatchQueue = new ThreadedQueue<Action>();
             _presentParams = EngineUtil.Alloc<PresentParameters>();
+            _presentParams[0] = new PresentParameters();
         }
 
         protected override void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle, uint handleIndex)
@@ -33,13 +35,14 @@ namespace Molten.Graphics.DX11
             if (NativeSwapChain != null)
             {
                 FreeOldHandles(device.Renderer.Profiler.FrameID);
-                WinHResult result = NativeSwapChain->ResizeBuffers(Device.Settings.GetBackBufferSize(), Width, Height, GraphicsFormat.Unknown.ToApi(), 0U);
+                WinHResult result = NativeSwapChain->ResizeBuffers(Device.FrameBufferSize, Width, Height, GraphicsFormat.Unknown.ToApi(), 0U);
                 NativeSwapChain->GetDesc1(ref _swapDesc);
             }
             else
             {
                 SilkUtil.ReleasePtr(ref NativeSwapChain);
                 OnCreateSwapchain(ref Desc);
+                NativeSwapChain->GetDesc1(ref _swapDesc);
 
                 _vsync = Device.Settings.VSync ? 1U : 0;
                 Device.Settings.VSync.OnChanged += VSync_OnChanged;
@@ -84,7 +87,7 @@ namespace Molten.Graphics.DX11
             DeviceDX11 nativeDevice = (Device as DeviceDX11);
             GraphicsManagerDXGI dxgiManager = Device.Manager as GraphicsManagerDXGI;
 
-            NativeSwapChain = dxgiManager.CreateSwapChain(mode, Device.Settings, Device.Log, (IUnknown*)nativeDevice.Ptr, controlHandle);
+            NativeSwapChain = dxgiManager.CreateSwapChain(mode, SwapEffect.FlipDiscard, Device.FrameBufferSize, Device.Log, (IUnknown*)nativeDevice.Ptr, controlHandle);
         }
 
         private void VSync_OnChanged(bool oldValue, bool newValue)
@@ -97,19 +100,29 @@ namespace Molten.Graphics.DX11
             return 1;
         }
 
+        DxgiError _lastError;
         internal void Present()
         {
             Apply(Device.Queue);
 
             if (OnPresent() && NativeSwapChain != null)
             {
-                NativeSwapChain->Present(_vsync, 0U);
-
                 // TODO implement partial-present - Partial Presentation (using scroll or dirty rects)
                 // is not valid until first submitting a regular Present without scroll or dirty rects.
                 // Otherwise, the preserved back-buffer data would be uninitialized.
 
-                // NativeSwapChain->Present1(_vsync, 0U, _presentParams);
+                // See for flags: https://learn.microsoft.com/en-us/windows/win32/direct3ddxgi/dxgi-present
+                WinHResult r = NativeSwapChain->Present1(_vsync, 0U, _presentParams);
+                DxgiError de = r.ToEnum<DxgiError>();
+
+                if (de != DxgiError.Ok)
+                {
+                    if (_lastError != de)
+                    {
+                        Device.Log.Error($"Creation of swapchain failed with result: {de}");
+                        _lastError = de;
+                    }
+                }
             }
 
             if (!IsDisposed)

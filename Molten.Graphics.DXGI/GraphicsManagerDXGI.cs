@@ -112,7 +112,7 @@ namespace Molten.Graphics.Dxgi
                 Log.Error($"No supported GPU adapter found.");
         }
 
-        public IDXGISwapChain4* CreateSwapChain(DisplayModeDXGI mode, GraphicsSettings settings, Logger log, IUnknown* ptrDevice, IntPtr windowHandle)
+        public IDXGISwapChain4* CreateSwapChain(DisplayModeDXGI mode, SwapEffect swapMode, uint bufferSize, Logger log, IUnknown* ptrDevice, IntPtr windowHandle)
         {
             SwapChainDesc1 desc = new SwapChainDesc1()
             {
@@ -120,9 +120,9 @@ namespace Molten.Graphics.Dxgi
                 Height = mode.Height,
                 Format = mode.Format.ToApi(),
                 BufferUsage = (uint)DxgiUsage.RenderTargetOutput,
-                BufferCount = settings.GetBackBufferSize(),
+                BufferCount = bufferSize,
                 SampleDesc = new SampleDesc(1, 0), // TODO support multi-sampling: https://learn.microsoft.com/en-us/windows/win32/api/dxgicommon/ns-dxgicommon-dxgi_sample_desc
-                SwapEffect = SwapEffect.Discard,
+                SwapEffect = swapMode,
                 Flags = (uint)DxgiSwapChainFlags.None,
                 Stereo = 0,
                 Scaling = Scaling.Stretch,

@@ -89,6 +89,11 @@ namespace Molten.Graphics.Vulkan
             ActiveOutputs = _activeOutputs.AsReadOnly();
         }
 
+        protected override uint MinimumFrameBufferSize()
+        {
+            return 2; // TODO Do some smartphones need 1?
+        }
+
         internal bool HasExtension(string extName)
         {
             return _loader.HasExtension(extName);

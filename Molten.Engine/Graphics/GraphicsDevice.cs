@@ -49,13 +49,32 @@ namespace Molten.Graphics
             _maxStagingSize = (uint)ByteMath.FromMegabytes(renderer.Settings.Graphics.FrameStagingSize);
 
             SettingValue<FrameBufferMode> bufferingMode = renderer.Settings.Graphics.FrameBufferMode;
-            _newFrameBufferSize = Math.Max(1, (uint)bufferingMode.Value);
+            BufferingMode_OnChanged(bufferingMode.Value, bufferingMode.Value);
             bufferingMode.OnChanged += BufferingMode_OnChanged;
         }
 
+        protected abstract uint MinimumFrameBufferSize();
+
         private void BufferingMode_OnChanged(FrameBufferMode oldValue, FrameBufferMode newValue)
         {
-            _newFrameBufferSize = Math.Max(1, (uint)newValue);
+            SettingValue<FrameBufferMode> bufferingMode = Settings.FrameBufferMode;
+            _newFrameBufferSize = MinimumFrameBufferSize();
+
+            // Does the buffer mode exceed the minimum?
+            switch (bufferingMode.Value)
+            {
+                case FrameBufferMode.Double:
+                    _newFrameBufferSize = Math.Max(_newFrameBufferSize, 2);
+                    break;
+
+                case FrameBufferMode.Triple:
+                    _newFrameBufferSize = Math.Max(_newFrameBufferSize, 3);
+                    break;
+
+                case FrameBufferMode.Quad:
+                    _newFrameBufferSize = Math.Max(_newFrameBufferSize, 4);
+                    break;
+            }
         }
 
         protected void InvokeOutputActivated(IDisplayOutput output)

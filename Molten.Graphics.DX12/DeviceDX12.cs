@@ -33,6 +33,11 @@ namespace Molten.Graphics.DX12
             return true;
         }
 
+        protected override uint MinimumFrameBufferSize()
+        {
+            return 2;
+        }
+
         protected override void OnDispose()
         {
             _cmdDirect.Dispose();
