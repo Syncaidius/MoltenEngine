@@ -1,4 +1,5 @@
 ﻿using System.Reflection.Metadata;
+using System.Runtime.InteropServices;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
@@ -41,8 +42,13 @@ namespace Molten.Graphics.DX11
             void* initialData,
             uint initialBytes) : base(device, stride, numElements, flags | GraphicsResourceFlags.GpuRead, type)
         {
-            _initialData = initialData;
-            _initialBytes = initialBytes;
+            if (initialData != null && initialBytes > 0)
+            {
+                _initialData = EngineUtil.Alloc(initialBytes);
+                _initialBytes = initialBytes;
+                NativeMemory.Copy(initialData, _initialData, _initialBytes);
+            }
+
             _oldHandles = new List<ResourceHandleDX11<ID3D11Buffer>>();
 
             ResourceFormat = format;
@@ -114,13 +120,13 @@ namespace Molten.Graphics.DX11
 
         private void CreateBuffer(DeviceDX11 device, ResourceHandleDX11<ID3D11Buffer> handle)
         {
-            if (_initialData != null && _initialBytes > 0)
+            if (_initialData != null)
             {
                 SubresourceData srd = new SubresourceData(_initialData, _initialBytes, SizeInBytes);
                 fixed (BufferDesc* pDesc = &Desc)
                     device.Ptr->CreateBuffer(pDesc, &srd, ref handle.NativePtr);
 
-                _initialData = null;
+                EngineUtil.Free(ref _initialData);
                 _initialBytes = 0;
             }
             else
@@ -130,8 +136,6 @@ namespace Molten.Graphics.DX11
             }
 
             CreateViews(device, handle);
-
-            _initialData = null;
             Version++;
         }
 
@@ -199,6 +203,9 @@ namespace Molten.Graphics.DX11
 
                 _curHandle = null;
             }
+
+            // Just in case the initial data was never used before disposal.
+            EngineUtil.Free(ref _initialData);
         }
 
         /// <summary>Gets the resource usage flags associated with the buffer.</summary>

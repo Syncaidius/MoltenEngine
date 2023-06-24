@@ -2,7 +2,6 @@
 using Molten.Graphics;
 using Molten.Graphics.Textures;
 using Molten.Graphics.Textures.DDS;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Molten.Content
 {
