@@ -66,9 +66,10 @@ namespace Molten.Graphics
                 else if (KnownFrameBufferSize != fbSize)
                 {
                     OnFrameBufferResized(KnownFrameBufferSize, fbSize, fbIndex, Device.Renderer.Profiler.FrameID);
-                    KnownFrameBufferSize = fbSize;
                     LastFrameResizedID = Device.Renderer.Profiler.FrameID;
                 }
+
+                KnownFrameBufferSize = fbSize;
             }
 
             if (LastUsedFrameBufferIndex != fbIndex)

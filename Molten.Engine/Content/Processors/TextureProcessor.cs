@@ -133,6 +133,7 @@ namespace Molten.Content
             else
                 manager.Log.Error($"Unsupported texture type {handle.ContentType}", handle.RelativePath);
 
+            tex.Name += "_" + handle.RelativePath;
             return tex;
         }
 

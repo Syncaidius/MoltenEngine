@@ -74,7 +74,7 @@ namespace Molten.Graphics.DX11
             for (uint i = 0; i < frameBufferSize; i++)
                 _handles[i] = new ResourceHandleDX11<ID3D11Buffer>(this);
 
-            if (Flags.IsImmutable() && _curHandle.InitialData == null)
+            if (Flags.IsImmutable() && _initialData == null)
                 throw new GraphicsResourceException(this, "Initial data cannot be null when buffer mode is Immutable.");
                 
             Desc = new BufferDesc();

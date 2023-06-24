@@ -9,10 +9,6 @@ namespace Molten.Graphics.DX11
 {
     public abstract unsafe class ResourceHandleDX11 : GraphicsResourceHandle
     {
-        internal void* InitialData;
-
-        internal uint InitialBytes;
-
         public static implicit operator ID3D11Resource*(ResourceHandleDX11 handle)
         {
             return (ID3D11Resource*)handle.Ptr;

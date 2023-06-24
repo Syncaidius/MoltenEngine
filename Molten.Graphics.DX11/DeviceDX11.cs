@@ -309,7 +309,6 @@ namespace Molten.Graphics.DX11
             uint stride = (uint)sizeof(T);
             uint initialBytes = initialData != null ? (uint)initialData.Length * stride : 0;
 
-            BufferDX11 buffer = null;
             fixed(T* ptrData = initialData)
                 return new BufferDX11(this, type, flags, format, stride, numElements, ptrData, initialBytes);
         }
