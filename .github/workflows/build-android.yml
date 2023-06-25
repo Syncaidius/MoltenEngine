@@ -42,32 +42,15 @@ jobs:
         body: |
           This is the latest development build.
         draft: false
-        prerelease: true
+        prerelease: false
         
-  publish_release:
-    name: Publish Release
-    runs-on: ubuntu-latest;
-    needs: build_dev_release
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v2
-        with:
-          dotnet-version: 7.0.x
-        
-      - name: Install Android Workload
-        run: dotnet workload install android
-
-      - name: Publish Release
-        id: publish_release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_path: ./dist/my-app.zip
-          asset_name: my-app.zip
-          asset_content_type: application/zip
+    - name: Publish Release
+      id: publish_release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create_release.outputs.upload_url }}
+        asset_path: ./dist/molten-latest-dev.zip
+        asset_name: molten-latest-dev.zip
+        asset_content_type: application/zip
