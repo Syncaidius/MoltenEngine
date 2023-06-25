@@ -30,27 +30,3 @@ jobs:
     
    # - name: Build Release
     #  run: dotnet build /p:Platform="x64" --configuration Android_Release
-    
-    - name: Create Release
-      id: build_dev_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: dev
-        release_name: Latest - Development
-        body: |
-          This is the latest development build.
-        draft: false
-        prerelease: false
-        
-    - name: Upload Release Assets
-      id: publish_release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.build_dev_release.outputs.upload_url }}
-        asset_path: ./dist/molten-latest-dev.zip
-        asset_name: molten-latest-dev.zip
-        asset_content_type: application/zip
