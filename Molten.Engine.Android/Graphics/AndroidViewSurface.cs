@@ -240,6 +240,11 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
+        public void SetData<T>(GraphicsPriority priority, ResourceRegion area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0, Action<GraphicsResource> completeCallback = null) where T : unmanaged
+        {
+            throw new NotImplementedException();
+        }
+
         public string Title
         {
             get => TargetActivity.UnderlyingActivity.Title;
