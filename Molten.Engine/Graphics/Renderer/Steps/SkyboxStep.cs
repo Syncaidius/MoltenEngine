@@ -9,7 +9,7 @@
         Mesh<Vertex> _sphereMesh;
         ObjectRenderData _skyboxData;
 
-        internal override void Initialize(RenderService renderer)
+        protected override void OnInitialize(RenderService renderer)
         {
             _skyboxData = new ObjectRenderData();
 
@@ -27,28 +27,26 @@
             _sphereMesh.Dispose();
         }
 
-        internal override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
+        internal override void Render(GraphicsQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
         {
             // No skybox texture or we're not on the first layer.
             if (context.Scene.SkyboxTexture == null || context.Scene.Layers.First() != context.Layer)
                 return;
 
             Rectangle bounds = (Rectangle)camera.Surface.Viewport.Bounds;
-            GraphicsQueue queue = renderer.Device.Queue;
-
             _sphereMesh.SetResource(context.Scene.SkyboxTexture, 0);
 
             // We want to add to the previous composition, rather than completely overwrite it.
-            IRenderSurface2D destSurface = context.HasComposed ? context.PreviousComposition : renderer.Surfaces[MainSurfaceType.Scene];
+            IRenderSurface2D destSurface = context.HasComposed ? context.PreviousComposition : Renderer.Surfaces[MainSurfaceType.Scene];
 
             queue.State.Surfaces.Reset();
             queue.State.Surfaces[0] = destSurface;
-            queue.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
+            queue.State.DepthSurface.Value = Renderer.Surfaces.GetDepth();
             queue.State.Viewports.Reset(camera.Surface.Viewport);
             queue.State.ScissorRects.Reset(bounds);
 
             _skyboxData.RenderTransform = Matrix4F.Scaling(camera.MaxDrawDistance) * Matrix4F.CreateTranslation(camera.Position);
-            _sphereMesh.Render(queue, renderer, camera, _skyboxData);
+            _sphereMesh.Render(queue, Renderer, camera, _skyboxData);
         }
 
         private void MakeSphere(uint latLines, uint longLines, out Vertex[] vertices, out uint[] indices)

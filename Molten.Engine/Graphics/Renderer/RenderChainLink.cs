@@ -74,7 +74,7 @@ namespace Molten.Graphics
             link._chain.LinkPool.Recycle(link);
         }
 
-        internal void Run(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
+        internal void Run(GraphicsQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
         {
             bool canStart = true;
 
@@ -90,9 +90,8 @@ namespace Molten.Graphics
 
             // TODO update this once the renderer supports running render steps in deferred context threads.
             // TODO also consider spawning extra chain contexts so they can individually 
-            GraphicsQueue queue = renderer.Device.Queue;
             queue.BeginEvent($"Step {_step.GetType().Name}");
-            _step.Render(renderer, camera, context, time);
+            _step.Render(queue, camera, context, time);
             _completed = true;
             queue.EndEvent();
 
@@ -101,7 +100,7 @@ namespace Molten.Graphics
 
             // Start the next steps
             for (int i = 0; i < _next.Count; i++)
-                _next[i].Run(renderer, camera, context, time);
+                _next[i].Run(queue, camera, context, time);
         }
     }
 }

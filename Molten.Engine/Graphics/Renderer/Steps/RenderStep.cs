@@ -5,10 +5,18 @@
     /// </summary>
     internal abstract class RenderStep : IDisposable
     {
-        internal virtual void Initialize(RenderService renderer) { }
+        internal void Initialize(RenderService renderer)
+        {
+            Renderer = renderer;
+            OnInitialize(renderer);
+        }
 
-        internal abstract void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time);
+        protected abstract void OnInitialize(RenderService service);
+
+        internal abstract void Render(GraphicsQueue queue, RenderCamera camera, RenderChainContext context, Timing time);
 
         public abstract void Dispose();
+
+        internal RenderService Renderer { get; private set; }
     }
 }

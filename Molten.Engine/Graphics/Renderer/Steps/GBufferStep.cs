@@ -4,28 +4,28 @@
     {
         public override void Dispose() { }
 
-        internal override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
-        {
-            IRenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
-            IRenderSurface2D sNormals = renderer.Surfaces[MainSurfaceType.Normals];
-            IRenderSurface2D sEmissive = renderer.Surfaces[MainSurfaceType.Emissive];
+        protected override void OnInitialize(RenderService service) { }
 
-            GraphicsQueue queue = renderer.Device.Queue;
+        internal override void Render(GraphicsQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
+        {
+            IRenderSurface2D sScene = Renderer.Surfaces[MainSurfaceType.Scene];
+            IRenderSurface2D sNormals = Renderer.Surfaces[MainSurfaceType.Normals];
+            IRenderSurface2D sEmissive = Renderer.Surfaces[MainSurfaceType.Emissive];
 
             queue.State.Surfaces.Reset();
             queue.State.Surfaces[0] = sScene;
             queue.State.Surfaces[1] = sNormals;
             queue.State.Surfaces[2] = sEmissive;
-            queue.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
+            queue.State.DepthSurface.Value = Renderer.Surfaces.GetDepth();
 
             if (context.Layer.Renderables.Count == 0)
                 return;
 
-            SetShaderCommon(renderer.FxStandardMesh, camera, sScene);
-            SetShaderCommon(renderer.FxStandardMesh_NoNormalMap, camera, sScene);
+            SetShaderCommon(Renderer.FxStandardMesh, camera, sScene);
+            SetShaderCommon(Renderer.FxStandardMesh_NoNormalMap, camera, sScene);
 
             queue.State.Viewports.Reset(camera.Surface.Viewport);
-            renderer.RenderSceneLayer(queue, context.Layer, camera);
+            Renderer.RenderSceneLayer(queue, context.Layer, camera);
         }
 
         private void SetShaderCommon(HlslShader shader, RenderCamera camera, IRenderSurface2D gBufferScene)

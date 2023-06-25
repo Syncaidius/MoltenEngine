@@ -8,7 +8,7 @@ namespace Molten.Graphics
         HlslShader _matDebugPoint;
         GraphicsBuffer _lightBuffer;
 
-        internal override void Initialize(RenderService renderer)
+        protected override void OnInitialize(RenderService renderer)
         {
             uint stride = (uint)Marshal.SizeOf<LightData>();
             uint maxLights = 2000; // TODO move to graphics settings
@@ -27,19 +27,17 @@ namespace Molten.Graphics
             _matDebugPoint.Dispose();
         }
 
-        internal override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
+        internal override void Render(GraphicsQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
         {
-            IRenderSurface2D _surfaceLighting = renderer.Surfaces[MainSurfaceType.Lighting];
-            IDepthStencilSurface sDepth = renderer.Surfaces.GetDepth();
-
-            GraphicsQueue queue = renderer.Device.Queue;
+            IRenderSurface2D _surfaceLighting = Renderer.Surfaces[MainSurfaceType.Lighting];
+            IDepthStencilSurface sDepth = Renderer.Surfaces.GetDepth();
 
             _surfaceLighting.Clear(GraphicsPriority.Immediate, context.Scene.AmbientLightColor);
             queue.State.Surfaces.Reset();
             queue.State.Surfaces[0] = _surfaceLighting;
             queue.State.DepthSurface.Value = sDepth;
 
-            RenderPointLights(renderer, queue, camera, context.Scene, sDepth);
+            RenderPointLights(Renderer, queue, camera, context.Scene, sDepth);
         }
 
         private void RenderPointLights(RenderService renderer, GraphicsQueue queue, RenderCamera camera, SceneRenderData scene, IDepthStencilSurface dsSurface)

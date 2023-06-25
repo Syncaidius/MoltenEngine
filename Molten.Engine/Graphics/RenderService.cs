@@ -211,7 +211,7 @@ namespace Molten.Graphics
                         continue;
 
                     Device.Queue.PushProfiler(camera.Profiler);
-                    _chain.Render(sceneData, camera, time);
+                    _chain.Render(Device.Queue, sceneData, camera, time);
                     Device.Queue.PopProfiler(time);
                 }
 

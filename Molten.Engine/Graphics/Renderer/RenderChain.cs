@@ -64,43 +64,42 @@ namespace Molten.Graphics
             return first;
         }
 
-        internal void Render(SceneRenderData sceneData, RenderCamera camera, Timing time)
+        internal void Render(GraphicsQueue queue, SceneRenderData sceneData, RenderCamera camera, Timing time)
         {
-            GraphicsQueue cmd = Renderer.Device.Queue;
             RenderChainContext context = ContextPool.GetInstance();
             Renderer.Surfaces.MultiSampleLevel = camera.MultiSampleLevel;
             context.Scene = sceneData;
 
-            cmd.Begin();
-            cmd.BeginEvent($"Pre-Render");
+            queue.Begin();
+            queue.BeginEvent($"Pre-Render");
             RenderChainLink stepPreRender = BuildPreRender(sceneData, camera);
-            stepPreRender.Run(Renderer, camera, context, time);
+            stepPreRender.Run(queue, camera, context, time);
             RenderChainLink.Recycle(stepPreRender);
-            cmd.EndEvent();
+            queue.EndEvent();
 
             for (int i = 0; i < sceneData.Layers.Count; i++)
             {
                 SceneLayerMask layerBitVal = (SceneLayerMask)(1UL << i);
                 if ((camera.LayerMask & layerBitVal) == layerBitVal)
                 {
-                    cmd.SetMarker($"Skipped masked layer {i + 1}/{sceneData.Layers.Count} - {sceneData.Layers[i].Name}");
+                    queue.SetMarker($"Skipped masked layer {i + 1}/{sceneData.Layers.Count} - {sceneData.Layers[i].Name}");
                     continue;
                 }
 
-                cmd.BeginEvent($"Render Layer {i+1}/{sceneData.Layers.Count} - {sceneData.Layers[i].Name}");
+                queue.BeginEvent($"Render Layer {i+1}/{sceneData.Layers.Count} - {sceneData.Layers[i].Name}");
                 context.Layer = sceneData.Layers[i];
                 RenderChainLink stepRender = BuildRender(sceneData, context.Layer, camera);
-                stepRender.Run(Renderer, camera, context, time);
+                stepRender.Run(queue, camera, context, time);
                 RenderChainLink.Recycle(stepRender);
-                cmd.EndEvent();
+                queue.EndEvent();
             }
 
-            cmd.BeginEvent($"Post-Render");
+            queue.BeginEvent($"Post-Render");
             RenderChainLink stepPostRender = BuildPostRender(sceneData, camera);
-            stepPostRender.Run(Renderer, camera, context, time);
+            stepPostRender.Run(queue, camera, context, time);
             RenderChainLink.Recycle(stepPostRender);
-            cmd.EndEvent();
-            cmd.End();
+            queue.EndEvent();
+            queue.End();
         }
 
         protected override void OnDispose()

@@ -8,22 +8,23 @@
         public override void Dispose()
         { }
 
-        internal override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
+        protected override void OnInitialize(RenderService service) { }
+
+        internal override void Render(GraphicsQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
         {
             if (context.Layer.Renderables.Count == 0)
                 return;
 
-            GraphicsQueue cmd = renderer.Device.Queue;
-            IRenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
+            IRenderSurface2D sScene = Renderer.Surfaces[MainSurfaceType.Scene];
 
-            cmd.State.Surfaces.Reset();
-            cmd.State.Surfaces[0] = sScene;
-            cmd.State.DepthSurface.Value = renderer.Surfaces.GetDepth();
+            queue.State.Surfaces.Reset();
+            queue.State.Surfaces[0] = sScene;
+            queue.State.DepthSurface.Value = Renderer.Surfaces.GetDepth();
 
-            cmd.State.Viewports.Reset(camera.Surface.Viewport);
-            cmd.State.ScissorRects.Reset((Rectangle)camera.Surface.Viewport.Bounds);
+            queue.State.Viewports.Reset(camera.Surface.Viewport);
+            queue.State.ScissorRects.Reset((Rectangle)camera.Surface.Viewport.Bounds);
 
-            renderer.RenderSceneLayer(cmd, context.Layer, camera);
+            Renderer.RenderSceneLayer(queue, context.Layer, camera);
         }
     }
 }

@@ -11,7 +11,7 @@
         ShaderVariable _valLighting;
         ShaderVariable _valEmissive;
 
-        internal override void Initialize(RenderService renderer)
+        protected override void OnInitialize(RenderService renderer)
         {
             _surfaceScene = renderer.Surfaces[MainSurfaceType.Scene];
             _surfaceLighting = renderer.Surfaces[MainSurfaceType.Lighting];
@@ -32,20 +32,19 @@
             _fxCompose.Dispose();
         }
 
-        internal override void Render(RenderService renderer, RenderCamera camera, RenderChainContext context, Timing time)
+        internal override void Render(GraphicsQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
         {
             _orthoCamera.Surface = camera.Surface;
 
             RectangleF vpBounds = camera.Surface.Viewport.Bounds;
-            GraphicsQueue cmd = renderer.Device.Queue;
 
             context.CompositionSurface.Clear(GraphicsPriority.Immediate, camera.BackgroundColor);
-            cmd.State.Surfaces.Reset();
-            cmd.State.Surfaces[0] = context.CompositionSurface;
-            cmd.State.DepthSurface.Value = null;
+            queue.State.Surfaces.Reset();
+            queue.State.Surfaces[0] = context.CompositionSurface;
+            queue.State.DepthSurface.Value = null;
 
-            cmd.State.Viewports.Reset(camera.Surface.Viewport);
-            cmd.State.ScissorRects.Reset((Rectangle)vpBounds);
+            queue.State.Viewports.Reset(camera.Surface.Viewport);
+            queue.State.ScissorRects.Reset((Rectangle)vpBounds);
 
             _valLighting.Value = _surfaceLighting;
             _valEmissive.Value = _surfaceEmissive;
@@ -53,8 +52,8 @@
             ITexture2D sourceSurface = context.HasComposed ? context.PreviousComposition : _surfaceScene;
             RectStyle style = RectStyle.Default;
 
-            renderer.SpriteBatch.Draw(sourceSurface, vpBounds, Vector2F.Zero, vpBounds.Size, 0, Vector2F.Zero, ref style, _fxCompose, 0, 0);
-            renderer.SpriteBatch.Flush(cmd, _orthoCamera, _dummyData);
+            Renderer.SpriteBatch.Draw(sourceSurface, vpBounds, Vector2F.Zero, vpBounds.Size, 0, Vector2F.Zero, ref style, _fxCompose, 0, 0);
+            Renderer.SpriteBatch.Flush(queue, _orthoCamera, _dummyData);
 
             context.SwapComposition();
         }
