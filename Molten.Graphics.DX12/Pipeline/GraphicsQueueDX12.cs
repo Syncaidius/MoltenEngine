@@ -36,6 +36,11 @@ namespace Molten.Graphics.DX12
             _ptr = (ID3D12CommandQueue*)cmdQueue;
         }
 
+        protected override void OnResetState()
+        {
+            throw new NotImplementedException();
+        }
+
         public override void Execute(GraphicsCommandList list)
         {
             throw new NotImplementedException();

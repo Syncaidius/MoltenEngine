@@ -41,6 +41,8 @@
                 Renderer.Overlay.Render(time, Renderer.SpriteBatch, Renderer.Profiler, context.Scene.Profiler, camera);
 
             Renderer.SpriteBatch.Flush(queue, _orthoCamera, _dummyData);
+
+            queue.ResetState();
         }
     }
 }

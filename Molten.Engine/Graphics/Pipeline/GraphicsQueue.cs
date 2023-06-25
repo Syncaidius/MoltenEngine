@@ -119,6 +119,9 @@
                 _freeStateStack.Push(_state);
                 _state = _stateStack.Pop();
             }
+
+            _state.Reset();
+            OnResetState();
         }
 
         /// <summary>
@@ -226,6 +229,8 @@
 
         public abstract unsafe void CopyResourceRegion(GraphicsResource source, uint srcSubresource, ResourceRegion* sourceRegion,
             GraphicsResource dest, uint destSubresource, Vector3UI destStart);
+
+        protected abstract void OnResetState();
 
         /// <summary>Draw non-indexed, non-instanced primitives. 
         /// All queued compute shader dispatch requests are also processed</summary>

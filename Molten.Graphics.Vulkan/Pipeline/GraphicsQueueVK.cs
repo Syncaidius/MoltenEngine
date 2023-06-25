@@ -143,6 +143,11 @@ namespace Molten.Graphics.Vulkan
             r.Throw(_device, () => "Failed to submit command list");
         }
 
+        protected override void OnResetState()
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Queues a texture memory barrier.
         /// </summary>

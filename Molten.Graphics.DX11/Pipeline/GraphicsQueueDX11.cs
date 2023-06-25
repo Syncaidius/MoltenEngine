@@ -73,6 +73,16 @@ namespace Molten.Graphics.DX11
             _rtvs = EngineUtil.AllocPtrArray<ID3D11RenderTargetView1>(maxRTs);
         }
 
+        protected override void OnResetState()
+        {
+            // Bind default state to all shader stages 
+            for (int i = 0; i < _shaderStages.Length; i++)
+                _shaderStages[i].Bind(null);
+
+            // Unbind all output surfaces
+            _native->OMSetRenderTargets(0, null, _dsv);
+        }
+
         public override void Begin(GraphicsCommandListFlags flags = GraphicsCommandListFlags.None)
         {
             base.Begin(flags);
