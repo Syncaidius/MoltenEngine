@@ -1,4 +1,4 @@
-name: Build Android
+name: Android [Debug]
 
 on:
   push:
@@ -7,22 +7,67 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-
+  build_dev_release:
     runs-on: windows-latest
-
+    
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout Git Repo
+      uses: actions/checkout@v3
+    
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 7.0.x
+        
     - name: Install Android Workload
       run: dotnet workload install android
+      
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
 
     - name: Build Debug
       run: dotnet build /p:Platform="x64" --configuration Android_Debug
-    - name: Build Release
-      run: dotnet build /p:Platform="x64" --configuration Android_Release
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+    
+   # - name: Build Release
+    #  run: dotnet build /p:Platform="x64" --configuration Android_Release
+    
+    - name: Create Release
+      id: build_dev_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: Latest-Dev
+        release_name: Latest Dev
+        body: |
+          This is the latest development build.
+        draft: false
+        prerelease: true
+        
+  publish_release:
+    name: Publish Release
+    runs-on: ubuntu-latest;
+    needs: build_dev_release
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 7.0.x
+        
+      - name: Install Android Workload
+        run: dotnet workload install android
+
+      - name: Publish Release
+        id: publish_release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./dist/my-app.zip
+          asset_name: my-app.zip
+          asset_content_type: application/zip
