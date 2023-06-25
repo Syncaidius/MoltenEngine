@@ -37,20 +37,20 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: Latest-Dev
-        release_name: Latest Dev
+        tag_name: dev
+        release_name: Latest - Development
         body: |
           This is the latest development build.
         draft: false
         prerelease: false
         
-    - name: Publish Release
+    - name: Upload Release Assets
       id: publish_release
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ needs.create_release.outputs.upload_url }}
+        upload_url: ${{ steps.build_dev_release.outputs.upload_url }}
         asset_path: ./dist/molten-latest-dev.zip
         asset_name: molten-latest-dev.zip
         asset_content_type: application/zip
