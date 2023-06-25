@@ -234,7 +234,7 @@
                         levelByteSize = (uint)data.Length;
                     }
 
-                    TextureSlice level = new TextureSlice(levelWidth, levelHeight, data)
+                    TextureSlice level = new TextureSlice(levelWidth, levelHeight, 1, data)
                     {
                         Pitch = blockPitch,
                     };

@@ -15,27 +15,32 @@ namespace Molten.Graphics
         public uint Width { get; private set; }
         public uint Height { get; private set; }
 
+        public uint Depth { get; private set; }
+
         List<TextureSliceRef> _references = new List<TextureSliceRef>();
 
-        public TextureSlice(uint width, uint height, uint numBytes)
+        public TextureSlice(uint width, uint height, uint depth, uint numBytes)
         {
             Width = width;
             Height = height;
+            Depth = depth;
             Allocate(numBytes);
         }
 
-        public TextureSlice(uint width, uint height, byte* data, uint numBytes)
+        public TextureSlice(uint width, uint height, uint depth, byte* data, uint numBytes)
         {
             Width = width;
             Height = height;
+            Depth = depth;
             _data = data;
             TotalBytes = numBytes;
         }
 
-        public TextureSlice(uint width, uint height, byte[] data, uint startIndex, uint numBytes)
+        public TextureSlice(uint width, uint height, uint depth, byte[] data, uint startIndex, uint numBytes)
         {
             Width = width;
             Height = height;
+            Depth = depth;
             Allocate(numBytes);
 
             fixed (byte* ptrData = data)
@@ -45,10 +50,11 @@ namespace Molten.Graphics
             }
         }
 
-        public TextureSlice(uint width, uint height, byte[] data)
+        public TextureSlice(uint width, uint height, uint depth, byte[] data)
         {
             Width = width;
             Height = height;
+            Depth = depth;
             uint numBytes = (uint)data.Length;
 
             Allocate(numBytes);
@@ -97,20 +103,20 @@ namespace Molten.Graphics
             uint subID = (arraySlice * tex.MipMapCount) + level;
             uint subWidth = tex.Width >> (int)level;
             uint subHeight = tex.Height >> (int)level;
+            uint subDepth = tex.Depth >> (int)level;
 
-            GraphicsResource resMap = tex as GraphicsResource;
-            GraphicsResource resStaging = staging as GraphicsResource;
+            GraphicsResource resMap = tex;
 
             if (staging != null)
             {
-                cmd.CopyResourceRegion(resMap, subID, null, resStaging, subID, Vector3UI.Zero);
+                cmd.CopyResourceRegion(resMap, subID, null, staging, subID, Vector3UI.Zero);
                 cmd.Profiler.Current.CopySubresourceCount++;
-                resMap = resStaging;
+                resMap = staging;
             }
 
             uint blockSize = BCHelper.GetBlockSize(tex.ResourceFormat);
             uint expectedRowPitch = 4 * tex.Width; // 4-bytes per pixel * Width.
-            uint expectedSlicePitch = expectedRowPitch * tex.Height;
+            uint expectedSlicePitch = (expectedRowPitch * tex.Height) * tex.Depth;
 
             if (blockSize > 0)
                 BCHelper.GetBCLevelSizeAndPitch(subWidth, subHeight, blockSize, out expectedSlicePitch, out expectedRowPitch);
@@ -136,7 +142,7 @@ namespace Molten.Graphics
                 }
             }
 
-            TextureSlice slice = new TextureSlice(subWidth, subHeight, sliceData)
+            TextureSlice slice = new TextureSlice(subWidth, subHeight, subDepth, sliceData)
             {
                 Pitch = expectedRowPitch,
             };
@@ -152,7 +158,7 @@ namespace Molten.Graphics
 
         public TextureSlice Clone()
         {
-            TextureSlice result = new TextureSlice(Width, Height, TotalBytes)
+            TextureSlice result = new TextureSlice(Width, Height, Depth, TotalBytes)
             {
                 Pitch = Pitch,
                 TotalBytes = TotalBytes,

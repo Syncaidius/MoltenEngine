@@ -79,7 +79,7 @@
         /// <param name="level"></param>
         /// <param name="arrayIndex"></param>
         /// <param name="completeCallback">A callback to run once the operation has completed.</param>
-        void SetData<T>(GraphicsPriority priority, RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0, Action<GraphicsResource> completeCallback = null) where T : unmanaged;
+        void SetData<T>(GraphicsPriority priority, ResourceRegion area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0, Action<GraphicsResource> completeCallback = null) where T : unmanaged;
 
         /// <summary>Returns the data contained within a texture via a staging texture or directly from the texture itself if possible.</summary>
         /// <param name="priority">The priority of the operation.</param>

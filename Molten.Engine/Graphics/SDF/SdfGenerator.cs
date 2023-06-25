@@ -32,7 +32,7 @@ namespace Molten.Graphics.SDF
             postGenConfig.DistanceCheckMode = SdfConfig.DistanceErrorCheckMode.DO_NOT_CHECK_DISTANCE;
 
             uint numBytes = pWidth * pHeight * (uint)sizeof(Color3);
-            TextureSlice sdf = new TextureSlice(pWidth, pHeight, numBytes);
+            TextureSlice sdf = new TextureSlice(pWidth, pHeight, 1, numBytes);
 
             TextureSliceRef<Color3> sdfRef = sdf.GetReference<Color3>();
 

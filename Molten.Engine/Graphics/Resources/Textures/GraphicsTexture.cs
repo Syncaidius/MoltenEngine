@@ -125,7 +125,7 @@ namespace Molten.Graphics
             });
         }
 
-        public unsafe void SetData<T>(GraphicsPriority priority, RectangleUI area, T* data, uint numElements, uint bytesPerPixel, uint level, uint arrayIndex = 0,
+        public unsafe void SetData<T>(GraphicsPriority priority, ResourceRegion area, T* data, uint numElements, uint bytesPerPixel, uint level, uint arrayIndex = 0,
             Action<GraphicsResource> completeCallback = null)
             where T : unmanaged
         {
@@ -138,7 +138,7 @@ namespace Molten.Graphics
                 throw new Exception($"The provided data does not match the provided area of {area.Width}x{area.Height}. Expected {expectedBytes} bytes. {dataBytes} bytes were provided.");
 
             // Do a bounds check
-            RectangleUI texBounds = new RectangleUI(0, 0, Width, Height);
+            ResourceRegion texBounds = new ResourceRegion(0, 0, 0, Width, Height, Depth);
             if (!texBounds.Contains(area))
                 throw new Exception("The provided area would go outside of the current texture's bounds.");
 
@@ -212,7 +212,7 @@ namespace Molten.Graphics
             }
         }
 
-        public unsafe void SetData<T>(GraphicsPriority priority, RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0,
+        public unsafe void SetData<T>(GraphicsPriority priority, ResourceRegion area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0,
             Action<GraphicsResource> completeCallback = null)
             where T : unmanaged
         {

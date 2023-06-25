@@ -30,7 +30,7 @@ namespace Molten.Graphics.SDF
 
         public unsafe SdfErrorCorrection(TextureSliceRef<Color3> sdf, SdfProjection pProjection, double range)
         {
-            _stencilSlice = new TextureSlice(sdf.Width, sdf.Height, sdf.Width * sdf.Height);
+            _stencilSlice = new TextureSlice(sdf.Width, sdf.Height, 1, sdf.Width * sdf.Height);
             _stencil = _stencilSlice.GetReference<byte>();
             _projection = pProjection;
 

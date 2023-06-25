@@ -112,7 +112,7 @@
             _profiler.Accumulate(prev.Previous, false);
         }
 
-        public void ResetState()
+        internal void ResetState()
         {
             while(_stateStack.Count > 0)
             {

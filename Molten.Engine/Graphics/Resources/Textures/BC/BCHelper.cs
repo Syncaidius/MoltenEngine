@@ -6,7 +6,7 @@ namespace Molten.Graphics.Textures
     /// <summary>
     /// Texture block-compression helper class.
     /// </summary>
-    public static class BCHelper
+    internal static class BCHelper
     {
         /// <summary>
         /// The expected width and height of a DDS data block, in pixels.
@@ -26,7 +26,7 @@ namespace Molten.Graphics.Textures
             }
         }
 
-        public unsafe static void Decompress(TextureData data, Logger log)
+        internal unsafe static void Decompress(TextureData data, Logger log)
         {
             // Cannot decompress uncompressed data.
             if (data.IsCompressed == false)
@@ -46,7 +46,7 @@ namespace Molten.Graphics.Textures
                         uint levelID = (a * data.MipMapLevels) + i;
                         byte[] decompressed = DecompressLevel(parser, levels[levelID], log);
 
-                        data.Levels[levelID] = new TextureSlice(levels[i].Width, levels[i].Height, decompressed)
+                        data.Levels[levelID] = new TextureSlice(levels[i].Width, levels[i].Height, 1, decompressed)
                         {
                             Pitch = levels[i].Width * 4,
                         };
@@ -132,7 +132,7 @@ namespace Molten.Graphics.Textures
                         byte[] levelData = CompressLevel(parser, levels[levelID], log);
                         uint pitch = Math.Max(1, ((levels[i].Width + 3) / 4) * GetBlockSize(gFormat));
 
-                        data.Levels[levelID] = new TextureSlice(levels[i].Width, levels[i].Height, levelData)
+                        data.Levels[levelID] = new TextureSlice(levels[i].Width, levels[i].Height, 1, levelData)
                         {
                             Pitch = pitch,
                         };
@@ -282,7 +282,7 @@ namespace Molten.Graphics.Textures
         /// <param name="height"></param>
         /// <param name="blockSize">The number of bytes per block.</param>
         /// <returns></returns>
-        public static uint GetBCPitch(uint width, uint height, uint blockSize)
+        public static uint GetBCPitch(uint width, uint blockSize)
         {
             uint numBlocksWide = Math.Max(1, (width + 3) / 4);
             return numBlocksWide * blockSize;

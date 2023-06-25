@@ -22,7 +22,7 @@ namespace Molten.Graphics
 
         public uint Stride { get; private set; }
 
-        public RectangleUI? Area;
+        public ResourceRegion? Area;
 
         public Action<GraphicsResource> CompleteCallback;
 
@@ -31,7 +31,6 @@ namespace Molten.Graphics
             Stride = stride;
             NumElements = numElements;
             NumBytes = Stride * NumElements;
-
             Data = EngineUtil.Alloc(NumBytes);
 
             void* ptrStart = (byte*)data + startIndex;
@@ -47,6 +46,7 @@ namespace Molten.Graphics
             uint blockSize = 8; // default block size
             uint levelWidth = texture.Width;
             uint levelHeight = texture.Height;
+            uint levelDepth = texture.Depth;
 
             if (texture.IsBlockCompressed)
             {
@@ -58,9 +58,10 @@ namespace Molten.Graphics
                 // Collect total level size.
                 for (uint i = 0; i < texture.MipMapCount; i++)
                 {
-                    arraySliceBytes += BCHelper.GetBCLevelSize(levelWidth, levelHeight, blockSize);
-                    levelWidth /= 2;
-                    levelHeight /= 2;
+                    arraySliceBytes += BCHelper.GetBCLevelSize(levelWidth, levelHeight, blockSize) * levelDepth;
+                    levelWidth = Math.Max(1, levelWidth / 2);
+                    levelHeight = Math.Max(1, levelHeight / 2);
+                    levelDepth = Math.Max(1, levelDepth / 2);
                 }
             }
             else
@@ -68,9 +69,10 @@ namespace Molten.Graphics
                 // TODO: This is invalid if the format isn't 32bpp/4-bytes-per-pixel/RGBA.
                 for (uint i = 0; i < texture.MipMapCount; i++)
                 {
-                    arraySliceBytes += levelWidth * levelHeight * 4; //4 color channels. 1 byte each. Width * height * colorByteSize.
-                    levelWidth /= 2;
-                    levelHeight /= 2;
+                    arraySliceBytes += (levelWidth * levelHeight * 4) * levelDepth; //4 color channels. 1 byte each. Width * height * colorByteSize.
+                    levelWidth = Math.Max(1, levelWidth / 2);
+                    levelHeight = Math.Max(1, levelHeight / 2);
+                    levelDepth = Math.Max(1, levelDepth / 2);
                 }
             }
 
@@ -88,14 +90,16 @@ namespace Molten.Graphics
                     // Are we constrained to an area of the texture?
                     if (Area != null)
                     {
-                        RectangleUI rect = Area.Value;
-                        uint areaPitch = Stride * rect.Width;
-                        uint aX = rect.X;
-                        uint aY = rect.Y;
+                        ResourceRegion area = Area.Value;
+                        uint areaPitch = Stride * area.Width;
+                        uint sliceBytes = areaPitch * area.Height;
+                        uint aX = area.Left;
+                        uint aY = area.Top;
+                        uint aZ = area.Front;
 
-                        for (uint y = aY, end = rect.Bottom; y < end; y++)
+                        for (uint y = aY, end = area.Bottom; y < end; y++)
                         {
-                            stream.Position = (Pitch * aY) + (aX * Stride);
+                            stream.Position = (sliceBytes * aZ) + (Pitch * aY) + (aX * Stride);
                             stream.WriteRange(ptrData, areaPitch);
                             ptrData += areaPitch;
                             aY++;
@@ -113,9 +117,8 @@ namespace Molten.Graphics
                 if (texture.IsBlockCompressed)
                 {
                     // Calculate mip-map level size.
-                    levelWidth = texture.Width >> (int)MipLevel;
-                    levelHeight = texture.Height >> (int)MipLevel;
-                    uint bcPitch = BCHelper.GetBCPitch(levelWidth, levelHeight, blockSize);
+                    levelWidth = Math.Max(1, texture.Width >> (int)MipLevel);
+                    uint bcPitch = BCHelper.GetBCPitch(levelWidth, blockSize);
 
                     // TODO support copy flags (DX11.1 feature)
                     cmd.UpdateResource(resource, subLevel, null, ptrData, bcPitch, arraySliceBytes);
@@ -124,10 +127,8 @@ namespace Molten.Graphics
                 {
                     if (Area != null)
                     {
-                        RectangleUI rect = Area.Value;
-                        uint rowPitch = Stride * rect.Width;
-                        ResourceRegion region = new ResourceRegion(rect.X, rect.Y, 0, rect.Right, rect.Bottom, 1);
-                        cmd.UpdateResource(resource, subLevel, region, ptrData, rowPitch, NumBytes);
+                        uint rowPitch = Stride * Area.Value.Width;
+                        cmd.UpdateResource(resource, subLevel, Area.Value, ptrData, rowPitch, NumBytes);
                     }
                     else
                     {

@@ -27,10 +27,11 @@ namespace Molten.Graphics
 
         public bool IsCompressed;
 
-        public TextureData(uint width, uint height, uint mipMapLevels, uint arraySize)
+        public TextureData(uint width, uint height, uint depth, uint mipMapLevels, uint arraySize)
         {
             Width = width;
             Height = height;
+            Depth = depth;
             MipMapLevels = mipMapLevels;
             ArraySize = arraySize;
 
@@ -41,6 +42,7 @@ namespace Molten.Graphics
         {
             Width = slices[0].Width;
             Height = slices[0].Height;
+            Depth = slices[0].Depth;
             MipMapLevels = (uint)(slices.Length / arraySize);
             ArraySize = arraySize;
 
@@ -131,6 +133,7 @@ namespace Molten.Graphics
 
             uint start = MipMapLevels * arraySlice;
             uint end = start + (MipMapLevels * otherData.ArraySize);
+
             if (Levels == null || end >= Levels.Length)
             {
                 EngineUtil.ArrayResize(ref Levels, end);
@@ -153,18 +156,14 @@ namespace Molten.Graphics
         /// <returns></returns>
         public TextureData Clone()
         {
-            TextureData result = new TextureData(this.Width, this.Height, this.MipMapLevels, this.ArraySize)
+            TextureData result = new TextureData(Width, Height, Depth, MipMapLevels, ArraySize)
             {
-                ArraySize = this.ArraySize,
-                Format = this.Format,
-                Flags = this.Flags,
-                IsCompressed = this.IsCompressed,
-                Height = this.Height,
-                Levels = new TextureSlice[this.Levels.Length],
-                MipMapLevels = this.MipMapLevels,
-                Width = this.Width,
-                MultiSampleLevel = this.MultiSampleLevel,
-                HighestMipMap = this.HighestMipMap,
+                Format = Format,
+                Flags = Flags,
+                IsCompressed = IsCompressed,
+                Levels = new TextureSlice[Levels.Length],
+                MultiSampleLevel = MultiSampleLevel,
+                HighestMipMap = HighestMipMap,
             };
 
             // Copy mip-map level data.
