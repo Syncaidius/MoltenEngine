@@ -7,18 +7,46 @@ namespace Molten.Graphics
     {
         byte* _data;
 
+        /// <summary>
+        /// Gets the data pointer of the texture slice.
+        /// </summary>
         public byte* Data => _data;
 
+        /// <summary>
+        /// Gets the row pitch of the texture slice. This is the number of bytes in a single row of pixels/blocks.
+        /// </summary>
         public uint Pitch;
+
+        /// <summary>
+        /// Gets the total number of bytes in the texture slice.
+        /// </summary>
         public uint TotalBytes { get; private set; }
 
+        /// <summary>
+        /// Gets the width of the texture slice, in pixels.
+        /// </summary>
+        /// 
         public uint Width { get; private set; }
+
+        /// <summary>
+        /// Gets the height of the texture slice, in pixels.
+        /// </summary>
         public uint Height { get; private set; }
 
+        /// <summary>
+        /// Gets the depth of the texture slice. This is only relevant for 3D textures.
+        /// </summary>
         public uint Depth { get; private set; }
 
         List<TextureSliceRef> _references = new List<TextureSliceRef>();
 
+        /// <summary>
+        /// Create a new instance of <see cref="TextureSlice"/>.
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="depth"></param>
+        /// <param name="numBytes"></param>
         public TextureSlice(uint width, uint height, uint depth, uint numBytes)
         {
             Width = width;
@@ -27,6 +55,14 @@ namespace Molten.Graphics
             Allocate(numBytes);
         }
 
+        /// <summary>
+        /// Create a new instance of <see cref="TextureSlice"/>.
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="depth"></param>
+        /// <param name="data"></param>
+        /// <param name="numBytes"></param>
         public TextureSlice(uint width, uint height, uint depth, byte* data, uint numBytes)
         {
             Width = width;
@@ -36,6 +72,15 @@ namespace Molten.Graphics
             TotalBytes = numBytes;
         }
 
+        /// <summary>
+        /// Create a new instance of <see cref="TextureSlice"/>.
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="depth"></param>
+        /// <param name="data"></param>
+        /// <param name="startIndex"></param>
+        /// <param name="numBytes"></param>
         public TextureSlice(uint width, uint height, uint depth, byte[] data, uint startIndex, uint numBytes)
         {
             Width = width;
@@ -50,6 +95,13 @@ namespace Molten.Graphics
             }
         }
 
+        /// <summary>
+        /// Create a new instance of <see cref="TextureSlice"/>.
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="depth"></param>
+        /// <param name="data"></param>
         public TextureSlice(uint width, uint height, uint depth, byte[] data)
         {
             Width = width;
