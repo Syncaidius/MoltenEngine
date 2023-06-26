@@ -31,7 +31,7 @@ jobs:
       run: dotnet build /p:Platform="x64" --configuration Android_Debug
 
     - name: Publish Artifacts
-      run: dotnet publish --configuration Android_Debug --no-build --output ./publish
+      run: dotnet publish --configuration Android_Debug --output ./publish
     
    # - name: Build Release
     #  run: dotnet build /p:Platform="x64" --configuration Android_Release
