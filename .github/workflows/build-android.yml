@@ -31,7 +31,7 @@ jobs:
       run: dotnet build /p:Platform="x64" --configuration Android_Debug
 
     - name: Publish Artifacts
-      run: dotnet publish --configuration Android_Debug --output ./publish
+      run: dotnet publish --configuration Android_Debug --no-build --output ./publish
     
    # - name: Build Release
     #  run: dotnet build /p:Platform="x64" --configuration Android_Release
@@ -71,7 +71,7 @@ jobs:
         prerelease: false
 
     - name: Upload Release artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: Release Artifacts
         path: ./publish
