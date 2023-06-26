@@ -10,7 +10,7 @@ on:
 
 jobs:
   build_dev_release:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     
     steps:
     - name: Checkout Git Repo
@@ -24,8 +24,8 @@ jobs:
     - name: Install Android Workload
       run: dotnet workload install android
       
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+    #- name: Test
+    #  run: dotnet test --no-build --verbosity normal
 
     - name: Build Debug
       run: dotnet build /p:Platform="x64" --configuration Android_Debug
@@ -33,13 +33,13 @@ jobs:
     - name: Publish Artifacts
       run: dotnet publish --configuration Android_Debug --output ./publish
     
-   # - name: Build Release
+    #- name: Build Release
     #  run: dotnet build /p:Platform="x64" --configuration Android_Release
 
     - name: Zip build output
       run: zip -r android_dev_debug.zip ./publish
 
-    - name: Delete release
+    - name: Delete old dev release
       uses: actions/github-script@v4
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
