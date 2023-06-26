@@ -36,6 +36,9 @@ jobs:
    # - name: Build Release
     #  run: dotnet build /p:Platform="x64" --configuration Android_Release
 
+    - name: Zip build output
+      run: zip -r android_dev_debug.zip ./publish
+
     - name: Delete release
       uses: actions/github-script@v4
       with:
@@ -70,8 +73,12 @@ jobs:
         draft: false
         prerelease: false
 
-    - name: Upload Release artifacts
-      uses: actions/upload-artifact@v3
+    - name: Upload release Zip
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: Release Artifacts
-        path: ./publish
+        upload_url: ${{ steps.build_dev_release.outputs.upload_url }}
+        asset_path: ./publish/android_dev_debug.zip
+        asset_name: android_dev_debug.zip
+        asset_content_type: application/zip
