@@ -260,11 +260,13 @@ Global
 		{D58134DD-2CA1-4417-8880-00A3F27DFDB5}.Release|x86.ActiveCfg = Release|Any CPU
 		{D58134DD-2CA1-4417-8880-00A3F27DFDB5}.Release|x86.Build.0 = Release|Any CPU
 		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Android_Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Android_Debug|Any CPU.Build.0 = Debug|Any CPU
 		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Android_Debug|x64.ActiveCfg = Debug|Any CPU
 		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Android_Debug|x64.Build.0 = Debug|Any CPU
 		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Android_Debug|x86.ActiveCfg = Debug|Any CPU
 		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Android_Debug|x86.Build.0 = Debug|Any CPU
 		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Android_Release|Any CPU.ActiveCfg = Release|Any CPU
+		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Android_Release|Any CPU.Build.0 = Release|Any CPU
 		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Android_Release|x64.ActiveCfg = Release|Any CPU
 		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Android_Release|x64.Build.0 = Release|Any CPU
 		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Android_Release|x86.ActiveCfg = Release|Any CPU
@@ -523,12 +525,10 @@ Global
 		{640AAF55-92F0-478C-8A81-EA13F9AF6B35}.Release|x86.ActiveCfg = Release|Any CPU
 		{640AAF55-92F0-478C-8A81-EA13F9AF6B35}.Release|x86.Build.0 = Release|Any CPU
 		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Android_Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Android_Debug|Any CPU.Build.0 = Debug|Any CPU
 		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Android_Debug|x64.ActiveCfg = Debug|Any CPU
 		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Android_Debug|x86.ActiveCfg = Debug|Any CPU
 		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Android_Debug|x86.Build.0 = Debug|Any CPU
 		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Android_Release|Any CPU.ActiveCfg = Release|Any CPU
-		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Android_Release|Any CPU.Build.0 = Release|Any CPU
 		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Android_Release|x64.ActiveCfg = Release|Any CPU
 		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Android_Release|x86.ActiveCfg = Release|Any CPU
 		{037B4625-B4FF-40E3-8EF2-DA240FB3953F}.Android_Release|x86.Build.0 = Release|Any CPU
