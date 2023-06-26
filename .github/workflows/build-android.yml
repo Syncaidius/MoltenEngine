@@ -79,6 +79,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.build_dev_release.outputs.upload_url }}
-        asset_path: ./publish/android_dev_debug.zip
+        asset_path: ./android_dev_debug.zip
         asset_name: android_dev_debug.zip
         asset_content_type: application/zip
