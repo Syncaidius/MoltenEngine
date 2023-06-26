@@ -256,6 +256,9 @@ namespace Molten.Graphics.Vulkan
 
         protected override unsafe void OnUnmapResource(GraphicsResource resource, uint subresource)
         {
+            // TODO unmap isn't actually needed in certain circumstances. If the mapped memory will be re-populated every frame (e.g. uniform buffer)
+            //      we can permenantly leave the memory mapped via vkMapMemory().
+            // TODO optimize this accordingly to buffer type and usage.
             _vk.UnmapMemory(_device, (((ResourceHandleVK)resource.Handle).Memory));
         }
 

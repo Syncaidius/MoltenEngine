@@ -10,7 +10,9 @@ namespace Molten.Graphics.DX11
         byte* _constData;
 
         internal ConstantBufferDX11(DeviceDX11 device, ConstantBufferInfo info)
-            : base(device, GraphicsBufferType.Constant, GraphicsResourceFlags.NoShaderAccess | GraphicsResourceFlags.CpuWrite, GraphicsFormat.Unknown, 1, info.Size, null, 0)
+            : base(device, GraphicsBufferType.Constant, 
+                  GraphicsResourceFlags.NoShaderAccess | GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.Buffered, 
+                  GraphicsFormat.Unknown, 1, info.Size, null, 0)
         {
             _varLookup = new Dictionary<string, GraphicsConstantVariable>();
             _constData = (byte*)EngineUtil.Alloc(info.Size);
@@ -19,27 +21,9 @@ namespace Molten.Graphics.DX11
             BufferName = info.Name;
             Type = (D3DCBufferType)info.Type;
 
-            uint variableCount = (uint)info.Variables.Count;
-            Variables = new GraphicsConstantVariable[variableCount];
-
-            // Read all variables from the constant buffer
-            for (int c = 0; c < info.Variables.Count; c++)
-            {
-                ConstantBufferVariableInfo variable = info.Variables[c];
-                GraphicsConstantVariable sv = CreateConstantVariable(variable, variable.Name);
-
-                // Throw exception if the variable type is unsupported.
-                if (sv == null) // TODO remove this exception!
-                    throw new NotSupportedException("Shader pipeline does not support HLSL variables of type: " + variable.Type.Type + " -- " + variable.Type.Class);
-
-                sv.ByteOffset = variable.StartOffset;
-
-                if(variable.DefaultValue != null)
-                    sv.ValueFromPtr(variable.DefaultValue);
-
-                _varLookup.Add(sv.Name, sv);
-                Variables[c] = sv;
-            }
+            Variables = ConstantBufferInfo.BuildBufferVariables(this, info);
+            foreach (GraphicsConstantVariable v in Variables)
+                _varLookup.Add(v.Name, v);
 
             // Generate hash for comparing constant buffers.
             Desc.ByteWidth = info.Size;

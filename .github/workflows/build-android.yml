@@ -5,6 +5,8 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  workflow_dispatch:
+    branches: [ master ]
 
 jobs:
   build_dev_release:
@@ -27,6 +29,27 @@ jobs:
 
     - name: Build Debug
       run: dotnet build /p:Platform="x64" --configuration Android_Debug
+
+    - name: Publish Artifacts
+      run: dotnet publish --configuration Android_Debug --output ./publish
     
    # - name: Build Release
     #  run: dotnet build /p:Platform="x64" --configuration Android_Release
+
+    - name: Create Release
+      id: build_dev_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        release_name: Latest - Development
+        body: |
+          This is the latest development build.
+        draft: false
+        prerelease: false
+
+    - name: Upload Release artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: Release Artifacts
+        path: ./publish
