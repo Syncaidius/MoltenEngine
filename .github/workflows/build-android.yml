@@ -10,12 +10,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     env:
-     PLATFORM: 'x64'
-     PLATFORM_NAME: 'android'
-     CONFIG_NAME: 'Android_Debug'
-     DOTNET_INSTALL_DIR: './.dotnet-${{env.PLATFORM_NAME}}'
+     PLATFORM: x64
+     PLATFORM_NAME: android
+     CONFIG_NAME: Android_Debug
+     DOTNET_INSTALL_DIR: ./.dotnet-${{env.CONFIG_NAME}}
+     RELEASE_TAG_NAME: android_dev_debug
     
     steps:
     - name: Checkout Git Repo
@@ -33,10 +33,10 @@ jobs:
     #  run: dotnet test --no-build --verbosity normal
 
     - name: Build Debug
-      run: dotnet build /p:Platform="${{env.PLATFORM}}" --configuration ${{env.CONFIG_NAME}}
+      run: dotnet build /p:Platform="$PLATFORM" --configuration $CONFIG_NAME
 
     - name: Publish Artifacts
-      run: dotnet publish --configuration ${{env.CONFIG_NAME}} --output ./publish
+      run: dotnet publish --configuration $CONFIG_NAME --output ./publish
 
     - name: Zip build output
       run: zip -r android_dev_debug.zip ./publish
@@ -50,7 +50,7 @@ jobs:
             owner: context.repo.owner,
             repo: context.repo.repo,
             });
-            const releaseToDelete = releases.find(release => release.tag_name === 'android_dev_debug');
+            const releaseToDelete = releases.find(release => release.tag_name === '$RELEASE_TAG_NAME');
             if (releaseToDelete) {
               await github.repos.deleteRelease({
                 owner: context.repo.owner,
@@ -63,12 +63,12 @@ jobs:
             }
 
     - name: Create Release
-      id: build_dev_release
+      id: build_create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: android_dev_debug
+        tag_name: ${{env.RELEASE_TAG_NAME}}
         release_name: Latest - Development
         body: |
           This is the latest development build.
@@ -80,7 +80,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.build_dev_release.outputs.upload_url }}
+        upload_url: ${{ steps.build_create_release.outputs.upload_url }}
         asset_path: ./android_dev_debug.zip
         asset_name: android_dev_debug.zip
         asset_content_type: application/zip
