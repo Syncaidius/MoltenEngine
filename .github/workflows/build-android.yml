@@ -16,7 +16,9 @@ jobs:
      CONFIG_NAME: Android_Debug
      RELEASE_TAG_NAME: android_dev_debug
      RELEASE_NAME: Latest - Android Dev
-     DOT_NET_VERSION: 7.0.x
+  
+     DOTNET_INSTALL_DIR: ./dotnet
+     DOTNET_VERSION: 7.0.x
 
      # If true, the dotnet workload of WORKLOAD_NAME will be installed.
      INSTALL_WORKLOAD: true
@@ -30,7 +32,7 @@ jobs:
       id: cache-dotnet
       uses: actions/cache@v3
       with:
-        path: ./dotnet-${{ env.CONFIG_NAME }}
+        path: ${{ env.DOTNET_INSTALL_DIR }}
         key: ${{ runner.os }}-dotnet-${{ env.CONFIG_NAME }}
         restore-keys: ${{ runner.os }}-dotnet-${{ env.CONFIG_NAME }}
     
@@ -38,11 +40,20 @@ jobs:
       if: ${{ steps.cache-dotnet.outputs.cache-hit != 'true' }}
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: ${{ env.DOT_NET_VERSION }}
+        dotnet-version: ${{ env.DOTNET_VERSION }}
         
     - name: Install [${{ env.WORKLOAD_NAME }}] workload
       if: ${{ env.INSTALL_WORKLOAD == 'true' }}
       run: dotnet workload install ${{ env.WORKLOAD_NAME }}
+
+    - name: Check default dotnet version
+      run: dotnet --version
+
+    - name: Set installed/cached dotnet path [${{ env.DOTNET_INSTALL_DIR }}]
+      run: echo "${{ env.DOTNET_INSTALL_DIR }}" | Out-File -FilePath $ENV:GITHUB_PATH -Encoding utf8 -Append
+
+    - name: Check installed/cached dotnet version
+      run: dotnet --version
       
     #- name: Test
     #  run: dotnet test --no-build --verbosity normal
