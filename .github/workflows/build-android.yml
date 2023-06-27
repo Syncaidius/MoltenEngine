@@ -12,13 +12,15 @@ jobs:
     runs-on: ubuntu-latest
     env:
      PLATFORM: x64
-     PLATFORM_NAME: android
      CONFIG_NAME: Android_Debug
+     RUN_TESTS: false
+
      RELEASE_TAG_NAME: android_dev_debug
      RELEASE_NAME: Latest - Android Dev
   
      DOTNET_INSTALL_DIR: ./dotnet
      DOTNET_VERSION: 7.0.x
+     RESTORE_DEPENDENCIES: false
 
      # If true, the dotnet workload of WORKLOAD_NAME will be installed.
      INSTALL_WORKLOAD: true
@@ -42,15 +44,17 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Install [${{ env.WORKLOAD_NAME }}] workload
-      if: ${{ env.INSTALL_WORKLOAD == 'true' && steps.cache-dotnet.outputs.cache-hit != 'true' }}
-      run: dotnet workload install ${{ env.WORKLOAD_NAME }}
-
     - name: Restore dependencies
+      if: ${{ env.RESTORE_DEPENDENCIES == 'true' }}
       run: dotnet restore
+
+    - name: Install [${{ env.WORKLOAD_NAME }}] workload
+      if: ${{ env.INSTALL_WORKLOAD == 'true' }}
+      run: dotnet workload install ${{ env.WORKLOAD_NAME }}
       
-    #- name: Test
-    #  run: dotnet test --no-build --verbosity normal
+    - name: Test
+      if: ${{ env.RUN_TESTS == 'true' }}
+      run: dotnet test --no-build --verbosity normal
 
     - name: Build Debug
       run: dotnet build /p:Platform="$PLATFORM" --configuration $CONFIG_NAME
