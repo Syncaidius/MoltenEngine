@@ -20,7 +20,6 @@ jobs:
   
      DOTNET_INSTALL_DIR: ./dotnet
      DOTNET_VERSION: 7.0.x
-     RESTORE_DEPENDENCIES: true
 
      # If true, the dotnet workload of WORKLOAD_NAME will be installed.
      INSTALL_WORKLOAD: false
@@ -43,10 +42,6 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
-
-    - name: Restore dependencies
-      if: ${{ env.RESTORE_DEPENDENCIES == 'true' }}
-      run: dotnet restore
 
     - name: Install [${{ env.WORKLOAD_NAME }}] workload
       if: ${{ env.INSTALL_WORKLOAD == 'true' }}
