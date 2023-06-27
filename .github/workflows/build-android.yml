@@ -14,7 +14,7 @@ jobs:
      PLATFORM: x64
      PLATFORM_NAME: android
      CONFIG_NAME: Android_Debug
-     DOTNET_INSTALL_DIR: ./.dotnet-${{env.CONFIG_NAME}}
+     DOTNET_INSTALL_DIR: ./.dotnet-${{ env.CONFIG_NAME }}
      RELEASE_TAG_NAME: android_dev_debug
     
     steps:
