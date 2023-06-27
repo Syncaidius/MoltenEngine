@@ -93,7 +93,10 @@ jobs:
         body: |
           This is the ${{ env. CONFIG_NAME }} build.
         draft: false
-        prerelease: false
+        prerelease: true
+
+    - name: Check Upload URL
+      run: echo "${{ steps.build_create_release.outputs.upload_url }}"
 
     - name: Upload Release Asset [${{ env.RELEASE_TAG_NAME }}.zip]
       uses: actions/upload-release-asset@v1
