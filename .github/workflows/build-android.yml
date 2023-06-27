@@ -31,10 +31,10 @@ jobs:
     - name: Cache NuGet Packages
       uses: actions/cache@v3
       with:
-        path: ./.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}-${{ env.CONFIG_NAME }} #hash of project files
         restore-keys: |
-          ${{ runner.os }}-nuget-
+          ${{ runner.os }}-nuget-${{ env.CONFIG_NAME }}
 
     - name: Cache dotnet
       id: cache-dotnet
