@@ -1,27 +1,110 @@
-name: Build Windows
+name: Windows [Debug]
 
 on:
   push:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  workflow_dispatch:
 
 jobs:
   build:
+    runs-on: ubuntu-latest
+    env:
+     PLATFORM: x64
+     CONFIG_NAME: Debug
+     RUN_TESTS: false
 
-    runs-on: windows-latest
+     RELEASE_TAG_NAME: windows_dev_debug
+     RELEASE_NAME: Latest - Windows Dev
+  
+     DOTNET_INSTALL_DIR: ./dotnet
+     DOTNET_VERSION: 7.0.x
+     RESTORE_DEPENDENCIES: true
 
+     # If true, the dotnet workload of WORKLOAD_NAME will be installed.
+     INSTALL_WORKLOAD: false
+     WORKLOAD_NAME: none
+    
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v2
+    - name: Checkout Git Repo
+      uses: actions/checkout@v3
+
+    - name: Cache dotnet
+      id: cache-dotnet
+      uses: actions/cache@v3
       with:
-        dotnet-version: 7.0.x
+        path: ${{ env.DOTNET_INSTALL_DIR }}
+        key: ${{ runner.os }}-dotnet-${{ env.DOTNET_VERSION }}-${{ env.CONFIG_NAME }}
+        restore-keys: ${{ runner.os }}-dotnet-${{ env.DOTNET_VERSION }}-${{ env.CONFIG_NAME }}
+    
+    - name: Install .NET [${{ env.DOTNET_VERSION }}]
+      if: ${{ steps.cache-dotnet.outputs.cache-hit != 'true' }}
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
     - name: Restore dependencies
+      if: ${{ env.RESTORE_DEPENDENCIES == 'true' }}
       run: dotnet restore
-    - name: Build Debug
-      run: dotnet build /p:Platform="x64" --configuration Debug --no-restore
-    - name: Build Release
-      run: dotnet build /p:Platform="x64" --configuration Release --no-restore
-    - name: Test
+
+    - name: Install [${{ env.WORKLOAD_NAME }}] workload
+      if: ${{ env.INSTALL_WORKLOAD == 'true' }}
+      run: dotnet workload install ${{ env.WORKLOAD_NAME }}
+      
+    - name: Run Tests
+      if: ${{ env.RUN_TESTS == 'true' }}
       run: dotnet test --no-build --verbosity normal
+
+    - name: Build Debug
+      run: dotnet build /p:Platform="$PLATFORM" --configuration $CONFIG_NAME
+
+    - name: Publish Artifacts
+      run: dotnet publish --configuration $CONFIG_NAME --output ./publish_$CONFIG_NAME
+
+    - name: Zip build output
+      run: zip -r $RELEASE_TAG_NAME.zip ./publish_$CONFIG_NAME
+
+    - name: Delete old dev release
+      uses: actions/github-script@v4
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const { data: releases } = await github.repos.listReleases({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            });
+            const releaseToDelete = releases.find(release => release.tag_name === '${{ env.RELEASE_TAG_NAME }}');
+            if (releaseToDelete) {
+              await github.repos.deleteRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: releaseToDelete.id,
+              });
+              console.log(`Deleted release ${releaseToDelete.tag_name}`);
+            } else {
+              console.log('Release not found');
+            }
+
+    - name: Create Release [${{ env.RELEASE_NAME }}]
+      id: build_create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{env.RELEASE_TAG_NAME}}
+        release_name: ${{ env.RELEASE_NAME }}
+        body: |
+          This is the ${{ env. CONFIG_NAME }} build.
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Asset [${{ env.RELEASE_TAG_NAME }}.zip]
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.build_create_release.outputs.upload_url }}
+        asset_path: ./${{ env.RELEASE_TAG_NAME }}.zip
+        asset_name: ${{ env.RELEASE_TAG_NAME }}.zip
+        asset_content_type: application/zip
