@@ -52,7 +52,7 @@ jobs:
       if: ${{ env.INSTALL_WORKLOAD == 'true' }}
       run: dotnet workload install ${{ env.WORKLOAD_NAME }}
       
-    - name: Test
+    - name: Run Tests
       if: ${{ env.RUN_TESTS == 'true' }}
       run: dotnet test --no-build --verbosity normal
 
