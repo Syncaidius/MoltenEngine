@@ -56,7 +56,7 @@ jobs:
       run: dotnet build /p:Platform="$PLATFORM" /p:EnableWindowsTargeting=$TARGET_WINDOWS --configuration $CONFIG_NAME 
 
     - name: Publish Artifacts
-      run: dotnet publish --configuration $CONFIG_NAME --output ./publish_$CONFIG_NAME
+      run: dotnet publish /p:EnableWindowsTargeting=$TARGET_WINDOWS --configuration $CONFIG_NAME --output ./publish_$CONFIG_NAME
 
     - name: Zip build output
       run: zip -r $RELEASE_TAG_NAME.zip ./publish_$CONFIG_NAME
