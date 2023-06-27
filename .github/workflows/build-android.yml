@@ -50,9 +50,12 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
         
-    - name: Install [${{ env.WORKLOAD_NAME }}] workload
-      if: ${{ env.INSTALL_WORKLOAD == 'true' && steps.cache-dotnet.outputs.cache-hit != 'true' }}
-      run: dotnet workload install ${{ env.WORKLOAD_NAME }}
+    - name: Restore workloads
+      run: dotnet workload restore /p:Platform="$PLATFORM" --configuration $CONFIG_NAME
+
+    #- name: Install [${{ env.WORKLOAD_NAME }}] workload
+    #  if: ${{ env.INSTALL_WORKLOAD == 'true' && steps.cache-dotnet.outputs.cache-hit != 'true' }}
+    #  run: dotnet workload install ${{ env.WORKLOAD_NAME }}
       
     #- name: Test
     #  run: dotnet test --no-build --verbosity normal
