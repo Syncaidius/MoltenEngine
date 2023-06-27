@@ -6,11 +6,16 @@ on:
   pull_request:
     branches: [ master ]
   workflow_dispatch:
-    branches: [ master ]
 
 jobs:
-  build_dev_release:
+  build:
     runs-on: ubuntu-latest
+
+    env:
+     PLATFORM: 'x64'
+     PLATFORM_NAME: 'android'
+     CONFIG_NAME: 'Android_Debug'
+     DOTNET_INSTALL_DIR: './.dotnet-${{env.PLATFORM_NAME}}'
     
     steps:
     - name: Checkout Git Repo
@@ -28,13 +33,10 @@ jobs:
     #  run: dotnet test --no-build --verbosity normal
 
     - name: Build Debug
-      run: dotnet build /p:Platform="x64" --configuration Android_Debug
+      run: dotnet build /p:Platform="${{env.PLATFORM}}" --configuration ${{env.CONFIG_NAME}}
 
     - name: Publish Artifacts
-      run: dotnet publish --configuration Android_Debug --output ./publish
-    
-    #- name: Build Release
-    #  run: dotnet build /p:Platform="x64" --configuration Android_Release
+      run: dotnet publish --configuration ${{env.CONFIG_NAME}} --output ./publish
 
     - name: Zip build output
       run: zip -r android_dev_debug.zip ./publish
