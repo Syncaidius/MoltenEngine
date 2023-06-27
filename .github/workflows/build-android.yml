@@ -19,6 +19,7 @@ jobs:
      RELEASE_NAME: Latest - Android Dev
   
      DOTNET_INSTALL_DIR: ./dotnet
+     TARGET_WINDOWS: false
      DOTNET_VERSION: 7.0.x
 
      # If true, the dotnet workload of WORKLOAD_NAME will be installed.
@@ -52,7 +53,7 @@ jobs:
       run: dotnet test --no-build --verbosity normal
 
     - name: Build Debug
-      run: dotnet build /p:Platform="$PLATFORM" --configuration $CONFIG_NAME
+      run: dotnet build /p:Platform="$PLATFORM" /p:EnableWindowsTargeting=$TARGET_WINDOWS --configuration $CONFIG_NAME 
 
     - name: Publish Artifacts
       run: dotnet publish --configuration $CONFIG_NAME --output ./publish_$CONFIG_NAME
