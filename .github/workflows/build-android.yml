@@ -51,7 +51,7 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
         
     - name: Restore workloads
-      run: dotnet workload restore /p:Platform="$PLATFORM" --configuration $CONFIG_NAME
+      run: dotnet workload restore SOLUTION /p:Platform="$PLATFORM" --configuration $CONFIG_NAME
 
     #- name: Install [${{ env.WORKLOAD_NAME }}] workload
     #  if: ${{ env.INSTALL_WORKLOAD == 'true' && steps.cache-dotnet.outputs.cache-hit != 'true' }}
