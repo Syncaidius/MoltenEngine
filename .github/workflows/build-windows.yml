@@ -95,9 +95,6 @@ jobs:
         draft: false
         prerelease: true
 
-    - name: Check Upload URL
-      run: echo "${{ steps.build_create_release.outputs.upload_url }}"
-
     - name: Upload Release Asset [${{ env.RELEASE_TAG_NAME }}.zip]
       uses: actions/upload-release-asset@v1
       env:

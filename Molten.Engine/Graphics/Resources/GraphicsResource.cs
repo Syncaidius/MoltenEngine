@@ -54,26 +54,24 @@ namespace Molten.Graphics
             }
 
             LastUsedFrameID = Device.Renderer.Profiler.FrameID;
-            LastUsedFrameBufferIndex = fbIndex;
 
             // Check if the last known frame buffer size has changed.
-            unsafe
+            if (Handle == null)
             {
-                if (Handle == null)
-                {
-                    OnCreateResource(fbSize, fbIndex, Device.Renderer.Profiler.FrameID);
-                }
-                else if (KnownFrameBufferSize != fbSize)
-                {
-                    OnFrameBufferResized(KnownFrameBufferSize, fbSize, fbIndex, Device.Renderer.Profiler.FrameID);
-                    LastFrameResizedID = Device.Renderer.Profiler.FrameID;
-                }
-
-                KnownFrameBufferSize = fbSize;
+                OnCreateResource(fbSize, fbIndex, Device.Renderer.Profiler.FrameID);
+            }
+            else if (KnownFrameBufferSize != fbSize)
+            {
+                OnFrameBufferResized(KnownFrameBufferSize, fbSize, fbIndex, Device.Renderer.Profiler.FrameID);
+                LastFrameResizedID = Device.Renderer.Profiler.FrameID;
+            }
+            else if (LastUsedFrameBufferIndex != fbIndex)
+            {
+                OnNextFrame(queue, Device.FrameBufferIndex, Device.Renderer.Profiler.FrameID);
+                LastUsedFrameBufferIndex = fbIndex;
             }
 
-            if (LastUsedFrameBufferIndex != fbIndex)
-                OnNextFrame(queue, Device.FrameBufferIndex, Device.Renderer.Profiler.FrameID);
+            KnownFrameBufferSize = fbSize;
         }
 
         /// <summary>
