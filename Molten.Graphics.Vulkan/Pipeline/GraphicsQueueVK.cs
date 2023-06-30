@@ -244,8 +244,11 @@ namespace Molten.Graphics.Vulkan
 
         protected override unsafe ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, GraphicsMapType mapType)
         {
-            ResourceMap map = new ResourceMap(null, resource.SizeInBytes, resource.SizeInBytes); // TODO Calculate correct RowPitch value when mapping textures
             ResourceHandleVK handle = (ResourceHandleVK)resource.Handle;
+            if (mapType == GraphicsMapType.Discard)
+                handle.Discard();
+
+            ResourceMap map = new ResourceMap(null, resource.SizeInBytes, resource.SizeInBytes); // TODO Calculate correct RowPitch value when mapping textures
             Result r = _vk.MapMemory(_device, handle.Memory, 0, resource.SizeInBytes, 0, &map.Ptr);
 
             if (!r.Check(_device))

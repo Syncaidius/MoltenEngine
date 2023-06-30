@@ -239,7 +239,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the ID of the frame that the current <see cref="GraphicsResource"/> was applied.
         /// </summary>
-        protected uint LastUsedFrameID { get; private set; }
+        protected ulong LastUsedFrameID { get; private set; }
 
         /// <summary>
         /// Gets the last frame buffer index that the current <see cref="GraphicsResource"/> was applied.

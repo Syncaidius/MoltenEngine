@@ -1,12 +1,13 @@
 ﻿using Silk.NET.Vulkan;
+using Buffer = Silk.NET.Vulkan.Buffer;
 
 namespace Molten.Graphics.Vulkan
 {
     public unsafe class BufferVK : GraphicsBuffer
     {
         BufferCreateInfo _desc;
-        BufferHandleVK[] _handles;
-        BufferHandleVK _curHandle;
+        ResourceHandleVK<Buffer, BufferHandleVK>[] _handles;
+        ResourceHandleVK<Buffer, BufferHandleVK> _curHandle;
         MemoryAllocationVK _memory;
 
         internal BufferVK(GraphicsDevice device,
@@ -15,20 +16,28 @@ namespace Molten.Graphics.Vulkan
             uint stride,
             uint numElements) :
             base(device, stride, numElements, flags, type)
-        { }
+        {
+            ResourceFormat = GraphicsFormat.Unknown;
+        }
+
+        protected override void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
+        {
+            throw new NotImplementedException();
+        }
 
         protected override void OnNextFrame(GraphicsQueue queue, uint frameBufferIndex, ulong frameID)
         {
             _curHandle = _handles[frameBufferIndex];
+            _curHandle.UpdateUsage(frameID);
         }
 
         protected override void OnCreateResource(uint frameBufferSize, uint frameBufferIndex, ulong frameID)
         {
             DeviceVK device = Device as DeviceVK;
-            _handles = new BufferHandleVK[frameBufferSize];
+            _handles = new ResourceHandleVK<Buffer, BufferHandleVK>[frameBufferSize];
 
             for (uint i = 0; i < frameBufferSize; i++)
-                _handles[i] = new BufferHandleVK(this);
+                _handles[i] = new ResourceHandleVK<Buffer, BufferHandleVK>(this, true, CreateBuffer);
 
             _curHandle = _handles[frameBufferIndex];
             BufferUsageFlags usageFlags = BufferUsageFlags.None;
@@ -81,26 +90,24 @@ namespace Molten.Graphics.Vulkan
             _desc.PQueueFamilyIndices = EngineUtil.AllocArray<uint>(1);
             _desc.PQueueFamilyIndices[0] = (Device.Queue as GraphicsQueueVK).Index;
             _desc.QueueFamilyIndexCount = 1;
+
+            foreach(ResourceHandleVK<Buffer, BufferHandleVK> handle in _handles)
+                CreateBuffer(device, handle.SubHandle, memFlags);
         }
 
-        protected override void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
+        private void CreateBuffer(DeviceVK device, BufferHandleVK subHandle, MemoryPropertyFlags memFlags)
         {
-            throw new NotImplementedException();
-        }
-
-        private void CreateBuffer(DeviceVK device, BufferHandleVK handle, MemoryPropertyFlags memFlags)
-        {
-            Result r = device.VK.CreateBuffer(device, in _desc, null, handle.NativePtr);
+            Result r = device.VK.CreateBuffer(device, in _desc, null, subHandle.Ptr);
             if (!r.Check(device))
                 return;
 
             MemoryRequirements memRequirements;
-            device.VK.GetBufferMemoryRequirements(device, *handle.NativePtr, &memRequirements);
-            handle.Memory = device.Memory.Allocate(ref memRequirements, memFlags);
-            if (handle.Memory == null)
+            device.VK.GetBufferMemoryRequirements(device, *subHandle.Ptr, &memRequirements);
+            subHandle.Memory = device.Memory.Allocate(ref memRequirements, memFlags);
+            if (subHandle.Memory == null)
                 throw new GraphicsResourceException(this, "Unable to allocate memory for buffer.");
 
-            r = device.VK.BindBufferMemory(device, *handle.NativePtr, handle.Memory, 0);
+            r = device.VK.BindBufferMemory(device, *subHandle.Ptr, subHandle.Memory, 0);
             if (!r.Check(device))
                 return;
         }
@@ -110,8 +117,8 @@ namespace Molten.Graphics.Vulkan
             DeviceVK device = Device as DeviceVK;
             for (int i = 0; i < KnownFrameBufferSize; i++)
             {
-                if (_handles[i].ViewPtr != null)
-                    device.VK.DestroyBufferView(device, *_handles[i].ViewPtr, null);
+                if (_handles[i].SubHandle.ViewPtr != null)
+                    device.VK.DestroyBufferView(device, *_handles[i].SubHandle.ViewPtr, null);
 
                 if (_handles[i].NativePtr != null)
                     device.VK.DestroyBuffer(device, *_handles[i].NativePtr, null);
@@ -120,12 +127,12 @@ namespace Molten.Graphics.Vulkan
             }
         }
 
-        public override unsafe BufferHandleVK Handle => _curHandle;
+        public override unsafe ResourceHandleVK<Buffer, BufferHandleVK> Handle => _curHandle;
 
         public override unsafe void* UAV => throw new NotImplementedException();
 
-        public override unsafe void* SRV => _curHandle.ViewPtr;
+        public override unsafe void* SRV => _curHandle.SubHandle.ViewPtr;
 
-        public override GraphicsFormat ResourceFormat { get => throw new NotImplementedException(); protected set => throw new NotImplementedException(); }
+        public override GraphicsFormat ResourceFormat { get; protected set; }
     }
 }

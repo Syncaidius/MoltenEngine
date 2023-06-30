@@ -3,29 +3,28 @@ using Buffer = Silk.NET.Vulkan.Buffer;
 
 namespace Molten.Graphics.Vulkan
 {
-    public unsafe class BufferHandleVK : ResourceHandleVK<Buffer>
+    public unsafe class BufferHandleVK : ResourceSubHandleVK<Buffer>
     {
-        internal BufferView* _ptrView;
+        BufferView* _ptrView;
 
-        internal BufferHandleVK(GraphicsResource resource) :
-            base(resource, true)
+        internal override void Initialize(DeviceVK device, bool isAllocated)
         {
+            base.Initialize(device, isAllocated);
             _ptrView = EngineUtil.Alloc<BufferView>();
         }
 
-        /// <inheritdoc/>
-        public override void Dispose()
+        internal override void Release(DeviceVK device, bool isAllocated)
         {
             if (_ptrView != null)
             {
-                Device.VK.DestroyBufferView(Device, *_ptrView, null);
+                device.VK.DestroyBufferView(device, *_ptrView, null);
                 EngineUtil.Free(ref _ptrView);
             }
 
             if (Ptr != null)
-                Device.VK.DestroyBuffer(Device, *NativePtr, null);
+                device.VK.DestroyBuffer(device, *Ptr, null);
 
-            base.Dispose();
+            base.Release(device, isAllocated);
         }
 
         public BufferView* ViewPtr => _ptrView;

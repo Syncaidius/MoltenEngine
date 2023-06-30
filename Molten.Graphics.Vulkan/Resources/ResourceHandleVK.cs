@@ -1,4 +1,6 @@
 ﻿using Silk.NET.Vulkan;
+using System.Reflection.Metadata;
+using Buffer = Silk.NET.Vulkan.Buffer;
 
 namespace Molten.Graphics.Vulkan
 {
@@ -6,12 +8,18 @@ namespace Molten.Graphics.Vulkan
     {
         bool _disposed;
 
-        internal MemoryAllocationVK Memory;
-
-        internal ResourceHandleVK(GraphicsResource resource) : base(resource)
+        protected ResourceHandleVK(GraphicsResource resource) : base(resource)
         {
             Device = resource.Device as DeviceVK;
         }
+
+        internal abstract void UpdateUsage(ulong frameID);
+
+        /// <summary>
+        /// Discards the current sub-handle and switches to another one that is not in-use by the GPU. 
+        /// If no existing sub-handles are available, a new one will be created.
+        /// </summary>
+        internal abstract void Discard();
 
         /// <summary>
         /// Disposes of the current Vulkan resource handle and frees <see cref="Memory"/> if assigned.
@@ -22,39 +30,112 @@ namespace Molten.Graphics.Vulkan
                 throw new ObjectDisposedException("The current ResourceHandleVK is already disposed.");
 
             _disposed = true;
-            Memory?.Free();
+            OnDispose();
         }
 
+        protected abstract void OnDispose();
+
         internal DeviceVK Device { get; }
+
+        /// <summary>
+        /// Gets the current memory allocation. This may automatically update or change if the resource is discarded via <see cref="Discard"/>.
+        /// </summary>
+        internal abstract MemoryAllocationVK Memory { get; }
     }
 
-    public unsafe abstract class ResourceHandleVK<T> : ResourceHandleVK
+    public unsafe class ResourceHandleVK<T, SH> : ResourceHandleVK
         where T : unmanaged
+        where SH : ResourceSubHandleVK<T>, new()
     {
-        T* _ptr;
+        internal delegate void DiscardCallback(DeviceVK device, SH subHandle, MemoryPropertyFlags memFlags);
 
-        protected ResourceHandleVK(GraphicsResource resource, bool allocate) :
+        DiscardCallback _discardCallback;
+        List<SH> _subHandles;
+        int _subIndex;
+        SH _sub;
+
+        internal ResourceHandleVK(GraphicsResource resource, bool allocate, DiscardCallback discardCallback) :
             base(resource)
         {
+            _subHandles = new List<SH>();
+            _discardCallback = discardCallback;
             IsAllocated = allocate;
 
             if (IsAllocated)
-                _ptr = EngineUtil.Alloc<T>();
+                AllocateSubHandle();
+        }
+
+        private void AllocateSubHandle()
+        {
+            _sub = new SH();
+            _subHandles.Add(_sub);
+        }
+
+        internal override sealed void UpdateUsage(ulong frameID)
+        {
+            if (_subHandles[0].LastFrameUsed != frameID)
+                _subIndex = 0;
+
+            _sub.LastFrameUsed = frameID;
+            ulong maxAge = Device.FrameBufferSize * 16;
+
+            // Check all of the other sub-handles and see if any of them are unused.
+            for(int i = _subHandles.Count - 1; i >= 0; i--)
+            {
+                SH sub = _subHandles[i];
+                ulong age = frameID - sub.LastFrameUsed;
+
+                // If the sub-handle exceeds the maximum age, release and remove it.
+                if (age > maxAge)
+                {
+                    sub.Release(Device, IsAllocated);
+                    _subHandles.RemoveAt(i);
+                }
+            }
+        }
+
+        internal override sealed void Discard()
+        {
+            _subIndex++;
+
+            // Do we need a new sub-handle or can we use an existing one?
+            if (_subIndex == _subHandles.Count)
+            {
+                AllocateSubHandle();
+                _discardCallback(Device, _sub, _subHandles[0].Memory.Flags);
+            }
+            else
+            {
+                _sub = _subHandles[_subIndex];
+            }
+
+            _sub.LastFrameUsed = Device.Renderer.Profiler.FrameID;
         }
 
         /// <inheritdoc/>
-        public override void Dispose()
+        protected override void OnDispose()
         {
-            base.Dispose();
-
             if (IsAllocated)
-                EngineUtil.Free(ref _ptr);
+            {
+                foreach (ResourceSubHandleVK<T> sub in _subHandles)
+                    sub.Release(Device, IsAllocated);
+            }
         }
 
-        public override unsafe void* Ptr => _ptr;
+        public override unsafe sealed void* Ptr => _sub.Ptr;
 
-        internal ref T* NativePtr => ref _ptr;
+        internal ref T* NativePtr => ref _sub.Ptr;
 
         protected bool IsAllocated { get; set; }
+
+        internal override sealed MemoryAllocationVK Memory => _sub.Memory;
+
+        internal SH SubHandle => _sub;
+
+        /// <summary>
+        /// Gets the number of sub-handles currently assigned to the <see cref="ResourceHandleVK{SH}"/>.
+        /// <para>This only increases if <see cref="Discard"/> is called and there are insufficient existing sub-handles.</para>
+        /// </summary>
+        internal int SubHandleCount => _subHandles.Count;
     }
 }

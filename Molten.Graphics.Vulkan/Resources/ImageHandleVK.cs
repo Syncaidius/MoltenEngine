@@ -2,29 +2,28 @@
 
 namespace Molten.Graphics.Vulkan
 {
-    public unsafe class ImageHandleVK : ResourceHandleVK<Image>
+    public unsafe class ImageHandleVK : ResourceSubHandleVK<Image>
     {
         internal ImageView* _ptrView;
 
-        internal ImageHandleVK(GraphicsResource resource, bool allocateImagePtr) :
-            base(resource, allocateImagePtr)
+        internal override void Initialize(DeviceVK device, bool isAllocated)
         {
+            base.Initialize(device, isAllocated);
             _ptrView = EngineUtil.Alloc<ImageView>();
         }
 
-        /// <inheritdoc/>
-        public override void Dispose()
+        internal override void Release(DeviceVK device, bool isAllocated)
         {
             if (_ptrView != null)
             {
-                Device.VK.DestroyImageView(Device, *_ptrView, null);
+                device.VK.DestroyImageView(device, *_ptrView, null);
                 EngineUtil.Free(ref _ptrView);
             }
 
-            if (Ptr != null && !IsAllocated)
-                Device.VK.DestroyImage(Device, *NativePtr, null);
+            if (Ptr != null && !isAllocated)
+                device.VK.DestroyImage(device, *Ptr, null);
 
-            base.Dispose();
+            base.Release(device, isAllocated);
         }
 
         public ref ImageView* ViewPtr => ref _ptrView;

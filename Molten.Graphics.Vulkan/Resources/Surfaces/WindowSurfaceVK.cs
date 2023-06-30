@@ -43,7 +43,7 @@ namespace Molten.Graphics.Vulkan
             FrameFence = device.GetFence();
         }
 
-        protected override void CreateImages(DeviceVK device, ImageHandleVK[] handles, MemoryPropertyFlags memFlags, ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo)
+        protected override void CreateImages(DeviceVK device, ResourceHandleVK<Image, ImageHandleVK>[] handles, MemoryPropertyFlags memFlags, ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo)
         { 
             RendererVK renderer = Device.Renderer as RendererVK;
 
@@ -95,7 +95,7 @@ namespace Molten.Graphics.Vulkan
             {
                 handles[i].NativePtr[0] = scImages[i];
                 viewInfo.Image = scImages[i];
-                r = renderer.VK.CreateImageView(device, viewInfo, null, handles[i].ViewPtr);
+                r = renderer.VK.CreateImageView(device, viewInfo, null, handles[i].SubHandle.ViewPtr);
                 if (!r.Check(device, () => $"Failed to create image view for back-buffer image {i}"))
                     break;
             }

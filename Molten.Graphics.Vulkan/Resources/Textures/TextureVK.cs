@@ -1,4 +1,5 @@
-﻿using Silk.NET.Vulkan;
+﻿using Silk.NET.Direct3D.Compilers;
+using Silk.NET.Vulkan;
 
 namespace Molten.Graphics.Vulkan
 {
@@ -7,8 +8,8 @@ namespace Molten.Graphics.Vulkan
         ImageCreateInfo _info;
         ImageViewCreateInfo _viewInfo;
 
-        ImageHandleVK[] _handles;
-        ImageHandleVK _curHandle;
+        ResourceHandleVK<Image, ImageHandleVK>[] _handles;
+        ResourceHandleVK<Image, ImageHandleVK> _curHandle;
 
         protected TextureVK(GraphicsDevice device, GraphicsTextureType type, TextureDimensions dimensions,
             AntiAliasLevel aaLevel, MSAAQuality sampleQuality, GraphicsFormat format, GraphicsResourceFlags flags, bool allowMipMapGen, string name) :
@@ -34,13 +35,13 @@ namespace Molten.Graphics.Vulkan
 
             DeviceVK device = Device as DeviceVK;
 
-            _handles = new ImageHandleVK[frameBufferSize];
+            _handles = new ResourceHandleVK<Image, ImageHandleVK>[frameBufferSize];
 
             // Don't allocate memory for Image handles if the texture is a swapchain surface.
             // Swapchain image creation/disposal is controlled entirely by the underlying Vulkan implementation.
             bool allocImagePtr = !(this is ISwapChainSurface);
             for (uint i = 0; i < frameBufferSize; i++)
-                _handles[i] = new ImageHandleVK(this, allocImagePtr);
+                _handles[i] = new ResourceHandleVK<Image, ImageHandleVK>(this, allocImagePtr, CreateImage);
 
             _curHandle = _handles[frameBufferIndex];
 
@@ -122,30 +123,33 @@ namespace Molten.Graphics.Vulkan
             CreateImages(device, _handles, memFlags, ref _info, ref _viewInfo);
         }
 
-        protected virtual void CreateImages(DeviceVK device, ImageHandleVK[] handles, MemoryPropertyFlags memFlags, ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo)
+        protected virtual void CreateImages(DeviceVK device, ResourceHandleVK<Image, ImageHandleVK>[] handles, MemoryPropertyFlags memFlags, ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo)
         {
             for (int i = 0; i < handles.Length; i++)
-            {
-                ImageHandleVK handle = handles[i];
-                Result r = device.VK.CreateImage(device, _info, null, handle.NativePtr);
-                if (!r.Check(device, () => "Failed to create image resource"))
-                    return;
-                MemoryRequirements memRequirements;
-                device.VK.GetImageMemoryRequirements(device, *handle.NativePtr, &memRequirements);
-                handle.Memory = device.Memory.Allocate(ref memRequirements, memFlags);
+                CreateImage(device, handles[i].SubHandle, memFlags);
+        }
 
-                if (handle.Memory == null)
-                    throw new GraphicsResourceException(this, "Failed to allocate memory for image resource");
+        protected void CreateImage(DeviceVK device, ImageHandleVK subHandle, MemoryPropertyFlags memFlags)
+        {
+            Result r = device.VK.CreateImage(device, _info, null, subHandle.Ptr);
+            if (!r.Check(device, () => "Failed to create image resource"))
+                return;
 
-                _viewInfo.Image = *handle.NativePtr;
-                r = device.VK.BindImageMemory(device, *handle.NativePtr, handle.Memory, 0);
-                if (!r.Check(device, () => "Failed to bind image memory"))
-                    return;
+            MemoryRequirements memRequirements;
+            device.VK.GetImageMemoryRequirements(device, *subHandle.Ptr, &memRequirements);
+            subHandle.Memory = device.Memory.Allocate(ref memRequirements, memFlags);
 
-                r = device.VK.CreateImageView(device, _viewInfo, null, handle.ViewPtr);
-                if (!r.Check(device, () => "Failed to create image view"))
-                    return;
-            }
+            if (subHandle.Memory == null)
+                throw new GraphicsResourceException(this, "Failed to allocate memory for image resource");
+
+            _viewInfo.Image = *subHandle.Ptr;
+            r = device.VK.BindImageMemory(device, *subHandle.Ptr, subHandle.Memory, 0);
+            if (!r.Check(device, () => "Failed to bind image memory"))
+                return;
+
+            r = device.VK.CreateImageView(device, _viewInfo, null, subHandle.ViewPtr);
+            if (!r.Check(device, () => "Failed to create image view"))
+                return;
         }
 
         protected override void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
@@ -236,9 +240,9 @@ namespace Molten.Graphics.Vulkan
             _curHandle = null;
         }
 
-        public override ImageHandleVK Handle => _curHandle;
+        public override ResourceHandleVK<Image, ImageHandleVK> Handle => _curHandle;
 
-        public override unsafe void* SRV => Handle.ViewPtr;
+        public override unsafe void* SRV => Handle.SubHandle.ViewPtr;
 
         public override unsafe void* UAV => throw new NotImplementedException();
     }

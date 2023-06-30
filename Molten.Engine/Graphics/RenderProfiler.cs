@@ -175,7 +175,7 @@ namespace Molten.Graphics
         /// <summary>
         /// The total number of frames tracked during this 
         /// </summary>
-        public uint FrameID { get; private set; }
+        public ulong FrameID { get; private set; }
 
         /// <summary>
         /// Gets the profiling data for the current frame.
