@@ -18,6 +18,7 @@ namespace Molten.Graphics.Vulkan
             base(device, title, width, height, mipCount, flags, format, presentMode, name)
         {
             _title = title;
+            _visible = true;
         }
 
         protected unsafe override Result OnCreateSurface(RendererVK renderer, int width, int height, out VkNonDispatchableHandle result)
@@ -39,7 +40,10 @@ namespace Molten.Graphics.Vulkan
             fixed (VkNonDispatchableHandle* ptrResult = &result)
                 r = (Result)renderer.GLFW.CreateWindowSurface(instanceHandle, _window, null, ptrResult);
 
-            r.Check(renderer);
+            // Ensure window is visible.
+            if(r.Check(renderer))
+                renderer.GLFW.ShowWindow(_window);
+
             return r;
         }
 
