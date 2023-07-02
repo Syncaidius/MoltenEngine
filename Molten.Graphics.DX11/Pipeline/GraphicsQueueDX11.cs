@@ -368,7 +368,7 @@ namespace Molten.Graphics.DX11
                     {
                         if (State.Surfaces.BoundValues[i] != null)
                         {
-                            RenderSurfaceHandleDX11 rsHandle = State.Surfaces.BoundValues[i].Handle as RenderSurfaceHandleDX11;
+                            SurfaceHandleDX11 rsHandle = State.Surfaces.BoundValues[i].Handle as SurfaceHandleDX11;
                             _rtvs[i] = rsHandle.RTV.Ptr;
                         }
                         else

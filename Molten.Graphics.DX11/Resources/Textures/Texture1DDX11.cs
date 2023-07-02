@@ -7,7 +7,7 @@ namespace Molten.Graphics.DX11
     public unsafe class Texture1DDX11 : TextureDX11, ITexture1D
     {
         internal ID3D11Texture1D* NativeTexture;
-        Texture1DDesc _desc;
+        protected Texture1DDesc Desc;
 
         internal Texture1DDX11(
             GraphicsDevice device, 
@@ -24,7 +24,7 @@ namespace Molten.Graphics.DX11
             if (IsBlockCompressed)
                 throw new NotSupportedException("1D textures do not supports block-compressed formats.");
 
-            _desc = new Texture1DDesc()
+            Desc = new Texture1DDesc()
             {
                 Width = width,
                 MipLevels = mipCount,
@@ -43,8 +43,8 @@ namespace Molten.Graphics.DX11
             desc.ViewDimension = D3DSrvDimension.D3DSrvDimensionTexture1Darray;
             desc.Texture1DArray = new Tex1DArraySrv()
             {
-                ArraySize = _desc.ArraySize,
-                MipLevels = _desc.MipLevels,
+                ArraySize = Desc.ArraySize,
+                MipLevels = Desc.MipLevels,
                 MostDetailedMip = 0,
                 FirstArraySlice = 0,
             };
@@ -57,15 +57,15 @@ namespace Molten.Graphics.DX11
             desc.Buffer = new BufferUav()
             {
                 FirstElement = 0,
-                NumElements = _desc.Width * _desc.ArraySize,
+                NumElements = Desc.Width * Desc.ArraySize,
             };
         }
 
         protected override void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle, uint handleIndex)
         {
-            SubresourceData* subData = GetImmutableData(_desc.Usage);
+            SubresourceData* subData = GetImmutableData(Desc.Usage);
 
-            fixed(Texture1DDesc* pDesc = &_desc)
+            fixed(Texture1DDesc* pDesc = &Desc)
                 (Device as DeviceDX11).Ptr->CreateTexture1D(pDesc, subData, ref NativeTexture);
 
             handle.NativePtr = (ID3D11Resource*)NativeTexture;
@@ -73,10 +73,10 @@ namespace Molten.Graphics.DX11
 
         protected override void UpdateDescription(TextureDimensions dimensions, GraphicsFormat newFormat)
         {
-            _desc.Width = dimensions.Width;
-            _desc.ArraySize = dimensions.ArraySize;
-            _desc.MipLevels = dimensions.MipMapCount;
-            _desc.Format = newFormat.ToApi();
+            Desc.Width = dimensions.Width;
+            Desc.ArraySize = dimensions.ArraySize;
+            Desc.MipLevels = dimensions.MipMapCount;
+            Desc.Format = newFormat.ToApi();
         }
     }
 }

@@ -119,13 +119,19 @@
         /// </summary>
         AntiAliasLevel MultiSampleLevel { get; }
 
+        /// <summary>
+        /// Gets the MSAA sample quality level. This is only valid if <see cref="MultiSampleLevel"/> is higher than <see cref="AntiAliasLevel.None"/>.
+        /// </summary>
         MSAAQuality SampleQuality { get; }
 
         /// <summary>
-        /// Gets whether or not the texture is multisampled. This is true if <see cref="SampleCount"/> is greater than 1.
+        /// Gets whether or not the texture is multisampled. This is true if <see cref="MultiSampleLevel"/> is higher than <see cref="AntiAliasLevel.None"/>.
         /// </summary>
         bool IsMultisampled { get; }
 
+        /// <summary>
+        /// Gets the texture type.
+        /// </summary>
         GraphicsTextureType TextureType { get; }
 
         /// <summary>

@@ -3,25 +3,22 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics.DX11
 {
-    public unsafe class RenderSurface2DDX11 : Texture2DDX11, IRenderSurface2D
+    public unsafe class RenderSurface1DDX11 : Texture1DDX11, IRenderSurface1D
     {
         RTViewDX11[] _rtvs;
 
-        internal RenderSurface2DDX11(
+        internal RenderSurface1DDX11(
             GraphicsDevice device,
             uint width,
-            uint height,
             GraphicsResourceFlags flags = GraphicsResourceFlags.None,
             GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm,
             uint mipCount = 1,
             uint arraySize = 1,
-            AntiAliasLevel aaLevel = AntiAliasLevel.None,
-            MSAAQuality msaa = MSAAQuality.Default,
             bool allowMipMapGen = false, 
             string name = null)
-            : base(device, width, height, flags, format, mipCount, arraySize, aaLevel, msaa, allowMipMapGen, name)
+            : base(device, width, flags, format, mipCount, arraySize, allowMipMapGen, name)
         {
-            Viewport = new ViewportF(0, 0, width, height);
+            Viewport = new ViewportF(0, 0, width, 1);
             Name = $"Surface_{name ?? GetType().Name}";
         }
 
@@ -40,26 +37,13 @@ namespace Molten.Graphics.DX11
 
             SetRTVDescription(ref desc);
 
-            if (Desc.SampleDesc.Count > 1)
+            desc.ViewDimension = RtvDimension.Texture1Darray;
+            desc.Texture1DArray = new Tex1DArrayRtv()
             {
-                desc.ViewDimension = RtvDimension.Texture2Dmsarray;
-                desc.Texture2DMSArray = new Tex2DmsArrayRtv
-                {
-                    ArraySize = Desc.ArraySize,
-                    FirstArraySlice = 0,
-                };
-            }
-            else
-            {
-                desc.ViewDimension = RtvDimension.Texture2Darray;
-                desc.Texture2DArray = new Tex2DArrayRtv1()
-                {
-                    ArraySize = Desc.ArraySize,
-                    MipSlice = 0,
-                    FirstArraySlice = 0,
-                    PlaneSlice = 0,
-                };
-            }
+                ArraySize = Desc.ArraySize,
+                MipSlice = 0,
+                FirstArraySlice = 0,
+            };
 
             rsHandle.RTV.Create();
         }
@@ -87,7 +71,7 @@ namespace Molten.Graphics.DX11
 
         public void Clear(GraphicsPriority priority, Color color)
         {
-            QueueTask(priority, new Surface2DClearTask()
+            QueueTask(priority, new Surface1DClearTask()
             {
                 Color = color,
                 Surface = this,

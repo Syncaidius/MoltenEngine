@@ -93,7 +93,7 @@ namespace Molten
                         if (Settings.UseGuiControl)
                             _gameWindow = _engine.Renderer.Device.CreateControlSurface(Title, "MainControl");
                         else
-                            _gameWindow = _engine.Renderer.Device.CreateFormSurface(Title, "MainForm");
+                            _gameWindow = _engine.Renderer.Device.CreateFormSurface(Title, "MainForm", 800, 600);
 
                         _gameWindow.IsVisible = true;
                         _gameWindow.OnClose += _gameWindow_OnClose;

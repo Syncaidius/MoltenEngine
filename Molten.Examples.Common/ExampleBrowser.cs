@@ -247,7 +247,7 @@ namespace Molten.Examples
 
             if (_chkNativeWindow.IsChecked)
             {
-                binding.NativeWindow = Engine.Renderer.Device.CreateFormSurface(selected.Text, selected.Text.Replace(" ", ""));
+                binding.NativeWindow = Engine.Renderer.Device.CreateFormSurface(selected.Text, selected.Text.Replace(" ", ""), 800, 600);
 
                 HookWindow(binding.NativeWindow);
 

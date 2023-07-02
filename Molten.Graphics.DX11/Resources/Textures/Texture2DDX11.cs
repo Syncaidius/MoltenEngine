@@ -8,24 +8,6 @@ namespace Molten.Graphics.DX11
     {
         protected Texture2DDesc1 Desc;
 
-        /// <summary>Creates a new instance of <see cref="Texture2DDX11"/> and uses a provided texture for its description. Note: This does not copy the contents 
-        /// of the provided texture in to the new instance.</summary>
-        /// <param name="descTexture">The <see cref="Texture2DDX11"/> to use as a template configuration for a new <see cref="Texture2DDX11"/> instance.</param>
-        /// <param name="flags">A set of flags to override those of the provided template texture.</param>
-        internal Texture2DDX11(Texture2DDX11 descTexture, GraphicsResourceFlags flags)
-            : this(descTexture.Device,
-                  descTexture.Width,
-                  descTexture.Height,
-                  flags,
-                  descTexture.ResourceFormat,
-                  descTexture.MipMapCount,
-                  descTexture.ArraySize,
-                  descTexture.MultiSampleLevel,
-                  descTexture.SampleQuality,
-                  descTexture.IsMipMapGenAllowed,
-                  descTexture.Name)
-        { }
-
         internal Texture2DDX11(
             GraphicsDevice device,
             uint width,

@@ -1,8 +1,8 @@
 ﻿namespace Molten.Graphics.DX11
 {
-    internal struct SurfaceClearTask : IGraphicsResourceTask
+    internal struct Surface1DClearTask : IGraphicsResourceTask
     {
-        public RenderSurface2DDX11 Surface;
+        public RenderSurface1DDX11 Surface;
 
         public Color Color;
 

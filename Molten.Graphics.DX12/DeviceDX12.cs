@@ -69,7 +69,8 @@ namespace Molten.Graphics.DX12
             throw new NotImplementedException();
         }
 
-        protected override INativeSurface OnCreateFormSurface(string formTitle, string formName, uint mipCount = 1)
+        protected override INativeSurface OnCreateFormSurface(string formTitle, string formName, uint width, uint height,
+            GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm, uint mipCount = 1)
         {
             throw new NotImplementedException();
         }

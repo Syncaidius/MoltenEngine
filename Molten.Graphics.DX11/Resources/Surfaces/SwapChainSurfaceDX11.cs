@@ -59,7 +59,7 @@ namespace Molten.Graphics.DX11
             WinHResult hr = NativeSwapChain->GetBuffer(handleIndex, &riid, &ppSurface);
             DxgiError err = hr.ToEnum<DxgiError>();
 
-            RenderSurfaceHandleDX11 rsHandle = handle as RenderSurfaceHandleDX11;
+            SurfaceHandleDX11 rsHandle = handle as SurfaceHandleDX11;
             rsHandle.RTV.Desc.Format = DxgiFormat;
 
             if (err == DxgiError.Ok)
