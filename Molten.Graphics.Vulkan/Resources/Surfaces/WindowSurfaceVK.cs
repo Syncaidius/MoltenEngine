@@ -8,6 +8,7 @@ namespace Molten.Graphics.Vulkan
     {
         WindowHandle* _window;
         string _title;
+        bool _visible;
 
         internal unsafe WindowSurfaceVK(DeviceVK device, string title, uint width, uint height, uint mipCount,
             GraphicsResourceFlags flags = GraphicsResourceFlags.None,
@@ -82,6 +83,21 @@ namespace Molten.Graphics.Vulkan
             }
         }
 
-        public override bool IsVisible { get; set; }
+        public override bool IsVisible
+        {
+            get => _visible;
+            set
+            {
+                if(_visible != value)
+                {
+                    _visible = value;
+                    RendererVK renderer = Device.Renderer as RendererVK;
+                    if (_visible)
+                        renderer.GLFW.ShowWindow(_window);
+                    else
+                        renderer.GLFW.HideWindow(_window);
+                }
+            }
+        }
     }
 }
