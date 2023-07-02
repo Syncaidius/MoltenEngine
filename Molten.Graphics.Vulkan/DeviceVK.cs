@@ -37,7 +37,7 @@ namespace Molten.Graphics.Vulkan
         Stack<FenceVK> _freeFences;
         List<FenceVK> _fences;
 
-        List<WindowSurfaceVK> _presentSurfaces;
+        List<SwapChainSurfaceVK> _presentSurfaces;
 
         KhrSwapchain _extSwapChain;
         /// <summary>
@@ -51,7 +51,7 @@ namespace Molten.Graphics.Vulkan
         {
             _freeFences = new Stack<FenceVK>();
             _fences = new List<FenceVK>();
-            _presentSurfaces = new List<WindowSurfaceVK>();
+            _presentSurfaces = new List<SwapChainSurfaceVK>();
 
             _renderer = renderer;
             _vkInstance = instance;
@@ -238,7 +238,7 @@ namespace Molten.Graphics.Vulkan
         /// </summary>
         /// <param name="surface"></param>
         /// <returns></returns>
-        internal GraphicsQueueVK FindPresentQueue(WindowSurfaceVK surface)
+        internal GraphicsQueueVK FindPresentQueue(SwapChainSurfaceVK surface)
         {
             KhrSurface extSurface = _renderer.GetInstanceExtension<KhrSurface>();
             Bool32 presentSupported = false;
@@ -322,7 +322,7 @@ namespace Molten.Graphics.Vulkan
                 if (!surface.IsEnabled)
                     return;
 
-                WindowSurfaceVK vkSurface = surface as WindowSurfaceVK;
+                SwapChainSurfaceVK vkSurface = surface as SwapChainSurfaceVK;
                 if (vkSurface.SurfaceHandle.Handle == 0)
                     vkSurface.Prepare(Queue, 0);
 
@@ -352,7 +352,7 @@ namespace Molten.Graphics.Vulkan
 
             for (int i = 0; i < _swapChainCount; i++)
             {
-                WindowSurfaceVK vkSurface = _presentSurfaces[i];
+                SwapChainSurfaceVK vkSurface = _presentSurfaces[i];
 
                 r = _extSwapChain.AcquireNextImage(this, vkSurface.SwapchainHandle, ulong.MaxValue, dummySemaphore, vkSurface.FrameFence, &_pPresentIndices[i]);
                 if (!r.Check(this, () => "Failed to acquire next swapchain image"))
@@ -383,9 +383,10 @@ namespace Molten.Graphics.Vulkan
                 semaphores[i] = vkCmd.Semaphore.Ptr;
             }
 
+            // Prepare presentable surfaces
             for (int i = 0; i < _swapChainCount; i++)
             {
-                WindowSurfaceVK vkSurface = _presentSurfaces[i];
+                SwapChainSurfaceVK vkSurface = _presentSurfaces[i];
                 vkSurface.Prepare(Queue, _pPresentIndices[i]);
                 _pSwapChains[i] = vkSurface.SwapchainHandle;
             }
