@@ -4,33 +4,25 @@ using System.Linq;
 
 namespace Molten.Graphics.Vulkan
 {
-    public class RenderSurface2DVK : Texture2DVK, IRenderSurface2D
+    public class RenderSurface1DVK : Texture1DVK, IRenderSurface1D
     {
         /// <summary>
         /// Creates a new instance of <see cref="RenderSurface2DVK"/>.
         /// </summary>
         /// <param name="device">The parent <see cref="GraphicsDevice"/>.</param>
-        /// <param name="dimensions">The image dimensions.</param>
-        /// <param name="aaLevel">The anti-aliasing/multi-sample level.</param>
-        /// <param name="sampleQuality">The sample quality.</param>
+        /// <param name="arraySize">The number of array slices (textures) within the texture array.</param>
+        /// <param name="mipCount">The number of mip-map levels.</param>
+        /// <param name="width">The width of the 1D texture.</param>
         /// <param name="format">The graphics format.</param>
         /// <param name="flags">Resource flags.</param>
         /// <param name="allowMipMapGen">If true, the generation of mip-maps will be allowed on the current <see cref="RenderSurface2DVK"/> instance.</param>
         /// <param name="name"></param>
-        public RenderSurface2DVK(GraphicsDevice device, uint width, uint height, uint mipCount, uint arraySize, 
-            AntiAliasLevel aaLevel, MSAAQuality sampleQuality, 
+        public RenderSurface1DVK(GraphicsDevice device, uint width, uint mipCount, uint arraySize, 
             GraphicsFormat format, GraphicsResourceFlags flags, 
             bool allowMipMapGen, string name) : 
-            base(device, GraphicsTextureType.Surface2D, 
-                width, height, mipCount, arraySize,
-                aaLevel, 
-                sampleQuality, 
-                format, 
-                flags, 
-                allowMipMapGen, 
-                name)
+            base(device, width, mipCount, arraySize, format, flags, allowMipMapGen, name, true)
         {
-            Viewport = new ViewportF(0, 0, Width, Height);
+            Viewport = new ViewportF(0, 0, Width, 1);
         }
 
         /// <inheritdoc/>

@@ -4,12 +4,12 @@ namespace Molten.Graphics.Vulkan
 {
     public class Texture2DVK : TextureVK, ITexture2D
     {
-        internal Texture2DVK(GraphicsDevice device, GraphicsTextureType type, TextureDimensions dimensions,
+        internal Texture2DVK(GraphicsDevice device, GraphicsTextureType type, uint width, uint height, uint mipCount, uint arraySize,
             AntiAliasLevel aaLevel, MSAAQuality sampleQuality, GraphicsFormat format,
             GraphicsResourceFlags flags, bool allowMipMapGen, string name) :
             base(device, 
                 type, 
-                dimensions, 
+                new TextureDimensions(width, height, 1 , mipCount, arraySize), 
                 aaLevel, 
                 sampleQuality, 
                 format, flags, 

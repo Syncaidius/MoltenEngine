@@ -6,9 +6,14 @@ namespace Molten.Graphics.Vulkan
 {
     internal class DepthSurfaceVK : Texture2DVK, IDepthStencilSurface
     {
-        internal DepthSurfaceVK(GraphicsDevice device, TextureDimensions dimensions, AntiAliasLevel aaLevel, 
-            MSAAQuality sampleQuality, DepthFormat format, GraphicsResourceFlags flags, bool allowMipMapGen, string name) : 
-            base(device, GraphicsTextureType.Surface2D, dimensions, aaLevel, sampleQuality, format.ToGraphicsFormat(), flags, allowMipMapGen, name)
+        internal DepthSurfaceVK(GraphicsDevice device, uint width, uint height, uint mipCount, uint arraySize,
+            AntiAliasLevel aaLevel, 
+            MSAAQuality sampleQuality, 
+            DepthFormat format, 
+            GraphicsResourceFlags flags, 
+            bool allowMipMapGen, 
+            string name) : 
+            base(device, GraphicsTextureType.Surface2D, width, height, mipCount, arraySize, aaLevel, sampleQuality, format.ToGraphicsFormat(), flags, allowMipMapGen, name)
         {
             DepthFormat = format;
             Viewport = new ViewportF(0, 0, Width, Height);

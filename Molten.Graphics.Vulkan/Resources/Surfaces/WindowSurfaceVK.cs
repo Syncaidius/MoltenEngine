@@ -31,12 +31,12 @@ namespace Molten.Graphics.Vulkan
         KhrSwapchain _extSwapChain;
         KhrSurface _extSurface;
 
-        internal unsafe WindowSurfaceVK(DeviceVK device, string title, TextureDimensions dimensions,
+        internal unsafe WindowSurfaceVK(DeviceVK device, string title, uint width, uint height, uint mipCount,
             GraphicsResourceFlags flags = GraphicsResourceFlags.None,
             GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm,
             PresentModeKHR presentMode = PresentModeKHR.ImmediateKhr,
             string name = null) : 
-            base(device, dimensions, AntiAliasLevel.None, MSAAQuality.Default, format, flags, false, name)
+            base(device, width, height, 1, 1, AntiAliasLevel.None, MSAAQuality.Default, format, flags, false, name)
         {
             _title = title;
             _mode = presentMode;

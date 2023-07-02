@@ -441,8 +441,7 @@ namespace Molten.Graphics.Vulkan
             GraphicsResourceFlags flags = GraphicsResourceFlags.None | GraphicsResourceFlags.GpuWrite, 
             uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, bool allowMipMapGen = false, string name = null)
         {
-            TextureDimensions dim = new TextureDimensions(width, height, 1, mipCount, arraySize);
-            return new DepthSurfaceVK(this, dim, aaLevel, MSAAQuality.Default, format, flags, allowMipMapGen, name);
+            return new DepthSurfaceVK(this, width, height, mipCount, arraySize, aaLevel, MSAAQuality.Default, format, flags, allowMipMapGen, name);
         }
 
         public override IRenderSurface2D CreateSurface(uint width, uint height, 
@@ -451,13 +450,18 @@ namespace Molten.Graphics.Vulkan
             uint mipCount = 1, uint arraySize = 1, 
             AntiAliasLevel aaLevel = AntiAliasLevel.None, bool allowMipMapGen = false, string name = null)
         {
-            TextureDimensions dim = new TextureDimensions(width, height, 1, mipCount, arraySize);
-            return new RenderSurface2DVK(this, dim, aaLevel, MSAAQuality.Default, format, flags, allowMipMapGen, name);
+            return new RenderSurface2DVK(this, width, height, mipCount, arraySize, aaLevel, MSAAQuality.Default, format, flags, allowMipMapGen, name);
         }
 
-        protected override INativeSurface OnCreateFormSurface(string formTitle, string formName, uint mipCount = 1)
+        protected override INativeSurface OnCreateFormSurface(
+            string formTitle, 
+            string formName,
+            uint width,
+            uint height, 
+            GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm, 
+            uint mipCount = 1)
         {
-            return new WindowSurfaceVK(_renderer.NativeDevice, formTitle, new TextureDimensions(1024, 800));
+            return new WindowSurfaceVK(_renderer.NativeDevice, formTitle, width, height, mipCount, GraphicsResourceFlags.None, format);
         }
 
         public override void ResolveTexture(GraphicsTexture source, GraphicsTexture destination)
@@ -475,21 +479,38 @@ namespace Molten.Graphics.Vulkan
             return new Texture1DVK(this, width, mipCount, arraySize, format, flags, allowMipMapGen, name);
         }
 
-        public override ITexture2D CreateTexture2D(uint width, uint height, uint mipCount, uint arraySize, GraphicsFormat format, GraphicsResourceFlags flags, AntiAliasLevel aaLevel = AntiAliasLevel.None, MSAAQuality aaQuality = MSAAQuality.Default, bool allowMipMapGen = false, string name = null)
+        public override ITexture2D CreateTexture2D(uint width, uint height, uint mipCount, uint arraySize, 
+            GraphicsFormat format, 
+            GraphicsResourceFlags flags, 
+            AntiAliasLevel aaLevel = AntiAliasLevel.None, 
+            MSAAQuality aaQuality = MSAAQuality.Default,
+            bool allowMipMapGen = false, 
+            string name = null)
         {
-            TextureDimensions dim = new TextureDimensions(width, height, 1, mipCount, arraySize);
-            return new Texture2DVK(this, GraphicsTextureType.Texture2D, dim, aaLevel, aaQuality, format, flags, allowMipMapGen, name);
+            return new Texture2DVK(this, GraphicsTextureType.Texture2D, width, height, mipCount, arraySize, 
+                aaLevel, aaQuality, 
+                format, 
+                flags, 
+                allowMipMapGen, 
+                name);
         }
 
-        public override ITexture3D CreateTexture3D(uint width, uint height, uint depth, uint mipCount, GraphicsFormat format, GraphicsResourceFlags flags, bool allowMipMapGen = false, string name = null)
+        public override ITexture3D CreateTexture3D(uint width, uint height, uint depth, uint mipCount, 
+            GraphicsFormat format, 
+            GraphicsResourceFlags flags, 
+            bool allowMipMapGen = false, 
+            string name = null)
         {
             TextureDimensions dim = new TextureDimensions(width, height, depth, mipCount, 1);
             return new Texture3DVK(this, dim, format, flags, allowMipMapGen, name);
         }
-        public override ITextureCube CreateTextureCube(uint width, uint height, uint mipCount, GraphicsFormat format, uint cubeCount = 1, uint arraySize = 1, GraphicsResourceFlags flags = GraphicsResourceFlags.None, bool allowMipMapGen = false, string name = null)
+        public override ITextureCube CreateTextureCube(uint width, uint height, uint mipCount, 
+            GraphicsFormat format, uint cubeCount = 1, uint arraySize = 1, 
+            GraphicsResourceFlags flags = GraphicsResourceFlags.None, 
+            bool allowMipMapGen = false, 
+            string name = null)
         {
-            TextureDimensions dim = new TextureDimensions(width, height, 1, mipCount, arraySize);
-            return new TextureCubeVK(this, cubeCount, dim, format, flags, allowMipMapGen, name);
+            return new TextureCubeVK(this, width, height, mipCount, 1, cubeCount, format, flags, allowMipMapGen, name);
         }
 
         public static implicit operator PhysicalDevice(DeviceVK device)
