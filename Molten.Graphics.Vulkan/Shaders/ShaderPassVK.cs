@@ -5,7 +5,10 @@ namespace Molten.Graphics.Vulkan
 {
     internal unsafe class ShaderPassVK : HlslPass
     {
-        static readonly ShaderType[] _stageOrder = new ShaderType[] {
+        /// <summary>
+        /// A list of all shader stages in the order they are expected by Vulkan and Molten.
+        /// </summary>
+        internal static readonly ShaderType[] ShaderTypes = new ShaderType[] {
             ShaderType.Vertex,
             ShaderType.Hull,
             ShaderType.Domain,
@@ -14,7 +17,7 @@ namespace Molten.Graphics.Vulkan
             ShaderType.Compute
         };
 
-        static readonly Dictionary<ShaderType, ShaderStageFlags> _stageTypeLookup = new Dictionary<ShaderType, ShaderStageFlags>()
+        internal static readonly Dictionary<ShaderType, ShaderStageFlags> ShaderStageLookup = new Dictionary<ShaderType, ShaderStageFlags>()
         {
             [ShaderType.Vertex] = ShaderStageFlags.VertexBit,
             [ShaderType.Hull] = ShaderStageFlags.TessellationControlBit,
@@ -71,7 +74,7 @@ namespace Molten.Graphics.Vulkan
             _info.StageCount = 0;
 
             // Iterate over and add pass compositions in the order Vulkan expects.
-            foreach (ShaderType type in _stageOrder)
+            foreach (ShaderType type in ShaderTypes)
             {
                 ShaderComposition c = this[type];
                 if (c == null)
@@ -80,16 +83,16 @@ namespace Molten.Graphics.Vulkan
                 ref PipelineShaderStageCreateInfo stageDesc = ref _info.PStages[_info.StageCount++];
                 stageDesc.SType = StructureType.PipelineShaderStageCreateInfo;
                 stageDesc.PName = (byte*)SilkMarshal.StringToPtr(c.EntryPoint, NativeStringEncoding.UTF8);
-                stageDesc.Stage = _stageTypeLookup[type];
+                stageDesc.Stage = ShaderStageLookup[type];
                 stageDesc.Module = *(ShaderModule*)c.PtrShader;
                 stageDesc.Flags = PipelineShaderStageCreateFlags.None;
                 stageDesc.PNext = null;
             }
 
             _info.PMultisampleState = null;                         // TODO initialize
-            _info.Layout = new PipelineLayout();                    // TODO initialize
+            _info.Layout = new PipelineLayout();                    // TODO initialize - DescriptorLayoutVK goes in here
             _info.BasePipelineIndex = 0;                            // TODO initialize
-            _info.BasePipelineHandle = new Pipeline();              // TODO initialize
+            _info.BasePipelineHandle = new Pipeline();              // TODO initialize or use derivative piplines. Implement pipeline inheritance.
             _info.PTessellationState = null;                        // TODO initialize
             _info.PVertexInputState = null;                         // TODO initialize
             _info.PViewportState = null;                            // Ignored. Set in dynamic state.
@@ -101,18 +104,38 @@ namespace Molten.Graphics.Vulkan
             _info.PDepthStencilState = _depthState.Desc;
             _info.PDynamicState = _dynamicState.Desc;
             _info.PInputAssemblyState = _inputState.Desc;
+
+            // Create pipeline.
+            fixed(GraphicsPipelineCreateInfo* pResult = &_info)
+            {
+                fixed(Pipeline* ptrPipeline = &_pipeline)
+                    device.VK.CreateGraphicsPipelines(device, new PipelineCache(), 1, _info, null, ptrPipeline);
+            }
         }
 
         protected override void OnGraphicsRelease()
         {
+            DeviceVK device = Device as DeviceVK;
+
             // Release indirect memory allocations for pipleine shader stages
-            for(uint i = 0; i < _info.StageCount; i++)
+            for (uint i = 0; i < _info.StageCount; i++)
             {
                 ref PipelineShaderStageCreateInfo stageDesc = ref _info.PStages[i];
                 SilkMarshal.FreeString((nint)stageDesc.PName);
             }
 
             EngineUtil.Free(ref _info.PStages);
+
+            if(_pipeline.Handle != 0)
+            {             
+                device.VK.DestroyPipeline(device, _pipeline, null);
+                _pipeline = new Pipeline();
+            }
+        }
+
+        public static implicit operator Pipeline(ShaderPassVK pass)
+        {
+            return pass._pipeline;
         }
     }
 }

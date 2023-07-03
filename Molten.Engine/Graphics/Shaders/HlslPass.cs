@@ -116,6 +116,10 @@ namespace Molten.Graphics
             }
         }
 
+        /// <summary>
+        /// Gets the number of compositions in the current <see cref="HlslPass"/>. 
+        /// Each composition represents a shader pipeline stage. For example, vertex, geometry or fragment/pixel stages.
+        /// </summary>
         public int CompositionCount => _compositions.Count;
 
         /// <summary>
@@ -140,6 +144,9 @@ namespace Molten.Graphics
         /// </value>
         public bool IsEnabled { get; set; }
 
+        /// <summary>
+        /// Gets the parent <see cref="HlslShader"/> that the current <see cref="HlslPass"/> belongs to.
+        /// </summary>
         public HlslShader Parent { get; }
 
         /// <summary>
@@ -147,6 +154,9 @@ namespace Molten.Graphics
         /// </summary>
         public bool IsCompute { get; internal set; }
 
+        /// <summary>
+        /// Gets the compute group sizes for the current <see cref="HlslPass"/>. This has no effect if <see cref="IsCompute"/> is false.
+        /// </summary>
         public Vector3UI ComputeGroups { get; private set; }
     }
 }

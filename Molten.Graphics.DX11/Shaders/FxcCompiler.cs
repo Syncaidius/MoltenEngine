@@ -310,7 +310,7 @@ namespace Molten.Graphics.DX11
                         break;
 
                     case ShaderInputType.Structured:
-                        ShaderResourceVariable bVar = GetVariableResource<ShaderResourceVariable<BufferDX11>>(context, shader, bindInfo);
+                        ShaderResourceVariable bVar = GetVariableResource<ShaderResourceVariable<GraphicsBuffer>>(context, shader, bindInfo);
                         if (bindPoint >= shader.Resources.Length)
                             EngineUtil.ArrayResize(ref shader.Resources, bindPoint + 1);
 
