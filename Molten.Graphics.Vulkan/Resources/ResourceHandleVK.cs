@@ -68,6 +68,7 @@ namespace Molten.Graphics.Vulkan
         private void AllocateSubHandle()
         {
             _sub = new SH();
+            _sub.Initialize(Device, IsAllocated);
             _subHandles.Add(_sub);
         }
 
