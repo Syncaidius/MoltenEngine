@@ -8,7 +8,7 @@ namespace Molten.Graphics.Vulkan
     internal unsafe class DescriptorSetLayoutVK : GraphicsObject
     {
         DescriptorSetLayoutBinding* _ptrBindings;
-        DescriptorSetLayout _layout;
+        DescriptorSetLayout _handle;
 
         public DescriptorSetLayoutVK(DeviceVK device, ShaderPassVK pass) : 
             base(device)
@@ -44,7 +44,7 @@ namespace Molten.Graphics.Vulkan
             };
 
             Result r = Result.Success;
-            fixed (DescriptorSetLayout* ptrLayout = &_layout)
+            fixed (DescriptorSetLayout* ptrLayout = &_handle)
                 r = device.VK.CreateDescriptorSetLayout(device, layoutInfo, null, ptrLayout);
 
             if (r != Result.Success)
@@ -95,14 +95,17 @@ namespace Molten.Graphics.Vulkan
 
         protected override void OnGraphicsRelease()
         {
-            DeviceVK device = Device as DeviceVK;
 
-            if(_layout.Handle != 0)
-                device.VK.DestroyDescriptorSetLayout(device, _layout, null);
+            if (_handle.Handle != 0)
+            {
+                DeviceVK device = Device as DeviceVK;
+                device.VK.DestroyDescriptorSetLayout(device, _handle, null);
+                _handle = new DescriptorSetLayout();
+            }
 
             EngineUtil.Free(ref _ptrBindings);
         }
 
-        public DescriptorSetLayout Handle => _layout;
+        public DescriptorSetLayout Handle => _handle;
     }
 }

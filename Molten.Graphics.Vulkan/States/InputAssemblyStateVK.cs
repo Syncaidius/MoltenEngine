@@ -9,7 +9,7 @@ namespace Molten.Graphics.Vulkan
     {
         internal StructKey<PipelineInputAssemblyStateCreateInfo> Desc { get; }
 
-        public unsafe InputAssemblyStateVK(GraphicsDevice device, ref ShaderPassParameters parameters) : 
+        public unsafe InputAssemblyStateVK(GraphicsDevice device, ref ShaderPassParameters parameters) :
             base(device)
         {
             Desc = new StructKey<PipelineInputAssemblyStateCreateInfo>();

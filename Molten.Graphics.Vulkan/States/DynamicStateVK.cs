@@ -7,12 +7,12 @@ namespace Molten.Graphics.Vulkan
         internal StructKey<PipelineDynamicStateCreateInfo> Desc { get; }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="device"></param>
         /// <param name="parameters"></param>
         /// <param name="states">A list of state values to say which parts of a piepline state will be dynamic.</param>
-        public DynamicStateVK(GraphicsDevice device, ref ShaderPassParameters parameters, DynamicState[] states) : 
+        public DynamicStateVK(GraphicsDevice device, ref ShaderPassParameters parameters, DynamicState[] states) :
             base(device)
         {
             Desc = new StructKey<PipelineDynamicStateCreateInfo>();
@@ -23,7 +23,7 @@ namespace Molten.Graphics.Vulkan
             desc.PNext = null;
 
             uint numBytes = sizeof(DynamicState) * desc.DynamicStateCount;
-            fixed(DynamicState* ptr = &states[0])
+            fixed (DynamicState* ptr = &states[0])
                 System.Buffer.MemoryCopy(&ptr, desc.PDynamicStates, numBytes, numBytes);
         }
 

@@ -34,6 +34,8 @@ namespace Molten.Graphics.Vulkan
         RasterizerStateVK _rasterizerState;
         DynamicStateVK _dynamicState;
         InputAssemblyStateVK _inputState;
+        DescriptorSetLayoutVK _descriptorLayout;
+        PipelineLayoutVK _pipelineLayout;
 
         internal ShaderPassVK(HlslShader material, string name = null) : 
             base(material, name)
@@ -89,14 +91,16 @@ namespace Molten.Graphics.Vulkan
                 stageDesc.PNext = null;
             }
 
+            _descriptorLayout = new DescriptorSetLayoutVK(device, this);
+            _pipelineLayout = new PipelineLayoutVK(device, _descriptorLayout);
+
             _info.PMultisampleState = null;                         // TODO initialize
-            _info.Layout = new PipelineLayout();                    // TODO initialize - DescriptorLayoutVK goes in here
             _info.BasePipelineIndex = 0;                            // TODO initialize
-            _info.BasePipelineHandle = new Pipeline();              // TODO initialize or use derivative piplines. Implement pipeline inheritance.
+            _info.BasePipelineHandle = new Pipeline();              // TODO initialize 
             _info.PTessellationState = null;                        // TODO initialize
             _info.PVertexInputState = null;                         // TODO initialize
             _info.PViewportState = null;                            // Ignored. Set in dynamic state.
-            _info.RenderPass = new RenderPass();                    // TODO initialize
+            _info.RenderPass = new RenderPass();                    // TODO initialize - Requires derivative pipeline implementation
             _info.Subpass = 0;                                      // TODO initialize
 
             _info.PColorBlendState = _blendState.Desc;
@@ -104,9 +108,17 @@ namespace Molten.Graphics.Vulkan
             _info.PDepthStencilState = _depthState.Desc;
             _info.PDynamicState = _dynamicState.Desc;
             _info.PInputAssemblyState = _inputState.Desc;
+            _info.Layout = _pipelineLayout.Handle;
+
+            /* TODO Implement derivative pipeline support:
+             *   - ShaderPass will provide a base PassPipelineVK instance
+             *   - GraphicsDevice will store PassPipelineVK instances by ShaderPassVK and render surface count + type
+             *   - GraphicsQueue.ApplyRenderState() or ApplyComputeState() must check the pipeline cache for a matching pipelines based on: 
+             *      - Bound render surfaces
+             */
 
             // Create pipeline.
-            fixed(GraphicsPipelineCreateInfo* pResult = &_info)
+            fixed (GraphicsPipelineCreateInfo* pResult = &_info)
             {
                 fixed(Pipeline* ptrPipeline = &_pipeline)
                     device.VK.CreateGraphicsPipelines(device, new PipelineCache(), 1, _info, null, ptrPipeline);
@@ -125,6 +137,9 @@ namespace Molten.Graphics.Vulkan
             }
 
             EngineUtil.Free(ref _info.PStages);
+
+            _pipelineLayout.Dispose();
+            _descriptorLayout.Dispose();
 
             if(_pipeline.Handle != 0)
             {             

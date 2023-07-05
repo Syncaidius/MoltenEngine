@@ -4,10 +4,10 @@ using Silk.NET.Maths;
 
 namespace Molten.Graphics.DX11
 {
-    /// <summary>Interop between SharpDX DX11 and engine types.</summary>
+    /// <summary>Interop between Silk.NET DX11 and Molten types.</summary>
     public static class SilkMathExtensions
     {
-        /// <summary>Converts a comparison mode to a SharpDX.Direct3D11.Comparison.</summary>
+        /// <summary>Converts a Molten <see cref="ComparisonMode"/> to a Direct3D11 <see cref="ComparisonFunc"/>.</summary>
         /// <param name="val">The value to convert.</param>
         /// <returns></returns>
         public static ComparisonFunc ToApi(this ComparisonMode val)
@@ -70,7 +70,7 @@ namespace Molten.Graphics.DX11
             return new Silk.NET.Direct3D11.Viewport(r.X, r.Y, r.Width, r.Height, r.MinDepth, r.MaxDepth);
         }
 
-        /// <summary>Converts a comparison mode to a SharpDX.Direct3D11.Comparison.</summary>
+        /// <summary>Converts a Direct3D11 <see cref="ComparisonFunc"/> to a Molten <see cref="ComparisonMode"/>.</summary>
         /// <param name="val">The value to convert.</param>
         /// <returns></returns>
         public static ComparisonMode FromApi(this ComparisonFunc val)

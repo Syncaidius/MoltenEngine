@@ -23,7 +23,7 @@ namespace Molten.Graphics.Vulkan
             raDesc.FrontFace = parameters.IsFrontCounterClockwise ? FrontFace.CounterClockwise : FrontFace.Clockwise;
             raDesc.RasterizerDiscardEnable = parameters.RasterizerDiscardEnabled;
             raDesc.LineWidth = parameters.LineWidth;
-            raDesc.Flags = 0; // Reserved for use in future Vulkan versions.  
+            raDesc.Flags = 0; // Reserved for use in future Vulkan versions.
         }
 
         protected override void OnGraphicsRelease()
