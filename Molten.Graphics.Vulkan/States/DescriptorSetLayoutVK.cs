@@ -55,11 +55,11 @@ namespace Molten.Graphics.Vulkan
         {
             ShaderStageFlags flags = ShaderStageFlags.None;
 
-            foreach(ShaderType type in ShaderPassVK.ShaderTypes)
+            foreach(ShaderType type in PipelineStateVK.ShaderTypes)
             {
                 ShaderComposition comp = pass[type];
                 if (comp != null && comp.ResourceIds.Contains(slotID))
-                    flags |= ShaderPassVK.ShaderStageLookup[type];
+                    flags |= PipelineStateVK.ShaderStageLookup[type];
             }
 
             return flags;
