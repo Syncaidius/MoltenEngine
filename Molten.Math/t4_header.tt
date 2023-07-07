@@ -472,7 +472,7 @@ public class TypeGenerator
     /// the default value of the other TypeDefs can be retrieved via the otherDefault callback, to be used for population.
     public void GenerateCasts(Func<TypeDef, string> otherDefault = null, string[] argNames = null, int indent = 2)
     {
-        argNames = argNames ?? _curDef.FieldNames;
+        argNames ??= _curDef.FieldNames;
 
         foreach(TypeDef other in _def.Types)
         {

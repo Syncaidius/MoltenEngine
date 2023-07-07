@@ -418,7 +418,7 @@ namespace Molten.Graphics
         {
             HashSet<string> dependencies = new HashSet<string>();
             Match m = regex.Match(source.SourceCode);
-            assembly = assembly ?? _defaultIncludeAssembly;
+            assembly ??= _defaultIncludeAssembly;
 
             while (m.Success)
             {

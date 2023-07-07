@@ -18,7 +18,7 @@ namespace Molten
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            existingValue = existingValue ?? Activator.CreateInstance(objectType);
+            existingValue ??= Activator.CreateInstance(objectType);
 
             JToken obj = JToken.Load(reader);
             Type settingType = objectType.GenericTypeArguments[0];

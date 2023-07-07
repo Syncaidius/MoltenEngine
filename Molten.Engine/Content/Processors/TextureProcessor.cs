@@ -76,7 +76,7 @@ namespace Molten.Content
 
                 TextureData data = partHandle.Get<TextureData>();
 
-                finalData = finalData ?? new TextureData(data.Width, data.Height, data.Depth, data.MipMapLevels, arraySize)
+                finalData ??= new TextureData(data.Width, data.Height, data.Depth, data.MipMapLevels, arraySize)
                 {
                     Format = data.Format,
                     IsCompressed = data.IsCompressed,

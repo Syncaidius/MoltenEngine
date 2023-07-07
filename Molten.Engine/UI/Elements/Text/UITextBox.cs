@@ -784,7 +784,7 @@ namespace Molten.UI
             get => _parser;
             set
             {
-                value = value ?? Engine.Settings.UI.DefaultTextParser;
+                value ??= Engine.Settings.UI.DefaultTextParser;
                 if (_parser != value)
                 {
                     _parser = value;

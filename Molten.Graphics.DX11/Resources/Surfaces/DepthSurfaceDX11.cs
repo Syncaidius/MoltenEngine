@@ -43,7 +43,7 @@ namespace Molten.Graphics.DX11
             _depthDesc = new DepthStencilViewDesc();
             _depthDesc.Format = format.ToDepthViewFormat().ToApi();
 
-            name = name ?? "surface";
+            name ??= "surface";
             Name = $"depth_{name}";
 
             if (MultiSampleLevel >= AntiAliasLevel.X2)

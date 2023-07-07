@@ -117,7 +117,7 @@ namespace Molten.Graphics
 
         protected void UnsupportedTagMessage(ShaderCompilerContext context, string parentName, string nodeName)
         {
-            parentName = parentName ?? "root";
+            parentName ??= "root";
             context.AddWarning($"Ignoring unsupported '{parentName}' tag '{nodeName}'.");
         }
 

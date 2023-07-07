@@ -22,7 +22,7 @@
         public unsafe bool Process(GraphicsQueue cmd, GraphicsResource resource)
         {
             GraphicsBuffer buffer = resource as GraphicsBuffer;
-            DestArray = DestArray ?? new T[Count];
+            DestArray ??= new T[Count];
 
             // Now set the structured variable's data
             using (GraphicsStream stream = cmd.MapResource(buffer, 0, ByteOffset, MapType))

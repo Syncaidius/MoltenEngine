@@ -35,7 +35,7 @@
                 }
             }
 
-            Q.EdgeList = Q.EdgeList ?? new List<Edge>();
+            Q.EdgeList ??= new List<Edge>();
             Q.EdgeList.Add(this);
         }
     }

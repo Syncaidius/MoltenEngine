@@ -275,7 +275,7 @@ namespace Molten
 
             if (!cFile.Handles.TryGetValue(contentType, out ContentHandle handle))
             {
-                settings = settings ?? _jsonSettings;
+                settings ??= _jsonSettings;
                 handle = new ContentLoadJsonHandle(this, path, contentType, completionCallback, settings, canHotReload);
                 if (!cFile.Handles.TryAdd(contentType, handle))
                 {
@@ -312,7 +312,7 @@ namespace Molten
 
         public ContentSaveJsonHandle SerializeToFile(string path, object asset, Action<FileInfo> completionCallback = null, JsonSerializerSettings settings = null, bool dispatch = true)
         {
-            settings = settings ?? _jsonSettings;
+            settings ??= _jsonSettings;
             ContentSaveJsonHandle handle = new ContentSaveJsonHandle(this, path, asset, settings, completionCallback);
             
             if(dispatch)

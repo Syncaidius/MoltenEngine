@@ -130,8 +130,8 @@ namespace Molten.Audio.OpenAL
                 }
 
                 // Use default devices if we don't have 
-                _inputDevice = _inputDevice ?? _defaultInputDevice;
-                _outputDevice = _outputDevice ?? _defaultOutputDevice;
+                _inputDevice ??= _defaultInputDevice;
+                _outputDevice ??= _defaultOutputDevice;
 
                 Input = _inputDevice;
                 Output = _outputDevice;

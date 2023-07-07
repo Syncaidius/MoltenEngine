@@ -109,7 +109,7 @@ namespace Molten.UI
                     continue;
                 }
 
-                startType = startType ?? t;
+                startType ??= t;
 
                 if (!node.Parents.TryGetValue(t, out UIStyle parent))
                 {

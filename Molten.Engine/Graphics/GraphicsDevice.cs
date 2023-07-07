@@ -228,7 +228,7 @@ namespace Molten.Graphics
                     uint bufferBytes = _maxStagingSize;
                     for (int i = 0; i < _frames.Length; i++)
                     {
-                        _frames[i] = _frames[i] ?? new GraphicsFrame(INITIAL_BRANCH_COUNT)
+                        _frames[i] ??= new GraphicsFrame(INITIAL_BRANCH_COUNT)
                         {
                             StagingBuffer = CreateStagingBuffer(true, true, bufferBytes),
                         };
@@ -378,7 +378,7 @@ namespace Molten.Graphics
         public ShaderCompileResult LoadEmbeddedShader(string nameSpace, string filename, Assembly assembly = null)
         {
             string src = "";
-            assembly = assembly ?? typeof(RenderService).Assembly;
+            assembly ??= typeof(RenderService).Assembly;
             Stream stream = EmbeddedResource.TryGetStream($"{nameSpace}.{filename}", assembly);
             if (stream != null)
             {

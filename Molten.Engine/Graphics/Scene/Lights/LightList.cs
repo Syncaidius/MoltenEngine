@@ -46,7 +46,7 @@
             }
 
             Data[id] = new LightData();
-            Instances[id] = Instances[id] ?? new LightInstance() { ID = id };
+            Instances[id] ??= new LightInstance() { ID = id };
             _itemCount++;
             return Instances[id];
         }

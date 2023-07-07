@@ -93,14 +93,14 @@ namespace Molten.Graphics.Vulkan
         {
             RendererVK renderer = Device.Renderer as RendererVK;
 
-            _extSurface = _extSurface ?? renderer.GetInstanceExtension<KhrSurface>();
+            _extSurface ??= renderer.GetInstanceExtension<KhrSurface>();
             if (_extSurface == null)
             {
                 renderer.Log.Error($"VK_KHR_surface extension is unsupported. Unable to initialize WindowSurfaceVK");
                 return;
             }
 
-            _extSwapChain = _extSwapChain ?? device.GetExtension<KhrSwapchain>();
+            _extSwapChain ??= device.GetExtension<KhrSwapchain>();
             if (_extSwapChain == null)
             {
                 renderer.Log.Error($"VK_KHR_swapchain extension is unsupported. Unable to initialize WindowSurfaceVK");

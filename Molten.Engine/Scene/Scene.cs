@@ -154,7 +154,7 @@ namespace Molten
         /// <param name="obj">The object to be added.</param>
         public void AddObject(SceneObject obj, SceneLayer layer = null)
         {
-            layer = layer ?? _defaultLayer;
+            layer ??= _defaultLayer;
             if (layer.ParentScene != this)
                 throw new SceneLayerException(this, layer, "The provided layer does not belong to the current scene.");
 
@@ -169,7 +169,7 @@ namespace Molten
         /// <param name="layer">The layer from which to remove the object. Must belong to the current <see cref="Scene"/> instance.</param>
         public void RemoveObject(SceneObject obj, SceneLayer layer = null)
         {
-            layer = layer ?? _defaultLayer;
+            layer ??= _defaultLayer;
 
             if (layer.ParentScene != this)
                 throw new SceneLayerException(this, layer, "The provided layer does not belong to the current scene.");
