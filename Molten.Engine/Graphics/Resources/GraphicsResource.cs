@@ -251,5 +251,10 @@ namespace Molten.Graphics
         /// If the texture was never resized then the frame ID will be the ID of the frame that the texture was created.
         /// </summary>
         public ulong LastFrameResizedID { get; internal set; }
+
+        /// <summary>
+        /// Gets the number of items in the current <see cref="GraphicsResource"/> apply queue.
+        /// </summary>
+        public int ApplyQueueCount => _applyTaskQueue.Count;
     }
 }

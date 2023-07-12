@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Silk.NET.Core.Native;
 using Silk.NET.Vulkan;
 
@@ -43,10 +42,17 @@ namespace Molten.Graphics.Vulkan
         DescriptorSetLayoutVK _descriptorLayout;
         PipelineLayoutVK _pipelineLayout;
 
+        AttachmentVK[] _attachments;
+
         public PipelineStateVK(DeviceVK device, ShaderPassVK pass, ref ShaderPassParameters parameters) : 
             base(device)
         {
-            Initialize();
+            _attachments = new AttachmentVK[0];
+
+            _info = new GraphicsPipelineCreateInfo();
+            _info.SType = StructureType.GraphicsPipelineCreateInfo;
+            _info.Flags = PipelineCreateFlags.None;
+            _info.PNext = null;
 
             // Populate dynamic state
             _blendState = new BlendStateVK(device, ref parameters);
@@ -128,34 +134,75 @@ namespace Molten.Graphics.Vulkan
                 fixed (Pipeline* ptrPipeline = &_pipeline)
                     device.VK.CreateGraphicsPipelines(device, new PipelineCache(), 1, _info, null, ptrPipeline);
             }
+
+            // TODO after render/compute pass, reset the load-op of surfaces.
         }
 
-        protected PipelineStateVK(DeviceVK device, PipelineStateVK baseState) : 
+        protected PipelineStateVK(DeviceVK device, PipelineStateVK baseState, IRenderSurfaceVK[] surfaces) : 
             base(device)
         {
             if (baseState == null)
                 throw new ArgumentNullException(nameof(baseState), "Base state cannot be null");
 
-            Initialize();
-
-            _info.BasePipelineHandle = baseState;
-            BaseState = baseState;
-        }
-
-        protected void Initialize()
-        {
+            _attachments = new AttachmentVK[surfaces.Length];
             _info = new GraphicsPipelineCreateInfo();
             _info.SType = StructureType.GraphicsPipelineCreateInfo;
             _info.Flags = PipelineCreateFlags.None;
             _info.PNext = null;
+            _info.BasePipelineHandle = baseState;
+            BaseState = baseState;
+
+            for (int i = 0; i < surfaces.Length; i++)
+                _attachments[i] = new AttachmentVK(surfaces[i]);
+
+
+            /* TODO:
+             *  - Remove IRenderSurfaceVK
+             *  - Move IRenderSurfaceVK.ClearColor to IRenderSurface
+             *  - Surface clearing should be API-specific
+             *  - If color is null, clear should not be performed
+             *  - Doing clears in this way allows Vulkan to optimize clear commands by doing it directly in the render pass via attachment load ops (LOAD_OP_CLEAR).
+             *      -- Also uses VkClearValue via the RenderPassBeginInfo struct.
+             *      -- This also allows us to clear multiple targets at once, including depth/stencil.
+             */
         }
 
-        internal PipelineStateVK Derive(DeviceVK device)
+        internal PipelineStateVK GetState(params IRenderSurfaceVK[] surfaces)
         {
-            PipelineStateVK result = new PipelineStateVK(device, this);
-            _derivatives.Add(result);
+            DeviceVK device = Device as DeviceVK;
 
-            return result;
+            if (DoSurfacesMatch(device, surfaces))
+                return this;
+            else
+                return GetDerivation(device, surfaces);
+        }
+
+        private PipelineStateVK GetDerivation(DeviceVK device, IRenderSurfaceVK[] surfaces)
+        {
+            // Check if we have an existing derivative that matches our surface attachments.
+            foreach (PipelineStateVK derivative in _derivatives)
+            {
+                if(derivative.DoSurfacesMatch(device, surfaces))
+                    return derivative;  
+            }
+
+            PipelineStateVK derivation = new PipelineStateVK(device, this, surfaces);
+            _derivatives.Add(derivation);
+            return derivation;
+        }
+
+        private bool DoSurfacesMatch(DeviceVK device, IRenderSurface[] surfaces)
+        {
+            if (surfaces.Length == _attachments.Length)
+            {
+                for (int i = 0; i < surfaces.Length; i++)
+                {
+                    if (!surfaces[i].Equals(_attachments[i]))
+                        return false;
+                }
+            }
+
+            return true;
         }
 
         protected override void OnGraphicsRelease()

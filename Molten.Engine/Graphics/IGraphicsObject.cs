@@ -1,5 +1,8 @@
 ﻿namespace Molten.Graphics
 {
+    /// <summary>
+    /// Represents a graphics object implementation. Generally used in conjunction with <see cref="GraphicsObject"/>.
+    /// </summary>
     public interface IGraphicsObject : IDisposable
     {
         /// <summary>
@@ -22,5 +25,10 @@
         /// Gets whether or not the current <see cref="IGraphicsObject"/> has been successfully disposed and released by its parent <see cref="Device"/>.
         /// </summary>
         bool IsReleased { get; }
+
+        /// <summary>
+        /// Gets the unique engine object ID (EOID) of the current <see cref="IGraphicsObject"/>.
+        /// </summary>
+        public ulong EOID { get; }
     }
 }

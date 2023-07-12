@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents the implementation of a render surface.
     /// </summary>
-    public interface IRenderSurface : IGraphicsObject
+    public interface IRenderSurface : ITexture
     {        
         /// <summary>Clears the provided <see cref="IRenderSurface2D"/> with the specified color.</summary>
         /// <param name="color">The color to use for clearing the surface.</param>

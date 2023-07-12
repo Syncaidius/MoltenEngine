@@ -1,11 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Silk.NET.Vulkan;
 
 namespace Molten.Graphics.Vulkan
 {
     internal class DepthSurfaceVK : Texture2DVK, IDepthStencilSurface
     {
+        internal struct DepthClearValue
+        {
+            public float Depth;
+
+            public uint Stencil;
+
+            internal DepthClearValue(float depth, uint stencil)
+            {
+                Depth = depth;
+                Stencil = stencil;
+            }
+        }
+
         internal DepthSurfaceVK(GraphicsDevice device, uint width, uint height, uint mipCount, uint arraySize,
             AntiAliasLevel aaLevel, 
             MSAAQuality sampleQuality, 
@@ -31,5 +45,10 @@ namespace Molten.Graphics.Vulkan
         public DepthFormat DepthFormat { get; }
 
         public ViewportF Viewport { get; }
+
+        /// <summary>
+        /// Gets surface clear color, if any.
+        /// </summary>
+        internal DepthClearValue? ClearValue { get; set; }
     }
 }

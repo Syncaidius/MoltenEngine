@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Molten.Graphics.Vulkan
 {
-    public class RenderSurface1DVK : Texture1DVK, IRenderSurface1D
+    public class RenderSurface1DVK : Texture1DVK, IRenderSurface1D, IRenderSurfaceVK
     {
         /// <summary>
         /// Creates a new instance of <see cref="RenderSurface2DVK"/>.
@@ -36,5 +36,8 @@ namespace Molten.Graphics.Vulkan
 
         /// <inheritdoc/>
         public ViewportF Viewport { get; protected set; }
+        
+        /// <inheritdoc/>
+        public Color? ClearColor { get; set; }
     }
 }
