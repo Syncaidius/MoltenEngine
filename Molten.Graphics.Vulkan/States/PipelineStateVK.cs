@@ -42,12 +42,12 @@ namespace Molten.Graphics.Vulkan
         DescriptorSetLayoutVK _descriptorLayout;
         PipelineLayoutVK _pipelineLayout;
 
-        AttachmentVK[] _attachments;
+        AttachmentDescription[] _attachments; // Last attachment(s) is always depth/stencil.
 
         public PipelineStateVK(DeviceVK device, ShaderPassVK pass, ref ShaderPassParameters parameters) : 
             base(device)
         {
-            _attachments = new AttachmentVK[0];
+            _attachments = new AttachmentDescription[0];
 
             _info = new GraphicsPipelineCreateInfo();
             _info.SType = StructureType.GraphicsPipelineCreateInfo;
@@ -138,13 +138,14 @@ namespace Molten.Graphics.Vulkan
             // TODO after render/compute pass, reset the load-op of surfaces.
         }
 
-        protected PipelineStateVK(DeviceVK device, PipelineStateVK baseState, IRenderSurfaceVK[] surfaces) : 
+        private PipelineStateVK(DeviceVK device, PipelineStateVK baseState, IRenderSurfaceVK[] surfaces, DepthSurfaceVK depthSurface) :
             base(device)
         {
             if (baseState == null)
                 throw new ArgumentNullException(nameof(baseState), "Base state cannot be null");
 
-            _attachments = new AttachmentVK[surfaces.Length];
+            int attachmentCount = surfaces.Length + (depthSurface != null ? 1 : 0);
+            _attachments = new AttachmentDescription[attachmentCount];
             _info = new GraphicsPipelineCreateInfo();
             _info.SType = StructureType.GraphicsPipelineCreateInfo;
             _info.Flags = PipelineCreateFlags.None;
@@ -153,56 +154,155 @@ namespace Molten.Graphics.Vulkan
             BaseState = baseState;
 
             for (int i = 0; i < surfaces.Length; i++)
-                _attachments[i] = new AttachmentVK(surfaces[i]);
-
-
-            /* TODO:
-             *  - Remove IRenderSurfaceVK
-             *  - Move IRenderSurfaceVK.ClearColor to IRenderSurface
-             *  - Surface clearing should be API-specific
-             *  - If color is null, clear should not be performed
-             *  - Doing clears in this way allows Vulkan to optimize clear commands by doing it directly in the render pass via attachment load ops (LOAD_OP_CLEAR).
-             *      -- Also uses VkClearValue via the RenderPassBeginInfo struct.
-             *      -- This also allows us to clear multiple targets at once, including depth/stencil.
-             */
+                GetAttachmentDesc(surfaces[i], out _attachments[i]);
         }
 
-        internal PipelineStateVK GetState(params IRenderSurfaceVK[] surfaces)
+        internal PipelineStateVK GetState(DepthSurfaceVK depth, params IRenderSurfaceVK[] surfaces)
         {
             DeviceVK device = Device as DeviceVK;
 
-            if (DoSurfacesMatch(device, surfaces))
+            if (DoSurfacesMatch(device, surfaces, depth))
                 return this;
             else
-                return GetDerivation(device, surfaces);
+                return GetDerivation(device, surfaces, depth);
         }
 
-        private PipelineStateVK GetDerivation(DeviceVK device, IRenderSurfaceVK[] surfaces)
+        private PipelineStateVK GetDerivation(DeviceVK device, IRenderSurfaceVK[] surfaces, DepthSurfaceVK depthSurface)
         {
             // Check if we have an existing derivative that matches our surface attachments.
             foreach (PipelineStateVK derivative in _derivatives)
             {
-                if(derivative.DoSurfacesMatch(device, surfaces))
+                if(derivative.DoSurfacesMatch(device, surfaces, depthSurface))
                     return derivative;  
             }
 
-            PipelineStateVK derivation = new PipelineStateVK(device, this, surfaces);
+            PipelineStateVK derivation = new PipelineStateVK(device, this, surfaces, depthSurface);
             _derivatives.Add(derivation);
             return derivation;
         }
 
-        private bool DoSurfacesMatch(DeviceVK device, IRenderSurface[] surfaces)
+        private bool DoSurfacesMatch(DeviceVK device, IRenderSurfaceVK[] surfaces, DepthSurfaceVK depthSurface)
         {
-            if (surfaces.Length == _attachments.Length)
+            AttachmentDescription descCompare = new AttachmentDescription();
+
+            int surfaceCount = surfaces.Length + (depthSurface != null ? 1 : 0);
+            if (surfaceCount == _attachments.Length)
             {
-                for (int i = 0; i < surfaces.Length; i++)
+                int i = 0;
+                for (; i < surfaces.Length; i++)
                 {
-                    if (!surfaces[i].Equals(_attachments[i]))
+                    GetAttachmentDesc(surfaces[i], out descCompare);
+                    if (!AttachmentsEqual(ref _attachments[i], ref descCompare))
+                        return false;
+                }
+
+                // Compare the last attachment to the depth surface, if present.
+                if(depthSurface != null)
+                {
+                    GetAttachmentDesc(depthSurface, out descCompare);
+                    if (!AttachmentsEqual(ref _attachments[i], ref descCompare))
                         return false;
                 }
             }
 
             return true;
+        }
+
+        private void GetAttachmentDesc(IRenderSurfaceVK surface, out AttachmentDescription desc)
+        {
+            desc = new AttachmentDescription()
+            {
+                Format = surface.ResourceFormat.ToApi(),
+                Samples = GetSampleFlags(surface.MultiSampleLevel),
+                LoadOp = surface.ClearColor.HasValue ? AttachmentLoadOp.Clear : AttachmentLoadOp.Load,
+                StoreOp = AttachmentStoreOp.Store,
+                InitialLayout = ImageLayout.Undefined, // TODO Track current layout of texture/surface and use it here
+                FinalLayout = ImageLayout.Undefined,
+                StencilLoadOp = AttachmentLoadOp.DontCare,
+                StencilStoreOp = AttachmentStoreOp.DontCare,
+            };
+
+            if (surface is ISwapChainSurface)
+            {
+                desc.FinalLayout = ImageLayout.PresentSrcKhr;
+            }
+            else
+            {
+                if (!surface.Flags.Has(GraphicsResourceFlags.NoShaderAccess))
+                    desc.FinalLayout = ImageLayout.ColorAttachmentOptimal;
+                else
+                    desc.FinalLayout = ImageLayout.ShaderReadOnlyOptimal;
+            }
+        }
+
+        private void GetAttachmentDesc(DepthSurfaceVK surface, out AttachmentDescription desc)
+        {
+            desc = new AttachmentDescription()
+            {
+                Format = surface.ResourceFormat.ToApi(),
+                Samples = GetSampleFlags(surface.MultiSampleLevel),
+                LoadOp = surface.ClearValue.HasValue ? AttachmentLoadOp.Clear : AttachmentLoadOp.Load,
+                StoreOp = AttachmentStoreOp.Store,
+                StencilLoadOp = AttachmentLoadOp.DontCare, // TODO Set these based on depthSurface.DepthFormat - stencil format
+                StencilStoreOp = AttachmentStoreOp.DontCare,
+                InitialLayout = ImageLayout.Undefined,
+                FinalLayout = ImageLayout.DepthStencilAttachmentOptimal,
+                // TODO Make use of DepthStencilReadOnlyOptimal when using read-only depth mode.
+                // TODO if we don't need a stencil, try attaching with DepthAttachmentOptimal instead.
+            };
+        }
+
+
+        internal AttachmentReference GetAttachmentRef(ref AttachmentDescription desc, uint index)
+        {
+            /* For depth surface,s if the separateDepthStencilLayouts feature is not enabled, and attachment is not VK_ATTACHMENT_UNUSED, layout must not be:
+             *  - VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL or 
+             *  VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL*/
+
+            ImageLayout layout = ImageLayout.ColorAttachmentOptimal;
+            if (desc.FinalLayout == ImageLayout.DepthStencilAttachmentOptimal
+                || desc.FinalLayout == ImageLayout.DepthStencilReadOnlyOptimal
+                || desc.FinalLayout == ImageLayout.DepthAttachmentOptimal
+                || desc.FinalLayout == ImageLayout.DepthReadOnlyOptimal)
+            {
+                layout = ImageLayout.DepthStencilAttachmentOptimal;
+            }
+
+            return new AttachmentReference(index, layout);
+        }
+
+        private SampleCountFlags GetSampleFlags(AntiAliasLevel aaLevel)
+        {
+            switch (aaLevel)
+            {
+                default:
+                case AntiAliasLevel.None:
+                    return SampleCountFlags.Count1Bit;
+
+                case AntiAliasLevel.X2:
+                    return SampleCountFlags.Count2Bit;
+
+                case AntiAliasLevel.X4:
+                    return SampleCountFlags.Count4Bit;
+
+                case AntiAliasLevel.X8:
+                    return SampleCountFlags.Count8Bit;
+
+                case AntiAliasLevel.X16:
+                    return SampleCountFlags.Count16Bit;
+            }
+        }
+
+        private bool AttachmentsEqual(ref AttachmentDescription a, ref AttachmentDescription b)
+        {
+            return a.FinalLayout == b.FinalLayout &&
+                a.Format == b.Format &&
+                a.InitialLayout == b.InitialLayout &&
+                a.LoadOp == b.LoadOp &&
+                a.Samples == b.Samples &&
+                a.StencilLoadOp == b.StencilLoadOp &&
+                a.StencilStoreOp == b.StencilStoreOp &&
+                a.StoreOp == b.StoreOp;
         }
 
         protected override void OnGraphicsRelease()
