@@ -2,6 +2,9 @@
 {
     public abstract class GraphicsQueue : EngineObject
     {
+        protected delegate void CmdQueueDrawCallback();
+        protected delegate void CmdQueueDrawFailCallback(HlslPass pass, uint passNumber, GraphicsBindResult result);
+
         /// <summary>
         /// A container for storing application data to share between completion callbacks of <see cref="HlslShader"/> passes.
         /// </summary>
@@ -12,27 +15,27 @@
             /// <para>
             /// Any dimension that is 0 will default to the one provided by the shader's definition, if any.</para>
             /// </summary>
-            public Vector3UI ComputeGroups;
+            internal Vector3UI ComputeGroups;
 
             /// <summary>
             /// Gets a dictionary of custom values.
             /// </summary>
-            public Dictionary<string, object> Values { get; } = new Dictionary<string, object>();
+            internal Dictionary<string, object> Values { get; } = new Dictionary<string, object>();
 
-            public void Reset()
+            internal void Reset()
             {
                 ComputeGroups = Vector3UI.Zero;
                 Values.Clear();
             }
         }
 
-        protected class BatchDrawInfo
+        private class BatchDrawInfo
         {
-            public bool Began;
+            internal bool Began;
 
-            public Vector3UI ComputeGroups;
+            internal Vector3UI ComputeGroups;
 
-            public CustomDrawInfo Custom { get; } = new CustomDrawInfo();
+            internal CustomDrawInfo Custom { get; } = new CustomDrawInfo();
 
             public void Reset()
             {
@@ -44,13 +47,14 @@
         Stack<RenderProfiler> _profilerStack;
         RenderProfiler _profiler;
         GraphicsState _state;
+        BatchDrawInfo _drawInfo;
 
         Stack<GraphicsState> _stateStack;
         Stack<GraphicsState> _freeStateStack;
 
         protected GraphicsQueue(GraphicsDevice device)
         {
-            DrawInfo = new BatchDrawInfo();
+            _drawInfo = new BatchDrawInfo();
             Device = device;
             _state = new GraphicsState(device);
             _stateStack = new Stack<GraphicsState>();
@@ -133,11 +137,11 @@
         public virtual void Begin(GraphicsCommandListFlags flags = GraphicsCommandListFlags.None)
         {
 #if DEBUG
-            if (DrawInfo.Began)
+            if (_drawInfo.Began)
                 throw new GraphicsCommandQueueException(this, $"{nameof(GraphicsCommandList)}: End() must be called before the next Begin() call.");
 #endif
 
-            DrawInfo.Began = true; 
+            _drawInfo.Began = true; 
         }
 
         /// <summary>
@@ -157,11 +161,11 @@
         public virtual GraphicsCommandList End()
         {
 #if DEBUG
-            if (!DrawInfo.Began)
+            if (!_drawInfo.Began)
                 throw new GraphicsCommandQueueException(this, $"{nameof(GraphicsCommandList)}: BeginDraw() must be called before EndDraw().");
 #endif
 
-            DrawInfo.Reset();
+            _drawInfo.Reset();
             return Cmd;
         }
 
@@ -232,6 +236,114 @@
 
         protected abstract void OnResetState();
 
+        protected GraphicsBindResult ApplyState(HlslShader shader, QueueValidationMode mode, CmdQueueDrawCallback drawCallback)
+        {
+            GraphicsBindResult vResult = GraphicsBindResult.Successful;
+
+            if (!_drawInfo.Began)
+                throw new GraphicsCommandQueueException(this, $"{GetType().Name}: BeginDraw() must be called before calling {nameof(Draw)}()");
+
+            State.Shader.Value = shader;
+            bool shaderChanged = State.Shader.Bind();
+
+            if (State.Shader.BoundValue == null)
+                return GraphicsBindResult.NoShader;
+
+            // Re-render the same material for mat.Iterations.
+            BeginEvent($"{mode} Call");
+            for (uint i = 0; i < shader.Passes.Length; i++)
+            {
+                HlslPass pass = shader.Passes[i];
+                if (!pass.IsEnabled)
+                {
+                    SetMarker($"Pass {i} - Skipped (Disabled)");
+                    continue;
+                }
+
+                if (pass.IsCompute)
+                {
+                    BeginEvent($"Pass {i} - Compute");
+                    vResult = ApplyComputeState(pass);
+                    if (vResult != GraphicsBindResult.Successful)
+                        return vResult;
+
+                    Vector3UI customGroups = _drawInfo.Custom.ComputeGroups;
+
+                    if (customGroups.X == 0)
+                        customGroups.X = pass.ComputeGroups.X;
+
+                    if (customGroups.Y == 0)
+                        customGroups.Y = pass.ComputeGroups.Y;
+
+                    if (customGroups.Z == 0)
+                        customGroups.Z = pass.ComputeGroups.Z;
+
+                    _drawInfo.ComputeGroups = customGroups;
+
+                    vResult = Validate(mode);
+                    if (vResult != GraphicsBindResult.Successful)
+                        return vResult;
+
+                    // Re-render the same pass for K iterations.
+                    for (int j = 0; j < pass.Iterations; j++)
+                    {
+                        BeginEvent($"Iteration {j}");
+                        OnDispatchCompute(shader, customGroups);
+                        Profiler.Current.DispatchCalls++;
+                        EndEvent();
+                    }
+
+                    pass.InvokeCompleted(_drawInfo.Custom);
+
+                    EndEvent();
+                }
+                else
+                {
+                    // Skip non-compute passes when we're in compute-only mode.
+                    if (mode == QueueValidationMode.Compute)
+                    {
+                        SetMarker($"Pass {i} - Skipped (Compute-Only-mode)");
+                        continue;
+                    };
+
+                    BeginEvent($"Pass {i} - Render");
+                    ApplyRenderState(pass, mode);
+                    vResult = Validate(mode);
+
+                    if (vResult == GraphicsBindResult.Successful)
+                    {
+                        // Re-render the same pass for K iterations.
+                        for (int k = 0; k < pass.Iterations; k++)
+                        {
+                            BeginEvent($"Iteration {k}");
+                            drawCallback();
+                            Profiler.Current.DrawCalls++;
+                            EndEvent();
+                        }
+
+                        pass.InvokeCompleted(_drawInfo.Custom);
+                    }
+                    EndEvent();
+                }
+
+                if (vResult != GraphicsBindResult.Successful)
+                {
+                    Device.Log.Warning($"{mode} call failed with result: {vResult} -- Iteration: Pass {i}/{shader.Passes.Length} -- " +
+                    $"Shader: {shader.Name} -- Topology: {pass.Topology} -- IsCompute: {pass.IsCompute}");
+                    break;
+                }
+            }
+            EndEvent();
+
+            return vResult;
+        }
+
+        protected abstract void OnDispatchCompute(HlslShader shader, Vector3UI groups);
+
+        protected abstract GraphicsBindResult ApplyRenderState(HlslPass hlslPass, QueueValidationMode mode);
+
+        protected abstract GraphicsBindResult ApplyComputeState(HlslPass hlslPass);
+
         /// <summary>Draw non-indexed, non-instanced primitives. 
         /// All queued compute shader dispatch requests are also processed</summary>
         /// <param name="shader">The <see cref="HlslShader"/> to apply when drawing.</param>
@@ -281,8 +393,106 @@
         /// <param name="shader">The shader to be dispatched.</param>
         /// <param name="groups">The number of thread groups.</param>
         /// <returns></returns>
-        public abstract GraphicsBindResult Dispatch(HlslShader shader, Vector3UI groups);
+        public GraphicsBindResult Dispatch(HlslShader shader, Vector3UI groups)
+        {
+            _drawInfo.Custom.ComputeGroups = groups;
+            return ApplyState(shader, QueueValidationMode.Compute, null);
+        }
 
+        private GraphicsBindResult Validate(QueueValidationMode mode)
+        {
+            GraphicsBindResult result = GraphicsBindResult.Successful;
+
+            result |= CheckShader();
+
+            // Validate and update mode-specific data if needed.
+            switch (mode)
+            {
+                case QueueValidationMode.Indexed:
+                    result |= CheckVertexSegment();
+                    result |= CheckIndexSegment();
+                    break;
+
+                case QueueValidationMode.Instanced:
+                    result |= CheckVertexSegment();
+                    result |= CheckInstancing();
+                    break;
+
+                case QueueValidationMode.InstancedIndexed:
+                    result |= CheckVertexSegment();
+                    result |= CheckIndexSegment();
+                    result |= CheckInstancing();
+                    break;
+
+                case QueueValidationMode.Compute:
+                    result |= CheckComputeGroups();
+                    break;
+            }
+
+            return result;
+        }
+
+        protected abstract GraphicsBindResult CheckInstancing();
+
+        /// <summary>Validate vertex buffer and vertex shader.</summary>
+        /// <returns></returns>
+        private GraphicsBindResult CheckShader()
+        {
+            GraphicsBindResult result = GraphicsBindResult.Successful;
+
+            if (State.Shader == null)
+                result |= GraphicsBindResult.MissingMaterial;
+
+            return result;
+        }
+
+        private GraphicsBindResult CheckComputeGroups()
+        {
+            ComputeCapabilities comCap = Device.Capabilities.Compute;
+            Vector3UI groups = _drawInfo.ComputeGroups;
+
+            if (groups.Z > comCap.MaxGroupCountZ)
+            {
+                Device.Log.Error($"Unable to dispatch compute shader. Z dimension ({groups.Z}) is greater than supported ({comCap.MaxGroupCountZ}).");
+                return GraphicsBindResult.InvalidComputeGroupDimension;
+            }
+
+            if (groups.X > comCap.MaxGroupCountX)
+            {
+                Device.Log.Error($"Unable to dispatch compute shader. X dimension ({groups.X}) is greater than supported ({comCap.MaxGroupCountX}).");
+                return GraphicsBindResult.InvalidComputeGroupDimension;
+            }
+
+            if (groups.Y > comCap.MaxGroupCountY)
+            {
+                Device.Log.Error($"Unable to dispatch compute shader. Y dimension ({groups.Y}) is greater than supported ({comCap.MaxGroupCountY}).");
+                return GraphicsBindResult.InvalidComputeGroupDimension;
+            }
+
+            return GraphicsBindResult.Successful;
+        }
+
+        private GraphicsBindResult CheckVertexSegment()
+        {
+            GraphicsBindResult result = GraphicsBindResult.Successful;
+
+            if (State.VertexBuffers[0] == null)
+                result |= GraphicsBindResult.MissingVertexSegment;
+
+            return result;
+        }
+
+        private GraphicsBindResult CheckIndexSegment()
+        {
+            GraphicsBindResult result = GraphicsBindResult.Successful;
+
+            // If the index buffer is null, this method will always fail because 
+            // it assumes it is only being called during an indexed draw call.
+            if (State.IndexBuffer.BoundValue == null)
+                result |= GraphicsBindResult.MissingIndexSegment;
+
+            return result;
+        }
 
         /// <summary>
         /// Gets the parent <see cref="GraphicsDevice"/> of the current <see cref="GraphicsQueue"/>.
@@ -291,8 +501,6 @@
 
         /// <summary>Gets the profiler that is currently bound to the current <see cref="GraphicsQueue"/>. Contains statistics for this context alone.</summary>
         public RenderProfiler Profiler => _profiler;
-
-        protected BatchDrawInfo DrawInfo { get; }
 
         protected abstract GraphicsCommandList Cmd { get; set; }
 

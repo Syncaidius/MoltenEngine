@@ -1,6 +1,6 @@
-﻿namespace Molten.Graphics.DX11
+﻿namespace Molten.Graphics
 {
-    internal enum QueueValidationMode
+    public enum QueueValidationMode
     {
         Unindexed = 0,
 

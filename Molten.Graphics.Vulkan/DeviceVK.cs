@@ -38,6 +38,7 @@ namespace Molten.Graphics.Vulkan
         List<FenceVK> _fences;
 
         List<SwapChainSurfaceVK> _presentSurfaces;
+        List<RenderPassVK> _renderPasses;
 
         KhrSwapchain _extSwapChain;
         /// <summary>
@@ -52,6 +53,7 @@ namespace Molten.Graphics.Vulkan
             _freeFences = new Stack<FenceVK>();
             _fences = new List<FenceVK>();
             _presentSurfaces = new List<SwapChainSurfaceVK>();
+            _renderPasses = new List<RenderPassVK>();
 
             _renderer = renderer;
             _vkInstance = instance;
@@ -87,6 +89,19 @@ namespace Molten.Graphics.Vulkan
             _activeOutputs = new List<DisplayOutputVK>();
             Outputs = _outputs.AsReadOnly();
             ActiveOutputs = _activeOutputs.AsReadOnly();
+        }
+
+        internal RenderPassVK GetRenderPass(IRenderSurfaceVK[] surfaces, DepthSurfaceVK depthSurface)
+        {
+            foreach(RenderPassVK pass in _renderPasses)
+            {
+                if (pass.DoSurfacesMatch(this, surfaces, depthSurface))
+                    return pass;
+            }
+
+            RenderPassVK newPass = new RenderPassVK(this, surfaces, depthSurface);
+            _renderPasses.Add(newPass);
+            return newPass;
         }
 
         protected override uint MinimumFrameBufferSize()

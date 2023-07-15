@@ -22,8 +22,6 @@ namespace Molten.Graphics.DX11
 
             DepthState = new DepthStateDX11(device, ref parameters);
             DepthState = Device.CacheObject(DepthState.Desc, DepthState);
-
-            Topology = parameters.Topology.ToApi();
         }
 
         internal DepthStateDX11 DepthState { get; private set; }
@@ -31,7 +29,5 @@ namespace Molten.Graphics.DX11
         internal RasterizerStateDX11 RasterizerState { get; private set; }
 
         internal BlendStateDX11 BlendState { get; private set; }
-
-        internal D3DPrimitiveTopology Topology { get; private set; }
     }
 }

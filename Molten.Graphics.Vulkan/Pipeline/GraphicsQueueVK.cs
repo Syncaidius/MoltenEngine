@@ -362,44 +362,45 @@ namespace Molten.Graphics.Vulkan
             throw new NotImplementedException();
         }
 
+        protected override GraphicsBindResult ApplyRenderState(HlslPass hlslPass, QueueValidationMode mode)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override GraphicsBindResult ApplyComputeState(HlslPass hlslPass)
+        {
+            throw new NotImplementedException();
+        }
+
         public override GraphicsBindResult Draw(HlslShader shader, uint vertexCount, uint vertexStartIndex = 0)
         {
-            // TODO apply state
-
-            _vk.CmdDraw(_cmd, vertexCount, 1, vertexStartIndex, 0);
-            return GraphicsBindResult.Successful;
+            return ApplyState(shader, QueueValidationMode.Unindexed, () => _vk.CmdDraw(_cmd, vertexCount, 1, vertexStartIndex, 0));
         }
 
         public override GraphicsBindResult DrawInstanced(HlslShader shader, uint vertexCountPerInstance, uint instanceCount, uint vertexStartIndex = 0, uint instanceStartIndex = 0)
         {
-            // TODO apply state
-
-            _vk.CmdDraw(_cmd, vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex);
-            return GraphicsBindResult.Successful;
+            return ApplyState(shader, QueueValidationMode.Instanced, () => _vk.CmdDraw(_cmd, vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex));
         }
 
         public override GraphicsBindResult DrawIndexed(HlslShader shader, uint indexCount, int vertexIndexOffset = 0, uint startIndex = 0)
         {
-            // TODO apply state
-
-            _vk.CmdDrawIndexed(_cmd, indexCount, 1, startIndex, vertexIndexOffset, 0);
-            return GraphicsBindResult.Successful;
+            return ApplyState(shader, QueueValidationMode.Indexed, () => _vk.CmdDrawIndexed(_cmd, indexCount, 1, startIndex, vertexIndexOffset, 0));
         }
 
         public override GraphicsBindResult DrawIndexedInstanced(HlslShader shader, uint indexCountPerInstance, uint instanceCount, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
         {
-            // TODO apply state
-
-            _vk.CmdDrawIndexed(_cmd, indexCountPerInstance, instanceCount, startIndex, vertexIndexOffset, instanceStartIndex);
-            return GraphicsBindResult.Successful;
+            return ApplyState(shader, QueueValidationMode.InstancedIndexed,
+                () => _vk.CmdDrawIndexed(_cmd, indexCountPerInstance, instanceCount, startIndex, vertexIndexOffset, instanceStartIndex));
         }
 
-        public override GraphicsBindResult Dispatch(HlslShader shader, Vector3UI groups)
+        protected override void OnDispatchCompute(HlslShader shader, Vector3UI groups)
         {
-            // TODO apply state
-
             _vk.CmdDispatch(_cmd, groups.X, groups.Y, groups.Z);
-            return GraphicsBindResult.Successful;
+        }
+
+        protected override GraphicsBindResult CheckInstancing()
+        {
+            throw new NotImplementedException();
         }
 
         internal Vk VK => _vk;

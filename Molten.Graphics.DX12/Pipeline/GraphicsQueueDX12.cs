@@ -12,7 +12,6 @@ namespace Molten.Graphics.DX12
             base(device)
         {
             _desc = desc;
-            Device = device;
             Log = log;
 
             Initialize(builder);
@@ -22,7 +21,9 @@ namespace Molten.Graphics.DX12
         {
             Guid cmdGuid = ID3D12CommandQueue.Guid;
             void* cmdQueue = null;
-            HResult r = Device.Ptr->CreateCommandQueue(_desc, &cmdGuid, &cmdQueue);
+
+            DeviceDX12 device = Device as DeviceDX12; 
+            HResult r = device.Ptr->CreateCommandQueue(_desc, &cmdGuid, &cmdQueue);
             if (!builder.CheckResult(r))
             {
                 Log.Error($"Failed to initialize '{_desc.Type}' command queue");
@@ -67,11 +68,6 @@ namespace Molten.Graphics.DX12
         }
 
         public override GraphicsBindResult DrawIndexedInstanced(HlslShader shader, uint indexCountPerInstance, uint instanceCount, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override GraphicsBindResult Dispatch(HlslShader shader, Vector3UI groups)
         {
             throw new NotImplementedException();
         }
@@ -121,9 +117,28 @@ namespace Molten.Graphics.DX12
             SilkUtil.ReleasePtr(ref _ptr);
         }
 
-        internal DeviceDX12 Device { get; }
+        protected override void OnDispatchCompute(HlslShader shader, Vector3UI groups)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override GraphicsBindResult ApplyRenderState(HlslPass hlslPass, QueueValidationMode mode)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override GraphicsBindResult ApplyComputeState(HlslPass hlslPass)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override GraphicsBindResult CheckInstancing()
+        {
+            throw new NotImplementedException();
+        }
 
         internal Logger Log { get; }
+
         protected override GraphicsCommandList Cmd { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }
 }

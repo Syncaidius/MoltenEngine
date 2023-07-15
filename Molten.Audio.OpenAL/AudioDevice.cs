@@ -75,7 +75,7 @@ namespace Molten.Audio.OpenAL
         internal void Close()
         {
             if (_device == null)
-                throw new AudioDeviceException(this, $"[{DeviceType}] device is not open");
+                return;
 
             Service.Log.WriteLine($"Closing [{DeviceType}] device '{Name}'");
             OnClose();

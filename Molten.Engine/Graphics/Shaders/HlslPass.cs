@@ -59,6 +59,8 @@ namespace Molten.Graphics
         internal void Initialize(ref ShaderPassParameters parameters)
         {
             ComputeGroups = new Vector3UI(parameters.GroupsX, parameters.GroupsY, parameters.GroupsZ);
+            Topology = parameters.Topology;
+
             OnInitialize(ref parameters);
         }
 
@@ -158,5 +160,10 @@ namespace Molten.Graphics
         /// Gets the compute group sizes for the current <see cref="HlslPass"/>. This has no effect if <see cref="IsCompute"/> is false.
         /// </summary>
         public Vector3UI ComputeGroups { get; private set; }
+
+        /// <summary>
+        /// Gets the vertex <see cref="PrimitiveTopology"/> that the current <see cref="HlslPass"/> will use when rendering mesh vertices.
+        /// </summary>
+        public PrimitiveTopology Topology { get; private set; }
     }
 }
