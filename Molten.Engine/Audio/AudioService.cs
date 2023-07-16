@@ -22,18 +22,18 @@ namespace Molten.Audio
             _buffers = new ThreadedList<AudioBuffer>();
         }
 
-        protected override void OnInitialize(EngineSettings settings)
+        protected override ThreadingMode OnInitialize(EngineSettings settings)
         {
             UpdateDeviceSwitching();
-        }
-
-        protected override ThreadingMode OnStart(ThreadManager threadManager)
-        {
-            _shouldUpdate = true;
             return ThreadingMode.SeparateThread;
         }
 
-        protected override void OnStop()
+        protected override void OnStart(EngineSettings settings)
+        {
+            _shouldUpdate = true;
+        }
+
+        protected override void OnStop(EngineSettings settings)
         {
             _shouldUpdate = false;
         }

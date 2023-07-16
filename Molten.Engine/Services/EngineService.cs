@@ -36,18 +36,21 @@ namespace Molten
         /// <summary>
         /// Initializes the current <see cref="EngineService"/>.
         /// </summary>
+        /// <param name="engine">The parent engine.</param>
         /// <param name="settings"></param>
         /// <param name="parentLog"></param>
-        public void Initialize(EngineSettings settings, Logger parentLog)
+        internal void Initialize(Engine engine, EngineSettings settings, Logger parentLog)
         {
             Settings = settings;
+            Engine = engine;
+
             try
             {
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
 
                 parentLog.WriteLine($"Initializing service: {this.GetType()}");
-                OnInitialize(Settings);
+                ThreadMode = OnInitialize(Settings);
                 parentLog.WriteLine($"Completed initialization of service: {this}");
                 State = EngineServiceState.Ready;
 
@@ -91,12 +94,13 @@ namespace Molten
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
 
-                ThreadMode = OnStart(threadManager);
                 if (ThreadMode == ThreadingMode.SeparateThread)
                 {
                     Thread = threadManager.CreateThread($"service_{this}", true, false, Update);
                     parentLog.WriteLine($"Started service thread: {Thread.Name}");
                 }
+
+                OnStart(Settings);
 
                 State = EngineServiceState.Running;
                 parentLog.WriteLine($"Started service: {this}");
@@ -121,7 +125,7 @@ namespace Molten
         /// </summary>
         public void Stop()
         {
-            OnStop();
+            OnStop(Settings);
 
             Thread?.Dispose();
             State = EngineServiceState.Ready;
@@ -153,22 +157,30 @@ namespace Molten
             OnUpdate(time);
         }
 
-        protected abstract void OnInitialize(EngineSettings settings);
-
-        /// <summary>Invoked when the current <see cref="EngineService"/> needs to be updated.</summary>
-        /// <param name="time"></param>
-        protected abstract void OnUpdate(Timing time);
+        /// <summary>
+        /// Invoked when the current <see cref="EngineService"/> is being initialized.
+        /// </summary>
+        /// <param name="settings">The <see cref="EngineSettings"/>.</param>
+        /// <returns>The threading mode that the current <see cref="EngineThread"/> should be run in, when <see cref="Start(ThreadManager, Logger)"/> is called.</returns>
+        protected abstract ThreadingMode OnInitialize(EngineSettings settings);
 
         /// <summary>
-        /// Invokved when the current <see cref="EngineService"/> has been requested to start.
+        /// Invoked when the current <see cref="EngineService"/> has been requested to start.
+        /// <para>For a service running in <see cref="ThreadingMode.SeparateThread"/>, 
+        /// <see cref="OnStart(EngineSettings)"/> is invoked after the service thread is created.</para>
         /// </summary>
-        /// <returns></returns>
-        protected abstract ThreadingMode OnStart(ThreadManager threadManager);
+        /// <param name="settings">The <see cref="EngineSettings"/>.</param>
+        protected abstract void OnStart(EngineSettings settings);
 
         /// <summary>
         /// Invoked when the current <see cref="EngineService"/> has been requested to stop.
         /// </summary>
-        protected abstract void OnStop();
+        /// <param name="settings">The <see cref="EngineSettings"/>.</param>
+        protected abstract void OnStop(EngineSettings settings);
+
+        /// <summary>Invoked when the current <see cref="EngineService"/> needs to be updated.</summary>
+        /// <param name="time"></param>
+        protected abstract void OnUpdate(Timing time);
 
         /// <summary>
         /// Gets the state of the current <see cref="EngineService"/>.
@@ -184,7 +196,7 @@ namespace Molten
         /// <summary>
         /// Gets the threading mode of the current <see cref="EngineService"/>.
         /// </summary>
-        public ThreadingMode ThreadMode { get; protected set; }
+        public ThreadingMode ThreadMode { get; private set; }
 
         /// <summary>
         /// Gets the current instance of engine settings. This will be the same instance that was passed in when the engine was instantiated.
@@ -198,5 +210,10 @@ namespace Molten
 
         /// <summary>Gets the version of the current service. If not set by the service, all version components will be 0.</summary>
         public Version Version { get; protected set; } = new Version();
+
+        /// <summary>
+        /// Gets the parent <see cref="Engine"/> instance.
+        /// </summary>
+        public Engine Engine { get; private set; }
     }
 }

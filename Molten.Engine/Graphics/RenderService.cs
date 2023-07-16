@@ -40,13 +40,12 @@ namespace Molten.Graphics
             Overlay = new OverlayProvider();
         }
 
-        protected override ThreadingMode OnStart(ThreadManager threadManager)
+        protected override void OnStart(EngineSettings settings)
         {
             _shouldPresent = true;
-            return ThreadingMode.SeparateThread;
         }
 
-        protected override void OnStop()
+        protected override void OnStop(EngineSettings settings)
         {
             _shouldPresent = false;
         }
@@ -55,7 +54,7 @@ namespace Molten.Graphics
         /// Occurs when the renderer is being initialized.
         /// </summary>
         /// <param name="settings">The engine settings to apply and bind to the current <see cref="RenderService"/>.</param>
-        protected override sealed void OnInitialize(EngineSettings settings)
+        protected override sealed ThreadingMode OnInitialize(EngineSettings settings)
         {
             DisplayManager = OnInitializeDisplayManager(settings.Graphics);
             _chain = new RenderChain(this);
@@ -101,6 +100,8 @@ namespace Molten.Graphics
             Surfaces.Initialize(BiggestWidth, BiggestHeight);
             Fonts = new SpriteFontManager(Log, this);
             Fonts.Initialize();
+
+            return ThreadingMode.SeparateThread;
         }
 
         private void ProcessTasks(RenderTaskPriority priority)

@@ -55,7 +55,7 @@ namespace Molten
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
             foreach (EngineService service in _services)
-                service.Initialize(Settings, Log);
+                service.Initialize(this, Settings, Log);
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

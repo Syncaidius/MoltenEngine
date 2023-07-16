@@ -1,4 +1,5 @@
-﻿using Silk.NET.Core.Attributes;
+﻿using Molten.Threading;
+using Silk.NET.Core.Attributes;
 using Silk.NET.OpenAL;
 using Silk.NET.OpenAL.Extensions;
 using Silk.NET.OpenAL.Extensions.Enumeration;
@@ -35,7 +36,7 @@ namespace Molten.Audio.OpenAL
             AvailableDevices = _devices.AsReadOnly();
         }
 
-        protected unsafe override void OnInitialize(EngineSettings settings)
+        protected unsafe override ThreadingMode OnInitialize(EngineSettings settings)
         {
             _al = AL.GetApi(true);
             _alc = ALContext.GetApi(true);
@@ -50,7 +51,7 @@ namespace Molten.Audio.OpenAL
 
             DetectDevices(settings);
 
-            base.OnInitialize(settings);
+            return base.OnInitialize(settings);
         }
 
         internal bool TryGetExtension<T>(out T extension) where T : ContextExtensionBase

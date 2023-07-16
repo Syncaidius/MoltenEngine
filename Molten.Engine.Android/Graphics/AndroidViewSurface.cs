@@ -327,5 +327,7 @@ namespace Molten.Graphics
         public bool IsEnabled { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         GraphicsResourceHandle IGraphicsResource.Handle => throw new NotImplementedException();
+
+        public ulong EOID => throw new NotImplementedException();
     }
 }

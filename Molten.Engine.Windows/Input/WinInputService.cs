@@ -15,25 +15,26 @@ namespace Molten.Input
 
         /// <summary>Initializes the current input manager instance. Avoid calling this directly unless you know what you are doing.</summary>
         /// <param name="settings">The <see cref="InputSettings"/> that was provided when the engine was instanciated.</param>
-        /// <param name="log">A logger.</param>
-        protected override void OnInitialize(EngineSettings settings)
+        protected override ThreadingMode OnInitialize(EngineSettings settings)
         {
-            base.OnInitialize(settings);
+            ThreadingMode mode = base.OnInitialize(settings);
 
             _gamepads = new List<WinGamepadDevice>();
             _clipboard = new WindowsClipboard();
+
+            return mode;
         }
 
-        protected override ThreadingMode OnStart(ThreadManager threadManager)
+        protected override void OnStart(EngineSettings settings)
         {
-            _clipboard.Start(threadManager);
-            return base.OnStart(threadManager);
+            _clipboard.Start(Engine.Threading);
+            base.OnStart(settings);
         }
 
-        protected override void OnStop()
+        protected override void OnStop(EngineSettings settings)
         {
             _clipboard.Stop();
-            base.OnStop();
+            base.OnStop(settings);
         }
 
         protected override void OnBindSurface(INativeSurface surface)

@@ -29,11 +29,12 @@ namespace Molten.Input
 
         /// <summary>Initializes the current input manager instance. Avoid calling this directly unless you know what you are doing.</summary>
         /// <param name="settings">The initial engine settings provided on startup.</param>
-        protected override void OnInitialize(EngineSettings settings)
+        protected override ThreadingMode OnInitialize(EngineSettings settings)
         {
             _gamepadsByIndex = new Dictionary<int, GamepadDevice>();
             _byType = new Dictionary<Type, InputDevice>();
             _devices = new List<InputDevice>();
+            return ThreadingMode.MainThread;
         }
 
         private void BindSurface(INativeSurface surface)
@@ -169,12 +170,9 @@ namespace Molten.Input
             }
         }
 
-        protected override ThreadingMode OnStart(ThreadManager threadManager)
-        {
-            return ThreadingMode.MainThread;
-        }
+        protected override void OnStart(EngineSettings settings) { }
 
-        protected override void OnStop() { }
+        protected override void OnStop(EngineSettings settings) { }
 
         protected override void OnDispose()
         {

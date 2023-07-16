@@ -48,19 +48,14 @@ namespace Molten.Net
 
         #region Protected
 
-        protected override void OnInitialize(EngineSettings settings)
+        protected override ThreadingMode OnInitialize(EngineSettings settings)
         {
-            throw new NotImplementedException();
-        }
-
-        protected override ThreadingMode OnStart(ThreadManager threadManager)
-        {
-            // NOTE access Settings property of base EngineService to get network settings/config.
-
             return ThreadingMode.SeparateThread;
         }
 
-        protected override void OnStop()
+        protected override void OnStart(EngineSettings settings) { }
+
+        protected override void OnStop(EngineSettings settings)
         {
             _outbox.Clear();
         }

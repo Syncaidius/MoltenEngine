@@ -1,4 +1,5 @@
 ﻿using Molten.Graphics;
+using Molten.Threading;
 
 namespace Molten.Input
 {
@@ -10,11 +11,13 @@ namespace Molten.Input
 
         public override IInputNavigation Navigation => _navigation;
 
-        protected override void OnInitialize(EngineSettings settings)
+        protected override ThreadingMode OnInitialize(EngineSettings settings)
         {
-            base.OnInitialize(settings);
+            ThreadingMode mode = base.OnInitialize(settings);
 
             _navigation = new AndroidInputNavigation();
+
+            return mode;
         }
 
         protected override void OnBindSurface(INativeSurface surface)
