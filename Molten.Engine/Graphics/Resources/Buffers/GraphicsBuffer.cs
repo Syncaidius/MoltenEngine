@@ -17,7 +17,6 @@
         /// <typeparam name="T"></typeparam>
         /// <param name="priority"></param>
         /// <param name="data"></param>
-        /// <param name="staging"></param>
         /// <param name="completeCallback"></param>
         public void SetData<T>(GraphicsPriority priority, T[] data, bool discard, Action completeCallback = null)
     where T : unmanaged
@@ -34,7 +33,6 @@
         /// <param name="startIndex">The start index within <paramref name="data"/> to copy.</param>
         /// <param name="elementCount"></param>
         /// <param name="byteOffset">The start location within the buffer to start copying from, in bytes.</param>
-        /// <param name="staging"></param>
         /// <param name="completeCallback"></param>
         /// <param name="discard">If true, the previous data will be discarded. Ignored if not applicable to the current buffer.</param>
         public void SetData<T>(GraphicsPriority priority, T[] data, uint startIndex, uint elementCount, bool discard, uint byteOffset = 0, Action completeCallback = null)

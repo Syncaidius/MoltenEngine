@@ -26,6 +26,7 @@ namespace Molten
             MSAA = AddSetting<AntiAliasLevel>("msaa", 0);
             FrameBufferMode = AddSetting("back_buffer_size", Graphics.FrameBufferMode.Double);
             EnableDebugLayer = AddSetting<bool>("renderer_debug");
+            TargetFPS = AddSetting<int>("target_fps", 60);
         }
 
         /// <summary>
@@ -49,9 +50,15 @@ namespace Molten
         [DataMember]
         public SettingValueList<int> DisplayOutputIds { get; }
 
-        /// <summary>Gets or sets wether Vsync is enabled.</summary>
+        /// <summary>Gets or sets whether Vsync is enabled.</summary>
         [DataMember]
         public SettingValue<bool> VSync { get; }
+
+        /// <summary>
+        /// Gets or sets the target frame rate of render services, if available.
+        /// </summary>
+        [DataMember]
+        public SettingValue<int> TargetFPS { get; }
 
         /// <summary>Gets or sets the multi-sampled anti-aliasing (MSAA) level.</summary>
         [DataMember]

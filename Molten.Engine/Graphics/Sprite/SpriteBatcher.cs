@@ -531,15 +531,23 @@ namespace Molten.Graphics
             GraphicsMapType map = GraphicsMapType.Discard;
             uint flushByteOffset = 0;
 
-            // Check if we actually need to discard. If we have enough space in the buffer, we can just write to it.
-            if(vertexCount <= (FlushCapacity - _flushIndex))
+            // TODO Improve this. Wasting a discard at the start of each frame!
+            if (_buffer.LastUsedFrameID != cmd.Device.Renderer.Profiler.FrameID)
             {
-                map = GraphicsMapType.Write;
-                flushByteOffset = _flushIndex * (uint)sizeof(GpuData);
+                _flushIndex = 0;
             }
             else
             {
-                _flushIndex = 0;
+                // Check if we actually need to discard. If we have enough space in the buffer, we can just write to it.
+                if (vertexCount <= (FlushCapacity - _flushIndex))
+                {
+                    map = GraphicsMapType.Write;
+                    flushByteOffset = _flushIndex * (uint)sizeof(GpuData);
+                }
+                else
+                {
+                    _flushIndex = 0;
+                }
             }
 
             using (GraphicsStream stream = cmd.MapResource(_buffer, 0, flushByteOffset, map))

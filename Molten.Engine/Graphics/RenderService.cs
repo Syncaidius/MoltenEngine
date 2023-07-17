@@ -43,6 +43,13 @@ namespace Molten.Graphics
         protected override void OnStart(EngineSettings settings)
         {
             _shouldPresent = true;
+            ChangeTargetFPS(0, settings.Graphics.TargetFPS.Value);
+            settings.Graphics.TargetFPS.OnChanged += ChangeTargetFPS;
+        }
+
+        private void ChangeTargetFPS(int oldValue, int newValue)
+        {
+            Thread.Timing.TargetUPS = Math.Max(1, newValue);
         }
 
         protected override void OnStop(EngineSettings settings)

@@ -168,16 +168,10 @@ namespace Molten
         }
 
         /// <summary>Gets the UPS within the snapshot of the last second. This is the same as <see cref="FPS"/></summary>
-        public int UPS
-        {
-            get { return _ups; }
-        }
+        public int UPS => _ups;
 
         /// <summary>Gets the FPS within the snapshot of the last second. This is the same as <see cref="UPS"/></summary>
-        public int FPS
-        {
-            get { return _ups; }
-        }
+        public int FPS => _ups;
 
         /// <summary>Gets whether the timing object is running.</summary>
         public bool IsRunning => _timer.IsRunning;
