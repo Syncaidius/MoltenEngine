@@ -127,60 +127,71 @@ namespace Molten.Graphics.DX11
             Map map = 0;
             GraphicsResourceFlags flags = resource.Flags;
 
-            if (flags.Has(GraphicsResourceFlags.CpuWrite))
+            if (mapType == GraphicsMapType.Read)
             {
-                if (mapType == GraphicsMapType.Discard)
+                if (flags.Has(GraphicsResourceFlags.CpuRead))
                 {
-                    map = Map.WriteDiscard;
-                    Profiler.Current.MapDiscardCount++;
+                    map |= Map.Read;
+
+                    // Only increment if we haven't already incremented during write flag check (above).
+                    if (!flags.Has(GraphicsResourceFlags.CpuWrite))
+                        Profiler.Current.MapReadWriteCount++;
                 }
                 else
                 {
-                    if (resource is GraphicsBuffer buffer &&
-                        (buffer.BufferType == GraphicsBufferType.Vertex || buffer.BufferType == GraphicsBufferType.Index))
+                    throw new InvalidOperationException($"Cannot map a resource for reading without CPU read access");
+                }
+            }
+            else
+            {
+                if (flags.Has(GraphicsResourceFlags.CpuWrite))
+                {
+                    if (mapType == GraphicsMapType.Discard)
                     {
-                        map = Map.WriteNoOverwrite;
-                        Profiler.Current.MapNoOverwriteCount++;
+                        map = Map.WriteDiscard;
+                        Profiler.Current.MapDiscardCount++;
                     }
                     else
                     {
-                        if (resource.Flags.Has(GraphicsResourceFlags.CpuWrite) &&
-                            !resource.Flags.Has(GraphicsResourceFlags.CpuRead) &&
-                            !resource.Flags.Has(GraphicsResourceFlags.GpuWrite))
+                        if (resource is GraphicsBuffer buffer &&
+                            (buffer.BufferType == GraphicsBufferType.Vertex || buffer.BufferType == GraphicsBufferType.Index))
                         {
                             map = Map.WriteNoOverwrite;
                             Profiler.Current.MapNoOverwriteCount++;
                         }
                         else
                         {
-                            map = Map.Write;
-                            Profiler.Current.MapReadWriteCount++;
+                            if (resource.Flags.Has(GraphicsResourceFlags.CpuWrite) &&
+                                !resource.Flags.Has(GraphicsResourceFlags.CpuRead) &&
+                                !resource.Flags.Has(GraphicsResourceFlags.GpuWrite))
+                            {
+                                map = Map.WriteNoOverwrite;
+                                Profiler.Current.MapNoOverwriteCount++;
+                            }
+                            else
+                            {
+                                map = Map.Write;
+                                Profiler.Current.MapReadWriteCount++;
+                            }
                         }
                     }
                 }
-            }
-            else
-            {
-                if (mapType != GraphicsMapType.Read)
+                else
+                {
                     throw new InvalidOperationException($"Cannot map a resource for writing without CPU write access");
-            }
-
-            if (flags.Has(GraphicsResourceFlags.CpuRead))
-            {
-                map |= Map.Read;
-
-                // Only increment if we haven't already incremented during write flag check (above).
-                if (!flags.Has(GraphicsResourceFlags.CpuWrite))
-                    Profiler.Current.MapReadWriteCount++;
-            }
-            else
-            {
-                if (mapType == GraphicsMapType.Read)
-                    throw new InvalidOperationException($"Cannot map a resource for reading without CPU read access");
+                }
             }
 
             MappedSubresource resMap = new MappedSubresource();
             _native->Map((ResourceHandleDX11)resource.Handle, subresource, map, 0, &resMap);
+
+            // Check for valid resource map handle.
+            if (resMap.PData == null)
+            {
+                (Device as DeviceDX11).ProcessDebugLayerMessages();
+                throw new InvalidOperationException($"Failed to map resource {resource.Name} for {mapType} access");
+            }
+
             return new ResourceMap(resMap.PData, resMap.RowPitch, resMap.DepthPitch);
         }
 
