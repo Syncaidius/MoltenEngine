@@ -57,8 +57,8 @@ namespace Molten
         [DataMember]
         public List<T> Values
         {
-            get { return _pendingValue; }
-            set { _pendingValue = value; }
+            get => _pendingValue;
+            set => _pendingValue = value;
         }
 
         public override object Object => _pendingValue;

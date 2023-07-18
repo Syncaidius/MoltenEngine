@@ -15,45 +15,24 @@
         }
 
         /// <summary>Gets the character that the event represents.</summary>
-        public char Character
-        {
-            get { return character; }
-        }
+        public char Character => character;
 
         /// <summary>Gets the raw window message loop parameter value.</summary>
-        public long Param
-        {
-            get { return lParam; }
-        }
+        public long Param => lParam;
 
         /// <summary>Gets the number of times the character has been repeated since the last update.</summary>
-        public long RepeatCount
-        {
-            get { return lParam & 0xffff; }
-        }
+        public long RepeatCount => lParam & 0xffff;
 
         /// <summary>Gets whether or not the character or key is from an extended set.</summary>
-        public bool ExtendedKey
-        {
-            get { return (lParam & (1 << 24)) > 0; }
-        }
+        public bool ExtendedKey => (lParam & (1 << 24)) > 0;
 
         /// <summary>Gets whether or not ALT is held down while the character key is being pressed..</summary>
-        public bool AltPressed
-        {
-            get { return (lParam & (1 << 29)) > 0; }
-        }
+        public bool AltPressed => (lParam & (1 << 29)) > 0;
 
         /// <summary>Gets the previous state of the character key (pressed or unpressed).</summary>
-        public bool PreviousState
-        {
-            get { return (lParam & (1 << 30)) > 0; }
-        }
+        public bool PreviousState => (lParam & (1 << 30)) > 0;
 
         /// <summary>Gets the transition state of the key. True if being released. False if being pressed.</summary>
-        public bool TransitionState
-        {
-            get { return (lParam & (1 << 31)) > 0; }
-        }
+        public bool TransitionState => (lParam & (1 << 31)) > 0;
     }
 }

@@ -302,8 +302,6 @@ namespace Molten.Graphics
 
         public RenderService Renderer => throw new NotImplementedException();
 
-        public IntPtr Handle => throw new NotImplementedException();
-
         public ViewportF Viewport => _vp;
 
         public GraphicsDevice Device => throw new NotImplementedException();

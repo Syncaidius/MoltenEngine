@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics
 {
-    public abstract class GraphicsObject : EngineObject, IGraphicsObject
+    public abstract class GraphicsObject : EngineObject
     {
         protected GraphicsObject(GraphicsDevice device)
         {

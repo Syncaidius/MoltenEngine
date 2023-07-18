@@ -1661,8 +1661,8 @@ namespace Molten.Font
             byte[] instructions;
             int ip;
 
-            public bool IsValid { get { return instructions != null; } }
-            public bool Done { get { return ip >= instructions.Length; } }
+            public bool IsValid => instructions != null;
+            public bool Done => ip >= instructions.Length;
 
             public InstructionStream(byte[] instructions)
             {

@@ -5,7 +5,7 @@
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class GraphicsStateBasicValue<T>
-        where T : class, IGraphicsObject
+        where T : GraphicsObject
     {
         T _boundValue;
         T _value;

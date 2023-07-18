@@ -48,11 +48,11 @@ namespace Molten.Graphics.DX11
                 Device.Settings.VSync.OnChanged += VSync_OnChanged;
             }
 
-            /* TODO Swapchain:
+            /* NOTE:
              *  Discard Mode = Only image index 0 can be accessed
              *  Sequential/FlipS-Sequential Modes = Only image index 0 can be accesed for writing. The rest can only be accesed for reading.
              *  
-             *  NOTE: This means we only need 1 handle for the swap chain, as the next image is always at index 0.
+             *  This means we only need 1 handle for the swap chain, as the next image is always at index 0.
              */
             void* ppSurface = null;
             Guid riid = ID3D11Texture2D1.Guid;

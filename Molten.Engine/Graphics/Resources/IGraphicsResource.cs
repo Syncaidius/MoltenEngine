@@ -2,7 +2,7 @@
 {
     /// <summary>Represents a 1D texture, while also acting as the base for all other texture implementations.</summary>
     /// <seealso cref="IDisposable" />
-    public interface IGraphicsResource : IGraphicsObject
+    public interface IGraphicsResource : IDisposable
     {
         /// <summary>
         /// Copies the current texture to the destination texture. Both textures must be of the same format and dimensions.
@@ -33,5 +33,31 @@
         /// Gets the <see cref="GraphicsResourceHandle"/> for the current <see cref="IGraphicsResource"/>.
         /// </summary>
         GraphicsResourceHandle Handle { get; }
+
+        /// <summary>
+        /// Gets the <see cref="GraphicsDevice"/> that the current <see cref="IGraphicsResource"/> is bound to.
+        /// </summary>
+        GraphicsDevice Device { get; }
+
+        /// <summary>
+        /// Gets the instance-specific version of the current <see cref="GraphicsObject"/>. Any change which will require a device
+        /// update should increase this value. E.g. Resizing a texture, recompiling a shader/material, etc.
+        /// </summary>
+        uint Version { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the current <see cref="IGraphicsResource"/>.
+        /// </summary>
+        string Name { get; set; }
+
+        /// <summary>
+        /// Gets whether or not the current <see cref="IGraphicsResource"/> has been successfully disposed and released by its parent <see cref="Device"/>.
+        /// </summary>
+        bool IsReleased { get; }
+
+        /// <summary>
+        /// Gets the unique engine object ID (EOID) of the current <see cref="IGraphicsObject"/>.
+        /// </summary>
+        public ulong EOID { get; }
     }
 }

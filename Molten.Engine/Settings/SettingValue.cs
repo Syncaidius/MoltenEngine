@@ -85,8 +85,8 @@ namespace Molten
         [DataMember]
         public T Value
         {
-            get { return _pendingValue; }
-            set { _pendingValue = value; }
+            get => _pendingValue;
+            set => _pendingValue = value;
         }
 
         /// <summary>

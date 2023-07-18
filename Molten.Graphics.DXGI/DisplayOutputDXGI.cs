@@ -48,7 +48,7 @@ namespace Molten.Graphics.Dxgi
         public Rectangle DesktopBounds => _desc->DesktopCoordinates.FromApi();
 
         /// <summary>Gets whether or not the output is bound to a desktop.</summary>
-        public bool IsBoundToDesktop { get { return _desc->AttachedToDesktop > 0; } }
+        public bool IsBoundToDesktop => _desc->AttachedToDesktop > 0;
 
         /// <summary>Gets the orientation of the current <see cref="IDisplayOutput" />.</summary>
         public DisplayOrientation Orientation => (DisplayOrientation)_desc->Rotation;

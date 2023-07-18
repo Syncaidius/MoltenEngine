@@ -17,6 +17,9 @@ namespace Molten.Graphics
         /// <summary>Occurs when a connected <see cref="IDisplayOutput"/> is deactivated on the current <see cref="GraphicsDevice"/>.</summary>
         public event DisplayOutputChanged OnOutputDeactivated;
 
+        /// <summary>
+        /// Invoked when the frame-buffer size is changed for the current <see cref="GraphicsDevice"/>.
+        /// </summary>
         public event FrameBufferSizeChangedHandler OnFrameBufferSizeChanged;
 
         const int INITIAL_BRANCH_COUNT = 3;
@@ -53,6 +56,10 @@ namespace Molten.Graphics
             bufferingMode.OnChanged += BufferingMode_OnChanged;
         }
 
+        /// <summary>
+        /// Invoked when the minimum supported frame-buffer size needs to be known.
+        /// </summary>
+        /// <returns></returns>
         protected abstract uint MinimumFrameBufferSize();
 
         private void BufferingMode_OnChanged(FrameBufferMode oldValue, FrameBufferMode newValue)
@@ -493,6 +500,9 @@ namespace Molten.Graphics
         /// </summary>
         public uint MaxStagingBufferSize => _maxStagingSize;
 
+        /// <summary>
+        /// Gets whether or not the current <see cref="GraphicsDevice"/> is initialized.
+        /// </summary>
         public bool IsInitialized { get; private set; }
     }
 }
