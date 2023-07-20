@@ -156,7 +156,7 @@ namespace Molten.Graphics.Vulkan
             BaseState = baseState;
         }
 
-        internal PipelineStateVK GetState(DepthSurfaceVK depthSurface, params IRenderSurfaceVK[] surfaces)
+        internal PipelineStateVK GetState(DepthSurfaceVK depthSurface, IRenderSurfaceVK[] surfaces)
         {
             DeviceVK device = Device as DeviceVK;
 

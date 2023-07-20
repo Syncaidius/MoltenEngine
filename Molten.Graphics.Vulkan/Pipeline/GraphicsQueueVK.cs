@@ -1,12 +1,14 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text;
+using Silk.NET.Core.Native;
 using Silk.NET.Vulkan;
 using Buffer = Silk.NET.Vulkan.Buffer;
 using Semaphore = Silk.NET.Vulkan.Semaphore;
+using VKViewport = Silk.NET.Vulkan.Viewport;
 
 namespace Molten.Graphics.Vulkan
 {
-    public class GraphicsQueueVK : GraphicsQueue
+    public unsafe class GraphicsQueueVK : GraphicsQueue
     {
         DeviceVK _device;
         Vk _vk;
@@ -15,6 +17,9 @@ namespace Molten.Graphics.Vulkan
         CommandListVK _cmd;
 
         Stack<DebugUtilsLabelEXT> _eventLabelStack;
+        IRenderSurfaceVK[] _applySurfaces;
+        Rect2D* _applyScissors;
+        VKViewport* _applyViewports;
 
         internal GraphicsQueueVK(RendererVK renderer, DeviceVK device, uint familyIndex, Queue queue, uint queueIndex, SupportedCommandSet set) :
             base(device)
@@ -27,6 +32,11 @@ namespace Molten.Graphics.Vulkan
             Index = queueIndex;
             Native = queue;
             Set = set;
+
+            uint maxSurfaces = (uint)State.Surfaces.Length;
+            _applySurfaces = new IRenderSurfaceVK[maxSurfaces];
+            _applyScissors = EngineUtil.AllocArray<Rect2D>(maxSurfaces);
+            _applyViewports = EngineUtil.AllocArray<VKViewport>(maxSurfaces);
 
             _eventLabelStack = new Stack<DebugUtilsLabelEXT>();
             _poolFrame = new CommandPoolVK(this, CommandPoolCreateFlags.ResetCommandBufferBit, 1);
@@ -201,7 +211,10 @@ namespace Molten.Graphics.Vulkan
         }
 
         protected override void OnDispose()
-        {            
+        {
+            EngineUtil.Free(ref _applyScissors);
+            EngineUtil.Free(ref _applyViewports);
+
             _poolFrame.Dispose();
             _poolTransient.Dispose();
         }
@@ -362,40 +375,196 @@ namespace Molten.Graphics.Vulkan
             throw new NotImplementedException();
         }
 
-        protected override GraphicsBindResult ApplyRenderState(HlslPass hlslPass, QueueValidationMode mode)
+        private GraphicsBindResult ApplyState(HlslShader shader, QueueValidationMode mode, Action callback)
         {
-            throw new NotImplementedException();
+             GraphicsBindResult vResult = GraphicsBindResult.Successful;
+
+            if (!DrawInfo.Began)
+                throw new GraphicsCommandQueueException(this, $"{GetType().Name}: BeginDraw() must be called before calling {nameof(Draw)}()");
+
+            State.Shader.Value = shader;
+            bool shaderChanged = State.Shader.Bind();
+
+            if (State.Shader.BoundValue == null)
+                return GraphicsBindResult.NoShader;
+
+            // Re-render the same material for mat.Iterations.
+            BeginEvent($"{mode} Call");
+            for (uint i = 0; i < shader.Passes.Length; i++)
+            {
+                ShaderPassVK pass = shader.Passes[i] as ShaderPassVK;
+                if (!pass.IsEnabled)
+                {
+                    SetMarker($"Pass {i} - Skipped (Disabled)");
+                    continue;
+                }
+
+                if (pass.IsCompute)
+                {
+                    BeginEvent($"Pass {i} - Compute");
+                    vResult = DoComputePass(pass);
+                    EndEvent();
+                }
+                else
+                {
+                    // Skip non-compute passes when we're in compute-only mode.
+                    if (mode == QueueValidationMode.Compute)
+                    {
+                        SetMarker($"Pass {i} - Skipped (Compute-Only-mode)");
+                        continue;
+                    };
+
+                    BeginEvent($"Pass {i} - Render");
+                    vResult = DoRenderPass(pass, mode, callback);
+                    EndEvent();
+                }
+
+                if (vResult != GraphicsBindResult.Successful)
+                {
+                    Device.Log.Warning($"{mode} call failed with result: {vResult} -- Iteration: Pass {i}/{shader.Passes.Length} -- " +
+                    $"Shader: {shader.Name} -- Topology: {pass.Topology} -- IsCompute: {pass.IsCompute}");
+                    break;
+                }
+            }
+            EndEvent();
+
+            return vResult;
         }
 
-        protected override GraphicsBindResult ApplyComputeState(HlslPass hlslPass)
+        private unsafe GraphicsBindResult DoRenderPass(ShaderPassVK pass, QueueValidationMode mode, Action callback)
         {
-            throw new NotImplementedException();
+            GraphicsBindResult vResult = Validate(mode);
+
+            if (vResult != GraphicsBindResult.Successful)
+                return vResult;
+
+            // Re-render the same pass for K iterations.
+            for (int k = 0; k < pass.Iterations; k++)
+            {
+                BeginEvent($"Iteration {k}");
+
+                // Gather all surfaces and scissor rectangles.
+                uint maxSurfaces = (uint)_applySurfaces.Length;
+                for (uint i = 0; i < maxSurfaces; i++)
+                {
+                    _applySurfaces[i] = State.Surfaces[i] as IRenderSurfaceVK;
+
+                    Rectangle r = State.ScissorRects[i];
+                    _applyScissors[i] = new Rect2D()
+                    {
+                        Offset = new Offset2D(r.X, r.Y),
+                        Extent = new Extent2D((uint)r.Width, (uint)r.Height)
+                    };
+                }
+
+                Buffer iBuffer = new Buffer();
+                IndexType iType = IndexType.NoneKhr;
+                if (State.IndexBuffer.BoundValue != null)
+                {
+                    BufferVK vkIndexBuffer = State.IndexBuffer.BoundValue as BufferVK;
+                    iBuffer = *vkIndexBuffer.Handle.NativePtr;
+                    switch (vkIndexBuffer.ResourceFormat)
+                    {
+                        case GraphicsFormat.R16_UInt:
+                            iType = IndexType.Uint16;
+                            break;
+                        case GraphicsFormat.R32_UInt:
+                            iType = IndexType.Uint32;
+                            break;
+
+                        case GraphicsFormat.R8_UInt:
+                            iType = IndexType.Uint8Ext;
+                            break;
+
+                        default:
+                            throw new InvalidOperationException($"Unsupported index format '{vkIndexBuffer.ResourceFormat}'");
+                    }
+                }
+
+                DepthSurfaceVK depthSurface = State.DepthSurface.Value as DepthSurfaceVK;
+                PipelineStateVK pipeState = pass.State.GetState(depthSurface, _applySurfaces);
+
+                // TODO: _device.VK.CmdBeginRenderPass(_cmd, renderPassInfo, SubpassContents.Inline);
+                _device.VK.CmdBindPipeline(_cmd, PipelineBindPoint.Graphics, pipeState);
+
+                _device.VK.CmdSetViewport(_cmd, 0, maxSurfaces, _applyViewports); // TODO collect viewport handles and set them all at once.
+                _device.VK.CmdSetScissor(_cmd, 0, maxSurfaces, _applyScissors);
+
+                // TODO: _device.VK.CmdBindDescriptorSets(_cmd, PipelineBindPoint.Graphics, pipelineLayout, 0, 1, descriptorSets, 0, null);
+                _device.VK.CmdBindVertexBuffers(_cmd, 0, 1, null, null);
+                _device.VK.CmdBindIndexBuffer(_cmd, iBuffer, 0, iType);
+
+                callback.Invoke();
+                _device.VK.CmdEndRenderPass(_cmd);
+
+                Profiler.Current.DrawCalls++;
+                EndEvent();
+            }
+
+            pass.InvokeCompleted(DrawInfo.Custom);
+            return GraphicsBindResult.Successful;
+        }
+
+        private GraphicsBindResult DoComputePass(ShaderPassVK pass)
+        {
+            Vector3UI groups = DrawInfo.Custom.ComputeGroups;
+
+            if (groups.X == 0)
+                groups.X = pass.ComputeGroups.X;
+
+            if (groups.Y == 0)
+                groups.Y = pass.ComputeGroups.Y;
+
+            if (groups.Z == 0)
+                groups.Z = pass.ComputeGroups.Z;
+
+            DrawInfo.ComputeGroups = groups;
+
+            GraphicsBindResult vResult = Validate(QueueValidationMode.Compute);
+            if (vResult != GraphicsBindResult.Successful)
+                return vResult;
+
+            // Re-render the same pass for K iterations.
+            // TODO Use sub-passes?
+            for (int j = 0; j < pass.Iterations; j++)
+            {
+                BeginEvent($"Iteration {j}");
+                _vk.CmdDispatch(_cmd, groups.X, groups.Y, groups.Z);
+                Profiler.Current.DispatchCalls++;
+                EndEvent();
+            }
+
+            pass.InvokeCompleted(DrawInfo.Custom);
+            return GraphicsBindResult.Successful;
         }
 
         public override GraphicsBindResult Draw(HlslShader shader, uint vertexCount, uint vertexStartIndex = 0)
         {
-            return ApplyState(shader, QueueValidationMode.Unindexed, () => _vk.CmdDraw(_cmd, vertexCount, 1, vertexStartIndex, 0));
+            return ApplyState(shader, QueueValidationMode.Unindexed, () => 
+                _vk.CmdDraw(_cmd, vertexCount, 1, vertexStartIndex, 0));
         }
 
         public override GraphicsBindResult DrawInstanced(HlslShader shader, uint vertexCountPerInstance, uint instanceCount, uint vertexStartIndex = 0, uint instanceStartIndex = 0)
         {
-            return ApplyState(shader, QueueValidationMode.Instanced, () => _vk.CmdDraw(_cmd, vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex));
+            return ApplyState(shader, QueueValidationMode.Instanced, () =>
+                _vk.CmdDraw(_cmd, vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex));
         }
 
         public override GraphicsBindResult DrawIndexed(HlslShader shader, uint indexCount, int vertexIndexOffset = 0, uint startIndex = 0)
         {
-            return ApplyState(shader, QueueValidationMode.Indexed, () => _vk.CmdDrawIndexed(_cmd, indexCount, 1, startIndex, vertexIndexOffset, 0));
+            return ApplyState(shader, QueueValidationMode.Indexed, () => 
+                _vk.CmdDrawIndexed(_cmd, indexCount, 1, startIndex, vertexIndexOffset, 0));
         }
 
         public override GraphicsBindResult DrawIndexedInstanced(HlslShader shader, uint indexCountPerInstance, uint instanceCount, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
         {
-            return ApplyState(shader, QueueValidationMode.InstancedIndexed,
-                () => _vk.CmdDrawIndexed(_cmd, indexCountPerInstance, instanceCount, startIndex, vertexIndexOffset, instanceStartIndex));
+            return ApplyState(shader, QueueValidationMode.InstancedIndexed, () => 
+                _vk.CmdDrawIndexed(_cmd, indexCountPerInstance, instanceCount, startIndex, vertexIndexOffset, instanceStartIndex));
         }
 
-        protected override void OnDispatchCompute(HlslShader shader, Vector3UI groups)
+        public override GraphicsBindResult Dispatch(HlslShader shader, Vector3UI groups)
         {
-            _vk.CmdDispatch(_cmd, groups.X, groups.Y, groups.Z);
+            return ApplyState(shader, QueueValidationMode.Compute, null);
         }
 
         protected override GraphicsBindResult CheckInstancing()

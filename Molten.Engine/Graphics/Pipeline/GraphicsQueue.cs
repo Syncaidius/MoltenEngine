@@ -15,12 +15,12 @@
             /// <para>
             /// Any dimension that is 0 will default to the one provided by the shader's definition, if any.</para>
             /// </summary>
-            internal Vector3UI ComputeGroups;
+            public Vector3UI ComputeGroups;
 
             /// <summary>
             /// Gets a dictionary of custom values.
             /// </summary>
-            internal Dictionary<string, object> Values { get; } = new Dictionary<string, object>();
+            public Dictionary<string, object> Values { get; } = new Dictionary<string, object>();
 
             internal void Reset()
             {
@@ -29,13 +29,13 @@
             }
         }
 
-        private class BatchDrawInfo
+        protected class BatchDrawInfo
         {
-            internal bool Began;
+            public bool Began { get; internal set; }
 
-            internal Vector3UI ComputeGroups;
+            public Vector3UI ComputeGroups;
 
-            internal CustomDrawInfo Custom { get; } = new CustomDrawInfo();
+            public CustomDrawInfo Custom { get; } = new CustomDrawInfo();
 
             public void Reset()
             {
@@ -47,14 +47,13 @@
         Stack<RenderProfiler> _profilerStack;
         RenderProfiler _profiler;
         GraphicsState _state;
-        BatchDrawInfo _drawInfo;
 
         Stack<GraphicsState> _stateStack;
         Stack<GraphicsState> _freeStateStack;
 
         protected GraphicsQueue(GraphicsDevice device)
         {
-            _drawInfo = new BatchDrawInfo();
+            DrawInfo = new BatchDrawInfo();
             Device = device;
             _state = new GraphicsState(device);
             _stateStack = new Stack<GraphicsState>();
@@ -137,11 +136,11 @@
         public virtual void Begin(GraphicsCommandListFlags flags = GraphicsCommandListFlags.None)
         {
 #if DEBUG
-            if (_drawInfo.Began)
+            if (DrawInfo.Began)
                 throw new GraphicsCommandQueueException(this, $"{nameof(GraphicsCommandList)}: End() must be called before the next Begin() call.");
 #endif
 
-            _drawInfo.Began = true; 
+            DrawInfo.Began = true; 
         }
 
         /// <summary>
@@ -161,11 +160,11 @@
         public virtual GraphicsCommandList End()
         {
 #if DEBUG
-            if (!_drawInfo.Began)
+            if (!DrawInfo.Began)
                 throw new GraphicsCommandQueueException(this, $"{nameof(GraphicsCommandList)}: BeginDraw() must be called before EndDraw().");
 #endif
 
-            _drawInfo.Reset();
+            DrawInfo.Reset();
             return Cmd;
         }
 
@@ -236,114 +235,6 @@
 
         protected abstract void OnResetState();
 
-        protected GraphicsBindResult ApplyState(HlslShader shader, QueueValidationMode mode, CmdQueueDrawCallback drawCallback)
-        {
-            GraphicsBindResult vResult = GraphicsBindResult.Successful;
-
-            if (!_drawInfo.Began)
-                throw new GraphicsCommandQueueException(this, $"{GetType().Name}: BeginDraw() must be called before calling {nameof(Draw)}()");
-
-            State.Shader.Value = shader;
-            bool shaderChanged = State.Shader.Bind();
-
-            if (State.Shader.BoundValue == null)
-                return GraphicsBindResult.NoShader;
-
-            // Re-render the same material for mat.Iterations.
-            BeginEvent($"{mode} Call");
-            for (uint i = 0; i < shader.Passes.Length; i++)
-            {
-                HlslPass pass = shader.Passes[i];
-                if (!pass.IsEnabled)
-                {
-                    SetMarker($"Pass {i} - Skipped (Disabled)");
-                    continue;
-                }
-
-                if (pass.IsCompute)
-                {
-                    BeginEvent($"Pass {i} - Compute");
-                    vResult = ApplyComputeState(pass);
-                    if (vResult != GraphicsBindResult.Successful)
-                        return vResult;
-
-                    Vector3UI customGroups = _drawInfo.Custom.ComputeGroups;
-
-                    if (customGroups.X == 0)
-                        customGroups.X = pass.ComputeGroups.X;
-
-                    if (customGroups.Y == 0)
-                        customGroups.Y = pass.ComputeGroups.Y;
-
-                    if (customGroups.Z == 0)
-                        customGroups.Z = pass.ComputeGroups.Z;
-
-                    _drawInfo.ComputeGroups = customGroups;
-
-                    vResult = Validate(mode);
-                    if (vResult != GraphicsBindResult.Successful)
-                        return vResult;
-
-                    // Re-render the same pass for K iterations.
-                    for (int j = 0; j < pass.Iterations; j++)
-                    {
-                        BeginEvent($"Iteration {j}");
-                        OnDispatchCompute(shader, customGroups);
-                        Profiler.Current.DispatchCalls++;
-                        EndEvent();
-                    }
-
-                    pass.InvokeCompleted(_drawInfo.Custom);
-
-                    EndEvent();
-                }
-                else
-                {
-                    // Skip non-compute passes when we're in compute-only mode.
-                    if (mode == QueueValidationMode.Compute)
-                    {
-                        SetMarker($"Pass {i} - Skipped (Compute-Only-mode)");
-                        continue;
-                    };
-
-                    BeginEvent($"Pass {i} - Render");
-                    ApplyRenderState(pass, mode);
-                    vResult = Validate(mode);
-
-                    if (vResult == GraphicsBindResult.Successful)
-                    {
-                        // Re-render the same pass for K iterations.
-                        for (int k = 0; k < pass.Iterations; k++)
-                        {
-                            BeginEvent($"Iteration {k}");
-                            drawCallback();
-                            Profiler.Current.DrawCalls++;
-                            EndEvent();
-                        }
-
-                        pass.InvokeCompleted(_drawInfo.Custom);
-                    }
-                    EndEvent();
-                }
-
-                if (vResult != GraphicsBindResult.Successful)
-                {
-                    Device.Log.Warning($"{mode} call failed with result: {vResult} -- Iteration: Pass {i}/{shader.Passes.Length} -- " +
-                    $"Shader: {shader.Name} -- Topology: {pass.Topology} -- IsCompute: {pass.IsCompute}");
-                    break;
-                }
-            }
-            EndEvent();
-
-            return vResult;
-        }
-
-        protected abstract void OnDispatchCompute(HlslShader shader, Vector3UI groups);
-
-        protected abstract GraphicsBindResult ApplyRenderState(HlslPass hlslPass, QueueValidationMode mode);
-
-        protected abstract GraphicsBindResult ApplyComputeState(HlslPass hlslPass);
-
         /// <summary>Draw non-indexed, non-instanced primitives. 
         /// All queued compute shader dispatch requests are also processed</summary>
         /// <param name="shader">The <see cref="HlslShader"/> to apply when drawing.</param>
@@ -393,13 +284,9 @@
         /// <param name="shader">The shader to be dispatched.</param>
         /// <param name="groups">The number of thread groups.</param>
         /// <returns></returns>
-        public GraphicsBindResult Dispatch(HlslShader shader, Vector3UI groups)
-        {
-            _drawInfo.Custom.ComputeGroups = groups;
-            return ApplyState(shader, QueueValidationMode.Compute, null);
-        }
+        public abstract GraphicsBindResult Dispatch(HlslShader shader, Vector3UI groups);
 
-        private GraphicsBindResult Validate(QueueValidationMode mode)
+        protected GraphicsBindResult Validate(QueueValidationMode mode)
         {
             GraphicsBindResult result = GraphicsBindResult.Successful;
 
@@ -449,7 +336,7 @@
         private GraphicsBindResult CheckComputeGroups()
         {
             ComputeCapabilities comCap = Device.Capabilities.Compute;
-            Vector3UI groups = _drawInfo.ComputeGroups;
+            Vector3UI groups = DrawInfo.ComputeGroups;
 
             if (groups.Z > comCap.MaxGroupCountZ)
             {
@@ -505,5 +392,7 @@
         protected abstract GraphicsCommandList Cmd { get; set; }
 
         public GraphicsState State => _state;
+
+        protected BatchDrawInfo DrawInfo { get; }
     }
 }

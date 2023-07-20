@@ -38,5 +38,15 @@ namespace Molten.Graphics
                 IsDirty = true;
             }
         }
+
+        public T this[uint index]
+        {
+            get => Items[index];
+            set
+            {
+                Items[index] = value;
+                IsDirty = true;
+            }
+        }
     }
 }

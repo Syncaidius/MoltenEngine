@@ -117,17 +117,7 @@ namespace Molten.Graphics.DX12
             SilkUtil.ReleasePtr(ref _ptr);
         }
 
-        protected override void OnDispatchCompute(HlslShader shader, Vector3UI groups)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override GraphicsBindResult ApplyRenderState(HlslPass hlslPass, QueueValidationMode mode)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override GraphicsBindResult ApplyComputeState(HlslPass hlslPass)
+        public override GraphicsBindResult Dispatch(HlslShader shader, Vector3UI groups)
         {
             throw new NotImplementedException();
         }

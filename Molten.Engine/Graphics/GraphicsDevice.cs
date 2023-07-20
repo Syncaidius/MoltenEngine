@@ -336,6 +336,11 @@ namespace Molten.Graphics
             return CreateIndexBuffer(flags, (uint)data.Length, data);
         }
 
+        public GraphicsBuffer CreateIndexBuffer(byte[] data, GraphicsResourceFlags flags = GraphicsResourceFlags.None)
+        {
+            return CreateIndexBuffer(flags, (uint)data.Length, data);
+        }
+
         public GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint indexCapacity, ushort[] initialData)
         {
             return CreateBuffer(GraphicsBufferType.Index, flags, GraphicsFormat.R16_UInt, indexCapacity, initialData);
@@ -345,6 +350,12 @@ namespace Molten.Graphics
         {
             flags |= GraphicsResourceFlags.NoShaderAccess;
             return CreateBuffer(GraphicsBufferType.Index, flags, GraphicsFormat.R32_UInt, indexCapacity, initialData);
+        }
+
+        public GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint indexCapacity, byte[] initialData = null)
+        {
+            flags |= GraphicsResourceFlags.NoShaderAccess;
+            return CreateBuffer(GraphicsBufferType.Index, flags, GraphicsFormat.R8_UInt, indexCapacity, initialData);
         }
 
         public GraphicsBuffer CreateStructuredBuffer<T>(T[] data, GraphicsResourceFlags flags = GraphicsResourceFlags.None)

@@ -235,7 +235,107 @@ namespace Molten.Graphics.DX11
             Profiler.Current.CopyResourceCount++;
         }
 
-        protected override GraphicsBindResult ApplyRenderState(HlslPass hlslPass, QueueValidationMode mode)
+        protected GraphicsBindResult ApplyState(HlslShader shader, QueueValidationMode mode, CmdQueueDrawCallback drawCallback)
+        {
+            GraphicsBindResult vResult = GraphicsBindResult.Successful;
+
+            if (!DrawInfo.Began)
+                throw new GraphicsCommandQueueException(this, $"{GetType().Name}: BeginDraw() must be called before calling {nameof(Draw)}()");
+
+            State.Shader.Value = shader;
+            bool shaderChanged = State.Shader.Bind();
+
+            if (State.Shader.BoundValue == null)
+                return GraphicsBindResult.NoShader;
+
+            // Re-render the same material for mat.Iterations.
+            BeginEvent($"{mode} Call");
+            for (uint i = 0; i < shader.Passes.Length; i++)
+            {
+                HlslPass pass = shader.Passes[i];
+                if (!pass.IsEnabled)
+                {
+                    SetMarker($"Pass {i} - Skipped (Disabled)");
+                    continue;
+                }
+
+                if (pass.IsCompute)
+                {
+                    BeginEvent($"Pass {i} - Compute");
+                    _cs.Bind(pass[ShaderType.Compute]);
+
+                    Vector3UI groups = DrawInfo.Custom.ComputeGroups;
+
+                    if (groups.X == 0)
+                        groups.X = pass.ComputeGroups.X;
+
+                    if (groups.Y == 0)
+                        groups.Y = pass.ComputeGroups.Y;
+
+                    if (groups.Z == 0)
+                        groups.Z = pass.ComputeGroups.Z;
+
+                    DrawInfo.ComputeGroups = groups;
+
+                    vResult = Validate(mode);
+                    if (vResult != GraphicsBindResult.Successful)
+                        return vResult;
+
+                    // Re-render the same pass for K iterations.
+                    for (int j = 0; j < pass.Iterations; j++)
+                    {
+                        BeginEvent($"Iteration {j}");
+                        _native->Dispatch(groups.X, groups.Y, groups.Z);
+                        Profiler.Current.DispatchCalls++;
+                        EndEvent();
+                    }
+
+                    pass.InvokeCompleted(DrawInfo.Custom);
+
+                    EndEvent();
+                }
+                else
+                {
+                    // Skip non-compute passes when we're in compute-only mode.
+                    if (mode == QueueValidationMode.Compute)
+                    {
+                        SetMarker($"Pass {i} - Skipped (Compute-Only-mode)");
+                        continue;
+                    };
+
+                    BeginEvent($"Pass {i} - Render");
+                    ApplyRenderState(pass, mode);
+                    vResult = Validate(mode);
+
+                    if (vResult == GraphicsBindResult.Successful)
+                    {
+                        // Re-render the same pass for K iterations.
+                        for (int k = 0; k < pass.Iterations; k++)
+                        {
+                            BeginEvent($"Iteration {k}");
+                            drawCallback();
+                            Profiler.Current.DrawCalls++;
+                            EndEvent();
+                        }
+
+                        pass.InvokeCompleted(DrawInfo.Custom);
+                    }
+                    EndEvent();
+                }
+
+                if (vResult != GraphicsBindResult.Successful)
+                {
+                    Device.Log.Warning($"{mode} call failed with result: {vResult} -- Iteration: Pass {i}/{shader.Passes.Length} -- " +
+                    $"Shader: {shader.Name} -- Topology: {pass.Topology} -- IsCompute: {pass.IsCompute}");
+                    break;
+                }
+            }
+            EndEvent();
+
+            return vResult;
+        }
+
+        private GraphicsBindResult ApplyRenderState(HlslPass hlslPass, QueueValidationMode mode)
         {
             ShaderPassDX11 pass = hlslPass as ShaderPassDX11;
             D3DPrimitiveTopology passTopology = pass.Topology.ToApi();
@@ -414,13 +514,6 @@ namespace Molten.Graphics.DX11
             return GraphicsBindResult.Successful;
         }
 
-        protected override GraphicsBindResult ApplyComputeState(HlslPass hlslPass)
-        {
-            ShaderPassDX11 pass = hlslPass as ShaderPassDX11;
-            _cs.Bind(pass[ShaderType.Compute]);
-            return GraphicsBindResult.Successful;
-        }
-
         private void BindVertexBuffers()
         {
             int count = State.VertexBuffers.Length;
@@ -504,9 +597,16 @@ namespace Molten.Graphics.DX11
                 _native->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndex, vertexIndexOffset, instanceStartIndex));
         }
 
-        protected override void OnDispatchCompute(HlslShader shader, Vector3UI groups)
+        /// <summary>
+        /// Dispatches a <see cref="HlslShader"/> as a compute shader. Any non-compute passes will be skipped.
+        /// </summary>
+        /// <param name="shader">The shader to be dispatched.</param>
+        /// <param name="groups">The number of thread groups.</param>
+        /// <returns></returns>
+        public override GraphicsBindResult Dispatch(HlslShader shader, Vector3UI groups)
         {
-            _native->Dispatch(groups.X, groups.Y, groups.Z);
+            DrawInfo.Custom.ComputeGroups = groups;
+            return ApplyState(shader, QueueValidationMode.Compute, null);
         }
 
         /// <summary>Retrieves or creates a usable input layout for the provided vertex buffers and sub-effect.</summary>
