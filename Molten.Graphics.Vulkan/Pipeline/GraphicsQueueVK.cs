@@ -482,14 +482,6 @@ namespace Molten.Graphics.Vulkan
                     }
                 }
 
-                /* TODO Retrieve each part of the render state separately
-                 *  - Store RenderPass instances in a cache - These are based solely on what surfaces are bound (color and depth/stencil)
-                 *  - Store FrameBuffer instances in a cache - These decide which image view is bound to which attachment - every surface has an image view already - Easy to bind
-                 *  - Store DescriptorSets instances in a cache - These decide which pipeline input layout to use and which descriptor sets to bind
-                 *  - BindedPassVK will be a combination of the above and perform part of the render process for us via a Draw() call
-                 *      - BindedPassVK instances will be faster to compare by testing their RenderPass, FrameBuffer, etc pointers/references for equality.
-                 */
-
                 DepthSurfaceVK depthSurface = State.DepthSurface.Value as DepthSurfaceVK;
                 PipelineStateVK pipeState = pass.State.GetState(_applySurfaces, depthSurface);
                 FrameBufferVK frameBuffer = _device.GetFrameBuffer(pipeState.RenderPass, _applySurfaces, depthSurface);
@@ -510,7 +502,7 @@ namespace Molten.Graphics.Vulkan
                 _device.VK.CmdSetViewport(_cmd, 0, maxSurfaceCount, _applyViewports); // TODO collect viewport handles and set them all at once.
                 _device.VK.CmdSetScissor(_cmd, 0, maxSurfaceCount, _applyScissors);
 
-                // TODO: _device.VK.CmdBindDescriptorSets(_cmd, PipelineBindPoint.Graphics, pipelineLayout, 0, 1, descriptorSets, 0, null);
+                //_device.VK.CmdBindDescriptorSets(_cmd, PipelineBindPoint.Graphics, pipeState.Layout, 0, 1, descriptorSets, 0, null);
                 _device.VK.CmdBindVertexBuffers(_cmd, 0, 1, null, null);
                 _device.VK.CmdBindIndexBuffer(_cmd, iBuffer, 0, iType);
 

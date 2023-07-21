@@ -223,5 +223,7 @@ namespace Molten.Graphics.Vulkan
         internal PipelineStateVK BaseState { get; }
 
         internal RenderPassVK RenderPass => _renderPass;
+
+        internal PipelineLayoutVK Layout => _pipelineLayout;
     }
 }
