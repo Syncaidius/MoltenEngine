@@ -239,6 +239,13 @@ namespace Molten.Graphics.Vulkan
             }
         }
 
+        public static implicit operator RenderPass(RenderPassVK pass)
+        {
+            return pass._handle;
+        }
+
         internal RenderPass Handle => _handle;
+
+        internal ref RenderPassCreateInfo Info => ref _info;
     }
 }

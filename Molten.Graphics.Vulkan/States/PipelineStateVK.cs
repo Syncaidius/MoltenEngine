@@ -42,7 +42,7 @@ namespace Molten.Graphics.Vulkan
         InputAssemblyStateVK _inputState;
         DescriptorSetLayoutVK _descriptorLayout;
         PipelineLayoutVK _pipelineLayout;
-        RenderPassVK _pass;
+        RenderPassVK _renderPass;
 
         public PipelineStateVK(DeviceVK device, ShaderPassVK pass, ref ShaderPassParameters parameters) : 
             base(device)
@@ -113,8 +113,8 @@ namespace Molten.Graphics.Vulkan
             _info.Layout = _pipelineLayout.Handle;
 
             // TODO initialize - This should be stored in RenderStep based on input and output surfaces.
-            if (_pass != null)
-                _info.RenderPass = _pass.Handle;
+            if (_renderPass != null)
+                _info.RenderPass = _renderPass.Handle;
             else
                 _info.RenderPass = new RenderPass();
 
@@ -156,21 +156,34 @@ namespace Molten.Graphics.Vulkan
             BaseState = baseState;
         }
 
-        internal PipelineStateVK GetState(DepthSurfaceVK depthSurface, IRenderSurfaceVK[] surfaces)
+        private PipelineStateVK(DeviceVK device, PipelineStateVK baseState, FrameBufferVK frameBuffer) : 
+            base(device)
+        {
+            if (baseState == null)
+                throw new ArgumentNullException(nameof(baseState), "Base state cannot be null");
+
+            _info = new GraphicsPipelineCreateInfo();
+            _info.SType = StructureType.GraphicsPipelineCreateInfo;
+            _info.Flags = PipelineCreateFlags.CreateAllowDerivativesBit | PipelineCreateFlags.CreateDerivativeBit;
+            _info.PNext = null;
+            _info.BasePipelineHandle = baseState;
+            BaseState = baseState;
+        }
+
+        internal PipelineStateVK GetState(IRenderSurfaceVK[] surfaces, DepthSurfaceVK depthSurface)
         {
             DeviceVK device = Device as DeviceVK;
-
-            if (_pass != null && _pass.DoSurfacesMatch(device, surfaces, depthSurface))
+            if (_renderPass != null && _renderPass.DoSurfacesMatch(device, surfaces, depthSurface))
                 return this;
 
 
             // Check if we have an existing derivative that matches our surface attachments.
             foreach (PipelineStateVK derivative in _derivatives)
             {
-                if (derivative._pass == null)
+                if (derivative._renderPass == null)
                     continue;
 
-                if (derivative._pass.DoSurfacesMatch(device, surfaces, depthSurface))
+                if (derivative._renderPass.DoSurfacesMatch(device, surfaces, depthSurface))
                     return derivative;
             }
 
@@ -208,5 +221,7 @@ namespace Molten.Graphics.Vulkan
         }
 
         internal PipelineStateVK BaseState { get; }
+
+        internal RenderPassVK RenderPass => _renderPass;
     }
 }

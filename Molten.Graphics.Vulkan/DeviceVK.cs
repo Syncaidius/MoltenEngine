@@ -39,6 +39,7 @@ namespace Molten.Graphics.Vulkan
 
         List<SwapChainSurfaceVK> _presentSurfaces;
         List<RenderPassVK> _renderPasses;
+        List<FrameBufferVK> _frameBuffers;
 
         KhrSwapchain _extSwapChain;
         /// <summary>
@@ -102,6 +103,19 @@ namespace Molten.Graphics.Vulkan
             RenderPassVK newPass = new RenderPassVK(this, surfaces, depthSurface);
             _renderPasses.Add(newPass);
             return newPass;
+        }
+
+        internal FrameBufferVK GetFrameBuffer(RenderPassVK renderPass, IRenderSurfaceVK[] surfaces, DepthSurfaceVK depthSurface)
+        {
+            foreach (FrameBufferVK fb in _frameBuffers)
+            {
+                if (fb.DoSurfacesMatch(this, renderPass, surfaces, depthSurface))
+                    return fb;
+            }
+
+            FrameBufferVK newFrameBuffer = new FrameBufferVK(this, renderPass, surfaces, depthSurface);
+            _frameBuffers.Add(newFrameBuffer);
+            return newFrameBuffer;
         }
 
         protected override uint MinimumFrameBufferSize()

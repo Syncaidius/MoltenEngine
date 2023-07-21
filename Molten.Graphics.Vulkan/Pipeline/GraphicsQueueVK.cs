@@ -1,6 +1,5 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text;
-using Silk.NET.Core.Native;
 using Silk.NET.Vulkan;
 using Buffer = Silk.NET.Vulkan.Buffer;
 using Semaphore = Silk.NET.Vulkan.Semaphore;
@@ -19,6 +18,7 @@ namespace Molten.Graphics.Vulkan
         Stack<DebugUtilsLabelEXT> _eventLabelStack;
         IRenderSurfaceVK[] _applySurfaces;
         Rect2D* _applyScissors;
+        ClearValue* _applyClearValues;
         VKViewport* _applyViewports;
 
         internal GraphicsQueueVK(RendererVK renderer, DeviceVK device, uint familyIndex, Queue queue, uint queueIndex, SupportedCommandSet set) :
@@ -36,6 +36,7 @@ namespace Molten.Graphics.Vulkan
             uint maxSurfaces = (uint)State.Surfaces.Length;
             _applySurfaces = new IRenderSurfaceVK[maxSurfaces];
             _applyScissors = EngineUtil.AllocArray<Rect2D>(maxSurfaces);
+            _applyClearValues = EngineUtil.AllocArray<ClearValue>(maxSurfaces);
             _applyViewports = EngineUtil.AllocArray<VKViewport>(maxSurfaces);
 
             _eventLabelStack = new Stack<DebugUtilsLabelEXT>();
@@ -444,8 +445,8 @@ namespace Molten.Graphics.Vulkan
                 BeginEvent($"Iteration {k}");
 
                 // Gather all surfaces and scissor rectangles.
-                uint maxSurfaces = (uint)_applySurfaces.Length;
-                for (uint i = 0; i < maxSurfaces; i++)
+                uint maxSurfaceCount = (uint)_applySurfaces.Length;
+                for (uint i = 0; i < maxSurfaceCount; i++)
                 {
                     _applySurfaces[i] = State.Surfaces[i] as IRenderSurfaceVK;
 
@@ -481,14 +482,33 @@ namespace Molten.Graphics.Vulkan
                     }
                 }
 
-                DepthSurfaceVK depthSurface = State.DepthSurface.Value as DepthSurfaceVK;
-                PipelineStateVK pipeState = pass.State.GetState(depthSurface, _applySurfaces);
+                /* TODO Retrieve each part of the render state separately
+                 *  - Store RenderPass instances in a cache - These are based solely on what surfaces are bound (color and depth/stencil)
+                 *  - Store FrameBuffer instances in a cache - These decide which image view is bound to which attachment - every surface has an image view already - Easy to bind
+                 *  - Store DescriptorSets instances in a cache - These decide which pipeline input layout to use and which descriptor sets to bind
+                 *  - BindedPassVK will be a combination of the above and perform part of the render process for us via a Draw() call
+                 *      - BindedPassVK instances will be faster to compare by testing their RenderPass, FrameBuffer, etc pointers/references for equality.
+                 */
 
-                // TODO: _device.VK.CmdBeginRenderPass(_cmd, renderPassInfo, SubpassContents.Inline);
+                DepthSurfaceVK depthSurface = State.DepthSurface.Value as DepthSurfaceVK;
+                PipelineStateVK pipeState = pass.State.GetState(_applySurfaces, depthSurface);
+                FrameBufferVK frameBuffer = _device.GetFrameBuffer(pipeState.RenderPass, _applySurfaces, depthSurface);
+
+                RenderPassBeginInfo rpInfo = new RenderPassBeginInfo()
+                {
+                    SType = StructureType.RenderPassBeginInfo,
+                    RenderPass = pipeState.RenderPass,
+                    Framebuffer = frameBuffer,
+                    RenderArea = _applyScissors[0],         // TODO Use a rectangle that contains all of the provided scissor rectangles
+                    PClearValues = _applyClearValues,       // TODO Gather clear values of all bound surfaces (value[0].DepthStencil is always for the depth-stencil clear value)
+                    ClearValueCount = maxSurfaceCount,      // TODO Gather clear values of all bound surfaces
+                };
+
+                _device.VK.CmdBeginRenderPass(_cmd, rpInfo, SubpassContents.Inline);
                 _device.VK.CmdBindPipeline(_cmd, PipelineBindPoint.Graphics, pipeState);
 
-                _device.VK.CmdSetViewport(_cmd, 0, maxSurfaces, _applyViewports); // TODO collect viewport handles and set them all at once.
-                _device.VK.CmdSetScissor(_cmd, 0, maxSurfaces, _applyScissors);
+                _device.VK.CmdSetViewport(_cmd, 0, maxSurfaceCount, _applyViewports); // TODO collect viewport handles and set them all at once.
+                _device.VK.CmdSetScissor(_cmd, 0, maxSurfaceCount, _applyScissors);
 
                 // TODO: _device.VK.CmdBindDescriptorSets(_cmd, PipelineBindPoint.Graphics, pipelineLayout, 0, 1, descriptorSets, 0, null);
                 _device.VK.CmdBindVertexBuffers(_cmd, 0, 1, null, null);
@@ -529,7 +549,13 @@ namespace Molten.Graphics.Vulkan
             for (int j = 0; j < pass.Iterations; j++)
             {
                 BeginEvent($"Iteration {j}");
+                PipelineStateVK pipeState = pass.State.GetState(null, null);
+                uint descriptorSetCount = 0;
+
+                _vk.CmdBindPipeline(_cmd, PipelineBindPoint.Compute, pipeState);
+                //_vk.CmdBindDescriptorSets(_cmd, PipelineBindPoint.Compute, pipelineLayout, 0, descriptorSetCount, pDescriptorSets, 0, null);
                 _vk.CmdDispatch(_cmd, groups.X, groups.Y, groups.Z);
+
                 Profiler.Current.DispatchCalls++;
                 EndEvent();
             }
