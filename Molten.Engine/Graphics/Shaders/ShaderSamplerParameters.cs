@@ -23,14 +23,26 @@
         [ShaderNode(ShaderNodeParseType.Enum)]
         public ComparisonMode Comparison;
 
-        /// <summary>Gets or sets the filtering method to use when sampling a texture.</summary>
+        /// <summary>Gets or sets the filtering method to use for minification (shrink) sampling.</summary>
         [ShaderNode(ShaderNodeParseType.Enum)]
-        public SamplerFilter Filter;
+        public SamplerFilter MinFilter;
 
-        /// <summary>Clamping value used if <see cref="SamplerFilter.Anisotropic"/> or 
-        /// <see cref="SamplerFilter.ComparisonAnisotropic"/> is specified in SamplerFilter. Valid values are between 1 and 16.</summary>
+        /// <summary>Gets or sets the filtering method to use for magnifcation (enlarge) sampling.</summary>
+        [ShaderNode(ShaderNodeParseType.Enum)]
+        public SamplerFilter MagFilter;
+
+        /// <summary>Gets or sets the filtering method to use when mip-level sampling.</summary>
+        [ShaderNode(ShaderNodeParseType.Enum)]
+        public SamplerFilter MipFilter;
+
+        /// <summary>Clamping value used if <see cref="SamplerFilter.Anisotropic"/> is specified in SamplerFilter. Valid values are between 1 and 16.
+        /// <para>A value of 0 will disable anisotrophic filtering.</para></summary>
         [ShaderNode(ShaderNodeParseType.UInt32)]
         public uint MaxAnisotropy;
+
+        /// <summary>Gets or sets whether or not the sampler is used for comparison sampling.</summary>
+        [ShaderNode(ShaderNodeParseType.Bool)]
+        public bool IsComparison;
 
         /// <summary>Upper end of the mipmap range to clamp access to, where 0 is the largest
         ///     and most detailed mipmap level and any level higher than that is less detailed.
@@ -55,27 +67,20 @@
             ApplyPreset(preset);
         }
 
-        /// <summary>Gets whether or not the sampler a comparison sampler. This is determined by the <see cref="Filter"/> mode.</summary>
-        public bool IsComparisonSampler
-        {
-            get
-            {
-                return Filter >= SamplerFilter.ComparisonMinMagMipPoint &&
-                    Filter <= SamplerFilter.ComparisonAnisotropic;
-            }
-        }
-
         public void ApplyPreset(SamplerPreset preset)
         {
             // Revert to default
-            Filter = SamplerFilter.MinMagMipLinear;
+            MinFilter = SamplerFilter.Linear;
+            MagFilter = SamplerFilter.Linear;
+            MipFilter = SamplerFilter.Linear;
             AddressU = SamplerAddressMode.Wrap;
             AddressV = SamplerAddressMode.Wrap;
             AddressW = SamplerAddressMode.Wrap;
+            IsComparison = false;
             MinMipMapLod = float.MinValue;
             MaxMipMapLod = float.MaxValue;
             LodBias = 0f;
-            MaxAnisotropy = 1;
+            MaxAnisotropy = 0;
             BorderColor = Color.White;
             Comparison = ComparisonMode.Never;
 
@@ -87,6 +92,24 @@
                     AddressV = SamplerAddressMode.Clamp;
                     AddressW = SamplerAddressMode.Clamp;
                     break;
+
+                case SamplerPreset.Mirror:
+                    AddressU = SamplerAddressMode.Mirror;
+                    AddressV = SamplerAddressMode.Mirror;
+                    AddressW = SamplerAddressMode.Mirror;
+                    break;
+
+                case SamplerPreset.MirrorOnce:
+                    AddressU = SamplerAddressMode.MirrorOnce;
+                    AddressV = SamplerAddressMode.MirrorOnce;
+                    AddressW = SamplerAddressMode.MirrorOnce;
+                    break;
+
+                case SamplerPreset.Border:
+                    AddressU = SamplerAddressMode.Border;
+                    AddressV = SamplerAddressMode.Border;
+                    AddressW = SamplerAddressMode.Border;
+                    break;
             }
         }
     }
@@ -97,5 +120,11 @@
         Default = 0,
 
         Clamp = 1,
+
+        Mirror = 2,
+
+        MirrorOnce = 3,
+
+        Border = 4,
     }
 }

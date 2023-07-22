@@ -307,7 +307,7 @@ namespace Molten.Graphics.DX11
 
         protected override ShaderSampler OnCreateSampler(ref ShaderSamplerParameters parameters)
         {
-            return new ShaderSamplerDX11(this, ref parameters);
+            return new SamplerDX11(this, ref parameters);
         }
 
         protected override GraphicsBuffer CreateBuffer<T>(GraphicsBufferType type, GraphicsResourceFlags flags, GraphicsFormat format, uint numElements, T[] initialData)

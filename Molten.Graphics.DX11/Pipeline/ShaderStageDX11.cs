@@ -6,7 +6,7 @@ namespace Molten.Graphics.DX11
     {
         GraphicsStateValueGroup<ConstantBufferDX11> _constantBuffers;
         GraphicsStateValueGroup<GraphicsResource> _resources;
-        GraphicsStateBasicValueGroup<ShaderSamplerDX11> _samplers;
+        GraphicsStateBasicValueGroup<SamplerDX11> _samplers;
         GraphicsStateBasicValue<ShaderComposition> _shader;
 
         internal ShaderStageDX11(GraphicsQueueDX11 queue, ShaderType type)
@@ -17,7 +17,7 @@ namespace Molten.Graphics.DX11
             GraphicsCapabilities cap = Cmd.Device.Capabilities;
             ShaderStageCapabilities shaderCap = cap[type];
 
-            _samplers = new GraphicsStateBasicValueGroup<ShaderSamplerDX11>(cap.MaxShaderSamplers);
+            _samplers = new GraphicsStateBasicValueGroup<SamplerDX11>(cap.MaxShaderSamplers);
             _resources = new GraphicsStateValueGroup<GraphicsResource>(shaderCap.MaxInResources);
             _constantBuffers = new GraphicsStateValueGroup<ConstantBufferDX11>(cap.ConstantBuffers.MaxSlots);
             _shader = new GraphicsStateBasicValue<ShaderComposition>();
@@ -48,7 +48,7 @@ namespace Molten.Graphics.DX11
                 for (int i = 0; i < c.SamplerIds.Count; i++)
                 {
                     uint slotID = c.SamplerIds[i];
-                    _samplers[slotID] = c.Pass.Parent.SamplerVariables[slotID]?.Sampler as ShaderSamplerDX11;
+                    _samplers[slotID] = c.Pass.Parent.SamplerVariables[slotID]?.Sampler as SamplerDX11;
                 }
 
                 // Apply pass resources to slots

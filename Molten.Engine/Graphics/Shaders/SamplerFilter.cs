@@ -29,58 +29,10 @@
     public enum SamplerFilter
     {
         /// <summary>Use point sampling for minification, magnification, and mip-level sampling.</summary>
-        MinMagMipPoint = 0,
+        Point = 0,
 
         /// <summary>Use point sampling for minification and magnification; use linear interpolation
         /// for mip-level sampling.</summary>
-        MinMagPointMipLinear = 1,
-
-        /// <summary>Use point sampling for minification; use linear interpolation for magnification; use point sampling for mip-level sampling.</summary>
-        MinPointMagLinearMipPoint = 4,
-
-        /// <summary>Use point sampling for minification; use linear interpolation for magnification and mip-level sampling. </summary>
-        MinPointMagMipLinear = 5,
-
-        /// <summary>Use linear interpolation for minification; use point sampling for magnification and mip-level sampling.</summary>
-        MinLinearMagMipPoint = 16,
-
-        /// <summary>Use linear interpolation for minification; use point sampling for magnification; use linear interpolation for mip-level sampling.</summary>
-        MinLinearMagPointMipLinear = 17,
-
-        /// <summary>Use linear interpolation for minification and magnification; use point sampling for mip-level sampling.</summary>
-        MinMagLinearMipPoint = 20,
-
-        /// <summary>Use linear interpolation for minification, magnification, and mip-level sampling.</summary>
-        MinMagMipLinear = 21,
-
-        /// <summary>Use anisotropic interpolation for minification, magnification, and mip-levelsampling.</summary>
-        Anisotropic = 85,
-
-        /// <summary>Use point sampling for minification, magnification, and mip-level sampling. Compare the result to the comparison value.</summary>
-        ComparisonMinMagMipPoint = 128,
-
-        /// <summary>Use point sampling for minification and magnification; use linear interpolation for mip-level sampling. Compare the result to the comparison value.</summary>
-        ComparisonMinMagPointMipLinear = 129,
-
-        /// <summary>Use point sampling for minification; use linear interpolation for magnification; use point sampling for mip-level sampling. Compare the result to the comparison value.</summary>
-        ComparisonMinPointMagLinearMipPoint = 132,
-
-        /// <summary>Use point sampling for minification; use linear interpolation for magnification and mip-level sampling. Compare the result to the comparison value.</summary>
-        ComparisonMinPointMagMipLinear = 133,
-
-        /// <summary>Use linear interpolation for minification; use point sampling for magnification and mip-level sampling. Compare the result to the comparison value.</summary>
-        ComparisonMinLinearMagMipPoint = 144,
-
-        /// <summary>Use linear interpolation for minification; use point sampling for magnification; use linear interpolation for mip-level sampling. Compare the result to the comparison value.</summary>
-        ComparisonMinLinearMagPointMipLinear = 145,
-
-        /// <summary>Use linear interpolation for minification and magnification; use point sampling for mip-level sampling. Compare the result to the comparison value.</summary>
-        ComparisonMinMagLinearMipPoint = 148,
-
-        /// <summary>Use linear interpolation for minification, magnification, and mip-level sampling. Compare the result to the comparison value.</summary>
-        ComparisonMinMagMipLinear = 149,
-
-        /// <summary>Use anisotropic interpolation for minification, magnification, and mip-level sampling. Compare the result to the comparison value.</summary>
-        ComparisonAnisotropic = 213
+        Linear = 1,
     }
 }

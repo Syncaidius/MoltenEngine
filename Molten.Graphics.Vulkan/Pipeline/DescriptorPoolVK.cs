@@ -15,7 +15,13 @@ namespace Molten.Graphics.Vulkan
             _sizes = new List<DescriptorPoolSize>(sizes);
         }
 
-        internal void AddPool(DescriptorType type, uint poolSize)
+        /// <summary>
+        /// Adds pooling to the current <see cref="DescriptorPoolVK"/> for the given descriptor type.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="poolSize"></param>
+        /// <exception cref="InvalidOperationException"></exception>
+        internal void AddPooling(DescriptorType type, uint poolSize)
         {
             if(_handle.Handle != 0)
                 throw new InvalidOperationException("Cannot add a pool to a descriptor pool that has already been built.");
@@ -49,17 +55,26 @@ namespace Molten.Graphics.Vulkan
             }
         }
 
-        internal unsafe DescriptorSetVK[] Allocate(ShaderPassVK pass, ref DescriptorSetAllocateInfo info)
+        internal unsafe DescriptorSetVK[] Allocate(ShaderPassVK pass, DescriptorSetLayoutVK[] layouts)
         {
             DeviceVK device = Device as DeviceVK;
-            DescriptorSetVK[] sets = new DescriptorSetVK[info.DescriptorSetCount];
-            DescriptorSet* ptrSets = stackalloc DescriptorSet[sets.Length];
+            DescriptorSetVK[] sets = new DescriptorSetVK[layouts.Length];
+            DescriptorSet* ptrSets = stackalloc DescriptorSet[layouts.Length];
+            DescriptorSetLayout* ptrLayouts = stackalloc DescriptorSetLayout[layouts.Length];
 
-            fixed(DescriptorSetAllocateInfo* ptrInfo = &info)
-                device.VK.AllocateDescriptorSets(device, ptrInfo, ptrSets);
+            DescriptorSetAllocateInfo info = new DescriptorSetAllocateInfo()
+            {
+                SType = StructureType.DescriptorSetAllocateInfo,
+                DescriptorPool = _handle,
+                DescriptorSetCount = (uint)layouts.Length,
+                PSetLayouts = ptrLayouts,
+                PNext = null,
+            };
+
+            device.VK.AllocateDescriptorSets(device, &info, ptrSets);
 
             for(int i = 0; i < sets.Length; i++)
-                sets[i] = new DescriptorSetVK(pass, this, ref ptrSets[i]);
+                sets[i] = new DescriptorSetVK(pass, this, layouts[i], ref ptrSets[i]);
 
             return sets;
         }

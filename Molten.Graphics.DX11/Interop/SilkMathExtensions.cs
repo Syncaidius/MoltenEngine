@@ -15,11 +15,6 @@ namespace Molten.Graphics.DX11
             return (ComparisonFunc)val;
         }
 
-        public static Filter ToApi(this SamplerFilter val)
-        {
-            return (Filter)val;
-        }
-
         public static TextureAddressMode ToApi(this SamplerAddressMode mode)
         {
             return (TextureAddressMode)mode;
