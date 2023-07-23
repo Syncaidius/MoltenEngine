@@ -2,32 +2,33 @@
 
 namespace Molten.Graphics.Vulkan
 {
-    public unsafe class BlendStateVK : GraphicsObject
+    public unsafe class BlendStateVK : GraphicsObject, IEquatable<BlendStateVK>, IEquatable<PipelineColorBlendStateCreateInfo>
     {
-        internal StructKey<PipelineColorBlendStateCreateInfo> Desc { get; }
+        PipelineColorBlendStateCreateInfo _desc;
 
         public BlendStateVK(GraphicsDevice device, ref ShaderPassParameters parameters) :
             base(device)
         {
-            Desc = new StructKey<PipelineColorBlendStateCreateInfo>();
-            ref PipelineColorBlendStateCreateInfo bDesc = ref Desc.Value;
-            bDesc.Flags = PipelineColorBlendStateCreateFlags.None; // See: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPipelineColorBlendStateCreateFlagBits.html
+            _desc = new PipelineColorBlendStateCreateInfo()
+            {
+                SType = StructureType.PipelineColorBlendStateCreateInfo,
+                LogicOp = parameters.Surface0.LogicOp.ToApi(),
+                LogicOpEnable = parameters.Surface0.LogicOpEnable,
+                AttachmentCount = ShaderPassParameters.MAX_SURFACES,
+                Flags = PipelineColorBlendStateCreateFlags.None,// See: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPipelineColorBlendStateCreateFlagBits.html
+                PAttachments = EngineUtil.AllocArray<PipelineColorBlendAttachmentState>(_desc.AttachmentCount),
+                PNext = null,
+            };
 
             Color4 blendConsts = parameters.BlendFactor;
-            bDesc.SType = StructureType.PipelineColorBlendStateCreateInfo;
-            bDesc.PNext = null;
-            bDesc.BlendConstants[0] = blendConsts.R;
-            bDesc.BlendConstants[1] = blendConsts.G;
-            bDesc.BlendConstants[2] = blendConsts.B;
-            bDesc.BlendConstants[3] = blendConsts.A;
-            bDesc.LogicOp = parameters.Surface0.LogicOp.ToApi();
-            bDesc.LogicOpEnable = parameters.Surface0.LogicOpEnable;
-            bDesc.AttachmentCount = ShaderPassParameters.MAX_SURFACES;
-            bDesc.PAttachments = EngineUtil.AllocArray<PipelineColorBlendAttachmentState>(bDesc.AttachmentCount);
+            _desc.BlendConstants[0] = blendConsts.R;
+            _desc.BlendConstants[1] = blendConsts.G;
+            _desc.BlendConstants[2] = blendConsts.B;
+            _desc.BlendConstants[3] = blendConsts.A;
 
-            for (uint i = 0; i < bDesc.AttachmentCount; i++)
+            for (uint i = 0; i < _desc.AttachmentCount; i++)
             {
-                ref PipelineColorBlendAttachmentState at = ref bDesc.PAttachments[i];
+                ref PipelineColorBlendAttachmentState at = ref _desc.PAttachments[i];
                 ShaderPassParameters.SurfaceBlend sBlend = parameters[i];
 
                 at.BlendEnable = sBlend.BlendEnable;
@@ -41,9 +42,51 @@ namespace Molten.Graphics.Vulkan
             }
         }
 
-        protected override void OnGraphicsRelease()
+        public override bool Equals(object obj)
         {
-            Desc.Dispose();
+            if(obj is BlendStateVK other)
+                return Equals(other._desc);
+
+            return false;
         }
+
+        public bool Equals(BlendStateVK other)
+        {
+            return Equals(other._desc);
+        }
+
+        public bool Equals(PipelineColorBlendStateCreateInfo other)
+        {
+            if (_desc.Flags != other.Flags
+            || _desc.LogicOp != other.LogicOp
+            || _desc.LogicOpEnable.Value != other.LogicOpEnable.Value
+            || _desc.BlendConstants[0] != other.BlendConstants[0]
+            || _desc.BlendConstants[1] != other.BlendConstants[1]
+            || _desc.BlendConstants[2] != other.BlendConstants[2]
+            || _desc.BlendConstants[3] != other.BlendConstants[3]
+            || _desc.AttachmentCount != other.AttachmentCount)
+                return false;
+
+            // Check if blend attachments are equal.
+            for (uint i = 0; i < _desc.AttachmentCount; i++)
+            {
+                ref PipelineColorBlendAttachmentState att = ref _desc.PAttachments[i];
+                ref PipelineColorBlendAttachmentState otherAtt = ref other.PAttachments[i];
+
+                if (att.BlendEnable.Value != otherAtt.BlendEnable.Value
+                    || att.SrcColorBlendFactor != otherAtt.SrcColorBlendFactor
+                    || att.DstColorBlendFactor != otherAtt.DstColorBlendFactor
+                    || att.ColorBlendOp != otherAtt.ColorBlendOp
+                    || att.SrcAlphaBlendFactor != otherAtt.SrcAlphaBlendFactor
+                    || att.DstAlphaBlendFactor != otherAtt.DstAlphaBlendFactor
+                    || att.AlphaBlendOp != otherAtt.AlphaBlendOp
+                    || att.ColorWriteMask != otherAtt.ColorWriteMask)
+                    return false;
+            }
+
+            return true;
+        }
+
+        protected override void OnGraphicsRelease() { }
     }
 }

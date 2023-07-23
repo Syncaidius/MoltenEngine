@@ -30,6 +30,7 @@ namespace Molten.Graphics.DX11
             desc.BorderColor[2] = bColor.B;
             desc.BorderColor[3] = bColor.A;
 
+            // Figure out which DX11 filter mode to use. 
             if (parameters.MaxAnisotropy > 0)
             {
                 desc.Filter = parameters.IsComparison ? Filter.ComparisonAnisotropic : Filter.Anisotropic;
