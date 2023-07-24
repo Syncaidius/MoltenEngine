@@ -2,50 +2,89 @@
 
 namespace Molten.Graphics.Vulkan
 {
-    public unsafe class DepthStateVK : GraphicsObject
+    public unsafe class DepthStateVK : GraphicsObject, IEquatable<DepthStateVK>, IEquatable<PipelineDepthStencilStateCreateInfo>
     {
-        internal StructKey<PipelineDepthStencilStateCreateInfo> Desc { get; }
+        PipelineDepthStencilStateCreateInfo* _desc;
 
         public DepthStateVK(GraphicsDevice device, ref ShaderPassParameters parameters) :
             base(device)
         {
-            Desc = new StructKey<PipelineDepthStencilStateCreateInfo>();
+            _desc = EngineUtil.Alloc<PipelineDepthStencilStateCreateInfo>();
+            _desc[0] = new PipelineDepthStencilStateCreateInfo()
+            {
+                SType = StructureType.PipelineDepthStencilStateCreateInfo,
+                DepthTestEnable = parameters.IsDepthEnabled,
+                StencilTestEnable = parameters.IsStencilEnabled,
+                DepthWriteEnable = parameters.DepthWriteEnabled,
+                DepthBoundsTestEnable = parameters.DepthBoundsTestEnabled,
+                MaxDepthBounds = parameters.MaxDepthBounds,
+                MinDepthBounds = parameters.MinDepthBounds,
+                DepthCompareOp = parameters.DepthComparison.ToApi(),
+                PNext = null,
+                Front = new StencilOpState()
+                {
+                    CompareMask = parameters.StencilReadMask,
+                    WriteMask = parameters.StencilWriteMask,
+                    CompareOp = parameters.DepthFrontFace.Comparison.ToApi(),
+                    DepthFailOp = parameters.DepthFrontFace.DepthFail.ToApi(),
+                    FailOp = parameters.DepthFrontFace.StencilFail.ToApi(),
+                    PassOp = parameters.DepthFrontFace.StencilPass.ToApi(),
+                    Reference = parameters.DepthFrontFace.StencilReference
+                },
+                Back = new StencilOpState()
+                {
+                    CompareMask = parameters.StencilWriteMask,
+                    WriteMask = parameters.StencilWriteMask,
+                    CompareOp = parameters.DepthBackFace.Comparison.ToApi(),
+                    DepthFailOp = parameters.DepthBackFace.DepthFail.ToApi(),
+                    FailOp = parameters.DepthBackFace.StencilFail.ToApi(),
+                    PassOp = parameters.DepthBackFace.StencilPass.ToApi(),
+                    Reference = parameters.DepthFrontFace.StencilReference,
+                }
+            };
+        }
 
-            ref PipelineDepthStencilStateCreateInfo dDesc = ref Desc.Value;
-            dDesc.SType = StructureType.PipelineDepthStencilStateCreateInfo;
-            dDesc.PNext = null;
-            dDesc.DepthTestEnable = parameters.IsDepthEnabled;
-            dDesc.StencilTestEnable = parameters.IsStencilEnabled;
-            dDesc.DepthWriteEnable = parameters.DepthWriteEnabled;
-            dDesc.DepthBoundsTestEnable = parameters.DepthBoundsTestEnabled;
-            dDesc.MaxDepthBounds = parameters.MaxDepthBounds;
-            dDesc.MinDepthBounds = parameters.MinDepthBounds;
-            dDesc.DepthCompareOp = parameters.DepthComparison.ToApi();
-            dDesc.Front = new StencilOpState()
-            {
-                CompareMask = parameters.StencilReadMask,
-                WriteMask = parameters.StencilWriteMask,
-                CompareOp = parameters.DepthFrontFace.Comparison.ToApi(),
-                DepthFailOp = parameters.DepthFrontFace.DepthFail.ToApi(),
-                FailOp = parameters.DepthFrontFace.StencilFail.ToApi(),
-                PassOp = parameters.DepthFrontFace.StencilPass.ToApi(),
-                Reference = parameters.DepthFrontFace.StencilReference
-            };
-            dDesc.Back = new StencilOpState()
-            {
-                CompareMask = parameters.StencilWriteMask,
-                WriteMask = parameters.StencilWriteMask,
-                CompareOp = parameters.DepthBackFace.Comparison.ToApi(),
-                DepthFailOp = parameters.DepthBackFace.DepthFail.ToApi(),
-                FailOp = parameters.DepthBackFace.StencilFail.ToApi(),
-                PassOp = parameters.DepthBackFace.StencilPass.ToApi(),
-                Reference = parameters.DepthFrontFace.StencilReference
-            };
+        private bool FaceEqual(ref StencilOpState a, ref StencilOpState b)
+        {
+            return a.CompareMask == b.CompareMask
+                && a.WriteMask == b.WriteMask
+                && a.CompareOp == b.CompareOp
+                && a.DepthFailOp == b.DepthFailOp
+                && a.FailOp == b.FailOp
+                && a.PassOp == b.PassOp
+                && a.Reference == b.Reference;
+        }
+
+        public override bool Equals(object obj) => obj switch
+        {
+            DepthStateVK val => Equals(*val._desc),
+            PipelineDepthStencilStateCreateInfo val => Equals(val),
+            _ => base.Equals(obj)
+        };
+
+        public bool Equals(DepthStateVK other)
+        {
+            return Equals(*other._desc);
+        }
+
+        public bool Equals(PipelineDepthStencilStateCreateInfo other)
+        {
+            return _desc->DepthTestEnable.Value == other.DepthTestEnable.Value
+                && _desc->StencilTestEnable.Value == other.StencilTestEnable.Value
+                && _desc->DepthWriteEnable.Value == other.DepthWriteEnable.Value
+                && _desc->DepthBoundsTestEnable.Value == other.DepthBoundsTestEnable.Value
+                && _desc->MaxDepthBounds == other.MaxDepthBounds
+                && _desc->MinDepthBounds == other.MinDepthBounds
+                && _desc->DepthCompareOp == other.DepthCompareOp
+                && FaceEqual(ref _desc->Front, ref other.Front)
+                && FaceEqual(ref _desc->Back, ref other.Back);
         }
 
         protected override void OnGraphicsRelease()
         {
-            Desc.Dispose();
+            EngineUtil.Free(ref _desc);
         }
+
+        internal PipelineDepthStencilStateCreateInfo* Desc => _desc;
     }
 }

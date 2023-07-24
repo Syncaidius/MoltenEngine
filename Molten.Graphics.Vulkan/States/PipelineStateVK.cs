@@ -54,16 +54,16 @@ namespace Molten.Graphics.Vulkan
 
             // Populate dynamic state
             _blendState = new BlendStateVK(device, ref parameters);
-            _blendState = device.CacheObject(_blendState.Desc, _blendState);
+            device.Cache.Object<BlendStateVK, PipelineColorBlendStateCreateInfo>(ref _blendState);
 
             _depthState = new DepthStateVK(device, ref parameters);
-            _depthState = device.CacheObject(_depthState.Desc, _depthState);
+            device.Cache.Object<DepthStateVK, PipelineDepthStencilStateCreateInfo>(ref _depthState);
 
             _rasterizerState = new RasterizerStateVK(device, ref parameters);
-            _rasterizerState = device.CacheObject(_rasterizerState.Desc, _rasterizerState);
+            device.Cache.Object<RasterizerStateVK, PipelineRasterizationStateCreateInfo>(ref _rasterizerState);
 
             _inputState = new InputAssemblyStateVK(device, ref parameters);
-            _inputState = device.CacheObject(_inputState.Desc, _inputState);
+            device.Cache.Object<InputAssemblyStateVK, PipelineInputAssemblyStateCreateInfo>(ref _inputState);
 
             DynamicState[] dynamics = new DynamicState[]
             {
@@ -72,7 +72,7 @@ namespace Molten.Graphics.Vulkan
             };
 
             _dynamicState = new DynamicStateVK(device, ref parameters, dynamics);
-            _dynamicState = device.CacheObject(_dynamicState.Desc, _dynamicState);
+            device.Cache.Object<DynamicStateVK, PipelineDynamicStateCreateInfo>(ref _dynamicState);
 
             // Setup shader stage info
             _info.PStages = EngineUtil.AllocArray<PipelineShaderStageCreateInfo>((uint)pass.CompositionCount);

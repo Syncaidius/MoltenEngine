@@ -31,7 +31,6 @@ namespace Molten.Graphics
         uint _maxStagingSize;
 
         ThreadedList<GraphicsObject> _disposals;
-        Dictionary<Type, Dictionary<StructKey, GraphicsObject>> _objectCache;
         ThreadedList<ISwapChainSurface> _outputSurfaces;
 
         /// <summary>
@@ -45,9 +44,9 @@ namespace Molten.Graphics
             Manager = manager;
             Log = renderer.Log;
 
+            Cache = new GraphicsObjectCache();
             _outputSurfaces = new ThreadedList<ISwapChainSurface>();
             _disposals = new ThreadedList<GraphicsObject>();
-            _objectCache = new Dictionary<Type, Dictionary<StructKey, GraphicsObject>>();
 
             _maxStagingSize = (uint)ByteMath.FromMegabytes(renderer.Settings.Graphics.FrameStagingSize);
 
@@ -151,40 +150,6 @@ namespace Molten.Graphics
 
             DisposeMarkedObjects(0,0);
             Queue?.Dispose();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="objKey"></param>
-        /// <param name="newObj"></param>
-        public T CacheObject<T>(StructKey objKey, T newObj)
-            where T : GraphicsObject
-        {
-            if (!_objectCache.TryGetValue(typeof(T), out Dictionary<StructKey, GraphicsObject> objects))
-            {
-                objects = new Dictionary<StructKey, GraphicsObject>();
-                _objectCache.Add(typeof(T), objects);
-            }
-
-            if (newObj != null)
-            {
-                foreach (StructKey key in objects.Keys)
-                {
-                    if (key.Equals(objKey))
-                    {
-                        // Dispose of the new object, we found an existing match.
-                        newObj.Dispose();
-                        return objects[key] as T;
-                    }
-                }
-
-                // If we reach here, object has no match in the cache. Add it
-                objects.Add(objKey.Clone(), newObj);
-            }
-
-            return newObj;
         }
 
         /// <summary>Track a VRAM allocation.</summary>
@@ -515,5 +480,10 @@ namespace Molten.Graphics
         /// Gets whether or not the current <see cref="GraphicsDevice"/> is initialized.
         /// </summary>
         public bool IsInitialized { get; private set; }
+
+        /// <summary>
+        /// Gets the <see cref="GraphicsObjectCache"/> that is bound to the current <see cref="GraphicsDevice"/>.
+        /// </summary>
+        public GraphicsObjectCache Cache { get; }
     }
 }

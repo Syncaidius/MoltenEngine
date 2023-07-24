@@ -2,33 +2,59 @@
 
 namespace Molten.Graphics.Vulkan
 {
-    public unsafe class RasterizerStateVK : GraphicsObject
+    public unsafe class RasterizerStateVK : GraphicsObject, IEquatable<RasterizerStateVK>, IEquatable<PipelineRasterizationStateCreateInfo>
     {
-        internal StructKey<PipelineRasterizationStateCreateInfo> Desc { get; }
+        PipelineRasterizationStateCreateInfo* _desc;
 
         public RasterizerStateVK(GraphicsDevice device, ref ShaderPassParameters parameters) :
             base(device)
         {
-            Desc = new StructKey<PipelineRasterizationStateCreateInfo>();
-
-            ref PipelineRasterizationStateCreateInfo raDesc = ref Desc.Value;
-            raDesc.SType = StructureType.PipelineRasterizationStateCreateInfo;
-            raDesc.PNext = null;
-            raDesc.PolygonMode = parameters.Fill.ToApi();
-            raDesc.CullMode = parameters.Cull.ToApi();
-            raDesc.DepthBiasClamp = parameters.DepthBiasClamp;
-            raDesc.DepthBiasSlopeFactor = parameters.SlopeScaledDepthBias;
-            raDesc.DepthClampEnable = parameters.DepthBiasEnabled;
-            raDesc.DepthBiasConstantFactor = parameters.DepthBias;
-            raDesc.FrontFace = parameters.IsFrontCounterClockwise ? FrontFace.CounterClockwise : FrontFace.Clockwise;
-            raDesc.RasterizerDiscardEnable = parameters.RasterizerDiscardEnabled;
-            raDesc.LineWidth = parameters.LineWidth;
-            raDesc.Flags = 0; // Reserved for use in future Vulkan versions.
+            _desc = EngineUtil.Alloc<PipelineRasterizationStateCreateInfo>();
+            _desc[0] = new PipelineRasterizationStateCreateInfo()
+            {
+                SType = StructureType.PipelineRasterizationStateCreateInfo,
+                PNext = null,
+                PolygonMode = parameters.Fill.ToApi(),
+                CullMode = parameters.Cull.ToApi(),
+                DepthBiasClamp = parameters.DepthBiasClamp,
+                DepthBiasSlopeFactor = parameters.SlopeScaledDepthBias,
+                DepthClampEnable = parameters.DepthBiasEnabled,
+                DepthBiasConstantFactor = parameters.DepthBias,
+                FrontFace = parameters.IsFrontCounterClockwise ? FrontFace.CounterClockwise : FrontFace.Clockwise,
+                RasterizerDiscardEnable = parameters.RasterizerDiscardEnabled,
+                LineWidth = parameters.LineWidth,
+                Flags = 0, // Reserved for use in future Vulkan versions.
+            };
         }
 
-        protected override void OnGraphicsRelease()
+        public override bool Equals(object obj) => obj switch
         {
-            Desc.Dispose();
+            RasterizerStateVK val => Equals(*val._desc),
+            PipelineRasterizationStateCreateInfo val => Equals(val),
+            _ => base.Equals(obj)
+        };
+
+        public bool Equals(RasterizerStateVK other)
+        {
+            return Equals(*other._desc);
         }
+
+        public bool Equals(PipelineRasterizationStateCreateInfo other)
+        {
+            return _desc->PolygonMode == other.PolygonMode
+                && _desc->CullMode == other.CullMode
+                && _desc->DepthBiasClamp == other.DepthBiasClamp
+                && _desc->DepthBiasSlopeFactor == other.DepthBiasSlopeFactor
+                && _desc->DepthClampEnable.Value == other.DepthClampEnable.Value
+                && _desc->DepthBiasConstantFactor == other.DepthBiasConstantFactor
+                && _desc->FrontFace == other.FrontFace
+                && _desc->RasterizerDiscardEnable.Value == other.RasterizerDiscardEnable.Value
+                && _desc->LineWidth == other.LineWidth
+                && _desc->Flags == other.Flags;
+        }
+
+        protected override void OnGraphicsRelease() { }
+
+        internal PipelineRasterizationStateCreateInfo* Desc => _desc;
     }
 }

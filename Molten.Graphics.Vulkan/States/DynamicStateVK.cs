@@ -2,9 +2,9 @@
 
 namespace Molten.Graphics.Vulkan
 {
-    public unsafe class DynamicStateVK : GraphicsObject
+    public unsafe class DynamicStateVK : GraphicsObject, IEquatable<DynamicStateVK>, IEquatable<PipelineDynamicStateCreateInfo>
     {
-        internal StructKey<PipelineDynamicStateCreateInfo> Desc { get; }
+        PipelineDynamicStateCreateInfo* _desc;
 
         /// <summary>
         ///
@@ -15,23 +15,46 @@ namespace Molten.Graphics.Vulkan
         public DynamicStateVK(GraphicsDevice device, ref ShaderPassParameters parameters, DynamicState[] states) :
             base(device)
         {
-            Desc = new StructKey<PipelineDynamicStateCreateInfo>();
-            ref PipelineDynamicStateCreateInfo desc = ref Desc.Value;
-            desc.SType = StructureType.PipelineDynamicStateCreateInfo;
-            desc.DynamicStateCount = (uint)states.Length;
-            desc.PDynamicStates = EngineUtil.AllocArray<DynamicState>(desc.DynamicStateCount);
-            desc.PNext = null;
+            _desc = EngineUtil.Alloc<PipelineDynamicStateCreateInfo>();
+            _desc[0] = new PipelineDynamicStateCreateInfo()
+            {
+                SType = StructureType.PipelineDynamicStateCreateInfo,
+                DynamicStateCount = (uint)states.Length,
+                PDynamicStates = EngineUtil.AllocArray<DynamicState>((uint)states.Length),
+                Flags = 0,
+                PNext = null,
+            };
 
-            uint numBytes = sizeof(DynamicState) * desc.DynamicStateCount;
+            uint numBytes = sizeof(DynamicState) * _desc->DynamicStateCount;
             fixed (DynamicState* ptr = &states[0])
-                System.Buffer.MemoryCopy(&ptr, desc.PDynamicStates, numBytes, numBytes);
+                System.Buffer.MemoryCopy(&ptr, _desc->PDynamicStates, numBytes, numBytes);
+        }
+
+        public override bool Equals(object obj) => obj switch
+        {
+            DynamicStateVK other => Equals(*other._desc),
+            PipelineDynamicStateCreateInfo other => Equals(other),
+            _ => base.Equals(obj),
+        };
+
+        public bool Equals(DynamicStateVK other)
+        {
+            return Equals(*other._desc);
+        }
+
+        public bool Equals(PipelineDynamicStateCreateInfo other)
+        {
+            return _desc->DynamicStateCount == other.DynamicStateCount
+                && _desc->Flags == other.Flags
+                && _desc->PDynamicStates == other.PDynamicStates;
         }
 
         protected override void OnGraphicsRelease()
         {
-            DynamicState* dPtr = Desc.Value.PDynamicStates;
-            Desc.Dispose();
-            EngineUtil.Free(ref dPtr);
+            EngineUtil.Free(ref _desc->PDynamicStates);
+            EngineUtil.Free(ref _desc);
         }
+
+        internal PipelineDynamicStateCreateInfo* Desc => _desc;
     }
 }

@@ -5,24 +5,48 @@ namespace Molten.Graphics.Vulkan
     /// <summary>
     /// See for info: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPipelineInputAssemblyStateCreateInfo.html
     /// </summary>
-    internal class InputAssemblyStateVK : GraphicsObject
+    internal unsafe class InputAssemblyStateVK : GraphicsObject, IEquatable<InputAssemblyStateVK>, IEquatable<PipelineInputAssemblyStateCreateInfo>
     {
-        internal StructKey<PipelineInputAssemblyStateCreateInfo> Desc { get; }
+        PipelineInputAssemblyStateCreateInfo* _desc;
 
         public unsafe InputAssemblyStateVK(GraphicsDevice device, ref ShaderPassParameters parameters) :
             base(device)
         {
-            Desc = new StructKey<PipelineInputAssemblyStateCreateInfo>();
-            ref PipelineInputAssemblyStateCreateInfo desc = ref Desc.Value;
-            desc.SType = StructureType.PipelineInputAssemblyStateCreateInfo;
-            desc.PNext = null;
-            desc.Topology = parameters.Topology.ToApi();
-            desc.PrimitiveRestartEnable = false;
+            _desc = EngineUtil.Alloc<PipelineInputAssemblyStateCreateInfo>();
+            _desc[0] = new PipelineInputAssemblyStateCreateInfo()
+            {
+                SType = StructureType.PipelineInputAssemblyStateCreateInfo,
+                Topology = parameters.Topology.ToApi(),
+                PrimitiveRestartEnable = false,
+                Flags = 0,
+                PNext = null,
+            };
+        }
+
+        public override bool Equals(object obj) => obj switch
+        {
+            InputAssemblyStateVK val => Equals(*val._desc),
+            PipelineInputAssemblyStateCreateInfo val => Equals(val),
+            _ => base.Equals(obj)
+        };
+
+        public bool Equals(InputAssemblyStateVK other)
+        {
+            return Equals(*other._desc);
+        }
+
+        public bool Equals(PipelineInputAssemblyStateCreateInfo other)
+        {
+            return _desc->Topology == other.Topology
+                && _desc->Flags == other.Flags
+                && _desc->PrimitiveRestartEnable.Value == other.PrimitiveRestartEnable.Value;
         }
 
         protected override void OnGraphicsRelease()
         {
-            Desc.Dispose();
+            EngineUtil.Free(ref _desc);
         }
+
+        internal PipelineInputAssemblyStateCreateInfo* Desc => _desc;
     }
 }

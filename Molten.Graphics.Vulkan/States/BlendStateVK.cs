@@ -4,31 +4,32 @@ namespace Molten.Graphics.Vulkan
 {
     public unsafe class BlendStateVK : GraphicsObject, IEquatable<BlendStateVK>, IEquatable<PipelineColorBlendStateCreateInfo>
     {
-        PipelineColorBlendStateCreateInfo _desc;
+        PipelineColorBlendStateCreateInfo* _desc;
 
         public BlendStateVK(GraphicsDevice device, ref ShaderPassParameters parameters) :
             base(device)
         {
-            _desc = new PipelineColorBlendStateCreateInfo()
+            _desc = EngineUtil.Alloc<PipelineColorBlendStateCreateInfo>();
+            _desc[0] = new PipelineColorBlendStateCreateInfo()
             {
                 SType = StructureType.PipelineColorBlendStateCreateInfo,
                 LogicOp = parameters.Surface0.LogicOp.ToApi(),
                 LogicOpEnable = parameters.Surface0.LogicOpEnable,
                 AttachmentCount = ShaderPassParameters.MAX_SURFACES,
                 Flags = PipelineColorBlendStateCreateFlags.None,// See: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPipelineColorBlendStateCreateFlagBits.html
-                PAttachments = EngineUtil.AllocArray<PipelineColorBlendAttachmentState>(_desc.AttachmentCount),
+                PAttachments = EngineUtil.AllocArray<PipelineColorBlendAttachmentState>(_desc->AttachmentCount),
                 PNext = null,
             };
 
             Color4 blendConsts = parameters.BlendFactor;
-            _desc.BlendConstants[0] = blendConsts.R;
-            _desc.BlendConstants[1] = blendConsts.G;
-            _desc.BlendConstants[2] = blendConsts.B;
-            _desc.BlendConstants[3] = blendConsts.A;
+            _desc->BlendConstants[0] = blendConsts.R;
+            _desc->BlendConstants[1] = blendConsts.G;
+            _desc->BlendConstants[2] = blendConsts.B;
+            _desc->BlendConstants[3] = blendConsts.A;
 
-            for (uint i = 0; i < _desc.AttachmentCount; i++)
+            for (uint i = 0; i < _desc->AttachmentCount; i++)
             {
-                ref PipelineColorBlendAttachmentState at = ref _desc.PAttachments[i];
+                ref PipelineColorBlendAttachmentState at = ref _desc->PAttachments[i];
                 ShaderPassParameters.SurfaceBlend sBlend = parameters[i];
 
                 at.BlendEnable = sBlend.BlendEnable;
@@ -42,35 +43,34 @@ namespace Molten.Graphics.Vulkan
             }
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object obj) => obj switch
         {
-            if(obj is BlendStateVK other)
-                return Equals(other._desc);
-
-            return false;
-        }
+            BlendStateVK val => Equals(val._desc[0]),
+            PipelineColorBlendStateCreateInfo val => Equals(val),
+            _ => base.Equals(obj)
+        };
 
         public bool Equals(BlendStateVK other)
         {
-            return Equals(other._desc);
+            return Equals(*other._desc);
         }
 
         public bool Equals(PipelineColorBlendStateCreateInfo other)
         {
-            if (_desc.Flags != other.Flags
-            || _desc.LogicOp != other.LogicOp
-            || _desc.LogicOpEnable.Value != other.LogicOpEnable.Value
-            || _desc.BlendConstants[0] != other.BlendConstants[0]
-            || _desc.BlendConstants[1] != other.BlendConstants[1]
-            || _desc.BlendConstants[2] != other.BlendConstants[2]
-            || _desc.BlendConstants[3] != other.BlendConstants[3]
-            || _desc.AttachmentCount != other.AttachmentCount)
+            if (_desc->Flags != other.Flags
+            || _desc->LogicOp != other.LogicOp
+            || _desc->LogicOpEnable.Value != other.LogicOpEnable.Value
+            || _desc->BlendConstants[0] != other.BlendConstants[0]
+            || _desc->BlendConstants[1] != other.BlendConstants[1]
+            || _desc->BlendConstants[2] != other.BlendConstants[2]
+            || _desc->BlendConstants[3] != other.BlendConstants[3]
+            || _desc->AttachmentCount != other.AttachmentCount)
                 return false;
 
             // Check if blend attachments are equal.
-            for (uint i = 0; i < _desc.AttachmentCount; i++)
+            for (uint i = 0; i < _desc->AttachmentCount; i++)
             {
-                ref PipelineColorBlendAttachmentState att = ref _desc.PAttachments[i];
+                ref PipelineColorBlendAttachmentState att = ref _desc->PAttachments[i];
                 ref PipelineColorBlendAttachmentState otherAtt = ref other.PAttachments[i];
 
                 if (att.BlendEnable.Value != otherAtt.BlendEnable.Value
@@ -87,6 +87,12 @@ namespace Molten.Graphics.Vulkan
             return true;
         }
 
-        protected override void OnGraphicsRelease() { }
+        protected override void OnGraphicsRelease()
+        {
+            EngineUtil.Free(ref _desc->PAttachments);
+            EngineUtil.Free(ref _desc);
+        }
+
+        internal PipelineColorBlendStateCreateInfo* Desc => _desc;
     }
 }

@@ -1,68 +1,99 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class GraphicsObjectCache<T>
-        where T : GraphicsObject, IEquatable<T>, IDisposable
+    public class GraphicsObjectCache
     {
-        protected List<T> Objects { get; } = new List<T>();
+        Dictionary<Type, IList> _caches = new Dictionary<Type, IList>();
 
         /// <summary>
-        /// Attempts to find a matching <typeparamref name="T"/> instace, based on the given <typeparamref name="T"/> instance.
+        /// Caches the provided object, or replaces with a matching duplicate.
         /// </summary>
-        /// <param name="existing">The existing <typeparamref name="T"/> instance to match against.</param>
-        /// <returns>True if a match is found. <paramref name="existing"/> is disposed replaced with the match.</returns>
-        internal bool Get(ref T existing)
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="DESC"></typeparam>
+        /// <param name="obj"></param>
+        public void Object<T, DESC>(ref T obj)
+            where T : GraphicsObject, IEquatable<T>, IEquatable<DESC>
+            where DESC : struct
         {
-            foreach(T obj in Objects)
+            // Retrieve correct cache list.
+            List<T> cache;
+            if (_caches.TryGetValue(typeof(T), out IList cacheObj))
             {
-                if (obj.Equals(existing))
+                cache = cacheObj as List<T>;
+
+                // Check cache for a matching object.
+                foreach (T item in cache)
                 {
-                    existing?.Dispose();
-                    existing = obj;
-                    return true;
+                    if (obj.Equals(item))
+                    {
+                        obj.Dispose();
+                        obj = item;
+                        return;
+                    }
                 }
             }
-
-            Objects.Add(existing);
-            return false;
-        }
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="DESC"></typeparam>
-    internal class PipelineCacheVK<T, DESC> : GraphicsObjectCache<T>
-        where T : GraphicsObject, IEquatable<T>, IDisposable, IEquatable<DESC>
-        where DESC : struct
-    {
-        /// <summary>
-        /// Attempts to find a matching <typeparamref name="T"/> instace, based on the given <typeparamref name="DESC"/> value. 
-        /// If no match is found, <paramref name="createCallback"/> will be invoked to create a new <typeparamref name="T"/> instance. If no callback is provided, null will be returned.
-        /// </summary>
-        /// <param name="desc">The description or info struct to match against.</param>
-        /// <param name="createCallback">The callback to invoke if no match is found for the provided <paramref name="desc"/>.</param>
-        /// <returns></returns>
-        internal T Get(ref DESC desc, Func<T> createCallback = null)
-        {
-            foreach (T obj in Objects)
+            else
             {
-                if (obj.Equals(desc))
-                    return obj;
+                cache = new List<T>();
+                _caches.Add(typeof(T), cache);
             }
 
-            // Create a new object if a callback is provided.
-            if(createCallback != null)
+            // No match found. Add the provided object to the cache.
+            cache.Add(obj);
+        }
+
+        /// <summary>
+        /// Adds the provided <paramref name="obj"/> to the cache without checking for duplicates.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="GraphicsObject"/> to be added.</typeparam>
+        /// <typeparam name="DESC">The description or info value type that represents the provided object.</typeparam>
+        /// <param name="obj"></param>
+        public void Add<T, DESC>(T obj)
+            where T : GraphicsObject, IEquatable<T>, IEquatable<DESC>
+            where DESC : struct
+        {
+            // Retrieve correct cache list.
+            List<T> cache;
+            if (_caches.TryGetValue(typeof(T), out IList cacheObj))
             {
-                T newObj = createCallback();
-                Objects.Add(newObj);
-                return newObj;
+                cache = cacheObj as List<T>;
+            }
+            else
+            {
+                cache = new List<T>();
+                _caches.Add(typeof(T), cache);
+            }
+
+            // No match found. Add the provided object to the cache.
+            cache.Add(obj);
+        }
+
+        /// <summary>
+        /// Retrieves a matching <typeparamref name="T"/> instance from the cache. If no match is found, null is returned instead.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="GraphicsObject"/> to match.</typeparam>
+        /// <typeparam name="DESC">The type of description or info value to be matched.</typeparam>
+        /// <param name="desc">The description or info value to match.</param>
+        /// <returns></returns>
+        public T Get<T, DESC>(ref DESC desc)
+            where T : GraphicsObject, IEquatable<T>, IEquatable<DESC>
+            where DESC : struct
+        {
+            // Retrieve correct cache list.
+            List<T> cache;
+            if (_caches.TryGetValue(typeof(T), out IList cacheObj))
+            {
+                cache = cacheObj as List<T>;                
+                
+                // Check cache for a matching object.
+                foreach (T obj in cache)
+                {
+                    if (obj.Equals(desc))
+                        return obj;
+                }
             }
 
             return null;
