@@ -31,7 +31,7 @@ namespace Molten.Graphics.Vulkan
         {
             RasterizerStateVK val => Equals(*val._desc),
             PipelineRasterizationStateCreateInfo val => Equals(val),
-            _ => base.Equals(obj)
+            _ => false
         };
 
         public bool Equals(RasterizerStateVK other)

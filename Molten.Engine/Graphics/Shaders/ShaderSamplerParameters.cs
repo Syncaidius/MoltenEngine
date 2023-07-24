@@ -1,6 +1,8 @@
-﻿namespace Molten.Graphics
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Molten.Graphics
 {
-    public struct ShaderSamplerParameters
+    public struct ShaderSamplerParameters : IEquatable<ShaderSamplerParameters>
     {
         /// <summary>Gets or sets the method to use for resolving a U texture coordinate that is outside the 0 to 1 range.</summary>
         [ShaderNode(ShaderNodeParseType.Enum)]
@@ -111,6 +113,31 @@
                     AddressW = SamplerAddressMode.Border;
                     break;
             }
+        }
+
+        public override bool Equals([NotNullWhen(true)] object obj)
+        {
+            if (obj is ShaderSamplerParameters p)
+                return Equals(p);
+
+            return false;
+        }
+
+        public bool Equals(ShaderSamplerParameters other)
+        {
+            return AddressU == other.AddressU &&
+                AddressV == other.AddressV &&
+                AddressW == other.AddressW &&
+                BorderColor == other.BorderColor &&
+                Comparison == other.Comparison &&
+                MinFilter == other.MinFilter &&
+                MagFilter == other.MagFilter &&
+                MipFilter == other.MipFilter &&
+                MaxAnisotropy == other.MaxAnisotropy &&
+                IsComparison == other.IsComparison &&
+                MaxMipMapLod == other.MaxMipMapLod &&
+                MinMipMapLod == other.MinMipMapLod &&
+                LodBias == other.LodBias;
         }
     }
 

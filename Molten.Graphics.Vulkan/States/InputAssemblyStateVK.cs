@@ -27,7 +27,7 @@ namespace Molten.Graphics.Vulkan
         {
             InputAssemblyStateVK val => Equals(*val._desc),
             PipelineInputAssemblyStateCreateInfo val => Equals(val),
-            _ => base.Equals(obj)
+            _ => false
         };
 
         public bool Equals(InputAssemblyStateVK other)

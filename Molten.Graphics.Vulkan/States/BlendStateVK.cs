@@ -47,7 +47,7 @@ namespace Molten.Graphics.Vulkan
         {
             BlendStateVK val => Equals(val._desc[0]),
             PipelineColorBlendStateCreateInfo val => Equals(val),
-            _ => base.Equals(obj)
+            _ => false
         };
 
         public bool Equals(BlendStateVK other)

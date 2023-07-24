@@ -34,7 +34,7 @@ namespace Molten.Graphics.Vulkan
         {
             DynamicStateVK other => Equals(*other._desc),
             PipelineDynamicStateCreateInfo other => Equals(other),
-            _ => base.Equals(obj),
+            _ => false,
         };
 
         public bool Equals(DynamicStateVK other)

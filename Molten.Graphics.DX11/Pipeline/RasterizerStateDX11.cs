@@ -5,10 +5,7 @@ namespace Molten.Graphics.DX11
     /// <summary>Stores a rasterizer state for use with a <see cref="GraphicsQueueDX11"/>.</summary>
     internal unsafe class RasterizerStateDX11 : GraphicsObject
     {
-        internal StructKey<RasterizerDesc2> Desc { get; }
-
-        internal unsafe ref ID3D11RasterizerState2* NativePtr => ref _native;
-
+        RasterizerDesc2 _desc;
         ID3D11RasterizerState2* _native;
 
         /// <summary>
@@ -19,28 +16,26 @@ namespace Molten.Graphics.DX11
         internal RasterizerStateDX11(DeviceDX11 device, ref ShaderPassParameters parameters) : 
             base(device)
         {
-            Desc = new StructKey<RasterizerDesc2>();
-            ref RasterizerDesc2 raDesc = ref Desc.Value;
-            raDesc.MultisampleEnable = parameters.IsMultisampleEnabled;
-            raDesc.DepthClipEnable = parameters.IsDepthClipEnabled;
-            raDesc.AntialiasedLineEnable = parameters.IsAALineEnabled;
-            raDesc.ScissorEnable = parameters.IsScissorEnabled;
-            raDesc.FillMode = parameters.Fill.ToApi();
-            raDesc.CullMode = parameters.Cull.ToApi();
-            raDesc.DepthBias = parameters.DepthBiasEnabled ? parameters.DepthBias : 0;
-            raDesc.DepthBiasClamp = parameters.DepthBiasEnabled ? parameters.DepthBiasClamp : 0;
-            raDesc.SlopeScaledDepthBias = parameters.SlopeScaledDepthBias;
-            raDesc.ConservativeRaster = (ConservativeRasterizationMode)parameters.ConservativeRaster;
-            raDesc.ForcedSampleCount = parameters.ForcedSampleCount;
-            raDesc.FrontCounterClockwise = parameters.IsFrontCounterClockwise;
+            _desc = new RasterizerDesc2();
+            _desc.MultisampleEnable = parameters.IsMultisampleEnabled;
+            _desc.DepthClipEnable = parameters.IsDepthClipEnabled;
+            _desc.AntialiasedLineEnable = parameters.IsAALineEnabled;
+            _desc.ScissorEnable = parameters.IsScissorEnabled;
+            _desc.FillMode = parameters.Fill.ToApi();
+            _desc.CullMode = parameters.Cull.ToApi();
+            _desc.DepthBias = parameters.DepthBiasEnabled ? parameters.DepthBias : 0;
+            _desc.DepthBiasClamp = parameters.DepthBiasEnabled ? parameters.DepthBiasClamp : 0;
+            _desc.SlopeScaledDepthBias = parameters.SlopeScaledDepthBias;
+            _desc.ConservativeRaster = (ConservativeRasterizationMode)parameters.ConservativeRaster;
+            _desc.ForcedSampleCount = parameters.ForcedSampleCount;
+            _desc.FrontCounterClockwise = parameters.IsFrontCounterClockwise;
 
-            device.Ptr->CreateRasterizerState2(Desc, ref _native);
+            device.Ptr->CreateRasterizerState2(_desc, ref _native);
         }
 
         protected override void OnGraphicsRelease()
         {
             SilkUtil.ReleasePtr(ref _native);
-            Desc.Dispose();
         }
 
         public static implicit operator ID3D11RasterizerState*(RasterizerStateDX11 state)

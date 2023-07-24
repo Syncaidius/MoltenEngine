@@ -1,9 +1,14 @@
 ﻿using Silk.NET.Core.Native;
+using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics.DX11
 {
     public class ShaderPassDX11 : HlslPass
     {
+        BlendStateDX11 _stateBlend;
+        DepthStateDX11 _stateDepth;
+        RasterizerStateDX11 _stateRasterizer;
+
         public ShaderPassDX11(HlslShader shader, string name) : base(shader, name) { }
 
         protected override void OnInitialize(ref ShaderPassParameters parameters)
@@ -14,20 +19,20 @@ namespace Molten.Graphics.DX11
 
             DeviceDX11 device = Device as DeviceDX11;
 
-            BlendState = new BlendStateDX11(device, ref parameters);
-            BlendState = Device.CacheObject(BlendState.Desc, BlendState);
+            _stateBlend = new BlendStateDX11(device, ref parameters);
+            Device.Cache.Object<BlendStateDX11, BlendStateDX11.CombinedDesc>(ref _stateBlend);
 
-            RasterizerState = new RasterizerStateDX11(device, ref parameters);
-            RasterizerState = Device.CacheObject(RasterizerState.Desc, RasterizerState);
+            _stateRasterizer = new RasterizerStateDX11(device, ref parameters);
+            Device.Cache.Object<RasterizerStateDX11, RasterizerDesc2>(ref _stateRasterizer);
 
-            DepthState = new DepthStateDX11(device, ref parameters);
-            DepthState = Device.CacheObject(DepthState.Desc, DepthState);
+            _stateDepth = new DepthStateDX11(device, ref parameters);
+            Device.Cache.Object<DepthStateDX11, DepthStateDX11.CombinedDesc>(ref _stateDepth);
         }
 
-        internal DepthStateDX11 DepthState { get; private set; }
+        internal DepthStateDX11 DepthState => _stateDepth;
 
-        internal RasterizerStateDX11 RasterizerState { get; private set; }
+        internal RasterizerStateDX11 RasterizerState => _stateRasterizer;
 
-        internal BlendStateDX11 BlendState { get; private set; }
+        internal BlendStateDX11 BlendState => _stateBlend;
     }
 }

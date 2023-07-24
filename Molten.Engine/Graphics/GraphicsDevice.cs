@@ -259,17 +259,9 @@ namespace Molten.Graphics
         /// <returns></returns>
         public ShaderSampler CreateSampler(ref ShaderSamplerParameters parameters)
         {
-            StructKey<ShaderSamplerParameters> key = new StructKey<ShaderSamplerParameters>(ref parameters);
-            ShaderSampler newSampler = OnCreateSampler(ref parameters);
-            ShaderSampler result = CacheObject(key, newSampler);
-
-            if (result != newSampler)
-            {
-                newSampler.Dispose();
-                key.Dispose();
-            }
-
-            return result;
+            ShaderSampler sampler = OnCreateSampler(ref parameters);
+            Cache.Object<ShaderSampler, ShaderSamplerParameters>(ref sampler);
+            return sampler;
         }
 
         protected abstract ShaderSampler OnCreateSampler(ref ShaderSamplerParameters parameters);

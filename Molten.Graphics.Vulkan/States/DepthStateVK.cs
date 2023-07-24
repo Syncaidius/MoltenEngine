@@ -59,7 +59,7 @@ namespace Molten.Graphics.Vulkan
         {
             DepthStateVK val => Equals(*val._desc),
             PipelineDepthStencilStateCreateInfo val => Equals(val),
-            _ => base.Equals(obj)
+            _ => false
         };
 
         public bool Equals(DepthStateVK other)
