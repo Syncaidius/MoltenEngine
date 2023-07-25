@@ -3,7 +3,7 @@
 namespace Molten.Graphics.DX11
 {
     /// <summary>Stores a rasterizer state for use with a <see cref="GraphicsQueueDX11"/>.</summary>
-    internal unsafe class RasterizerStateDX11 : GraphicsObject
+    internal unsafe class RasterizerStateDX11 : GraphicsObject, IEquatable<RasterizerStateDX11>, IEquatable<RasterizerDesc2>
     {
         RasterizerDesc2 _desc;
         ID3D11RasterizerState2* _native;
@@ -31,6 +31,34 @@ namespace Molten.Graphics.DX11
             _desc.FrontCounterClockwise = parameters.IsFrontCounterClockwise;
 
             device.Ptr->CreateRasterizerState2(_desc, ref _native);
+        }
+
+        public override bool Equals(object obj) => obj switch
+        {
+            RasterizerStateDX11 state => Equals(state._desc),
+            RasterizerDesc2 desc => Equals(desc),
+            _ => false
+        };
+
+        public bool Equals(RasterizerStateDX11 other)
+        {
+            return Equals(other._desc);
+        }
+
+        public bool Equals(RasterizerDesc2 other)
+        {
+            return _desc.MultisampleEnable.Value == other.MultisampleEnable &&
+                _desc.DepthClipEnable.Value == other.DepthClipEnable &&
+                _desc.AntialiasedLineEnable.Value == other.AntialiasedLineEnable &&
+                _desc.ScissorEnable.Value == other.ScissorEnable &&
+                _desc.FillMode == other.FillMode &&
+                _desc.CullMode == other.CullMode &&
+                _desc.DepthBias == other.DepthBias &&
+                _desc.DepthBiasClamp == other.DepthBiasClamp &&
+                _desc.SlopeScaledDepthBias == other.SlopeScaledDepthBias &&
+                _desc.ConservativeRaster == other.ConservativeRaster &&
+                _desc.ForcedSampleCount == other.ForcedSampleCount &&
+                _desc.FrontCounterClockwise.Value == other.FrontCounterClockwise;
         }
 
         protected override void OnGraphicsRelease()
