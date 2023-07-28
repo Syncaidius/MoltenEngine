@@ -5,3 +5,5 @@
   homepage: api/index.md
 - name: GitHub
   href: https://github.com/Syncaidius/MoltenEngine/
+- name: NuGet
+  href: https://www.nuget.org/packages?q=syncaidius
