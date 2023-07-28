@@ -1,0 +1,40 @@
+name: Generate Documentation
+on:
+  push:
+    branches: [Release, NewDocGen]
+    
+jobs:
+  generate-docs:
+    runs-on: windows-latest
+    env:
+      DOTNET_VERSION: 7.0.x
+      
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Install .NET [${{ env.DOTNET_VERSION }}]
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          
+      - name: Install DocFX
+        uses: crazy-max/ghaction-chocolatey@v2
+        with:
+          args: install docfx
+          
+      - name: Install dependencies
+        run: dotnet restore
+        
+      - name: DocFX Build
+        working-directory: docs
+        run: docfx .\docfx.json
+        continue-on-error: false
+        
+      - name: Publish
+        if: github.event_name == 'push'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/
+          force_orphan: true
