@@ -19,6 +19,8 @@ on:
 jobs:
   Get-Changelog:
     runs-on: ubuntu-latest
+    env:
+      CHANGELOG_DIR: docs/articles/changelogs
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -31,10 +33,10 @@ jobs:
          VERSION_FN=${VERSION//./_}
          rm -f "Changelogs/CHANGELOG_${VERSION_FN}.md"
          echo -e $"# Version ${VERSION} Changelog " >> "Changelogs/CHANGELOG_$VERSION_FN.md"
-         echo -e $"<br>" >> "Changelogs/CHANGELOG_$VERSION_FN.md"
-         echo -e $"" >> "Changelogs/CHANGELOG_$VERSION_FN.md"
-         echo -e $"| Commit | Changes |" >> "Changelogs/CHANGELOG_${VERSION_FN}.md"
-         echo -e $"| ------ | ------- |" >> "Changelogs/CHANGELOG_${VERSION_FN}.md"
+         echo -e $"<br>" >> "${CHANGELOG_DIR}/CHANGELOG_$VERSION_FN.md"
+         echo -e $"" >> "{CHANGELOG_DIR}/CHANGELOG_$VERSION_FN.md"
+         echo -e $"| Commit | Changes |" >> "${CHANGELOG_DIR}/CHANGELOG_${VERSION_FN}.md"
+         echo -e $"| ------ | ------- |" >> "${CHANGELOG_DIR}/CHANGELOG_${VERSION_FN}.md"
          
       - name: Get Changes Since Date
         if: "${{github.event.inputs.origin-type == 'Date'}}"
@@ -49,7 +51,7 @@ jobs:
          CHANGES=${CHANGES//$'<br><br>'/'<br>'}
          CHANGES=${CHANGES//$'\r\n'/$'<br>'}
          CHANGES=${CHANGES//$'<br> |'/$' |\r\n'}
-         echo $CHANGES >> "Changelogs/CHANGELOG_${VERSION_FN}.md" 
+         echo $CHANGES >> "{CHANGELOG_DIR}/CHANGELOG_${VERSION_FN}.md" 
         
       - name: Get Changes Since Commit
         if: "${{github.event.inputs.origin-type == 'Commit'}}"
@@ -64,7 +66,7 @@ jobs:
          CHANGES=${CHANGES//$'<br><br>'/'<br>'}
          CHANGES=${CHANGES//$'\r\n'/$'<br>'}
          CHANGES=${CHANGES//$'<br> |'/$' |\r\n'}
-         echo $CHANGES >> "Changelogs/CHANGELOG_${VERSION_FN}.md" 
+         echo $CHANGES >> "{CHANGELOG_DIR}/CHANGELOG_${VERSION_FN}.md" 
          
       - name: Commit
         uses: stefanzweifel/git-auto-commit-action@v4
