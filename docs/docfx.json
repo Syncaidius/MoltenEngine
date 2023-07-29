@@ -32,7 +32,9 @@
         {
           "files": [
             "api/**.yml", 
-            "api/**.md"
+            "api/**.md",
+            "articles/**.yml",
+            "articles/**.md"
           ]
         },
         {
