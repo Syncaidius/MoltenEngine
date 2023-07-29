@@ -31,10 +31,10 @@ jobs:
         run: |
          VERSION=${{inputs.version}}
          VERSION_FN=${VERSION//./_}
-         rm -f "Changelogs/CHANGELOG_${VERSION_FN}.md"
-         echo -e $"# Version ${VERSION} Changelog " >> "Changelogs/CHANGELOG_$VERSION_FN.md"
+         rm -f "${CHANGELOG_DIR}/CHANGELOG_${VERSION_FN}.md"
+         echo -e $"# Version ${VERSION} Changelog " >> "${CHANGELOG_DIR}/CHANGELOG_$VERSION_FN.md"
          echo -e $"<br>" >> "${CHANGELOG_DIR}/CHANGELOG_$VERSION_FN.md"
-         echo -e $"" >> "{CHANGELOG_DIR}/CHANGELOG_$VERSION_FN.md"
+         echo -e $"" >> "${CHANGELOG_DIR}/CHANGELOG_$VERSION_FN.md"
          echo -e $"| Commit | Changes |" >> "${CHANGELOG_DIR}/CHANGELOG_${VERSION_FN}.md"
          echo -e $"| ------ | ------- |" >> "${CHANGELOG_DIR}/CHANGELOG_${VERSION_FN}.md"
          
@@ -51,7 +51,7 @@ jobs:
          CHANGES=${CHANGES//$'<br><br>'/'<br>'}
          CHANGES=${CHANGES//$'\r\n'/$'<br>'}
          CHANGES=${CHANGES//$'<br> |'/$' |\r\n'}
-         echo $CHANGES >> "{CHANGELOG_DIR}/CHANGELOG_${VERSION_FN}.md" 
+         echo $CHANGES >> "${CHANGELOG_DIR}/CHANGELOG_${VERSION_FN}.md" 
         
       - name: Get Changes Since Commit
         if: "${{github.event.inputs.origin-type == 'Commit'}}"
@@ -66,7 +66,7 @@ jobs:
          CHANGES=${CHANGES//$'<br><br>'/'<br>'}
          CHANGES=${CHANGES//$'\r\n'/$'<br>'}
          CHANGES=${CHANGES//$'<br> |'/$' |\r\n'}
-         echo $CHANGES >> "{CHANGELOG_DIR}/CHANGELOG_${VERSION_FN}.md" 
+         echo $CHANGES >> "${CHANGELOG_DIR}/CHANGELOG_${VERSION_FN}.md" 
          
       - name: Commit
         uses: stefanzweifel/git-auto-commit-action@v4
