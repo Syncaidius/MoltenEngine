@@ -1,3 +1,4 @@
+# Welcome
 Molten started as spare-time engine project, which I eventually intend to use to develop my own games without relying on other engines. Hopefully you'll find a use for it too!
 
 While parts of this project will inevitably be a classic case of re-inventing the wheel, I'm treating it as a chance to gain more experience in the area of game engine development. 
@@ -11,7 +12,7 @@ While parts of this project will inevitably be a classic case of re-inventing th
 | MacOS      |        |         |
 | iOS        |        |         |
 
-[ ![GitHub](https://img.shields.io/github/license/Syncaidius/MoltenEngine)](LICENSE)  [![GitHub last commit](https://img.shields.io/github/last-commit/Syncaidius/MoltenEngine)](https://github.com/Syncaidius/MoltenEngine/commits/) [![Nuget](https://img.shields.io/nuget/v/Molten.Engine?color=%2322AAFF&label=NuGet)](https://www.nuget.org/packages?q=molten+Syncaidius)
+[ ![GitHub](https://img.shields.io/github/license/Syncaidius/MoltenEngine)](LICENSE)  [![GitHub last commit](https://img.shields.io/github/last-commit/Syncaidius/MoltenEngine)](https://github.com/Syncaidius/MoltenEngine/commits/) [![Nuget](https://img.shields.io/nuget/v/Molten.Engine?color=%2322AAFF&label=NuGet)](https://www.nuget.org/packages?q=molten+Syncaidius) ![GitHub Sponsors](https://img.shields.io/github/sponsors/Syncaidius?logo=github&label=sponsors&color=red) 
 
 # Core Feature Status
 See the following table for the per-platform support and status of each feature.

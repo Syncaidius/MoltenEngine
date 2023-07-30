@@ -61,3 +61,7 @@ a:hover{
     color: var(--main-highlight);
     font-weight:bold;
 }
+
+.footer{
+    background-color: #222222;
+}
