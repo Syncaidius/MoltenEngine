@@ -18,7 +18,7 @@
     <PackageTags>game engine;cross platform;android;openal;vulkan;opengl;</PackageTags>
     <PackageReleaseNotes>Initial release of Molten Engine.</PackageReleaseNotes>
     <PackageIcon>logo_128.png</PackageIcon>
-    <Version>0.5.0</Version>
+    <Version>0.6.0</Version>
     <Company>James Yarwood</Company>
     <SupportedOSPlatformVersion>31.0</SupportedOSPlatformVersion>
   </PropertyGroup>

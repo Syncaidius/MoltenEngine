@@ -19,7 +19,7 @@
     <PackageTags>game engine;cross platform;math;vectors;matrix;matrices;</PackageTags>
     <PackageReleaseNotes>Initial release of Molten Engine.</PackageReleaseNotes>
     <PackageIcon>logo_128.png</PackageIcon>
-    <Version>0.5.0</Version>
+    <Version>0.6.0</Version>
     <Company>James Yarwood</Company>
     <RootNamespace>Molten</RootNamespace>
   </PropertyGroup>
