@@ -7,19 +7,6 @@ namespace Molten.Graphics.Vulkan
 {
     internal class DepthSurfaceVK : Texture2DVK, IDepthStencilSurface
     {
-        internal struct DepthClearValue
-        {
-            public float Depth;
-
-            public uint Stencil;
-
-            internal DepthClearValue(float depth, uint stencil)
-            {
-                Depth = depth;
-                Stencil = stencil;
-            }
-        }
-
         internal DepthSurfaceVK(GraphicsDevice device, uint width, uint height, uint mipCount, uint arraySize,
             AntiAliasLevel aaLevel, 
             MSAAQuality sampleQuality, 
@@ -49,6 +36,6 @@ namespace Molten.Graphics.Vulkan
         /// <summary>
         /// Gets surface clear color, if any.
         /// </summary>
-        internal DepthClearValue? ClearValue { get; set; }
+        internal ClearDepthStencilValue? ClearValue { get; set; }
     }
 }

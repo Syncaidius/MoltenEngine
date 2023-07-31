@@ -439,24 +439,51 @@ namespace Molten.Graphics.Vulkan
             if (vResult != GraphicsBindResult.Successful)
                 return vResult;
 
+            DepthSurfaceVK depthSurface = State.DepthSurface.Value as DepthSurfaceVK;
+
+            // Gather all surfaces and scissor rectangles.
+            uint maxSurfaceCount = (uint)_applySurfaces.Length;
+            uint surfaceID = 0;
+            for (; surfaceID < maxSurfaceCount; surfaceID++)
+            {
+                IRenderSurfaceVK surface = State.Surfaces[surfaceID] as IRenderSurfaceVK;
+                _applySurfaces[surfaceID] = surface;
+
+                // Get scissor rectangles.
+                Rectangle r = State.ScissorRects[surfaceID];
+                _applyScissors[surfaceID] = new Rect2D()
+                {
+                    Offset = new Offset2D(r.X, r.Y),
+                    Extent = new Extent2D((uint)r.Width, (uint)r.Height)
+                };
+
+                // Get clear color
+                _applyClearValues[surfaceID] = new ClearValue();
+                if (surface.ClearColor.HasValue)
+                {
+                    Color4 color = surface.ClearColor.Value;
+                    _applyClearValues[surfaceID].Color = new ClearColorValue() // TODO handle formats that are not RGBA layout (e.g. BGRA)
+                    {
+                        Float32_0 = color.R,
+                        Float32_1 = color.G,
+                        Float32_2 = color.B,
+                        Float32_3 = color.A,
+                    };
+                }
+            }
+
+            // Get depth surface clear value, if any.
+            if (depthSurface != null)
+            {
+                _applyClearValues[surfaceID] = new ClearValue();
+                if (depthSurface.ClearValue.HasValue)
+                    _applyClearValues[surfaceID].DepthStencil = depthSurface.ClearValue.Value;
+            }
+
             // Re-render the same pass for K iterations.
             for (int k = 0; k < pass.Iterations; k++)
             {
-                BeginEvent($"Iteration {k}");
-
-                // Gather all surfaces and scissor rectangles.
-                uint maxSurfaceCount = (uint)_applySurfaces.Length;
-                for (uint i = 0; i < maxSurfaceCount; i++)
-                {
-                    _applySurfaces[i] = State.Surfaces[i] as IRenderSurfaceVK;
-
-                    Rectangle r = State.ScissorRects[i];
-                    _applyScissors[i] = new Rect2D()
-                    {
-                        Offset = new Offset2D(r.X, r.Y),
-                        Extent = new Extent2D((uint)r.Width, (uint)r.Height)
-                    };
-                }
+                BeginEvent($"Iteration {k}"); 
 
                 Buffer iBuffer = new Buffer();
                 IndexType iType = IndexType.NoneKhr;
@@ -482,7 +509,6 @@ namespace Molten.Graphics.Vulkan
                     }
                 }
 
-                DepthSurfaceVK depthSurface = State.DepthSurface.Value as DepthSurfaceVK;
                 PipelineStateVK pipeState = pass.State.GetState(_applySurfaces, depthSurface);
                 FrameBufferVK frameBuffer = _device.GetFrameBuffer(pipeState.RenderPass, _applySurfaces, depthSurface);
 
@@ -494,6 +520,7 @@ namespace Molten.Graphics.Vulkan
                     RenderArea = _applyScissors[0],         // TODO Use a rectangle that contains all of the provided scissor rectangles
                     PClearValues = _applyClearValues,       // TODO Gather clear values of all bound surfaces (value[0].DepthStencil is always for the depth-stencil clear value)
                     ClearValueCount = maxSurfaceCount,      // TODO Gather clear values of all bound surfaces
+                    PNext = null
                 };
 
                 _device.VK.CmdBeginRenderPass(_cmd, rpInfo, SubpassContents.Inline);

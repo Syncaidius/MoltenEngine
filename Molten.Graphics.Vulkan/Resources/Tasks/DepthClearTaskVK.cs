@@ -41,7 +41,7 @@ namespace Molten.Graphics.Vulkan
             }
             else
             {
-                surface.ClearValue = new DepthSurfaceVK.DepthClearValue(DepthValue, StencilValue);
+                surface.ClearValue = new ClearDepthStencilValue(DepthValue, StencilValue);
             }
 
             return true;
