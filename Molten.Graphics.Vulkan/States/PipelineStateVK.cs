@@ -40,7 +40,6 @@ namespace Molten.Graphics.Vulkan
         RasterizerStateVK _rasterizerState;
         DynamicStateVK _dynamicState;
         InputAssemblyStateVK _inputState;
-        DescriptorSetLayoutVK _descriptorLayout;
         PipelineLayoutVK _pipelineLayout;
         RenderPassVK _renderPass;
 
@@ -94,8 +93,8 @@ namespace Molten.Graphics.Vulkan
                 stageDesc.PNext = null;
             }
 
-            _descriptorLayout = new DescriptorSetLayoutVK(device, pass);
-            _pipelineLayout = new PipelineLayoutVK(device, _descriptorLayout);
+            _pipelineLayout = new PipelineLayoutVK(device, pass.DescriptorLayout);
+            device.Cache.Object<PipelineLayoutVK, PipelineLayoutCreateInfo>(ref _pipelineLayout);
 
             _info.PMultisampleState = null;                         // TODO initialize
             _info.BasePipelineIndex = 0;                            // TODO initialize
@@ -206,7 +205,6 @@ namespace Molten.Graphics.Vulkan
             EngineUtil.Free(ref _info.PStages);
 
             _pipelineLayout.Dispose();
-            _descriptorLayout.Dispose();
 
             if (_pipeline.Handle != 0)
             {

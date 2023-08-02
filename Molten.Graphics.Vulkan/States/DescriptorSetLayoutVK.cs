@@ -5,12 +5,13 @@ using Silk.NET.Vulkan;
 
 namespace Molten.Graphics.Vulkan
 {
-    internal unsafe class DescriptorSetLayoutVK : GraphicsObject
+    internal unsafe class DescriptorSetLayoutVK : GraphicsObject, IEquatable<DescriptorSetLayoutVK>, IEquatable<DescriptorSetLayoutCreateInfo>
     {
         DescriptorSetLayoutBinding* _ptrBindings;
         DescriptorSetLayout _handle;
+        DescriptorSetLayoutCreateInfo _info;
 
-        public DescriptorSetLayoutVK(DeviceVK device, ShaderPassVK pass) : 
+        public DescriptorSetLayoutVK(DeviceVK device, ShaderPassVK pass) :
             base(device)
         {
             List<DescriptorSetLayoutBinding> layoutBindings = new List<DescriptorSetLayoutBinding>();
@@ -34,7 +35,7 @@ namespace Molten.Graphics.Vulkan
             for (int i = 0; i < layoutBindings.Count; i++)
                 _ptrBindings[i] = layoutBindings[i];
 
-            DescriptorSetLayoutCreateInfo layoutInfo = new DescriptorSetLayoutCreateInfo()
+            _info = new DescriptorSetLayoutCreateInfo()
             {
                 SType = StructureType.DescriptorSetLayoutCreateInfo,
                 Flags = DescriptorSetLayoutCreateFlags.None,
@@ -45,10 +46,42 @@ namespace Molten.Graphics.Vulkan
 
             Result r = Result.Success;
             fixed (DescriptorSetLayout* ptrLayout = &_handle)
-                r = device.VK.CreateDescriptorSetLayout(device, layoutInfo, null, ptrLayout);
+                r = device.VK.CreateDescriptorSetLayout(device, _info, null, ptrLayout);
 
             if (r != Result.Success)
                 r.Throw(device, () => $"Failed to create descriptor set layout for shader pass '{pass.Name}' of shader '{pass.Parent.Name}'");
+        }
+
+        public bool Equals(DescriptorSetLayoutVK other) => Equals(other._info);
+
+        public bool Equals(DescriptorSetLayoutCreateInfo other)
+        {
+            bool equal = _info.BindingCount == other.BindingCount &&
+                _info.Flags == other.Flags &&
+                _info.PNext == other.PNext;
+
+            if (!equal)
+                return false;
+
+            // Check binding equality.
+            for (int i = 0; i < _info.BindingCount; i++)
+            {
+                if (!BindingsEqual(ref _info.PBindings[i], ref other.PBindings[i]))
+                    return false;
+            }
+
+            return true;
+        }
+
+        private bool BindingsEqual(ref DescriptorSetLayoutBinding a, ref DescriptorSetLayoutBinding b)
+        {
+            return a.Binding == b.Binding &&
+                a.DescriptorCount == b.DescriptorCount &&
+                a.DescriptorType == b.DescriptorType &&
+                a.PImmutableSamplers == b.PImmutableSamplers &&
+                a.StageFlags == b.StageFlags;
+
+            // TODO check PImmutableSampler values, if any. Need to store count to iterate.
         }
 
         private ShaderStageFlags GetShaderStageFlags(ShaderPassVK pass, uint slotID)

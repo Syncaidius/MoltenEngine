@@ -36,10 +36,10 @@ namespace Molten.Graphics.Vulkan
 
             uint maxSurfaces = (uint)State.Surfaces.Length;
             _applySurfaces = new IRenderSurfaceVK[maxSurfaces];
-            _applyScissors = new UnsafeBufferedArray<Rect2D>(maxSurfaces);
-            _applyClearValues = new UnsafeBufferedArray<ClearValue>(maxSurfaces);
-            _applyViewports = new UnsafeBufferedArray<VKViewport>(maxSurfaces);
-            _applyVertexBuffers = new UnsafeBufferedArray<Buffer>(maxSurfaces);
+            _applyScissors = new FrameBufferedArray<Rect2D>(device, maxSurfaces);
+            _applyClearValues = new FrameBufferedArray<ClearValue>(device, maxSurfaces);
+            _applyViewports = new FrameBufferedArray<VKViewport>(device, maxSurfaces);
+            _applyVertexBuffers = new FrameBufferedArray<Buffer>(device, maxSurfaces);
 
             _eventLabelStack = new Stack<DebugUtilsLabelEXT>();
             _poolFrame = new CommandPoolVK(this, CommandPoolCreateFlags.ResetCommandBufferBit, 1);
