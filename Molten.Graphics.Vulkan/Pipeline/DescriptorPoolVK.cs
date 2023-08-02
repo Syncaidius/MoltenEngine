@@ -71,12 +71,20 @@ namespace Molten.Graphics.Vulkan
                 PNext = null,
             };
 
-            device.VK.AllocateDescriptorSets(device, &info, ptrSets);
+            Result r = device.VK.AllocateDescriptorSets(device, &info, ptrSets);
+            r.Throw(device, () => "Failed to allocate descriptor sets");
 
-            for(int i = 0; i < sets.Length; i++)
+            for (int i = 0; i < sets.Length; i++)
                 sets[i] = new DescriptorSetVK(pass, this, layouts[i], ref ptrSets[i]);
 
             return sets;
+        }
+
+        internal unsafe void Free(DescriptorSetVK set)
+        {
+            DeviceVK device = Device as DeviceVK;
+            Result r = device.VK.FreeDescriptorSets(device, _handle, 1, set);
+            r.Throw(device, () => "Failed to free descriptor set");
         }
 
         protected override unsafe void OnGraphicsRelease()

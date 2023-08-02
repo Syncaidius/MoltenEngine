@@ -17,9 +17,10 @@ namespace Molten.Graphics.Vulkan
 
         Stack<DebugUtilsLabelEXT> _eventLabelStack;
         IRenderSurfaceVK[] _applySurfaces;
-        Rect2D* _applyScissors;
-        ClearValue* _applyClearValues;
-        VKViewport* _applyViewports;
+        FrameBufferedArray<Rect2D> _applyScissors;
+        FrameBufferedArray<ClearValue> _applyClearValues;
+        FrameBufferedArray<VKViewport> _applyViewports;
+        FrameBufferedArray<Buffer> _applyVertexBuffers;
 
         internal GraphicsQueueVK(RendererVK renderer, DeviceVK device, uint familyIndex, Queue queue, uint queueIndex, SupportedCommandSet set) :
             base(device)
@@ -35,9 +36,10 @@ namespace Molten.Graphics.Vulkan
 
             uint maxSurfaces = (uint)State.Surfaces.Length;
             _applySurfaces = new IRenderSurfaceVK[maxSurfaces];
-            _applyScissors = EngineUtil.AllocArray<Rect2D>(maxSurfaces);
-            _applyClearValues = EngineUtil.AllocArray<ClearValue>(maxSurfaces);
-            _applyViewports = EngineUtil.AllocArray<VKViewport>(maxSurfaces);
+            _applyScissors = new UnsafeBufferedArray<Rect2D>(maxSurfaces);
+            _applyClearValues = new UnsafeBufferedArray<ClearValue>(maxSurfaces);
+            _applyViewports = new UnsafeBufferedArray<VKViewport>(maxSurfaces);
+            _applyVertexBuffers = new UnsafeBufferedArray<Buffer>(maxSurfaces);
 
             _eventLabelStack = new Stack<DebugUtilsLabelEXT>();
             _poolFrame = new CommandPoolVK(this, CommandPoolCreateFlags.ResetCommandBufferBit, 1);
@@ -213,8 +215,10 @@ namespace Molten.Graphics.Vulkan
 
         protected override void OnDispose()
         {
-            EngineUtil.Free(ref _applyScissors);
-            EngineUtil.Free(ref _applyViewports);
+            _applyScissors.Dispose();
+            _applyViewports.Dispose();
+            _applyClearValues.Dispose();
+            _applyVertexBuffers.Dispose();
 
             _poolFrame.Dispose();
             _poolTransient.Dispose();

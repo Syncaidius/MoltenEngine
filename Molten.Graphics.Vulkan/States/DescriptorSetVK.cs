@@ -95,16 +95,11 @@ namespace Molten.Graphics.Vulkan
             throw new NotImplementedException("Not finished");
         }
 
-        protected override void OnGraphicsRelease()
-        {
-            DeviceVK device = Device as DeviceVK;
+        protected override void OnGraphicsRelease() => 
+            Pool.Free(this);
 
-            if (_set.Handle != 0)
-            {
-                Result r = device.VK.FreeDescriptorSets(device, Pool, 1, _set);
-                r.Throw(device, () => "Failed to free descriptor set");
-            }
-        }
+        public static implicit operator DescriptorSet(DescriptorSetVK set) => 
+            set._set;
 
         internal DescriptorPoolVK Pool { get; }
     }
