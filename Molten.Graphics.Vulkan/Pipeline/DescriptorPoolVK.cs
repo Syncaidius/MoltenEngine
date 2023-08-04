@@ -9,10 +9,20 @@ namespace Molten.Graphics.Vulkan
         List<DescriptorPoolSize> _sizes;
         DescriptorPool _handle;
 
-        internal DescriptorPoolVK(DeviceVK device, DescriptorPoolSize[] sizes) : 
+        internal DescriptorPoolVK(DeviceVK device, DescriptorPoolSize[] sizes) :
             base(device)
         {
             _sizes = new List<DescriptorPoolSize>(sizes);
+        }
+
+        internal DescriptorPoolVK(DeviceVK device, DescriptorSetLayoutVK layout, uint maxSets) :
+            base(device)
+        {
+            _sizes = new List<DescriptorPoolSize>();
+            foreach (DescriptorSetLayoutBinding binding in layout.Bindings)
+                AddPooling(binding.DescriptorType, binding.DescriptorCount);
+
+            Build(maxSets);
         }
 
         /// <summary>
@@ -55,12 +65,20 @@ namespace Molten.Graphics.Vulkan
             }
         }
 
+        internal unsafe DescriptorSetVK Allocate(ShaderPassVK pass, DescriptorSetLayoutVK layout)
+        {
+            return Allocate(pass, new DescriptorSetLayoutVK[] { layout })[0];
+        }
+
         internal unsafe DescriptorSetVK[] Allocate(ShaderPassVK pass, DescriptorSetLayoutVK[] layouts)
         {
             DeviceVK device = Device as DeviceVK;
             DescriptorSetVK[] sets = new DescriptorSetVK[layouts.Length];
             DescriptorSet* ptrSets = stackalloc DescriptorSet[layouts.Length];
             DescriptorSetLayout* ptrLayouts = stackalloc DescriptorSetLayout[layouts.Length];
+
+            for(int i = 0; i < layouts.Length; i++)
+                ptrLayouts[i] = layouts[i].Handle;
 
             DescriptorSetAllocateInfo info = new DescriptorSetAllocateInfo()
             {

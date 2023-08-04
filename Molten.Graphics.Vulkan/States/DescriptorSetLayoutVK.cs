@@ -10,11 +10,12 @@ namespace Molten.Graphics.Vulkan
         DescriptorSetLayoutBinding* _ptrBindings;
         DescriptorSetLayout _handle;
         DescriptorSetLayoutCreateInfo _info;
+        List<DescriptorSetLayoutBinding> _layoutBindings;
 
         public DescriptorSetLayoutVK(DeviceVK device, ShaderPassVK pass) :
             base(device)
         {
-            List<DescriptorSetLayoutBinding> layoutBindings = new List<DescriptorSetLayoutBinding>();
+            _layoutBindings = new List<DescriptorSetLayoutBinding>();
 
             for (uint slotID = 0; slotID < pass.Parent.Resources.Length; slotID++)
             {
@@ -28,18 +29,18 @@ namespace Molten.Graphics.Vulkan
                     StageFlags = GetShaderStageFlags(pass, slotID),
                 };
 
-                layoutBindings.Add(binding);
+                _layoutBindings.Add(binding);
             }
 
-            _ptrBindings = EngineUtil.AllocArray<DescriptorSetLayoutBinding>((uint)layoutBindings.Count);
-            for (int i = 0; i < layoutBindings.Count; i++)
-                _ptrBindings[i] = layoutBindings[i];
+            _ptrBindings = EngineUtil.AllocArray<DescriptorSetLayoutBinding>((uint)_layoutBindings.Count);
+            for (int i = 0; i < _layoutBindings.Count; i++)
+                _ptrBindings[i] = _layoutBindings[i];
 
             _info = new DescriptorSetLayoutCreateInfo()
             {
                 SType = StructureType.DescriptorSetLayoutCreateInfo,
                 Flags = DescriptorSetLayoutCreateFlags.None,
-                BindingCount = (uint)layoutBindings.Count,
+                BindingCount = (uint)_layoutBindings.Count,
                 PBindings = _ptrBindings,
                 PNext = null,
             };
@@ -139,5 +140,7 @@ namespace Molten.Graphics.Vulkan
         }
 
         public DescriptorSetLayout Handle => _handle;
+
+        public IReadOnlyList<DescriptorSetLayoutBinding> Bindings => _layoutBindings;
     }
 }

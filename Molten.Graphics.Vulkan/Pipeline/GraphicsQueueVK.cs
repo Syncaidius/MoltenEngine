@@ -21,6 +21,7 @@ namespace Molten.Graphics.Vulkan
         FrameBufferedArray<ClearValue> _applyClearValues;
         FrameBufferedArray<VKViewport> _applyViewports;
         FrameBufferedArray<Buffer> _applyVertexBuffers;
+        FrameBufferedArray<DescriptorSet> _applyDescSets;
 
         internal GraphicsQueueVK(RendererVK renderer, DeviceVK device, uint familyIndex, Queue queue, uint queueIndex, SupportedCommandSet set) :
             base(device)
@@ -35,11 +36,14 @@ namespace Molten.Graphics.Vulkan
             Set = set;
 
             uint maxSurfaces = (uint)State.Surfaces.Length;
+            uint maxVBuffers = (uint)device.Capabilities.VertexBuffers.MaxSlots;
+            uint maxDescSets = 16U; // TODO: (uint)device.Capabilities.MaxBoundDescriptors;
             _applySurfaces = new IRenderSurfaceVK[maxSurfaces];
             _applyScissors = new FrameBufferedArray<Rect2D>(device, maxSurfaces);
             _applyClearValues = new FrameBufferedArray<ClearValue>(device, maxSurfaces);
             _applyViewports = new FrameBufferedArray<VKViewport>(device, maxSurfaces);
-            _applyVertexBuffers = new FrameBufferedArray<Buffer>(device, maxSurfaces);
+            _applyVertexBuffers = new FrameBufferedArray<Buffer>(device, maxVBuffers);
+            _applyDescSets = new FrameBufferedArray<DescriptorSet>(device, maxDescSets);
 
             _eventLabelStack = new Stack<DebugUtilsLabelEXT>();
             _poolFrame = new CommandPoolVK(this, CommandPoolCreateFlags.ResetCommandBufferBit, 1);
@@ -461,6 +465,17 @@ namespace Molten.Graphics.Vulkan
                     Extent = new Extent2D((uint)r.Width, (uint)r.Height)
                 };
 
+                ViewportF vp = State.Viewports[surfaceID];
+                _applyViewports[surfaceID] = new VKViewport()
+                {
+                    X = vp.X,
+                    Y = vp.Y,
+                    Width = vp.Width,
+                    Height = vp.Height,
+                    MinDepth = vp.MinDepth,
+                    MaxDepth = vp.MaxDepth,
+                };
+
                 // Get clear color
                 _applyClearValues[surfaceID] = new ClearValue();
                 if (surface.ClearColor.HasValue)
@@ -533,7 +548,7 @@ namespace Molten.Graphics.Vulkan
                 _device.VK.CmdSetViewport(_cmd, 0, maxSurfaceCount, _applyViewports); // TODO collect viewport handles and set them all at once.
                 _device.VK.CmdSetScissor(_cmd, 0, maxSurfaceCount, _applyScissors);
 
-                //_device.VK.CmdBindDescriptorSets(_cmd, PipelineBindPoint.Graphics, pipeState.Layout, 0, 1, descriptorSets, 0, null);
+                _device.VK.CmdBindDescriptorSets(_cmd, PipelineBindPoint.Graphics, pipeState.Layout, 0, 1, _applyDescSets, 0, null);
                 _device.VK.CmdBindVertexBuffers(_cmd, 0, 1, null, null);
                 _device.VK.CmdBindIndexBuffer(_cmd, iBuffer, 0, iType);
 

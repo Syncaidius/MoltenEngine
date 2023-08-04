@@ -103,6 +103,8 @@ namespace Molten.Graphics.Vulkan
             }
         }
 
+        public static implicit operator PipelineLayout(PipelineLayoutVK layout) => layout._handle;
+
         internal PipelineLayout Handle => _handle;
     }
 }
