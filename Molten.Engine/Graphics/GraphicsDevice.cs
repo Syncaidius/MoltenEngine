@@ -171,10 +171,12 @@ namespace Molten.Graphics
             if (IsInitialized)
                 throw new InvalidOperationException("Cannot initialize a GraphicsDevice that has already been initialized.");
 
+            CheckFrameBufferSize(false);
+
             if (OnInitialize())
             {
                 IsInitialized = true;
-                CheckFrameBufferSize();
+                CheckFrameBufferSize(true);
             }
 
             return IsInitialized;
@@ -182,7 +184,7 @@ namespace Molten.Graphics
 
         protected abstract bool OnInitialize();
 
-        private void CheckFrameBufferSize()
+        private void CheckFrameBufferSize(bool checkStagingBuffers)
         {
             // Do we need to resize the number of buffered frames?
             if (_newFrameBufferSize != FrameBufferSize)
@@ -197,13 +199,18 @@ namespace Molten.Graphics
                 if (_frames == null || _frames.Length < FrameBufferSize)
                 {
                     Array.Resize(ref _frames, (int)FrameBufferSize);
-                    uint bufferBytes = _maxStagingSize;
-                    for (int i = 0; i < _frames.Length; i++)
+                    if (checkStagingBuffers)
                     {
-                        _frames[i] ??= new GraphicsFrame(INITIAL_BRANCH_COUNT)
+                        for (int i = 0; i < FrameBufferSize; i++)
                         {
-                            StagingBuffer = CreateStagingBuffer(true, true, bufferBytes),
-                        };
+                            _frames[i] ??= new GraphicsFrame(INITIAL_BRANCH_COUNT);
+                            _frames[i].StagingBuffer = CreateStagingBuffer(true, true, _maxStagingSize);
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < FrameBufferSize; i++)
+                            _frames[i] ??= new GraphicsFrame(INITIAL_BRANCH_COUNT);
                     }
                 }
             }
@@ -214,7 +221,7 @@ namespace Molten.Graphics
             Queue.Profiler.Begin();
 
             // TODO check if _maxStagingSize has changed due to settings. May need to resize all existing staging buffers.
-            CheckFrameBufferSize();
+            CheckFrameBufferSize(true);
 
             // If the oldest frame hasn't finished yet, wait for it before replacing it with a new one.
             // This stops the CPU from getting too far ahead of the GPU.
@@ -272,76 +279,6 @@ namespace Molten.Graphics
         }
 
         protected abstract HlslPass OnCreateShaderPass(HlslShader shader, string name);
-
-        public GraphicsBuffer CreateVertexBuffer<T>(GraphicsResourceFlags flags, uint vertexCapacity, T[] initialData = null)
-            where T : unmanaged, IVertexType
-        {
-            flags |= GraphicsResourceFlags.NoShaderAccess;
-            GraphicsBuffer buffer = CreateBuffer(GraphicsBufferType.Vertex, flags, GraphicsFormat.Unknown, vertexCapacity, initialData);
-            buffer.VertexFormat = VertexCache.Get<T>();
-
-            return buffer;
-        }
-
-        public GraphicsBuffer CreateIndexBuffer(ushort[] data, GraphicsResourceFlags flags = GraphicsResourceFlags.None)
-        {
-            return CreateIndexBuffer(flags, (uint)data.Length, data);
-        }
-
-        public GraphicsBuffer CreateIndexBuffer(uint[] data, GraphicsResourceFlags flags = GraphicsResourceFlags.None)
-        {
-            return CreateIndexBuffer(flags, (uint)data.Length, data);
-        }
-
-        public GraphicsBuffer CreateIndexBuffer(byte[] data, GraphicsResourceFlags flags = GraphicsResourceFlags.None)
-        {
-            return CreateIndexBuffer(flags, (uint)data.Length, data);
-        }
-
-        public GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint indexCapacity, ushort[] initialData)
-        {
-            return CreateBuffer(GraphicsBufferType.Index, flags, GraphicsFormat.R16_UInt, indexCapacity, initialData);
-        }
-
-        public GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint indexCapacity, uint[] initialData = null)
-        {
-            flags |= GraphicsResourceFlags.NoShaderAccess;
-            return CreateBuffer(GraphicsBufferType.Index, flags, GraphicsFormat.R32_UInt, indexCapacity, initialData);
-        }
-
-        public GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint indexCapacity, byte[] initialData = null)
-        {
-            flags |= GraphicsResourceFlags.NoShaderAccess;
-            return CreateBuffer(GraphicsBufferType.Index, flags, GraphicsFormat.R8_UInt, indexCapacity, initialData);
-        }
-
-        public GraphicsBuffer CreateStructuredBuffer<T>(T[] data, GraphicsResourceFlags flags = GraphicsResourceFlags.None)
-            where T : unmanaged
-        {
-            return CreateStructuredBuffer(flags, (uint)data.Length, data);
-        }
-
-        public GraphicsBuffer CreateStructuredBuffer<T>(GraphicsResourceFlags flags, uint elementCapacity, T[] initialData = null)
-            where T : unmanaged
-        {
-            return CreateBuffer(GraphicsBufferType.Structured, flags, GraphicsFormat.Unknown, elementCapacity, initialData);
-        }
-
-        public GraphicsBuffer CreateStagingBuffer(bool allowCpuRead, bool allowCpuWrite, uint byteCapacity)
-        {
-            GraphicsResourceFlags flags = GraphicsResourceFlags.GpuWrite | GraphicsResourceFlags.NoShaderAccess;
-
-            if (allowCpuRead)
-                flags |= GraphicsResourceFlags.CpuRead;
-
-            if (allowCpuWrite)
-                flags |= GraphicsResourceFlags.CpuWrite;
-
-            return CreateBuffer<byte>(GraphicsBufferType.Staging, flags, GraphicsFormat.Unknown, byteCapacity, null);
-        }
-
-        protected abstract GraphicsBuffer CreateBuffer<T>(GraphicsBufferType type, GraphicsResourceFlags flags, GraphicsFormat format, 
-            uint numElements, T[] initialData) where T : unmanaged;
 
         /// <summary>
         /// Loads an embedded shader from the target assembly. If an assembly is not provided, the current renderer's assembly is used instead.

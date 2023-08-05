@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using Molten.Collections;
+﻿using Molten.Collections;
 
 namespace Molten.Graphics
 {
