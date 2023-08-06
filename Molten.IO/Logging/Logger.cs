@@ -229,28 +229,32 @@ namespace Molten
         /// <param name="handled">If true, the exception will be marked as handled in it's log message.</param>
         public void Error(Exception e, bool handled = false)
         {
-            string[] st = e.StackTrace.Split(_traceSeparators, StringSplitOptions.RemoveEmptyEntries);
+            if (!string.IsNullOrWhiteSpace(e.StackTrace))
+            {
 
-            string title = "   Type: " + e.GetType().ToString();
-            string msg = "   Message: " + e.Message;
-            string source = "   Source: " + e.Source;
-            string hResult = "   HResult: " + e.HResult;
-            string target = "   Target Site: " + e.TargetSite.Name;
+                string[] st = e.StackTrace.Split(_traceSeparators, StringSplitOptions.RemoveEmptyEntries);
 
-            if (handled)
-                WriteLine("===HANDLED EXCEPTION===", ErrorColor, LogCategory.Error);
-            else
-                WriteLine("===UNHANDLED EXCEPTION===", ErrorColor, LogCategory.Error);
+                string title = "   Type: " + e.GetType().ToString();
+                string msg = "   Message: " + e.Message;
+                string source = "   Source: " + e.Source;
+                string hResult = "   HResult: " + e.HResult;
+                string target = "   Target Site: " + e.TargetSite.Name;
 
-            Error(title);
-            Error(msg);
-            Error(source);
-            Error(hResult);
-            Error(target);
+                if (handled)
+                    WriteLine("===HANDLED EXCEPTION===", ErrorColor, LogCategory.Error);
+                else
+                    WriteLine("===UNHANDLED EXCEPTION===", ErrorColor, LogCategory.Error);
 
-            // Stack-trace lines.
-            for (int i = 0; i < st.Length; i++)
-                Error(st[i]);
+                Error(title);
+                Error(msg);
+                Error(source);
+                Error(hResult);
+                Error(target);
+
+                // Stack-trace lines.
+                for (int i = 0; i < st.Length; i++)
+                    Error(st[i]);
+            }
 
             if (e.InnerException != null)
             {

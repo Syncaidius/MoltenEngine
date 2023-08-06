@@ -16,8 +16,8 @@ namespace Molten.Graphics.Vulkan
         protected override void OnInitialize(ref ShaderPassParameters parameters)
         {
             DeviceVK device = Device as DeviceVK;
-            State = new PipelineStateVK(device, this, ref parameters);
             DescriptorLayout = new DescriptorSetLayoutVK(device, this);
+            State = new PipelineStateVK(device, this, ref parameters);
 
             _descPool = new DescriptorPoolVK(device, DescriptorLayout, 5);
             _descSet = _descPool.Allocate(this, DescriptorLayout);

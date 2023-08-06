@@ -37,6 +37,7 @@ namespace Molten.Graphics
         /// Creates a new instance of <see cref="GraphicsDevice"/>.
         /// </summary>
         /// <param name="renderer">The <see cref="RenderService"/> that the new graphics device will be bound to.</param>
+        /// <param name="manager">The <see cref="GraphicsManager"/> that the device will be bound to.</param>
         protected GraphicsDevice(RenderService renderer, GraphicsManager manager)
         {
             Settings = renderer.Settings.Graphics;
