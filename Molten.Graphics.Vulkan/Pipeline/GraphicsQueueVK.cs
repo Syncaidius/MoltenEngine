@@ -384,64 +384,9 @@ namespace Molten.Graphics.Vulkan
             throw new NotImplementedException();
         }
 
-        private GraphicsBindResult ApplyState(HlslShader shader, QueueValidationMode mode, Action callback)
+        protected override unsafe GraphicsBindResult DoRenderPass(HlslPass hlslPass, QueueValidationMode mode, Action callback)
         {
-             GraphicsBindResult vResult = GraphicsBindResult.Successful;
-
-            if (!DrawInfo.Began)
-                throw new GraphicsCommandQueueException(this, $"{GetType().Name}: BeginDraw() must be called before calling {nameof(Draw)}()");
-
-            State.Shader.Value = shader;
-            bool shaderChanged = State.Shader.Bind();
-
-            if (State.Shader.BoundValue == null)
-                return GraphicsBindResult.NoShader;
-
-            // Re-render the same material for mat.Iterations.
-            BeginEvent($"{mode} Call");
-            for (uint i = 0; i < shader.Passes.Length; i++)
-            {
-                ShaderPassVK pass = shader.Passes[i] as ShaderPassVK;
-                if (!pass.IsEnabled)
-                {
-                    SetMarker($"Pass {i} - Skipped (Disabled)");
-                    continue;
-                }
-
-                if (pass.IsCompute)
-                {
-                    BeginEvent($"Pass {i} - Compute");
-                    vResult = DoComputePass(pass);
-                    EndEvent();
-                }
-                else
-                {
-                    // Skip non-compute passes when we're in compute-only mode.
-                    if (mode == QueueValidationMode.Compute)
-                    {
-                        SetMarker($"Pass {i} - Skipped (Compute-Only-mode)");
-                        continue;
-                    };
-
-                    BeginEvent($"Pass {i} - Render");
-                    vResult = DoRenderPass(pass, mode, callback);
-                    EndEvent();
-                }
-
-                if (vResult != GraphicsBindResult.Successful)
-                {
-                    Device.Log.Warning($"{mode} call failed with result: {vResult} -- Iteration: Pass {i}/{shader.Passes.Length} -- " +
-                    $"Shader: {shader.Name} -- Topology: {pass.Topology} -- IsCompute: {pass.IsCompute}");
-                    break;
-                }
-            }
-            EndEvent();
-
-            return vResult;
-        }
-
-        private unsafe GraphicsBindResult DoRenderPass(ShaderPassVK pass, QueueValidationMode mode, Action callback)
-        {
+            ShaderPassVK pass = hlslPass as ShaderPassVK;
             GraphicsBindResult vResult = Validate(mode);
 
             if (vResult != GraphicsBindResult.Successful)
@@ -559,12 +504,12 @@ namespace Molten.Graphics.Vulkan
                 EndEvent();
             }
 
-            pass.InvokeCompleted(DrawInfo.Custom);
             return GraphicsBindResult.Successful;
         }
 
-        private GraphicsBindResult DoComputePass(ShaderPassVK pass)
+        protected override GraphicsBindResult DoComputePass(HlslPass hlslPass)
         {
+            ShaderPassVK pass = hlslPass as ShaderPassVK;
             Vector3UI groups = DrawInfo.Custom.ComputeGroups;
 
             if (groups.X == 0)

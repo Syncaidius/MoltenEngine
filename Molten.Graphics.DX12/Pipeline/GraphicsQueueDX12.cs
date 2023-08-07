@@ -87,6 +87,16 @@ namespace Molten.Graphics.DX12
             throw new NotImplementedException();
         }
 
+        protected override GraphicsBindResult DoRenderPass(HlslPass pass, QueueValidationMode mode, Action callback)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override GraphicsBindResult DoComputePass(HlslPass pass)
+        {
+            throw new NotImplementedException();
+        }
+
         protected override ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, GraphicsMapType mapType)
         {
             throw new NotImplementedException();

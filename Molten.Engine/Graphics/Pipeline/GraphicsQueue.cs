@@ -235,6 +235,69 @@
 
         protected abstract void OnResetState();
 
+
+        protected GraphicsBindResult ApplyState(HlslShader shader, QueueValidationMode mode, Action callback)
+        {
+            GraphicsBindResult vResult = GraphicsBindResult.Successful;
+
+            if (!DrawInfo.Began)
+                throw new GraphicsCommandQueueException(this, $"{GetType().Name}: BeginDraw() must be called before calling {nameof(Draw)}()");
+
+            State.Shader.Value = shader;
+            bool shaderChanged = State.Shader.Bind();
+
+            if (State.Shader.BoundValue == null)
+                return GraphicsBindResult.NoShader;
+
+            // Re-render the same material for mat.Iterations.
+            BeginEvent($"{mode} Call");
+            for (uint i = 0; i < shader.Passes.Length; i++)
+            {
+                HlslPass pass = shader.Passes[i];
+                if (!pass.IsEnabled)
+                {
+                    SetMarker($"Pass {i} - Skipped (Disabled)");
+                    continue;
+                }
+
+                if (pass.IsCompute)
+                {
+                    BeginEvent($"Pass {i} - Compute");
+                    vResult = DoComputePass(pass);
+                    EndEvent();
+                }
+                else
+                {
+                    // Skip non-compute passes when we're in compute-only mode.
+                    if (mode == QueueValidationMode.Compute)
+                    {
+                        SetMarker($"Pass {i} - Skipped (Compute-Only-mode)");
+                        continue;
+                    };
+
+                    BeginEvent($"Pass {i} - Render");
+                    vResult = DoRenderPass(pass, mode, callback);
+                    EndEvent();
+                }
+
+                if (vResult != GraphicsBindResult.Successful)
+                {
+                    Device.Log.Warning($"{mode} call failed with result: {vResult} -- Iteration: Pass {i}/{shader.Passes.Length} -- " +
+                    $"Shader: {shader.Name} -- Topology: {pass.Topology} -- IsCompute: {pass.IsCompute}");
+                    break;
+                }
+
+                pass.InvokeCompleted(DrawInfo.Custom);
+            }
+            EndEvent();
+
+            return vResult;
+        }
+
+        protected abstract unsafe GraphicsBindResult DoRenderPass(HlslPass pass, QueueValidationMode mode, Action callback);
+
+        protected abstract GraphicsBindResult DoComputePass(HlslPass pass);
+
         /// <summary>Draw non-indexed, non-instanced primitives. 
         /// All queued compute shader dispatch requests are also processed</summary>
         /// <param name="shader">The <see cref="HlslShader"/> to apply when drawing.</param>
