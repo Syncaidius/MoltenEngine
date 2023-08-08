@@ -67,7 +67,7 @@ namespace Molten.Graphics.DX11
                     _debugInfo->GetMessageA(i, msg, &msgSize);
 
                     string desc = SilkMarshal.PtrToString((nint)msg->PDescription, NativeStringEncoding.LPStr);
-                    Log.Error($"[DX11 DEBUG] [Frame {Queue.Profiler.FrameID}] [{msg->Severity}] [{msg->Category}] {desc}");
+                    Log.Error($"[DX11 DEBUG] [Frame {Renderer.FrameID}] [{msg->Severity}] [{msg->Category}] {desc}");
                 }
 
                 _debugInfo->ClearStoredMessages();

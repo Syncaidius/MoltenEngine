@@ -3,6 +3,7 @@ using Molten.Collections;
 using Molten.Graphics;
 using Molten.Input;
 using Molten.Net;
+using Molten.Services;
 using Molten.Threading;
 
 namespace Molten
@@ -12,7 +13,7 @@ namespace Molten
     {
         ThreadedQueue<EngineTask> _taskQueue;
         List<EngineService> _services;
-        EngineThread _mainThread;
+        Action<Timing> _updateCallback;
 
         /// <summary>Gets the current instance of the engine. There can only be one active per application.</summary>
         public static Engine Current { get; private set; }
@@ -43,7 +44,14 @@ namespace Molten
             Log.Debug("Engine Instantiated");
             Threading = new ThreadManager(Log);
             _taskQueue = new ThreadedQueue<EngineTask>();
-            _services = new List<EngineService>(Settings.StartupServices);
+            _services = new List<EngineService>();
+
+            MainThread = Threading.CreateThread("engine", false, true, Update);
+
+            // Build active service list.
+            foreach (ServiceStartupProperties startup in Settings.StartupServices)
+                _services.Add(startup.Instance);
+
             Content = new ContentManager(Log, this, Settings.ContentWorkerThreads, Settings.AllowContentHotReload);
             Scenes = new SceneManager();
 
@@ -54,8 +62,8 @@ namespace Molten
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-            foreach (EngineService service in _services)
-                service.Initialize(this, Settings, Log);
+            foreach (ServiceStartupProperties startup in Settings.StartupServices)
+                startup.Instance.Initialize(this, Settings, startup.ThreadMode);
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -73,7 +81,7 @@ namespace Molten
         public T GetService<T>() where T: EngineService
         {
             Type t = typeof(T);
-            foreach(EngineService service in Settings.StartupServices)
+            foreach(EngineService service in _services)
             {
                 Type serviceType = service.GetType();
                 if (t.IsAssignableFrom(serviceType))
@@ -101,7 +109,7 @@ namespace Molten
         /// <returns></returns>
         public bool IsServiceAvailable(Type type)
         {
-            foreach (EngineService service in Settings.StartupServices)
+            foreach (EngineService service in _services)
             {
                 Type serviceType = service.GetType();
                 if (type.IsAssignableFrom(serviceType))
@@ -118,15 +126,12 @@ namespace Molten
         public void Start(Action<Timing> updateCallback)
         {
             foreach (EngineService service in _services)
-                service.Start(Threading, Log);
+                service.Start();
 
+            _updateCallback = updateCallback;
             Content.Workers.IsPaused = false;
 
-            _mainThread = Threading.CreateThread("engine", true, true, (timing) =>
-            {
-                Update(timing);
-                updateCallback(timing);
-            });
+            MainThread.Start();
         }
 
         /// <summary>
@@ -134,23 +139,10 @@ namespace Molten
         /// </summary>
         public void Stop()
         {
-            _mainThread?.Dispose();
+            MainThread?.Dispose();
 
             foreach (EngineService service in _services)
-            {
-                service.Stop();
-
-                // Wait for the service thread to stop.
-                while (service.State != EngineServiceState.Ready)
-                {
-                    if (service.Thread != null)
-                    {
-                        if (service.Thread.IsDisposed)
-                            break;
-                        Thread.Sleep(10);
-                    }
-                }
-            }
+                service.Stop(true);
         }
 
         internal void AddScene(Scene scene)
@@ -180,6 +172,7 @@ namespace Molten
             }
 
             Scenes.Update(time);
+            _updateCallback?.Invoke(time);
         }
 
         /// <summary>
@@ -231,7 +224,7 @@ namespace Molten
         /// Gets the main <see cref="EngineThread"/> of the current <see cref="Engine"/> instance.
         /// Core/game update logic is usually done on this thread.
         /// </summary>
-        public EngineThread MainThread => _mainThread;
+        public EngineThread MainThread { get; private set; }
 
         /// <summary>
         /// Gets the main content manager bound to the current engine instance. <para/>

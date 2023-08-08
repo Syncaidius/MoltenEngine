@@ -44,6 +44,7 @@ namespace Molten.Graphics
         {
             _shouldPresent = true;
             ChangeTargetFPS(0, settings.Graphics.TargetFPS.Value);
+            Profiler = new GraphicsProfiler(Thread.Timing, 60);
             settings.Graphics.TargetFPS.OnChanged += ChangeTargetFPS;
         }
 
@@ -61,7 +62,7 @@ namespace Molten.Graphics
         /// Occurs when the renderer is being initialized.
         /// </summary>
         /// <param name="settings">The engine settings to apply and bind to the current <see cref="RenderService"/>.</param>
-        protected override sealed ThreadingMode OnInitialize(EngineSettings settings)
+        protected override sealed void OnInitialize(EngineSettings settings)
         {
             DisplayManager = OnInitializeDisplayManager(settings.Graphics);
             _chain = new RenderChain(this);
@@ -107,8 +108,6 @@ namespace Molten.Graphics
             Surfaces.Initialize(BiggestWidth, BiggestHeight);
             Fonts = new SpriteFontManager(Log, this);
             Fonts.Initialize();
-
-            return ThreadingMode.SeparateThread;
         }
 
         private void ProcessTasks(RenderTaskPriority priority)
@@ -138,7 +137,6 @@ namespace Molten.Graphics
             if (!_shouldPresent)
                 return;
 
-            Profiler.Begin();
             Device.BeginFrame();
 
             // Handle any pending graphics-based disposals.
@@ -200,7 +198,6 @@ namespace Molten.Graphics
 
                 Device.Queue.BeginEvent("Draw Scene");
                 sceneData.PreRenderInvoke(this);
-                Device.Queue.PushProfiler(sceneData.Profiler);
 
                 // Sort cameras into ascending order-depth.
                 sceneData.Cameras.Sort((a, b) =>
@@ -218,22 +215,23 @@ namespace Molten.Graphics
                     if (camera.Skip)
                         continue;
 
-                    Device.Queue.PushProfiler(camera.Profiler);
                     _chain.Render(Device.Queue, sceneData, camera, time);
-                    Device.Queue.PopProfiler(time);
                 }
 
-                Device.Queue.PopProfiler(time);
                 sceneData.PostRenderInvoke(this);
                 Device.Queue.EndEvent();
             }
 
             ProcessTasks(RenderTaskPriority.EndOfFrame);
             Device.EndFrame(time);
-
             Surfaces.ResetFirstCleared();
-            Profiler.Accumulate(Device.Queue.Profiler.Previous, false);
-            Profiler.End(time);
+
+            // Accumulate profiling information.
+            foreach (GraphicsDevice device in _devices)
+            {
+                device.Profiler.Accumulate(device.Queue.Profiler);
+                Profiler.Accumulate(device.Profiler);
+            }
         }
 
         internal void RenderSceneLayer(GraphicsQueue cmd, LayerRenderData layerData, RenderCamera camera)
@@ -358,7 +356,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets profiling data attached to the renderer.
         /// </summary>
-        public RenderProfiler Profiler { get; } = new RenderProfiler();
+        public GraphicsProfiler Profiler { get; private set; }
 
         /// <summary>
         /// Gets the display manager bound to the renderer.
@@ -410,5 +408,11 @@ namespace Molten.Graphics
         /// Gets the internal <see cref="SpriteFontManager"/> bound to the current <see cref="RenderService"/>.
         /// </summary>
         internal SpriteFontManager Fonts { get; private set; }
+
+        /// <summary>
+        /// Gets the incremental frame ID of the current <see cref="RenderService"/> instance. 
+        /// This matches the value of render service thread <see cref="Timing.FrameID"/>.
+        /// </summary>
+        public ulong FrameID => Thread.Timing.FrameID;
     }
 }

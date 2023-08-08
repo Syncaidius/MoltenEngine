@@ -48,10 +48,7 @@ namespace Molten.Net
 
         #region Protected
 
-        protected override ThreadingMode OnInitialize(EngineSettings settings)
-        {
-            return ThreadingMode.SeparateThread;
-        }
+        protected override void OnInitialize(EngineSettings settings) { }
 
         protected override void OnStart(EngineSettings settings) { }
 

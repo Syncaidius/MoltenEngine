@@ -1,6 +1,8 @@
 ﻿using System.Runtime.Serialization;
 using System.Text;
 using Molten.Input;
+using Molten.Services;
+using Molten.Threading;
 using Molten.Utility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -10,11 +12,11 @@ namespace Molten
     [DataContract]
     public class EngineSettings : SettingBank
     {
-        List<EngineService> _startupServices;
+        List<ServiceStartupProperties> _startupServices;
 
         public EngineSettings()
         {
-            _startupServices = new List<EngineService>();
+            _startupServices = new List<ServiceStartupProperties>();
             StartupServices = _startupServices.AsReadOnly();
             Graphics = AddBank<GraphicsSettings>();
             Input = AddBank<InputSettings>();
@@ -42,26 +44,30 @@ namespace Molten
         /// Adds a new <see cref="EngineService"/> to be attached to an <see cref="Engine"/> instance upon initialization.
         /// </summary>
         /// <typeparam name="T">The type of <see cref="EngineService"/>.</typeparam>
+        /// <param name="threadMode">The threading mode to use when running the service.</param>
+        /// <param name="name">The name of the service. If no name is provided, a default name will be given.</param>
         /// <param name="initCallback">The initialization callback to attach to the service.</param>
         /// <exception cref="Exception"></exception>
-        public void AddService<T>(string name = null, MoltenEventHandler<EngineService> initCallback = null)
+        public void AddService<T>(ThreadingMode threadMode, string name = null, MoltenEventHandler<EngineService> initCallback = null)
             where T : EngineService, new()
         {
             Type t = typeof(T);
-            AddService(t, name, initCallback);
+            AddService(t, threadMode, name, initCallback);
         }
 
         /// <summary>
         /// Adds a new <see cref="EngineService"/> to be attached to an <see cref="Engine"/> instance upon initialization.
         /// </summary>
         /// <param name="serviceType">The type of <see cref="EngineService"/>.</param>
+        /// <param name="threadMode">The threading mode to use when running the service.</param>
+        /// <param name="name">The name of the service. If no name is provided, a default name will be given.</param>
         /// <param name="initCallback">The initialization callback to attach to the service.</param>
         /// <exception cref="Exception"></exception>
-        public void AddService(Type serviceType, string name = null, MoltenEventHandler<EngineService> initCallback = null)
+        public void AddService(Type serviceType, ThreadingMode threadMode, string name = null, MoltenEventHandler<EngineService> initCallback = null)
         {
             // Check if service is already in startup list.
             
-            foreach (EngineService s in StartupServices)
+            foreach (ServiceStartupProperties s in _startupServices)
             {
                 Type sType = s.GetType();
                 if (sType.IsAssignableFrom(serviceType) || serviceType.IsAssignableFrom(sType))
@@ -75,7 +81,11 @@ namespace Molten
             if (initCallback != null)
                 service.OnInitialized += initCallback;
 
-            _startupServices.Add(service);
+            _startupServices.Add(new ServiceStartupProperties()
+            {
+                Instance = service,
+                ThreadMode = threadMode
+            });
         }
 
         /// <summary>
@@ -151,6 +161,9 @@ namespace Molten
         /// <summary>Gets or sets the path (and filename) of the settings file.</summary>
         public string Path { get; set; } = "settings.json";
 
+        /// <summary>
+        /// Gets or sets the default asset path.
+        /// </summary>
         public string DefaultAssetPath { get; set; } = "assets/";
 
         /// <summary>Gets or sets the number of content worker threads. Changing this value will only have an affect before <see cref="Engine"/> is instantiated.</summary>
@@ -171,7 +184,6 @@ namespace Molten
         /// </summary>
         public List<JsonConverter> JsonConverters { get; }
 
-
         /// <summary>Gets or sets the product name.</summary>
         public string ProductName { get; set; } = "Molten Game";
 
@@ -183,6 +195,6 @@ namespace Molten
         /// <summary>
         /// A list of services to be initialized once the engine is started.
         /// </summary>
-        public IReadOnlyCollection<EngineService> StartupServices { get; }
+        public IReadOnlyCollection<ServiceStartupProperties> StartupServices { get; }
     }
 }

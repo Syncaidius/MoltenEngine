@@ -110,7 +110,7 @@ namespace Molten.Graphics.Vulkan
                 _sub = _subHandles[_subIndex];
             }
 
-            _sub.LastFrameUsed = Device.Renderer.Profiler.FrameID;
+            _sub.LastFrameUsed = Device.Renderer.FrameID;
         }
 
         /// <inheritdoc/>

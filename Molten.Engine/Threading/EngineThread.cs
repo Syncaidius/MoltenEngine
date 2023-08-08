@@ -1,4 +1,6 @@
-﻿using Molten.Collections;
+﻿using System.Threading;
+using Molten.Collections;
+using Molten.Font;
 
 namespace Molten.Threading
 {
@@ -30,36 +32,10 @@ namespace Molten.Threading
             _timing = new Timing(callback);
             _timing.IsFixedTimestep = fixedTimeStep;
             _dispatchedActions = new ThreadedQueue<Action>();
-
-            _thread = new Thread(() =>
-            {
-                while (!_shouldExit)
-                {
-                    while (_dispatchedActions.TryDequeue(out Action action))
-                        action();
-
-                    if (!_timing.IsRunning)
-                        _reset.WaitOne();
-
-                    _timing.Update();
-                }
-            })
-            {
-                Name = name,
-            };
-
-            try
-            {
-                _thread.TrySetApartmentState(apartmentState);
-            }
-            catch { }
-
-            _thread.Start();
+            Name = name;
 
             if (startNow)
-                _timing.Start();
-
-            Name = name;
+                Start();
         }
 
         /// <summary>
@@ -73,6 +49,36 @@ namespace Molten.Threading
         /// <summary>Starts or resumes the thread's update loop.</summary>
         public void Start()
         {
+            if (_thread == null)
+            {
+                _thread = new Thread(() =>
+                {
+                    while (!_shouldExit)
+                    {
+                        while (_dispatchedActions.TryDequeue(out Action action))
+                            action();
+
+                        if (!_timing.IsRunning)
+                            _reset.WaitOne();
+
+                        _timing.Update();
+                    }
+                });
+
+                _thread.Name = Name;
+
+                try
+                {
+                    _thread.TrySetApartmentState(ApartmentState);
+                }
+                catch { }
+            }
+            else
+            {
+                // TODO Add EngineThreadState and set it to running.
+            }
+
+            _thread.Start();
             _timing.Start();
             _reset.Set();
         }

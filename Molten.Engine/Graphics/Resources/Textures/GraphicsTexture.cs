@@ -22,7 +22,7 @@ namespace Molten.Graphics
             MSAAQuality sampleQuality, GraphicsFormat format, GraphicsResourceFlags flags, bool allowMipMapGen, string name) 
             : base(device, flags)
         {
-            LastFrameResizedID = device.Renderer.Profiler.FrameID;
+            LastFrameResizedID = device.Renderer.FrameID;
             IsMipMapGenAllowed = allowMipMapGen;
             ValidateFlagCombination();
 
@@ -271,8 +271,8 @@ namespace Molten.Graphics
                 fbIndex = Math.Min(fbSize - 1, Device.FrameBufferIndex);
             }
 
-            OnResizeTexture(in newDimensions, newFormat, fbSize, fbIndex, Device.Renderer.Profiler.FrameID);
-            LastFrameResizedID = Device.Renderer.Profiler.FrameID;
+            OnResizeTexture(in newDimensions, newFormat, fbSize, fbIndex, Device.Renderer.FrameID);
+            LastFrameResizedID = Device.Renderer.FrameID;
             OnResize?.Invoke(this);
         }
 

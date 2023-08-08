@@ -36,7 +36,7 @@ namespace Molten.Audio.OpenAL
             AvailableDevices = _devices.AsReadOnly();
         }
 
-        protected unsafe override ThreadingMode OnInitialize(EngineSettings settings)
+        protected unsafe override void OnInitialize(EngineSettings settings)
         {
             _al = AL.GetApi(true);
             _alc = ALContext.GetApi(true);
@@ -51,7 +51,7 @@ namespace Molten.Audio.OpenAL
 
             DetectDevices(settings);
 
-            return base.OnInitialize(settings);
+            base.OnInitialize(settings);
         }
 
         internal bool TryGetExtension<T>(out T extension) where T : ContextExtensionBase

@@ -44,6 +44,7 @@ namespace Molten.Graphics
             Renderer = renderer;
             Manager = manager;
             Log = renderer.Log;
+            Profiler = new GraphicsDeviceProfiler();
 
             Cache = new GraphicsObjectCache();
             _outputSurfaces = new ThreadedList<ISwapChainSurface>();
@@ -130,7 +131,7 @@ namespace Molten.Graphics
             if (IsDisposed)
                 throw new ObjectDisposedException("GraphicsDevice has already been disposed, so it cannot mark GraphicsObject instances for release.");
 
-            obj.ReleaseFrameID = Renderer.Profiler.FrameID;
+            obj.ReleaseFrameID = Renderer.FrameID;
             _disposals.Add(obj);
         }
 
@@ -219,8 +220,6 @@ namespace Molten.Graphics
 
         internal void BeginFrame()
         {
-            Queue.Profiler.Begin();
-
             // TODO check if _maxStagingSize has changed due to settings. May need to resize all existing staging buffers.
             CheckFrameBufferSize(true);
 
@@ -243,16 +242,14 @@ namespace Molten.Graphics
 
         internal void Begin()
         {
-            Queue.Profiler.Begin();
             OnBeginFrame(_outputSurfaces);
         }
 
         internal void EndFrame(Timing time)
         {
             OnEndFrame(_outputSurfaces);
-            Queue.Profiler.End(time);
 
-            _frames[_frameIndex].FrameID = Renderer.Profiler.FrameID;
+            _frames[_frameIndex].FrameID = Renderer.FrameID;
             _frameIndex = (_frameIndex + 1U) % FrameBufferSize;
         }
 
@@ -390,6 +387,8 @@ namespace Molten.Graphics
         /// Gets the vertex format cache which stores <see cref="VertexFormat"/> instances to help avoid the need to generate multiple instances of the same formats.
         /// </summary>
         public VertexFormatCache VertexCache { get; protected set; }
+
+        public GraphicsDeviceProfiler Profiler { get; } 
 
         /// <summary>
         /// Gets the current frame-buffer size. The value will be between 1 and <see cref="GraphicsSettings.FrameBufferMode"/>, from <see cref="Settings"/>.

@@ -135,7 +135,7 @@ namespace Molten.Graphics.DX11
 
                     // Only increment if we haven't already incremented during write flag check (above).
                     if (!flags.Has(GraphicsResourceFlags.CpuWrite))
-                        Profiler.Current.MapReadWriteCount++;
+                        Profiler.ResourceMapCalls++;
                 }
                 else
                 {
@@ -149,32 +149,27 @@ namespace Molten.Graphics.DX11
                     if (mapType == GraphicsMapType.Discard)
                     {
                         map = Map.WriteDiscard;
-                        Profiler.Current.MapDiscardCount++;
                     }
                     else
                     {
-                        if (resource is GraphicsBuffer buffer &&
-                            (buffer.BufferType == GraphicsBufferType.Vertex || buffer.BufferType == GraphicsBufferType.Index))
+                        if (resource is GraphicsBuffer buffer 
+                            && (buffer.BufferType == GraphicsBufferType.Vertex 
+                            || buffer.BufferType == GraphicsBufferType.Index))
                         {
                             map = Map.WriteNoOverwrite;
-                            Profiler.Current.MapNoOverwriteCount++;
                         }
                         else
                         {
-                            if (resource.Flags.Has(GraphicsResourceFlags.CpuWrite) &&
-                                !resource.Flags.Has(GraphicsResourceFlags.CpuRead) &&
-                                !resource.Flags.Has(GraphicsResourceFlags.GpuWrite))
-                            {
+                            if (resource.Flags.Has(GraphicsResourceFlags.CpuWrite) 
+                                && !resource.Flags.Has(GraphicsResourceFlags.CpuRead) 
+                                && !resource.Flags.Has(GraphicsResourceFlags.GpuWrite))
                                 map = Map.WriteNoOverwrite;
-                                Profiler.Current.MapNoOverwriteCount++;
-                            }
                             else
-                            {
                                 map = Map.Write;
-                                Profiler.Current.MapReadWriteCount++;
-                            }
                         }
                     }
+
+                    Profiler.ResourceMapCalls++;
                 }
                 else
                 {
@@ -207,7 +202,7 @@ namespace Molten.Graphics.DX11
             Box* box = (Box*)sourceRegion;
 
             _native->CopySubresourceRegion((ResourceHandleDX11)dest.Handle, destSubresource, destStart.X, destStart.Y, destStart.Z, (ResourceHandleDX11)source.Handle, srcSubresource, box);
-            Profiler.Current.CopySubresourceCount++;
+            Profiler.SubResourceCopyCalls++;
         }
 
         protected override unsafe void UpdateResource(GraphicsResource resource, uint subresource, ResourceRegion? region, void* ptrData, uint rowPitch, uint slicePitch)
@@ -221,7 +216,7 @@ namespace Molten.Graphics.DX11
             }
 
             _native->UpdateSubresource((ResourceHandleDX11)resource.Handle, subresource, destBox, ptrData, rowPitch, slicePitch);
-            Profiler.Current.UpdateSubresourceCount++;
+            Profiler.SubResourceUpdateCalls++;
         }
 
         protected override void CopyResource(GraphicsResource src, GraphicsResource dest)
@@ -232,7 +227,7 @@ namespace Molten.Graphics.DX11
                 dest.Ensure(this);
 
             _native->CopyResource((ResourceHandleDX11)dest.Handle, (ResourceHandleDX11)src.Handle);
-            Profiler.Current.CopyResourceCount++;
+            Profiler.ResourceCopyCalls++;
         }
 
         protected override GraphicsBindResult DoRenderPass(HlslPass hlslPass, QueueValidationMode mode, Action callback)
@@ -408,7 +403,7 @@ namespace Molten.Graphics.DX11
             }
 
             _native->OMSetRenderTargets((uint)State.Surfaces.Length, (ID3D11RenderTargetView**)_rtvs, _dsv);
-            Profiler.Current.SurfaceBindings++;
+            Profiler.BindSurfaceCalls++;
 
             GraphicsBindResult vResult = Validate(mode);
 
@@ -419,7 +414,7 @@ namespace Molten.Graphics.DX11
                 {
                     BeginEvent($"Iteration {k}");
                     callback();
-                    Profiler.Current.DrawCalls++;
+                    Profiler.DrawCalls++;
                     EndEvent();
                 }
             }
@@ -455,7 +450,7 @@ namespace Molten.Graphics.DX11
                 {
                     BeginEvent($"Iteration {j}");
                     _native->Dispatch(groups.X, groups.Y, groups.Z);
-                    Profiler.Current.DispatchCalls++;
+                    Profiler.DispatchCalls++;
                     EndEvent();
                 }
             }

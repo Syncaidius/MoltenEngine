@@ -244,11 +244,6 @@ namespace Molten
         public SceneLayer DefaultLayer => _defaultLayer;
 
         /// <summary>
-        /// Gets the scene's debug overlay. 
-        /// </summary>
-        public RenderProfiler Profiler => RenderData?.Profiler;
-
-        /// <summary>
         /// Gets or sets the scene's skybox texture.
         /// </summary>
         public ITextureCube SkyboxTeture

@@ -162,7 +162,7 @@ namespace Molten.Graphics
             if (staging != null)
             {
                 cmd.CopyResourceRegion(resMap, subID, null, staging, subID, Vector3UI.Zero);
-                cmd.Profiler.Current.CopySubresourceCount++;
+                cmd.Profiler.SubResourceCopyCalls++;
                 resMap = staging;
             }
 

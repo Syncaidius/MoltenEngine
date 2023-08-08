@@ -5,6 +5,7 @@ using Molten.Audio;
 using Molten.Collections;
 using Molten.Graphics;
 using Molten.Input;
+using Molten.Threading;
 using Molten.UI;
 
 namespace Molten.Examples
@@ -48,9 +49,9 @@ namespace Molten.Examples
 
         protected override void OnStart(EngineSettings settings)
         {
-            settings.AddService<R>("Renderer");
-            settings.AddService<I>("Input");
-            settings.AddService<A>("Audio");
+            settings.AddService<R>(ThreadingMode.SeparateThread, "Renderer");
+            settings.AddService<I>(ThreadingMode.MainThread, "Input");
+            settings.AddService<A>(ThreadingMode.SeparateThread, "Audio");
         }
 
         protected override void OnInitialize(Engine engine)

@@ -38,7 +38,7 @@
             Renderer.SpriteBatch.Draw(sourceSurface, bounds, Vector2F.Zero, camera.Surface.Viewport.Size, 0, Vector2F.Zero, ref style, null, 0, 0);
 
             if (camera.HasFlags(RenderCameraFlags.ShowOverlay))
-                Renderer.Overlay.Render(time, Renderer.SpriteBatch, Renderer.Profiler, context.Scene.Profiler, camera);
+                Renderer.Overlay.Render(time, Renderer.SpriteBatch, Renderer.Profiler, camera);
 
             Renderer.SpriteBatch.Flush(queue, _orthoCamera, _dummyData);
 

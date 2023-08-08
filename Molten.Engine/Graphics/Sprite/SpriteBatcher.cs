@@ -532,7 +532,7 @@ namespace Molten.Graphics
             uint flushByteOffset = 0;
 
             // TODO Improve this. Wasting a discard at the start of each frame!
-            if (_buffer.LastUsedFrameID != cmd.Device.Renderer.Profiler.FrameID)
+            if (_buffer.LastUsedFrameID != cmd.Device.Renderer.FrameID)
             {
                 _flushIndex = 0;
             }

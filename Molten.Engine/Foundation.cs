@@ -1,6 +1,7 @@
 ﻿using Molten.Graphics;
 using Molten.Input;
 using Molten.Net;
+using Molten.Services;
 using Molten.Utility;
 
 namespace Molten
@@ -64,9 +65,9 @@ namespace Molten
                 return;
             }
 
-            foreach (EngineService service in settings.StartupServices)
+            foreach (ServiceStartupProperties startup in settings.StartupServices)
             {
-                switch (service)
+                switch (startup.Instance)
                 {
                     case InputService iService:
                         if (_engine.Input.State == EngineServiceState.Error)

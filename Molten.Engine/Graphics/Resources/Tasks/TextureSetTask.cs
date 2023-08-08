@@ -110,7 +110,7 @@ namespace Molten.Graphics
                         stream.WriteRange(ptrData, NumBytes);
                     }
                 }
-                cmd.Profiler.Current.MapDiscardCount++;
+                cmd.Profiler.ResourceMapCalls++;
             }
             else
             {

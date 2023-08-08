@@ -44,8 +44,6 @@
             }
         }
 
-        Stack<RenderProfiler> _profilerStack;
-        RenderProfiler _profiler;
         GraphicsState _state;
 
         Stack<GraphicsState> _stateStack;
@@ -58,9 +56,7 @@
             _state = new GraphicsState(device);
             _stateStack = new Stack<GraphicsState>();
             _freeStateStack = new Stack<GraphicsState>();
-
-            _profilerStack = new Stack<RenderProfiler>();
-            _profiler = new RenderProfiler();
+            Profiler = new GraphicsQueueProfiler();
         }
 
         public void PushState(GraphicsState newest = null)
@@ -85,34 +81,6 @@
 
             _freeStateStack.Push(_state);
             _state = _stateStack.Pop();
-        }
-
-        /// <summary>
-        /// Pushes the specified <see cref="RenderProfiler"/> onto the current <see cref="GraphicsQueue"/> and begins profiling.
-        /// </summary>
-        /// <param name="profiler"></param>
-        public void PushProfiler(RenderProfiler profiler)
-        {
-            _profilerStack.Push(_profiler);
-            _profiler = profiler;
-            _profiler.Begin();
-        }
-
-        /// <summary>
-        /// Ends the current profiler run and pops it from the current <see cref="GraphicsQueue"/>.
-        /// </summary>
-        /// <param name="time"></param>
-        /// <exception cref="InvalidOperationException"></exception>
-        public void PopProfiler(Timing time)
-        {
-            if (_profilerStack.Count == 0)
-                throw new InvalidOperationException("There are no profilers left to pop from the current GraphicsQueue.");
-
-            RenderProfiler prev = _profiler;
-            _profiler = _profilerStack.Pop();
-
-            prev.End(time);
-            _profiler.Accumulate(prev.Previous, false);
         }
 
         internal void ResetState()
@@ -449,8 +417,8 @@
         /// </summary>
         public GraphicsDevice Device { get; }
 
-        /// <summary>Gets the profiler that is currently bound to the current <see cref="GraphicsQueue"/>. Contains statistics for this context alone.</summary>
-        public RenderProfiler Profiler => _profiler;
+        /// <summary>Gets the profiler bound to the current <see cref="GraphicsQueue"/>.</summary>
+        public GraphicsQueueProfiler Profiler { get; }
 
         protected abstract GraphicsCommandList Cmd { get; set; }
 

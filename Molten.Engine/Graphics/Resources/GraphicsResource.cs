@@ -11,7 +11,7 @@ namespace Molten.Graphics
         {
             Flags = flags;
             _applyTaskQueue = new ThreadedQueue<IGraphicsResourceTask>();
-            LastUsedFrameID = Device.Renderer.Profiler.FrameID;
+            LastUsedFrameID = Device.Renderer.FrameID;
         }
 
         /// <summary>
@@ -52,21 +52,21 @@ namespace Molten.Graphics
                 fbIndex = Math.Min(fbSize - 1, Device.FrameBufferIndex);
             }
 
-            LastUsedFrameID = Device.Renderer.Profiler.FrameID;
+            LastUsedFrameID = Device.Renderer.FrameID;
 
             // Check if the last known frame buffer size has changed.
             if (Handle == null)
             {
-                OnCreateResource(fbSize, fbIndex, Device.Renderer.Profiler.FrameID);
+                OnCreateResource(fbSize, fbIndex, Device.Renderer.FrameID);
             }
             else if (KnownFrameBufferSize != fbSize)
             {
-                OnFrameBufferResized(KnownFrameBufferSize, fbSize, fbIndex, Device.Renderer.Profiler.FrameID);
-                LastFrameResizedID = Device.Renderer.Profiler.FrameID;
+                OnFrameBufferResized(KnownFrameBufferSize, fbSize, fbIndex, Device.Renderer.FrameID);
+                LastFrameResizedID = Device.Renderer.FrameID;
             }
             else if (LastUsedFrameBufferIndex != fbIndex)
             {
-                OnNextFrame(queue, Device.FrameBufferIndex, Device.Renderer.Profiler.FrameID);
+                OnNextFrame(queue, Device.FrameBufferIndex, Device.Renderer.FrameID);
                 LastUsedFrameBufferIndex = fbIndex;
             }
 

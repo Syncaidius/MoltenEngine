@@ -38,8 +38,8 @@ namespace Molten
         /// </summary>
         /// <param name="engine">The parent engine.</param>
         /// <param name="settings"></param>
-        /// <param name="parentLog"></param>
-        internal void Initialize(Engine engine, EngineSettings settings, Logger parentLog)
+        /// <param name="mode">The threading mode that the service will use.</param>
+        internal void Initialize(Engine engine, EngineSettings settings, ThreadingMode mode)
         {
             Settings = settings;
             Engine = engine;
@@ -49,9 +49,19 @@ namespace Molten
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
 
-                parentLog.WriteLine($"Initializing service: {this.GetType()}");
-                ThreadMode = OnInitialize(Settings);
-                parentLog.WriteLine($"Completed initialization of service: {this}");
+                Engine.Log.WriteLine($"Initializing service: {GetType()}");
+
+                ThreadMode = mode;
+
+                // Setup service thread, but don't start it yet.
+                if (ThreadMode == ThreadingMode.SeparateThread)
+                    Thread = engine.Threading.CreateThread($"service_{this}", false, false, Update);
+                else
+                    Thread = Engine.MainThread;
+
+                OnInitialize(Settings);
+
+                Log.WriteLine($"Completed initialization of service: {this}");
                 State = EngineServiceState.Ready;
 
                 sw.Stop();
@@ -62,24 +72,23 @@ namespace Molten
             catch (Exception ex)
             {
                 State = EngineServiceState.Error;
-                parentLog.Error($"Failed to initialize service: {this}");
-                parentLog.Error(ex);
+                Log.Error($"Failed to initialize service: {this}");
+                Log.Error(ex);
             }
         }
 
         /// <summary>
         /// Requests the current <see cref="EngineService"/> to start.
         /// </summary>
-        /// <param name="threadManager">The <see cref="ThreadManager"/> provided for startup.</param>
         /// <returns></returns>
-        public void Start(ThreadManager threadManager, Logger parentLog)
+        public void Start()
         {
             if (State == EngineServiceState.Uninitialized)
                 throw new EngineServiceException(this, "Cannot start uninitialized service.");
 
             if (State == EngineServiceState.Error)
             {
-                parentLog.Error($"Cannot start service {this} due to error.");
+                Engine.Log.Error($"Cannot start service {this} due to error.");
                 OnError?.Invoke(this);
                 return;
             }
@@ -87,24 +96,22 @@ namespace Molten
             if (State == EngineServiceState.Starting || State == EngineServiceState.Running)
                 return;
 
-
             State = EngineServiceState.Starting;
             try
             {
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
 
-                if (ThreadMode == ThreadingMode.SeparateThread)
+                OnStart(Settings);
+                if (Thread != Engine.MainThread)
                 {
-                    Thread = threadManager.CreateThread($"service_{this}", true, false, Update);
-                    parentLog.WriteLine($"Started service thread: {Thread.Name}");
+                    Thread.Start();
+                    Engine.Log.WriteLine($"Started service thread: {Thread.Name}");
                 }
 
-                OnStart(Settings);
-
                 State = EngineServiceState.Running;
-                parentLog.WriteLine($"Started service: {this}");
-                parentLog.WriteLine($"Service log: {_logWriter.LogFileInfo.FullName}");
+                Engine.Log.WriteLine($"Started service: {this}");
+                Engine.Log.WriteLine($"Service log: {_logWriter.LogFileInfo.FullName}");
 
                 sw.Stop();
                 Log.WriteLine($"Started service in {sw.Elapsed.TotalMilliseconds:N2} milliseconds");
@@ -114,8 +121,8 @@ namespace Molten
             catch (Exception ex)
             {
                 State = EngineServiceState.Error;
-                parentLog.Error($"Failed to start service: {this}");
-                parentLog.Error(ex);
+                Engine.Log.Error($"Failed to start service: {this}");
+                Engine.Log.Error(ex);
                 OnError?.Invoke(this);
             }
         }
@@ -123,17 +130,40 @@ namespace Molten
         /// <summary>
         /// Stops the current <see cref="EngineService"/>.
         /// </summary>
-        public void Stop()
+        public void Stop(bool waitForStop)
         {
             OnStop(Settings);
 
-            Thread?.Dispose();
+            if (Thread != Engine.MainThread)
+            {
+                if (waitForStop)
+                {
+                    Thread?.DisposeAndJoin();
+
+                    // Wait for the service thread to stop.
+                    while (State != EngineServiceState.Ready)
+                    {
+                        if (Thread != null)
+                        {
+                            if (Thread.IsDisposed)
+                                break;
+
+                            System.Threading.Thread.Sleep(10);
+                        }
+                    }
+                }
+                else
+                {
+                    Thread?.Dispose();
+                }
+            }
+
             State = EngineServiceState.Ready;
         }
 
         protected override void OnDispose()
         {
-            Thread?.DisposeAndJoin();
+            Stop(true);
 
             OnServiceDisposing();
 
@@ -161,8 +191,8 @@ namespace Molten
         /// Invoked when the current <see cref="EngineService"/> is being initialized.
         /// </summary>
         /// <param name="settings">The <see cref="EngineSettings"/>.</param>
-        /// <returns>The threading mode that the current <see cref="EngineThread"/> should be run in, when <see cref="Start(ThreadManager, Logger)"/> is called.</returns>
-        protected abstract ThreadingMode OnInitialize(EngineSettings settings);
+        /// <returns>The threading mode that the current <see cref="EngineThread"/> should be run in, when <see cref="Start()"/> is called.</returns>
+        protected abstract void OnInitialize(EngineSettings settings);
 
         /// <summary>
         /// Invoked when the current <see cref="EngineService"/> has been requested to start.

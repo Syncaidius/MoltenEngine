@@ -500,7 +500,7 @@ namespace Molten.Graphics.Vulkan
                 callback.Invoke();
                 _device.VK.CmdEndRenderPass(_cmd);
 
-                Profiler.Current.DrawCalls++;
+                Profiler.DrawCalls++;
                 EndEvent();
             }
 
@@ -539,7 +539,7 @@ namespace Molten.Graphics.Vulkan
                 //_vk.CmdBindDescriptorSets(_cmd, PipelineBindPoint.Compute, pipelineLayout, 0, descriptorSetCount, pDescriptorSets, 0, null);
                 _vk.CmdDispatch(_cmd, groups.X, groups.Y, groups.Z);
 
-                Profiler.Current.DispatchCalls++;
+                Profiler.DispatchCalls++;
                 EndEvent();
             }
 

@@ -12,12 +12,12 @@ namespace Molten.Graphics.Overlays
             _overlays.Add(new RenderProfilerOverlay());
         }
 
-        public void Render(Timing time, SpriteBatcher sb, RenderProfiler rendererProfiler, RenderProfiler sceneProfiler, RenderCamera camera)
+        public void Render(Timing time, SpriteBatcher sb, GraphicsProfiler rendererProfiler, RenderCamera camera)
         {
             if (Font == null)
                 return;
 
-            _overlays.For(0, (index, overlay) => overlay.OnRender(time, sb, Font, rendererProfiler, sceneProfiler, camera));
+            _overlays.For(0, (index, overlay) => overlay.OnRender(time, sb, Font, rendererProfiler, camera));
         }
 
         public void Add(IRenderOverlay overlay)

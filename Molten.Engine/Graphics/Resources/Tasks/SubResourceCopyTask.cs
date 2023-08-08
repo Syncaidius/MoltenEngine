@@ -35,7 +35,7 @@
                 cmd.CopyResourceRegion(resource, SrcSubResource, null, DestResource, DestSubResource, DestStart);
             }
 
-            cmd.Profiler.Current.CopySubresourceCount++;
+            cmd.Profiler.SubResourceCopyCalls++;
             CompletionCallback?.Invoke(resource);
 
             return false;

@@ -8,7 +8,6 @@ namespace Molten
 
         int _targetUps;
         float _deltaTime;
-        double _targetFrameTime;
         TimeSpan _accumulated;
         TimeSpan _upsTime;
         int _upsCurrent;
@@ -98,7 +97,7 @@ namespace Molten
                     _timer.Stop();
                     _elapsed = _timer.Elapsed;
                     _total += _elapsed;
-                    _deltaTime = (float)(_elapsed.TotalMilliseconds / _targetFrameTime);
+                    _deltaTime = (float)(_elapsed.TotalMilliseconds / _target.TotalMilliseconds);
                     _timer.Restart();
 
                     DoUpdate();
@@ -151,7 +150,7 @@ namespace Molten
         public bool IsFixedTimestep { get; set; } = true;
 
         /// <summary>Gets the target frame time.</summary>
-        public double TargetFrameTime => _targetFrameTime;
+        public TimeSpan TargetFrameTime => _target;
 
         /// <summary>
         /// Gets or sets the target UPS/FPS.
@@ -162,8 +161,7 @@ namespace Molten
             set
             {
                 _targetUps = value;
-                _targetFrameTime = 1000.0 / _targetUps;
-                _target = TimeSpan.FromTicks((long)(_targetFrameTime * TimeSpan.TicksPerMillisecond));
+                _target = TimeSpan.FromMilliseconds(1000.0 / _targetUps);
             }
         }
 

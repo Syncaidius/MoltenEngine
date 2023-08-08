@@ -34,7 +34,7 @@ namespace Molten.Graphics.DX11
             // Resize the swap chain if needed.
             if (NativeSwapChain != null)
             {
-                FreeOldHandles(device.Renderer.Profiler.FrameID);
+                FreeOldHandles(device.Renderer.FrameID);
                 WinHResult result = NativeSwapChain->ResizeBuffers(Device.FrameBufferSize, Width, Height, GraphicsFormat.Unknown.ToApi(), 0U);
                 NativeSwapChain->GetDesc1(ref _swapDesc);
             }

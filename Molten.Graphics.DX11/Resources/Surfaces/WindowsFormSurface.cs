@@ -388,7 +388,7 @@ namespace Molten.Graphics.DX11
             {
                 uint fbMax = GetMaxFrameBufferSize(Device.FrameBufferSize);
                 uint fbIndex = Math.Min(Device.FrameBufferIndex, fbMax - 1);
-                base.OnResizeTexture(_requestedTexDim, ResourceFormat, fbMax, fbIndex, Device.Renderer.Profiler.FrameID);
+                base.OnResizeTexture(_requestedTexDim, ResourceFormat, fbMax, fbIndex, Device.Renderer.FrameID);
                 InvokeOnResize();
             }
 
