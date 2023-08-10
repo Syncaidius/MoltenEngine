@@ -25,9 +25,8 @@ namespace Molten.Graphics.Vulkan
                 PNext = null,
             };
 
-            uint numBytes = sizeof(DynamicState) * _desc->DynamicStateCount;
-            fixed (DynamicState* ptr = &states[0])
-                System.Buffer.MemoryCopy(&ptr, _desc->PDynamicStates, numBytes, numBytes);
+            for(int i = 0; i < states.Length; i++)
+                _desc->PDynamicStates[i] = states[i];
         }
 
         public override bool Equals(object obj) => obj switch

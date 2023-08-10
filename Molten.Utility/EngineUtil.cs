@@ -252,6 +252,7 @@ namespace Molten
 
             fixed (byte* ptrBytes = bytes)
                 Buffer.MemoryCopy(ptrBytes, ptrMem, (nuint)bytes.Length, (nuint)bytes.Length);
+
             return ptrMem;
         }
 

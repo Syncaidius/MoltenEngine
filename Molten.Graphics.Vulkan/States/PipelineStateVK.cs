@@ -1,4 +1,5 @@
-﻿using Silk.NET.Core.Native;
+﻿using System.Text;
+using Silk.NET.Core.Native;
 using Silk.NET.Vulkan;
 
 namespace Molten.Graphics.Vulkan
@@ -81,7 +82,7 @@ namespace Molten.Graphics.Vulkan
 
                 ref PipelineShaderStageCreateInfo stageDesc = ref _info.PStages[_info.StageCount++];
                 stageDesc.SType = StructureType.PipelineShaderStageCreateInfo;
-                stageDesc.PName = (byte*)SilkMarshal.StringToPtr(c.EntryPoint, NativeStringEncoding.UTF8);
+                stageDesc.PName = EngineUtil.StringToPtr(c.EntryPoint, Encoding.UTF8);
                 stageDesc.Stage = ShaderStageLookup[type];
                 stageDesc.Module = *(ShaderModule*)c.PtrShader;
                 stageDesc.Flags = PipelineShaderStageCreateFlags.None;
@@ -126,11 +127,8 @@ namespace Molten.Graphics.Vulkan
              */
 
             // Create pipeline.
-            fixed (GraphicsPipelineCreateInfo* pResult = &_info)
-            {
-                fixed (Pipeline* ptrPipeline = &_pipeline)
-                    device.VK.CreateGraphicsPipelines(device, new PipelineCache(), 1, _info, null, ptrPipeline);
-            }
+            fixed (Pipeline* ptrPipeline = &_pipeline)
+                device.VK.CreateGraphicsPipelines(device, new PipelineCache(), 1, _info, null, ptrPipeline);
 
             // TODO after render/compute pass, reset the load-op of surfaces.
         }
@@ -194,7 +192,7 @@ namespace Molten.Graphics.Vulkan
             for (uint i = 0; i < _info.StageCount; i++)
             {
                 ref PipelineShaderStageCreateInfo stageDesc = ref _info.PStages[i];
-                SilkMarshal.FreeString((nint)stageDesc.PName);
+                EngineUtil.Free(ref stageDesc.PName);
             }
 
             EngineUtil.Free(ref _info.PStages);
