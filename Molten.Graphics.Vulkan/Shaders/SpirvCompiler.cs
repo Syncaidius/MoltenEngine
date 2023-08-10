@@ -76,7 +76,7 @@ namespace Molten.Graphics.Vulkan
         protected override unsafe ShaderReflection OnBuildReflection(ShaderCompilerContext context, IDxcBlob* byteCode, DxcBuffer* reflectionBuffer)
         {
             // Output to file.
-            string fn = $"{context.Source.Filename}_{context.Type}_{context.EntryPoint}.spirv";
+            //string fn = $"{context.Source.Filename}_{context.Type}_{context.EntryPoint}.spirv";
             /*using (FileStream stream = new FileStream(fn, FileMode.Create, FileAccess.Write))
             {
                 using (BinaryWriter writer = new BinaryWriter(stream))

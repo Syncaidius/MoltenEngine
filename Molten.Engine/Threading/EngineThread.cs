@@ -116,7 +116,7 @@ namespace Molten.Threading
 
             Exit();
             if (_thread != Thread.CurrentThread)
-                _thread.Join();
+                _thread?.Join();
 
             Manager.DestroyThread(this);
             IsDisposed = true;
