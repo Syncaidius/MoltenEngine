@@ -267,6 +267,19 @@ namespace Molten
         }
 
         /// <summary>
+        /// Clamps the specified value between <paramref name="min"/> and <paramref name="max"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="min">The minimum value.</param>
+        /// <param name="max">The maximum value.</param>
+        /// <returns>The result of clamping a value between <paramref name="min"/> and <paramref name="max"/>.</returns>
+        public static T Clamp<T>(T value, T min, T max)
+            where T : INumber<T>
+        {
+            return value < min ? min : value > max ? max : value;
+        }
+
+        /// <summary>
         /// Interpolates between two values using a linear function by a given amount.
         /// </summary>
         /// <remarks>
@@ -295,7 +308,7 @@ namespace Molten
         /// <returns>The result of linear interpolation of values based on the amount.</returns>
         public static int Lerp(int from, int to, double amount)
         {
-            return (int)MathHelper.Lerp(from, (double)to, amount);
+            return (int)Lerp(from, (double)to, amount);
         }
 
         /// <summary>
@@ -311,7 +324,7 @@ namespace Molten
         /// <returns>The result of linear interpolation of values based on the amount.</returns>
         public static uint Lerp(uint from, uint to, double amount)
         {
-            return (uint)MathHelper.Lerp(from, (double)to, amount);
+            return (uint)Lerp(from, (double)to, amount);
         }
 
         /// <summary>
@@ -327,7 +340,7 @@ namespace Molten
         /// <returns>The result of linear interpolation of values based on the amount.</returns>
         public static long Lerp(long from, long to, double amount)
         {
-            return (long)MathHelper.Lerp(from, (double)to, amount);
+            return (long)Lerp(from, (double)to, amount);
         }
 
         /// <summary>
@@ -343,7 +356,7 @@ namespace Molten
         /// <returns>The result of linear interpolation of values based on the amount.</returns>
         public static ulong Lerp(ulong from, ulong to, double amount)
         {
-            return (ulong)MathHelper.Lerp(from, (double)to, amount);
+            return (ulong)Lerp(from, (double)to, amount);
         }
 
         /// <summary>
