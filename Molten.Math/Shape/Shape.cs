@@ -223,31 +223,35 @@ namespace Molten
             return true;
         }
 
-        public bool Contains(Vector2F point, int edgeResolution = 3)
+        public bool Contains(Vector2D point, int edgeResolution = 3)
         {
-            Vector2D dPoint = (Vector2D)point;
-
             // Check hole contours first.
-            foreach(Contour c in Contours)
+            foreach (Contour c in Contours)
             {
-                if(c.GetWinding() == -1)
+                if (c.GetWinding() == -1)
                 {
-                    if (c.Contains(dPoint, edgeResolution))
+                    if (c.Contains(point, edgeResolution))
                         return true;
                 }
             }
 
             // Now check main contour(s)
-            foreach(Contour c in Contours)
+            foreach (Contour c in Contours)
             {
                 if (c.GetWinding() > -1)
                 {
-                    if (c.Contains(dPoint, edgeResolution))
+                    if (c.Contains(point, edgeResolution))
                         return false;
                 }
             }
 
             return false;
+        }
+
+        public bool Contains(Vector2F point, int edgeResolution = 3)
+        {
+            Vector2D dPoint = (Vector2D)point;
+            return Contains(dPoint, edgeResolution);
         }
     }
 }
