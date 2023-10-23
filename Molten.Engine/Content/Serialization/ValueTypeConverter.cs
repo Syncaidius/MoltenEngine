@@ -15,7 +15,7 @@ namespace Molten
 
         public override bool CanConvert(Type objectType)
         {
-            if (objectType.IsEnum)
+            if (objectType.IsEnum || !objectType.IsValueType)
                 return false;
 
             return (objectType.Assembly.GetName().Name.StartsWith("Molten")) && _valueType.IsAssignableFrom(objectType);
