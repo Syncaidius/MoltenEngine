@@ -15,7 +15,6 @@ gen.Generate(null, (d, def) =>
     string postfix = d.Name.Replace("Rectangle", "");
     string vectorName = $"Vector2{(string.IsNullOrWhiteSpace(postfix) ? "I" : postfix)}";
 #>
-using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -31,8 +30,8 @@ using Molten.DoublePrecision;
 
 namespace Molten<#=d.SubNamespace#>
 {
-	///<summary>Represents a four dimensional mathematical <#=d.Name#>.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack = <#=d.DT.Pack#>)]
+    ///<summary>Represents a four dimensional mathematical <#=d.Name#>.</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = <#=d.DT.Pack#>)]
     [Serializable]
 	public partial struct <#=d.Name#> : IFormattable, IEquatable<<#=d.Name#>>
 	{

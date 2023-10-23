@@ -4,9 +4,9 @@
     "net7.0": {
       "Silk.NET.Core": {
         "type": "Direct",
-        "requested": "[2.17.1, )",
-        "resolved": "2.17.1",
-        "contentHash": "x/Xfv7+UlbWjNqrxocxHu32Ypgmqnw4q5xRXUj8vjrMsDTWkyEFBSaDnmcjWSSDiZ8TJDfsmCYLxjj7OdHNHbw==",
+        "requested": "[2.18.0, )",
+        "resolved": "2.18.0",
+        "contentHash": "KUxkzbn2jFUFQf/rXOBJ3JDmPKNioqrXMQS3c0NtzV7V/po74HYa08BMsSImRYl/5yPtwo1ArPM9IIdKupYo+A==",
         "dependencies": {
           "Microsoft.CSharp": "4.7.0",
           "Microsoft.DotNet.PlatformAbstractions": "3.1.6",

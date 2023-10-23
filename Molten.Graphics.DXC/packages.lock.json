@@ -4,25 +4,25 @@
     "net7.0": {
       "Silk.NET.Direct3D.Compilers": {
         "type": "Direct",
-        "requested": "[2.17.1, )",
-        "resolved": "2.17.1",
-        "contentHash": "dAz0D6rJDAqF0whnFpHSCZx44NYeV+anm96D7OOzS95r86b3An8/53F+gaO3Hs8Ar6R+YX/4lwJp1PnPJb8low==",
+        "requested": "[2.18.0, )",
+        "resolved": "2.18.0",
+        "contentHash": "3QwhMFjQdcni7HElgbcC/JDOj8qFUNyI9ObAQPMR7mWESYOhJ20tg8/ttIw8fX50c59ghVL+F4GIw616/xc/3A==",
         "dependencies": {
-          "Silk.NET.Core": "2.17.1"
+          "Silk.NET.Core": "2.18.0"
         }
       },
       "Magick.NET-Q8-AnyCPU": {
         "type": "Transitive",
-        "resolved": "13.3.0",
-        "contentHash": "QR0/mehbf/hLXiMDE2RXgGOF15tCRai7QysbGAHdVxWLIh2FpiUgxBUDSQ2LV8YoufYFWnxt0quW07dtbCGFgQ==",
+        "resolved": "13.4.0",
+        "contentHash": "iOHL6liGt2m5XAuDOL/e43FIibB6wU2Wj17N2MocsEIfIROFsKfGbTGEGINGLSgiG7cR3kCar1w3M6cjzHTlIg==",
         "dependencies": {
-          "Magick.NET.Core": "13.3.0"
+          "Magick.NET.Core": "13.4.0"
         }
       },
       "Magick.NET.Core": {
         "type": "Transitive",
-        "resolved": "13.3.0",
-        "contentHash": "5d6hy5QusOYBmj4AUoPvPmgg8FWMdsyJPhs/QAiHGhX1XLB9xn8C05JWj63tQO6u+1KdDq3nn1RLchJEJ5GSBQ=="
+        "resolved": "13.4.0",
+        "contentHash": "Z1om0NiXREKUUI2BYKM86RSgMpBJFuc+OCI25fPtF/evpWsWm83kpACMODuNs60Bv/I4sn8VCGqezQA2/azWKA=="
       },
       "Microsoft.CSharp": {
         "type": "Transitive",
@@ -50,8 +50,8 @@
       },
       "Silk.NET.Core": {
         "type": "Transitive",
-        "resolved": "2.17.1",
-        "contentHash": "x/Xfv7+UlbWjNqrxocxHu32Ypgmqnw4q5xRXUj8vjrMsDTWkyEFBSaDnmcjWSSDiZ8TJDfsmCYLxjj7OdHNHbw==",
+        "resolved": "2.18.0",
+        "contentHash": "KUxkzbn2jFUFQf/rXOBJ3JDmPKNioqrXMQS3c0NtzV7V/po74HYa08BMsSImRYl/5yPtwo1ArPM9IIdKupYo+A==",
         "dependencies": {
           "Microsoft.CSharp": "4.7.0",
           "Microsoft.DotNet.PlatformAbstractions": "3.1.6",
@@ -92,7 +92,7 @@
       "molten.engine": {
         "type": "Project",
         "dependencies": {
-          "Magick.NET-Q8-AnyCPU": "[13.3.0, )",
+          "Magick.NET-Q8-AnyCPU": "[13.4.0, )",
           "Molten.Font": "[0.7.0, )",
           "Molten.IO": "[0.7.0, )",
           "Molten.Math": "[0.7.0, )",
@@ -121,7 +121,7 @@
       "molten.utility": {
         "type": "Project",
         "dependencies": {
-          "Silk.NET.Core": "[2.17.1, )"
+          "Silk.NET.Core": "[2.18.0, )"
         }
       }
     }

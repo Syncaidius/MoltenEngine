@@ -142,7 +142,7 @@ namespace Molten.Graphics.DX12
             cap.NonPowerOfTwoTextures = true;
             cap.MaxAllocatedSamplers = 4096;                // D3D11_REQ_SAMPLER_OBJECT_COUNT_PER_DEVICE (4096) - Total number of sampler objects per context
             cap.MaxPrimitiveCount = uint.MaxValue;          // (2^32) – 1 = uint.maxValue (4,294,967,295)
-            cap.RasterizerOrderViews = features12_0.ROVsSupported != 0;
+            cap.RasterizerOrderViews = features12_0.ROVsSupported;
             cap.ConservativeRasterization = (ConservativeRasterizationLevel)features12_0.ConservativeRasterizationTier;
 
             cap.VertexBuffers.MaxSlots = 32;                // D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT = 32;
@@ -151,8 +151,8 @@ namespace Molten.Graphics.DX12
 
             DetectShaderStages(ptrDevice, cap, 
                 features12_0.MinPrecisionSupport, 
-                features12_0.DoublePrecisionFloatShaderOps != 0, 
-                features12_1.Int64ShaderOps != 0);
+                features12_0.DoublePrecisionFloatShaderOps, 
+                features12_1.Int64ShaderOps);
 
             SilkUtil.ReleasePtr(ref ptrDevice);
         }
