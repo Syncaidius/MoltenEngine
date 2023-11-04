@@ -1,15 +1,17 @@
+using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
+using Molten.HalfPrecision;
 using Molten.DoublePrecision;
 
 namespace Molten.HalfPrecision
 {
-    ///<summary>A <see cref="ushort"/> vector comprised of four components.</summary>
-    [StructLayout(LayoutKind.Sequential, Pack=2)]
+	///<summary>A <see cref="ushort"/> vector comprised of four components.</summary>
+	[StructLayout(LayoutKind.Sequential, Pack=2)]
     [Serializable]
-	public partial struct Vector4US : IFormattable, IVector<ushort>
+	public partial struct Vector4US : IFormattable, IVector<ushort>, IEquatable<Vector4US>
 	{
 		///<summary>The size of <see cref="Vector4US"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector4US));
@@ -187,11 +189,10 @@ namespace Molten.HalfPrecision
         /// </returns>
         public override bool Equals(object value)
         {
-            if (value is not Vector4US)
-                return false;
+            if (value is Vector4US v)
+               return Equals(ref v);
 
-            var strongValue = (Vector4US)value;
-            return Equals(ref strongValue);
+            return false;
         }
 
         /// <summary>

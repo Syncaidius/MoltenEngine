@@ -1,15 +1,17 @@
+using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
+using Molten.HalfPrecision;
 using Molten.DoublePrecision;
 
 namespace Molten.HalfPrecision
 {
-    ///<summary>A <see cref="short"/> vector comprised of two components.</summary>
-    [StructLayout(LayoutKind.Sequential, Pack=2)]
+	///<summary>A <see cref="short"/> vector comprised of two components.</summary>
+	[StructLayout(LayoutKind.Sequential, Pack=2)]
     [Serializable]
-	public partial struct Vector2S : IFormattable, IVector<short>
+	public partial struct Vector2S : IFormattable, IVector<short>, IEquatable<Vector2S>
 	{
 		///<summary>The size of <see cref="Vector2S"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector2S));
@@ -143,11 +145,10 @@ namespace Molten.HalfPrecision
         /// </returns>
         public override bool Equals(object value)
         {
-            if (value is not Vector2S)
-                return false;
+            if (value is Vector2S v)
+               return Equals(ref v);
 
-            var strongValue = (Vector2S)value;
-            return Equals(ref strongValue);
+            return false;
         }
 
         /// <summary>

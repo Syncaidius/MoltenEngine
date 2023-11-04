@@ -1,16 +1,17 @@
+using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
-using Molten.DoublePrecision;
 using Molten.HalfPrecision;
+using Molten.DoublePrecision;
 
 namespace Molten
 {
-    ///<summary>A <see cref="sbyte"/> vector comprised of three components.</summary>
-    [StructLayout(LayoutKind.Sequential, Pack=1)]
+	///<summary>A <see cref="sbyte"/> vector comprised of three components.</summary>
+	[StructLayout(LayoutKind.Sequential, Pack=1)]
     [Serializable]
-	public partial struct SByte3 : IFormattable, IVector<sbyte>
+	public partial struct SByte3 : IFormattable, IVector<sbyte>, IEquatable<SByte3>
 	{
 		///<summary>The size of <see cref="SByte3"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(SByte3));
@@ -165,11 +166,10 @@ namespace Molten
         /// </returns>
         public override bool Equals(object value)
         {
-            if (value is not SByte3)
-                return false;
+            if (value is SByte3 v)
+               return Equals(ref v);
 
-            var strongValue = (SByte3)value;
-            return Equals(ref strongValue);
+            return false;
         }
 
         /// <summary>

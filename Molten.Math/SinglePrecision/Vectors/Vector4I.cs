@@ -1,16 +1,17 @@
+using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
-using Molten.DoublePrecision;
 using Molten.HalfPrecision;
+using Molten.DoublePrecision;
 
 namespace Molten
 {
-    ///<summary>A <see cref="int"/> vector comprised of four components.</summary>
-    [StructLayout(LayoutKind.Sequential, Pack=4)]
+	///<summary>A <see cref="int"/> vector comprised of four components.</summary>
+	[StructLayout(LayoutKind.Sequential, Pack=4)]
     [Serializable]
-	public partial struct Vector4I : IFormattable, IVector<int>
+	public partial struct Vector4I : IFormattable, IVector<int>, IEquatable<Vector4I>
 	{
 		///<summary>The size of <see cref="Vector4I"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector4I));
@@ -188,11 +189,10 @@ namespace Molten
         /// </returns>
         public override bool Equals(object value)
         {
-            if (value is not Vector4I)
-                return false;
+            if (value is Vector4I v)
+               return Equals(ref v);
 
-            var strongValue = (Vector4I)value;
-            return Equals(ref strongValue);
+            return false;
         }
 
         /// <summary>
