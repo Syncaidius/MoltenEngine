@@ -1,4 +1,6 @@
-﻿namespace Molten
+﻿using System.Diagnostics;
+
+namespace Molten
 {
     internal class Sweep
     {
@@ -43,15 +45,20 @@
             // Get an Internal triangle to start with
             Triangle t = tcx.Front._head.Next.Triangle;
             TriPoint p = tcx.Front._head.Next.Point;
-            while (!t.GetConstrainedEdgeCW(p))
+            while (t != null && !t.GetConstrainedEdgeCW(p))
                 t = t.NeighborCCW(p);
 
-            tcx.MeshClean(t);
+            if (t != null)
+                tcx.MeshClean(t);
         }
 
         private Node PointEvent(SweepContext tcx, TriPoint point)
         {
             Node node = tcx.LocateNode(point);
+
+            if (node == null || node.Point == null || node.Next == null || node.Next.Point == null)
+                throw new Exception("PointEvent - null node");
+
             Node new_node = NewFrontTriangle(tcx, point, node);
 
             // Only need to check +epsilon since point never have smaller
@@ -82,6 +89,9 @@
 
         private void EdgeEvent(SweepContext tcx, TriPoint ep, TriPoint eq, Triangle triangle, TriPoint point)
         {
+            if (triangle == null)
+                throw new Exception("EdgeEvent - null triangle");
+
             if (IsEdgeSideOfTriangle(triangle, ep, eq))
                 return;
 
@@ -132,18 +142,16 @@
                 // Need to decide if we are rotating CW or CCW to get to a triangle
                 // that will cross edge
                 if (o1 == Winding.Clockwise)
-                {
                     triangle = triangle.NeighborCCW(point);
-                }
                 else
-                {
                     triangle = triangle.NeighborCW(point);
-                }
+
                 EdgeEvent(tcx, ep, eq, triangle, point);
             }
             else
             {
                 // This triangle crosses constraint so lets flippin start!
+                Debug.Assert(triangle != null);
                 FlipEdgeEvent(tcx, ep, eq, triangle, point);
             }
         }
@@ -156,8 +164,7 @@
             {
                 triangle.MarkConstrainedEdge(index);
                 Triangle t = triangle.GetNeighbor(index);
-                if (t != null)
-                    t.MarkConstrainedEdge(ep, eq);
+                t?.MarkConstrainedEdge(ep, eq);
 
                 return true;
             }
@@ -189,6 +196,9 @@
         private void Fill(SweepContext tcx, Node node)
         {
             Triangle triangle = new Triangle(node.Prev.Point, node.Point, node.Next.Point);
+
+            // TODO: should copy the constrained_edge value from neighbor triangles
+            //       for now constrained_edge values are copied during the legalize
             triangle.MarkNeighbor(node.Prev.Triangle);
             triangle.MarkNeighbor(node.Triangle);
 
@@ -228,7 +238,7 @@
             }
 
             // Fill right basins
-            if (n.Next != null && n.Next.Next != null)
+            if (n.Next?.Next != null)
             {
                 double angle = BasinAngle(n);
                 if (angle < TriUtil.PI_3div4)
@@ -243,18 +253,27 @@
             if (!AngleExceeds90Degrees(node.Point, nextNode.Point, prevNode.Point))
                 return false;
 
+            if (AngleIsNegative(node.Point, nextNode.Point, prevNode.Point))
+                return true;
+
             // Check additional points on front.
             Node next2Node = nextNode.Next;
             // "..Plus.." because only want angles on same side as point being added.
-            if ((next2Node != null) && !AngleExceedsPlus90DegreesOrIsNegative(node.Point, next2Node.Point, prevNode.Point))
+            if (next2Node != null && !AngleExceedsPlus90DegreesOrIsNegative(node.Point, next2Node.Point, prevNode.Point))
                 return false;
 
             Node prev2Node = prevNode.Prev;
             // "..Plus.." because only want angles on same side as point being added.
-            if ((prev2Node != null) && !AngleExceedsPlus90DegreesOrIsNegative(node.Point, nextNode.Point, prev2Node.Point))
+            if (prev2Node != null && !AngleExceedsPlus90DegreesOrIsNegative(node.Point, nextNode.Point, prev2Node.Point))
                 return false;
 
             return true;
+        }
+
+        public bool AngleIsNegative(TriPoint origin, TriPoint pa, TriPoint pb)
+        {
+            double angle = Angle(origin, pa, pb);
+            return angle < 0;
         }
 
         private bool AngleExceeds90Degrees(TriPoint origin, TriPoint pa, TriPoint pb)
@@ -287,7 +306,7 @@
             double by = pb.Y - py;
             double x = ax * by - ay * bx;
             double y = ax * bx + ay * by;
-            return System.Math.Atan2(x, y);
+            return Math.Atan2(x, y);
         }
 
         private double BasinAngle(Node node)
@@ -356,9 +375,7 @@
                         // Make sure that triangle to node mapping is done only one time for a specific triangle
                         bool not_legalized = !Legalize(tcx, t);
                         if (not_legalized)
-                        {
                             tcx.MapTriangleToNodes(t);
-                        }
 
                         not_legalized = !Legalize(tcx, ot);
                         if (not_legalized)
@@ -765,6 +782,9 @@
         private void FlipEdgeEvent(SweepContext tcx, TriPoint ep, TriPoint eq, Triangle t, TriPoint p)
         {
             Triangle ot = t.NeighborAcross(p);
+            if (ot == null)
+                throw new Exception("FlipEdgeEvent - null neighbour across");
+
             TriPoint op = ot.OppositePoint(t, p);
 
             if (TriUtil.InScanArea(p, t.PointCCW(p), t.PointCW(p), op))
@@ -774,9 +794,9 @@
                 tcx.MapTriangleToNodes(t);
                 tcx.MapTriangleToNodes(ot);
 
-                if (p == eq && op == ep)
+                if (p.Equals(eq) && op.Equals(ep))
                 {
-                    if (eq == tcx.EdgeEvent.ConstrainedEdge.Q && ep == tcx.EdgeEvent.ConstrainedEdge.P)
+                    if (eq.Equals(tcx.EdgeEvent.ConstrainedEdge.Q) && ep.Equals(tcx.EdgeEvent.ConstrainedEdge.P))
                     {
                         t.MarkConstrainedEdge(ep, eq);
                         ot.MarkConstrainedEdge(ep, eq);
@@ -846,9 +866,19 @@
         private void FlipScanEdgeEvent(SweepContext tcx, TriPoint ep, TriPoint eq, Triangle flip_triangle, Triangle t, TriPoint p)
         {
             Triangle ot = t.NeighborAcross(p);
-            TriPoint op = ot.OppositePoint(t, p);
+            if (ot == null)
+                throw new Exception("FlipScanEdgeEvent - null neighbour across");
 
-            if (TriUtil.InScanArea(eq, flip_triangle.PointCCW(eq), flip_triangle.PointCW(eq), op))
+            TriPoint op = ot.OppositePoint(t, p);
+            if (op == null)
+                throw new Exception("FlipScanEdgeEvent - null opposing point");
+
+            TriPoint p1 = flip_triangle.PointCCW(eq);
+            TriPoint p2 = flip_triangle.PointCW(eq);
+            if (p1 == null || p2 == null)
+                throw new Exception("FlipScanEdgeEvent - null on either of points");
+
+            if (TriUtil.InScanArea(eq, p1, p2, op))
             {
                 // flip with new edge op->eq
                 FlipEdgeEvent(tcx, eq, op, ot, op);

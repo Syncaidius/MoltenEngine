@@ -79,13 +79,13 @@
 
         public void InitTriangulation()
         {
-            float xmax = _points[0].X;
-            float xmin = _points[0].X;
-            float ymax = _points[0].Y;
-            float ymin = _points[0].Y;
+            double xmax = _points[0].X;
+            double xmin = _points[0].X;
+            double ymax = _points[0].Y;
+            double ymin = _points[0].Y;
 
             // Calculate bounds
-            for(int i = 0; i < _points.Count; i++)
+            for (int i = 0; i < _points.Count; i++)
             {
                 TriPoint p = _points[i];
                 if (p.X > xmax)
@@ -98,11 +98,11 @@
                     ymin = p.Y;
             }
 
-            float dx = K_ALPHA * (xmax - xmin);
-            float dy = K_ALPHA * (ymax - ymin);
+            double dx = K_ALPHA * (xmax - xmin);
+            double dy = K_ALPHA * (ymax - ymin);
 
-            _head = new TriPoint(xmax + dx, ymin - dy);
-            _tail = new TriPoint(xmin - dx, ymin - dy);
+            _head = new TriPoint(xmin - dx, ymin - dy);
+            _tail = new TriPoint(xmax + dx, ymin - dy);
 
             // Sort points along y-axis
             _points.Sort(_cmp);
@@ -110,7 +110,7 @@
 
         private void InitEdges(int first, int last)
         {
-            for(int i = first; i <= last; i++)
+            for (int i = first; i <= last; i++)
             {
                 int j = i < last ? i + 1 : first;
                 _edge_list.Add(new Edge(_points[i], _points[j]));
@@ -135,7 +135,7 @@
 
         public void CreateAdvancingFront(List<Node> nodes)
         {
-            Triangle triangle = new Triangle(_points[0], _tail, _head);
+            Triangle triangle = new Triangle(_points[0], _head, _tail);
 
             _map.Add(triangle);
 
@@ -160,7 +160,7 @@
 
         public void MapTriangleToNodes(Triangle t)
         {
-            for(int i = 0; i < 3; i++)
+            for (int i = 0; i < 3; i++)
             {
                 if (t.GetNeighbor(i) == null)
                 {
@@ -181,17 +181,17 @@
             List<Triangle> triangles = new List<Triangle>();
             triangles.Add(triangle);
 
-            while(triangles.Count != 0)
+            while (triangles.Count != 0)
             {
                 int last = triangles.Count - 1;
                 Triangle t = triangles[last];
                 triangles.RemoveAt(last);
 
-                if(t != null && !t.IsInterior())
+                if (t != null && !t.IsInterior())
                 {
                     t.IsInterior(true);
                     _triangles.Add(t);
-                    for(int i = 0; i < 3; i++)
+                    for (int i = 0; i < 3; i++)
                     {
                         if (!t.ConstrainedEdge[i])
                             triangles.Add(t.GetNeighbor(i));

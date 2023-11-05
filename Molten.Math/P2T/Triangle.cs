@@ -167,7 +167,7 @@ namespace Molten
             }
             else
             {
-                Debug.Assert(false, "What happened here????");
+                Debug.Assert(false);
             }
         }
 
@@ -180,7 +180,7 @@ namespace Molten
             else if (p.Equals(Points[2]))
                 return 2;
 
-            Debug.Assert(false, "What happened here????");
+            Debug.Assert(false);
             return -1;
         }
 
@@ -250,8 +250,8 @@ namespace Molten
             else if (point.Equals(Points[2]))
                 return Points[1];
 
-            Debug.Assert(false, "What happened here????");
-            return TriPoint.Empty;
+            Debug.Assert(false);
+            return null;
         }
 
         /// <summary>
@@ -268,8 +268,19 @@ namespace Molten
             else if (point.Equals(Points[2]))
                 return Points[0];
 
-            Debug.Assert(false, "What happened here????");
-            return TriPoint.Empty;
+            Debug.Assert(false);
+            return null;
+        }
+
+        // The neighbor across to given point
+        public Triangle NeighborAcross(TriPoint point)
+        {
+            if (point.Equals(Points[0]))
+                return _neighbours[0];
+            else if (point.Equals(Points[1]))
+                return _neighbours[1];
+
+            return _neighbours[2];
         }
 
         /// <summary>
@@ -301,7 +312,7 @@ namespace Molten
         {
             if (p.Equals(Points[0]))
                 return ConstrainedEdge[2];
-            else if (p.Equals( Points[1]))
+            else if (p.Equals(Points[1]))
                 return ConstrainedEdge[0];
 
             return ConstrainedEdge[1];
@@ -377,19 +388,52 @@ namespace Molten
                 DelaunayEdge[0] = e;
         }
 
-        public Triangle NeighborAcross(TriPoint opoint)
-        {
-            if (opoint.Equals(Points[0]))
-                return _neighbours[0];
-            else if (opoint.Equals(Points[1]))
-                return _neighbours[1];
-
-            return _neighbours[2];
-        }
-
         public override string ToString()
         {
             return $"{Points[0].X},{Points[0].Y} | {Points[1].X},{Points[1].Y} | {Points[2].X},{Points[2].Y}";
+        }
+
+        public bool CircumcicleContains(TriPoint point)
+        {
+            Debug.Assert(IsCounterClockwise());
+            double dx = Points[0].X - point.X;
+            double dy = Points[0].Y - point.Y;
+            double ex = Points[1].X - point.X;
+            double ey = Points[1].Y - point.Y;
+            double fx = Points[2].X - point.X;
+            double fy = Points[2].Y - point.Y;
+
+            double ap = dx * dx + dy * dy;
+            double bp = ex * ex + ey * ey;
+            double cp = fx * fx + fy * fy;
+
+            return (dx * (fy * bp - cp * ey) - dy * (fx * bp - cp * ex) + ap * (fx * ey - fy * ex)) < 0;
+        }
+
+        public bool IsCounterClockwise()
+        {
+            return (Points[1].X - Points[0].X) * (Points[2].Y - Points[0].Y) -
+                       (Points[2].X - Points[0].X) * (Points[1].Y - Points[0].Y) > 0;
+        }
+
+        public bool IsDelaunay(List<Triangle> triangles)
+        {
+            foreach (Triangle triangle in triangles)
+            {
+                foreach (Triangle other in triangles)
+                {
+                    if (triangle == other)
+                    {
+                        continue;
+                    }
+                    for (int i = 0; i < 3; ++i)
+                    {
+                        if (triangle.CircumcicleContains(other.Points[i]))
+                            return false;
+                    }
+                }
+            }
+            return true;
         }
     }
 }

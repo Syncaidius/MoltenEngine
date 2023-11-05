@@ -233,7 +233,7 @@ namespace Molten
                     Edge e = Edges[i];
 
                     if (i == 0)
-                        points.Add(new TriPoint((Vector2F)e.Start));
+                        points.Add(new TriPoint(e.Start));
                     
                     if (e is not LinearEdge)
                     {
@@ -246,7 +246,7 @@ namespace Molten
                         }
                     }
 
-                    points.Add(new TriPoint((Vector2F)e.End));
+                    points.Add(new TriPoint(e.End));
                 }
 
                 return points;

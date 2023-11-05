@@ -1,4 +1,6 @@
-﻿namespace Molten
+﻿using Molten.DoublePrecision;
+
+namespace Molten
 {
     public class TriPoint : IEquatable<TriPoint>
     {
@@ -7,15 +9,15 @@
         /// </summary>
         public static readonly TriPoint Empty = new TriPoint();
 
-        public float X;
+        public double X;
 
-        public float Y;
+        public double Y;
 
         public List<Edge> EdgeList;
 
         public TriPoint() { }
 
-        public TriPoint(float x, float y)
+        public TriPoint(double x, double y)
         {
             X = x;
             Y = y;
@@ -29,16 +31,11 @@
             EdgeList = null;
         }
 
-        public void set_zero()
+        public TriPoint(Vector2D p)
         {
-            X = 0;
-            Y = 0;
-        }
-
-        public void Set(float x, float y)
-        {
-            X = x;
-            Y = y;
+            X = p.X;
+            Y = p.Y;
+            EdgeList = null;
         }
 
         /// <summary>
@@ -74,7 +71,7 @@
         /// Multiply this point by a scalar.
         /// </summary>
         /// <param name="a"></param>
-        public void Multiply(float a)
+        public void Multiply(double a)
         {
             X *= a;
             Y *= a;
@@ -84,46 +81,51 @@
         /// Get the length of this point (the norm).
         /// </summary>
         /// <returns></returns>
-        public float Length()
+        public double Length()
         {
-            return MathF.Sqrt(X * X + Y * Y);
+            return Math.Sqrt(X * X + Y * Y);
         }
 
         /// <summary>
         /// Convert this point into a unit point (normalizes it). Returns the Length.
         /// </summary>
         /// <returns></returns>
-        public float Normalize()
+        public double Normalize()
         {
-            float len = Length();
+            double len = Length();
             X /= len;
             Y /= len;
             return len;
         }
 
-        public static float Dot(TriPoint a, TriPoint b)
+        public static double Dot(TriPoint a, TriPoint b)
         {
             return a.X * b.X + a.Y * b.Y;
         }
 
-        public static float Cross(TriPoint a, TriPoint b)
+        public static double Cross(TriPoint a, TriPoint b)
         {
             return a.X * b.Y - a.Y * b.X;
         }
 
-        public static TriPoint Cross(TriPoint a, float s)
+        public static TriPoint Cross(TriPoint a, double s)
         {
             return new TriPoint(s * a.Y, -s * a.X);
         }
 
-        public static TriPoint Cross(float s, TriPoint a)
+        public static TriPoint Cross(double s, TriPoint a)
         {
             return new TriPoint(-s * a.Y, s * a.X);
         }
 
+        public static explicit operator Vector2D(TriPoint p)
+        {
+            return new Vector2D(p.X, p.Y);
+        }
+
         public static explicit operator Vector2F(TriPoint p)
         {
-            return new Vector2F(p.X, p.Y);
+            return new Vector2F((float)p.X, (float)p.Y);
         }
 
         public class Comparer : IComparer<TriPoint>
@@ -173,16 +175,7 @@
             return X == other.X && Y == other.Y;
         }
 
-        public static bool operator ==(TriPoint a, TriPoint b)
-        {
-            return a.X == b.X && a.Y == b.Y;
-        }
-        public static bool operator !=(TriPoint a, TriPoint b)
-        {
-            return a.X != b.X || a.Y != b.Y;
-        }
-
-        public static TriPoint operator *(TriPoint a, float scale)
+        public static TriPoint operator *(TriPoint a, double scale)
         {
             return new TriPoint(a.X * scale, a.Y * scale)
             {
@@ -190,7 +183,7 @@
             };
         }
 
-        public static TriPoint operator *(TriPoint a, Vector2F scale)
+        public static TriPoint operator *(TriPoint a, Vector2D scale)
         {
             return new TriPoint(a.X * scale.X, a.Y * scale.Y)
             {
@@ -198,7 +191,7 @@
             };
         }
 
-        public static TriPoint operator +(TriPoint a, Vector2F delta)
+        public static TriPoint operator +(TriPoint a, Vector2D delta)
         {
             return new TriPoint(a.X + delta.X, a.Y + delta.Y)
             {
