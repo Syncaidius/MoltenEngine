@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Molten.DoublePrecision;
+using Molten.Shapes;
 
 namespace Molten.Graphics.SDF
 {
@@ -49,7 +50,7 @@ namespace Molten.Graphics.SDF
             return Vector2D.Dot(ref aDir, ref bDir) <= 0 || Math.Abs(Vector2D.Cross(ref aDir, ref bDir)) > crossThreshold;
         }
 
-        static double EstimateEdgeLength(Shape.Edge edge)
+        static double EstimateEdgeLength(Edge edge)
         {
             double len = 0;
             Vector2D prev = edge.Point(0);
@@ -87,7 +88,7 @@ namespace Molten.Graphics.SDF
             double crossThreshold = Math.Sin(angleThreshold);
             List<int> corners = new List<int>();
 
-            foreach (Shape.Contour contour in shape.Contours)
+            foreach (Contour contour in shape.Contours)
             {
                 // Identify corners
                 corners.Clear();
@@ -95,7 +96,7 @@ namespace Molten.Graphics.SDF
                 {
                     Vector2D prevDirection = contour.Edges.Last().GetDirection(1);
                     int index = 0;
-                    foreach (Shape.Edge edge in contour.Edges)
+                    foreach (Edge edge in contour.Edges)
                     {
                         if (IsCorner(prevDirection.GetNormalized(), edge.GetDirection(0).GetNormalized(), crossThreshold))
                             corners.Add(index);
@@ -106,7 +107,7 @@ namespace Molten.Graphics.SDF
                 // Smooth contour
                 if (corners.Count == 0)
                 {
-                    foreach (Shape.Edge edge in contour.Edges)
+                    foreach (Edge edge in contour.Edges)
                         edge.Color = EdgeColor.White;
                 }
                 else if (corners.Count == 1) // "Teardrop" case
@@ -126,7 +127,7 @@ namespace Molten.Graphics.SDF
                     else if (contour.Edges.Count >= 1)
                     {
                         // Less than three edge segments for three colors => edges must be split
-                        Shape.Edge[] parts = new Shape.Edge[7];
+                        Edge[] parts = new Edge[7];
                         contour.Edges[0].SplitInThirds(ref parts[0 + 3 * corner], ref parts[1 + 3 * corner], ref parts[2 + 3 * corner]);
                         if (contour.Edges.Count >= 2)
                         {
@@ -175,7 +176,7 @@ namespace Molten.Graphics.SDF
             double crossThreshold = Math.Sin(angleThreshold);
             List<EdgeColoringInkTrapCorner> corners = new List<EdgeColoringInkTrapCorner>();
 
-            foreach (Shape.Contour contour in shape.Contours)
+            foreach (Contour contour in shape.Contours)
             {
                 // Identify corners
                 double splineLength = 0;
@@ -185,7 +186,7 @@ namespace Molten.Graphics.SDF
                 {
                     Vector2D prevDirection = contour.Edges.Last().GetDirection(1);
                     int index = 0;
-                    foreach (Shape.Edge edge in contour.Edges)
+                    foreach (Edge edge in contour.Edges)
                     {
                         if (IsCorner(prevDirection.GetNormalized(), edge.GetDirection(0).GetNormalized(), crossThreshold))
                         {
@@ -202,7 +203,7 @@ namespace Molten.Graphics.SDF
                 // Smooth contour
                 if (corners.Count == 0)
                 {
-                    foreach (Shape.Edge edge in contour.Edges)
+                    foreach (Edge edge in contour.Edges)
                         edge.Color = EdgeColor.White;
                 }
                 else if (corners.Count == 1) // "Teardrop" case
@@ -223,7 +224,7 @@ namespace Molten.Graphics.SDF
                     else if (contour.Edges.Count >= 1)
                     {
                         // Less than three edge segments for three colors => edges must be split
-                        Shape.Edge[] parts = new Shape.Edge[7];
+                        Edge[] parts = new Edge[7];
                         contour.Edges[0].SplitInThirds(ref parts[0 + 3 * corner], ref parts[1 + 3 * corner], ref parts[2 + 3 * corner]);
                         if (contour.Edges.Count >= 2)
                         {
@@ -312,7 +313,7 @@ namespace Molten.Graphics.SDF
         /// <param name="b"></param>
         /// <param name="precision"></param>
         /// <returns></returns>
-        static double EdgeToEdgeDistance(Shape.Edge a, Shape.Edge b, int precision)
+        static double EdgeToEdgeDistance(Edge a, Edge b, int precision)
         {
             if (a.Point(0) == b.Point(0) || a.Point(0) == b.Point(1) || a.Point(1) == b.Point(0) || a.Point(1) == b.Point(1))
                 return 0;
@@ -333,7 +334,7 @@ namespace Molten.Graphics.SDF
             return minDistance;
         }
 
-        static double SplineToSplineDistance(List<Shape.Edge> edgeSegments, int aStart, int aEnd, int bStart, int bEnd, int precision)
+        static double SplineToSplineDistance(List<Edge> edgeSegments, int aStart, int aEnd, int bStart, int bEnd, int precision)
         {
             double minDistance = double.MaxValue;
             for (int ai = aStart; ai < aEnd; ++ai)
@@ -469,19 +470,19 @@ namespace Molten.Graphics.SDF
 
         public static unsafe void EdgeColoringByDistance(Shape shape, double angleThreshold, int seed)
         {
-            List<Shape.Edge> edgeSegments = new List<Shape.Edge>();
+            List<Edge> edgeSegments = new List<Edge>();
             List<int> splineStarts = new List<int>();
 
             double crossThreshold = Math.Sin(angleThreshold);
             List<int> corners = new List<int>();
-            foreach (Shape.Contour contour in shape.Contours)
+            foreach (Contour contour in shape.Contours)
                 if (contour.Edges.Count != 0)
                 {
                     // Identify corners
                     corners.Clear();
                     Vector2D prevDirection = contour.Edges.Last().GetDirection(1);
                     int index = 0;
-                    foreach (Shape.Edge edge in contour.Edges)
+                    foreach (Edge edge in contour.Edges)
                     {
                         if (IsCorner(prevDirection.GetNormalized(), edge.GetDirection(0).GetNormalized(), crossThreshold))
                             corners.Add(index);
@@ -493,7 +494,7 @@ namespace Molten.Graphics.SDF
                     // Smooth contour
                     if (corners.Count == 0)
                     {
-                        foreach (Shape.Edge edge in contour.Edges)
+                        foreach (Edge edge in contour.Edges)
                             edgeSegments.Add(edge);
                     }
                     else if (corners.Count == 1) // "Teardrop" case
@@ -515,7 +516,7 @@ namespace Molten.Graphics.SDF
                         else if (contour.Edges.Count >= 1)
                         {
                             // Less than three edge segments for three colors => edges must be split
-                            Shape.Edge[] parts = new Shape.Edge[7];
+                            Edge[] parts = new Edge[7];
                             contour.Edges[0].SplitInThirds(ref parts[0 + 3 * corner], ref parts[1 + 3 * corner], ref parts[2 + 3 * corner]);
                             if (contour.Edges.Count >= 2)
                             {
@@ -635,7 +636,7 @@ namespace Molten.Graphics.SDF
             if (string.IsNullOrEmpty(edgeAssignment)) 
                 return;
 
-            Shape.Contour contour = shape.Contours[c];
+            Contour contour = shape.Contours[c];
             bool change = false;
             bool clear = true;
 

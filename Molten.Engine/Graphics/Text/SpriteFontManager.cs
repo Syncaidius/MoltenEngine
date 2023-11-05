@@ -1,12 +1,14 @@
 ﻿using Molten.Collections;
 using Molten.Font;
 using Molten.Graphics.SDF;
+using Molten.Shapes;
 
 namespace Molten.Graphics
 {
     public class SpriteFontManager : EngineObject
     {
         public const char PLACEHOLDER_CHAR = ' ';
+        const int GLYPH_EDGE_RESOLUTION = 16;
 
         RenderService _renderer;
         Dictionary<string, SpriteFontBinding> _fonts;
@@ -98,7 +100,7 @@ namespace Molten.Graphics
                     Y = -binding.YOffset,
                 };
 
-                Shape shape = binding.Glyph.CreateShape();
+                CompoundShape shape = binding.Glyph.CreateShape(GLYPH_EDGE_RESOLUTION);
                 _sdf.Normalize(shape);
                 shape.ScaleAndOffset(glyphOffset, glyphScale);
 

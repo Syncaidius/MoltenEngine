@@ -2,7 +2,7 @@
 {
     internal class EdgeEvent
     {
-        public Edge ConstrainedEdge;
+        public TriEdge ConstrainedEdge;
 
         public bool Right;
     }

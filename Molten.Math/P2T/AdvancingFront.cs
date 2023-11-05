@@ -15,11 +15,6 @@ namespace Molten
             _search_node = _head;
         }
 
-        public void SetSearch(Node node)
-        {
-            _search_node = node;
-        }
-
         public Node LocateNode(double x)
         {
             Node node = _search_node;
@@ -50,15 +45,10 @@ namespace Molten
             return null;
         }
 
-        Node FindSearchNode(double x)
-        {
-            return _search_node;
-        }
-
         public Node LocatePoint(TriPoint point)
         {
             double px = point.X;
-            Node node = FindSearchNode(px);
+            Node node = _search_node;
             double nx = node.Point.X;
 
             if (px == nx)

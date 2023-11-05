@@ -1,4 +1,5 @@
 ﻿using Molten.DoublePrecision;
+using Molten.Shapes;
 
 namespace Molten.Graphics.SDF
 {

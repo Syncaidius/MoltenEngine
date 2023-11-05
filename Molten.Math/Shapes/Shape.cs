@@ -1,27 +1,30 @@
 ﻿using Molten.DoublePrecision;
 
-namespace Molten
+namespace Molten.Shapes
 {
-    public partial class Shape
+    public partial class CompoundShape
     {
+        /// <summary>
+        /// A list of shapes that make up the current <see cref="CompoundShape"/>.
+        /// </summary>
         public List<Contour> Contours { get; } = new List<Contour>();
 
         /// <summary>
-        /// Creates a new instance of <see cref="Shape"/>.
+        /// Creates a new instance of <see cref="CompoundShape"/>.
         /// </summary>
-        public Shape() { }
+        public CompoundShape() { }
 
         /// <summary>
-        /// Creates a new instance of <see cref="Shape"/> from a list of linear points.
+        /// Creates a new instance of <see cref="CompoundShape"/> from a list of linear points.
         /// </summary>
         /// <param name="points"></param>
-        public Shape(List<Vector2F> points) : this(points, Vector2F.Zero, 1f) { }
+        public CompoundShape(List<Vector2F> points) : this(points, Vector2F.Zero, 1f) { }
 
         /// <summary>
-        /// Creates a new instance of <see cref="Shape"/> from a list of linear points.
+        /// Creates a new instance of <see cref="CompoundShape"/> from a list of linear points.
         /// </summary>
         /// <param name="points"></param>
-        public Shape(List<Vector2F> points, Vector2F offset, float scale = 1.0f)
+        public CompoundShape(List<Vector2F> points, Vector2F offset, float scale = 1.0f)
         {
             Contour c = new Contour();
             Contours.Add(c);
@@ -34,11 +37,10 @@ namespace Molten
         /// 
         /// </summary>
         /// <param name="output"></param>
-        /// <param name="edgeResolution">The maximum number of points that are allowed to represent an edge. For bezier curves, this will affect the curve smoothness.</param>
-        public void Triangulate(List<Vector2F> output, int edgeResolution = 3)
+        public void Triangulate(List<Vector2F> output)
         {
             List<Triangle> triangles = new List<Triangle>();
-            Triangulate(triangles, edgeResolution);
+            Triangulate(triangles);
 
             foreach (Triangle tri in triangles)
             {
@@ -48,10 +50,10 @@ namespace Molten
             }
         }
 
-        /// <summary>Triangulates the area inside the edge perimeter of the current <see cref="Shape"/>.</summary>
+        /// <summary>Triangulates the area inside the edge perimeter of the current <see cref="CompoundShape"/>.</summary>
         /// <param name="output">A list to output the <see cref="Triangle"/> ojects which make up the interior mesh.</param>
-        /// <param name="edgeResolution">The maximum number of points that are allowed to represent an edge. For bezier curves, this will affect the curve smoothness.</param>
-        public void Triangulate(List<Triangle> output, int edgeResolution = 3)
+        
+        internal void Triangulate(List<Triangle> output)
         {
             // Group contours
             List<(Contour c, List<TriPoint> edgeList)> holes =  new List<(Contour c, List<TriPoint> edgeList)> ();
@@ -61,7 +63,7 @@ namespace Molten
             // Group contours into outlines and holes
             foreach (Contour c in Contours)
             {
-                List<TriPoint> points = c.GetEdgePoints(edgeResolution);
+                List<TriPoint> points = c.GetEdgePoints();
 
                 // Check start/end points
                 if (points.Count > 2)
@@ -102,7 +104,7 @@ namespace Molten
                 // Add all holes to context
                 foreach ((Contour h, List<TriPoint> holePoints) in holes)
                 {
-                    if (c.Contains(h, edgeResolution) == ContainmentType.Contains)
+                    if (c.Contains(h) == ContainmentType.Contains)
                         tcx.AddHole(holePoints);
                 }
 
@@ -141,7 +143,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns the total number of edges in the current <see cref="Shape"/>.
+        /// Returns the total number of edges in the current <see cref="CompoundShape"/>.
         /// </summary>
         /// <returns></returns>
         public int GetEdgeCount()
@@ -209,13 +211,13 @@ namespace Molten
             }
         }
 
-        public bool Contains(Shape other, int edgeResolution = 3)
+        public bool Contains(CompoundShape other)
         {
             foreach(Contour contour in Contours)
             {
                 foreach(Contour otherContour in other.Contours)
                 {
-                    if (contour.Contains(otherContour, edgeResolution) != ContainmentType.Contains)
+                    if (contour.Contains(otherContour) != ContainmentType.Contains)
                         return false;
                 }
             }
@@ -224,19 +226,18 @@ namespace Molten
         }
 
         /// <summary>
-        /// Tests whether or not the current <see cref="Shape"/> contains the provided double-precision point.  
+        /// Tests whether or not the current <see cref="CompoundShape"/> contains the provided double-precision point.  
         /// </summary>
         /// <param name="point">The point to be tested.</param>
-        /// <param name="edgeResolution">The resolution of edges. For curves, this will be the number of linear edges that the curve is broken down into.</param>
         /// <returns></returns>
-        public bool Contains(Vector2D point, int edgeResolution = 3)
+        public bool Contains(Vector2D point)
         {
             // Check hole contours first.
             foreach (Contour c in Contours)
             {
                 if (c.GetWinding() == -1)
                 {
-                    if (c.Contains(point, edgeResolution))
+                    if (c.Contains(point))
                         return true;
                 }
             }
@@ -246,7 +247,7 @@ namespace Molten
             {
                 if (c.GetWinding() > -1)
                 {
-                    if (c.Contains(point, edgeResolution))
+                    if (c.Contains(point))
                         return false;
                 }
             }
@@ -254,10 +255,10 @@ namespace Molten
             return false;
         }
 
-        public bool Contains(Vector2F point, int edgeResolution = 3)
+        public bool Contains(Vector2F point)
         {
             Vector2D dPoint = (Vector2D)point;
-            return Contains(dPoint, edgeResolution);
+            return Contains(dPoint);
         }
     }
 }

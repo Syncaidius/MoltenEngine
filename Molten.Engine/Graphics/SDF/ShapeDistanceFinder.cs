@@ -1,4 +1,5 @@
 ﻿using Molten.DoublePrecision;
+using Molten.Shapes;
 
 namespace Molten.Graphics.SDF
 {
@@ -9,15 +10,15 @@ namespace Molten.Graphics.SDF
     /// <typeparam name="DT">Distance Type</typeparam>
     public class ShapeDistanceFinder
     {
-        Shape _shape;
+        CompoundShape _shape;
         ContourCombiner _combiner;
-        EdgeCache[] _shapeEdgeCache;
+        EdgeCache[] _EdgeCache;
 
-        public ShapeDistanceFinder(Shape shape)
+        public ShapeDistanceFinder(CompoundShape shape)
         {
             _shape = shape;
             _combiner = new ContourCombiner(shape);
-            _shapeEdgeCache = new EdgeCache[shape.GetEdgeCount()];
+            _EdgeCache = new EdgeCache[shape.GetEdgeCount()];
         }
 
         public Color3D distance(ref Vector2D origin)
@@ -28,19 +29,19 @@ namespace Molten.Graphics.SDF
 
             for (int i = 0; i < _shape.Contours.Count; i++)
             {
-                Shape.Contour contour = _shape.Contours[i];
+                Contour contour = _shape.Contours[i];
                 int edgeCount = contour.Edges.Count;
 
                 if (edgeCount > 0)
                 {
                     MultiDistanceSelector edgeSelector = _combiner.EdgeSelectors[0];
 
-                    Shape.Edge prevEdge = contour.Edges.Count >= 2 ? (contour.Edges[edgeCount - 2]) : contour.Edges[0];
-                    Shape.Edge curEdge = contour.Edges.Last();
-                    foreach (Shape.Edge edge in contour.Edges)
+                    Edge prevEdge = contour.Edges.Count >= 2 ? (contour.Edges[edgeCount - 2]) : contour.Edges[0];
+                    Edge curEdge = contour.Edges.Last();
+                    foreach (Edge edge in contour.Edges)
                     {
-                        Shape.Edge nextEdge = edge;
-                        edgeSelector.AddEdge(ref _shapeEdgeCache[edgeCache++], prevEdge, curEdge, nextEdge);
+                        Edge nextEdge = edge;
+                        edgeSelector.AddEdge(ref _EdgeCache[edgeCache++], prevEdge, curEdge, nextEdge);
                         prevEdge = curEdge;
                         curEdge = nextEdge;
                     }

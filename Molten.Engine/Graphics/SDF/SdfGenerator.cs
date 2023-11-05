@@ -1,4 +1,5 @@
 ﻿using Molten.DoublePrecision;
+using Molten.Shapes;
 
 namespace Molten.Graphics.SDF
 {
@@ -99,7 +100,7 @@ namespace Molten.Graphics.SDF
             ErrorCorrection.MsdfErrorCorrection(output, shape, projection, range, config);
         }
 
-        internal static void DeconvergeCubicEdge(Shape.CubicEdge edge, int param, double amount)
+        internal static void DeconvergeCubicEdge(CubicEdge edge, int param, double amount)
         {
             Vector2D dir = edge.GetDirection(param);
             Vector2D normal = dir.GetOrthonormal();
@@ -115,12 +116,12 @@ namespace Molten.Graphics.SDF
             }
         }
 
-        internal static void DeconvergeEdge(Shape.Edge edge, int param)
+        internal static void DeconvergeEdge(Edge edge, int param)
         {
-            if (edge is Shape.QuadraticEdge quadratic)
+            if (edge is QuadraticEdge quadratic)
                 edge = quadratic.ConvertToCubic();
 
-            if (edge is Shape.CubicEdge cubic)
+            if (edge is CubicEdge cubic)
                 DeconvergeCubicEdge(cubic, param, MSDFGEN_DECONVERGENCE_FACTOR);
         }
 
@@ -129,11 +130,11 @@ namespace Molten.Graphics.SDF
         /// </summary>
         public void Normalize(Shape shape)
         {
-            foreach (Shape.Contour contour in shape.Contours)
+            foreach (Contour contour in shape.Contours)
             {
                 if (contour.Edges.Count == 1)
                 {
-                    Shape.Edge[] parts = new Shape.Edge[3];
+                    Edge[] parts = new Edge[3];
 
                     contour.Edges[0].SplitInThirds(ref parts[0], ref parts[1], ref parts[2]);
                     contour.Edges.Clear();
@@ -143,9 +144,9 @@ namespace Molten.Graphics.SDF
                 }
                 else
                 {
-                    Shape.Edge prevEdge = contour.Edges.Last();
+                    Edge prevEdge = contour.Edges.Last();
 
-                    foreach (Shape.Edge edge in contour.Edges)
+                    foreach (Edge edge in contour.Edges)
                     {
                         Vector2D prevDir = prevEdge.GetDirection(1).GetNormalized();
                         Vector2D curDir = edge.GetDirection(0).GetNormalized();

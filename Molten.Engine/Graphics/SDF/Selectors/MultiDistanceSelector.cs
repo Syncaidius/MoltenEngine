@@ -1,4 +1,5 @@
 ﻿using Molten.DoublePrecision;
+using Molten.Shapes;
 
 namespace Molten.Graphics.SDF
 {
@@ -18,7 +19,7 @@ namespace Molten.Graphics.SDF
             P = p;
         }
 
-        public void AddEdge(ref EdgeCache cache, Shape.Edge prevEdge, Shape.Edge edge, Shape.Edge nextEdge)
+        public void AddEdge(ref EdgeCache cache, Edge prevEdge, Edge edge, Edge nextEdge)
         {
             if (
                 ((edge.Color & EdgeColor.Red) == EdgeColor.Red && R.IsEdgeRelevant(cache, edge, P)) ||

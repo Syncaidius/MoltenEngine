@@ -1,7 +1,7 @@
-﻿namespace Molten
+﻿namespace Molten.Shapes
 {
     /// <summary>
-    /// Represents the color of a <see cref="Shape.Edge"/>.
+    /// Represents the color of a <see cref="Edge"/>.
     /// </summary>
     [Flags]
     public enum EdgeColor

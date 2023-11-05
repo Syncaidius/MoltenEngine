@@ -6,7 +6,7 @@
         public const double PI_div2 = 1.57079632679489661923;
         public const double EPSILON = 1e-12;
 
-        public static Winding Orient2d(TriPoint pa, TriPoint pb, TriPoint pc)
+        internal static Winding Orient2d(TriPoint pa, TriPoint pb, TriPoint pc)
         {
             double detleft = (pa.X - pc.X) * (pb.Y - pc.Y);
             double detright = (pa.Y - pc.Y) * (pb.X - pc.X);
@@ -23,7 +23,7 @@
             return Winding.Clockwise;
         }
 
-        public static bool InScanArea(TriPoint pa, TriPoint pb, TriPoint pc, TriPoint pd)
+        internal static bool InScanArea(TriPoint pa, TriPoint pb, TriPoint pc, TriPoint pd)
         {
             double oadb = (pa.X - pb.X) * (pd.Y - pb.Y) - (pd.X - pb.X) * (pa.Y - pb.Y);
             if (oadb >= -EPSILON)

@@ -1,4 +1,5 @@
 ﻿using Molten.DoublePrecision;
+using Molten.Shapes;
 
 namespace Molten.Graphics.SDF
 {
@@ -7,7 +8,7 @@ namespace Molten.Graphics.SDF
         SignedDistance MinTrueDistance;
         double MinNegativePseudoDistance;
         double MinPositivePseudoDistance;
-        Shape.Edge NearEdge;
+        Edge NearEdge;
         double NearEdgeParam;
         Vector2D P;
 
@@ -19,7 +20,7 @@ namespace Molten.Graphics.SDF
             NearEdgeParam = 0;
         }
 
-        public void AddEdge(ref EdgeCache cache, Shape.Edge prevEdge, Shape.Edge edge, Shape.Edge nextEdge)
+        public void AddEdge(ref EdgeCache cache, Edge prevEdge, Edge edge, Edge nextEdge)
         {
             if (IsEdgeRelevant(cache, edge, P))
             {
@@ -107,7 +108,7 @@ namespace Molten.Graphics.SDF
             NearEdgeParam = 0;
         }
 
-        public bool IsEdgeRelevant(in EdgeCache cache, Shape.Edge edge, in Vector2D p)
+        public bool IsEdgeRelevant(in EdgeCache cache, Edge edge, in Vector2D p)
         {
             double delta = SdfGenerator.DISTANCE_DELTA_FACTOR * (p - cache.Point).Length();
             return (
@@ -125,7 +126,7 @@ namespace Molten.Graphics.SDF
             );
         }
 
-        public void AddEdgeTrueDistance(Shape.Edge edge, in SignedDistance distance, double param)
+        public void AddEdgeTrueDistance(Edge edge, in SignedDistance distance, double param)
         {
             if (distance < MinTrueDistance)
             {

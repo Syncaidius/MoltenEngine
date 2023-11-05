@@ -1,4 +1,5 @@
 ﻿using Molten.DoublePrecision;
+using Molten.Shapes;
 
 namespace Molten.Graphics
 {
@@ -6,7 +7,7 @@ namespace Molten.Graphics
     {
         /// <summary>Draws .</summary>
         /// <param name="edge">The edge to draw.</param>
-        public void DrawEdge(Shape.Edge edge, Color color, float thickness, float resolution = 16, uint surfaceSlice = 0)
+        public void DrawEdge(Edge edge, Color color, float thickness, float resolution = 16, uint surfaceSlice = 0)
         {
             LineStyle style = new LineStyle(color, color, thickness);
             DrawEdge(edge, ref style, resolution, surfaceSlice);
@@ -14,10 +15,10 @@ namespace Molten.Graphics
 
         /// <summary>Draws .</summary>
         /// <param name="edge">The edge to draw.</param>
-        public void DrawEdge(Shape.Edge edge, ref LineStyle style, float resolution = 16, uint surfaceSlice = 0)
+        public void DrawEdge(Edge edge, ref LineStyle style, float resolution = 16, uint surfaceSlice = 0)
         {
             // Early exit for linear edges. Always straight.
-            if (edge is Shape.LinearEdge)
+            if (edge is LinearEdge)
             {
                 DrawLine((Vector2F)edge.P[0], (Vector2F)edge.P[1], ref style, surfaceSlice);
                 return;

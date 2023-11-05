@@ -1,4 +1,5 @@
 ﻿using Molten.DoublePrecision;
+using Molten.Shapes;
 
 namespace Molten.Graphics.SDF
 {
@@ -52,12 +53,12 @@ namespace Molten.Graphics.SDF
 
         public unsafe void ProtectCorners(Shape shape)
         {
-            foreach (Shape.Contour contour in shape.Contours)
+            foreach (Contour contour in shape.Contours)
             {
                 if (contour.Edges.Count > 0)
                 {
-                    Shape.Edge prevEdge = contour.Edges.Last();
-                    foreach (Shape.Edge edge in contour.Edges)
+                    Edge prevEdge = contour.Edges.Last();
+                    foreach (Edge edge in contour.Edges)
                     {
                         EdgeColor commonColor = prevEdge.Color & edge.Color;
                         // If the color changes from prevEdge to edge, this is a corner.

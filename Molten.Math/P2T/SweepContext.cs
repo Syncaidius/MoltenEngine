@@ -9,7 +9,7 @@
         List<TriPoint> _points;
         List<Triangle> _triangles;
         List<Triangle> _map;
-        List<Edge> _edge_list;
+        List<TriEdge> _edge_list;
 
         TriPoint _head;
         TriPoint _tail;
@@ -30,7 +30,7 @@
             _triangles = new List<Triangle>();
             _map = new List<Triangle>();
             _cmp = new TriPoint.Comparer();
-            _edge_list = new List<Edge>();
+            _edge_list = new List<TriEdge>();
             EdgeEvent = new EdgeEvent();
             Basin = new SweepBasin();
         }
@@ -113,7 +113,7 @@
             for (int i = first; i <= last; i++)
             {
                 int j = i < last ? i + 1 : first;
-                _edge_list.Add(new Edge(_points[i], _points[j]));
+                _edge_list.Add(new TriEdge(_points[i], _points[j]));
             }
         }
 
@@ -152,12 +152,6 @@
             _af_tail.Prev = _af_middle;
         }
 
-        public void RemoveNode(Node node)
-        {
-            // TODO: ???
-            // delete node; (C++ code)
-        }
-
         public void MapTriangleToNodes(Triangle t)
         {
             for (int i = 0; i < 3; i++)
@@ -171,11 +165,6 @@
             }
         }
 
-        public void RemoveFromMap(Triangle triangle)
-        {
-            _map.Remove(triangle);
-        }
-
         public void MeshClean(Triangle triangle)
         {
             List<Triangle> triangles = new List<Triangle>();
@@ -187,9 +176,9 @@
                 Triangle t = triangles[last];
                 triangles.RemoveAt(last);
 
-                if (t != null && !t.IsInterior())
+                if (t != null && !t.IsInterior)
                 {
-                    t.IsInterior(true);
+                    t.IsInterior = true;
                     _triangles.Add(t);
                     for (int i = 0; i < 3; i++)
                     {
@@ -200,19 +189,6 @@
             }
         }
 
-        public int PointCount()
-        {
-            return _points.Count;
-        }
-
-        public void SetHead(TriPoint p1)
-        {
-            _head = p1;
-        }
-
-        public TriPoint GetHead()
-        {
-            return _head;
-        }
+        public int PointCount => _points.Count;
     }
 }

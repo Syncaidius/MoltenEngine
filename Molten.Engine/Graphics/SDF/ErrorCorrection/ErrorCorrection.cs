@@ -1,4 +1,6 @@
-﻿namespace Molten.Graphics.SDF
+﻿using Molten.Shapes;
+
+namespace Molten.Graphics.SDF
 {
     public static class ErrorCorrection
     {
@@ -14,9 +16,9 @@
             double* x = stackalloc double[3];
             int* dy = stackalloc int[3];
 
-            foreach (Shape.Contour contour in shape.Contours)
+            foreach (Contour contour in shape.Contours)
             {
-                foreach (Shape.Edge edge in contour.Edges)
+                foreach (Edge edge in contour.Edges)
                 {
                     int n = edge.ScanlineIntersections(x, dy, y);
                     for (int i = 0; i < n; ++i)

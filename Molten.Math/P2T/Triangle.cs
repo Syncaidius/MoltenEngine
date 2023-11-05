@@ -2,13 +2,12 @@
 
 namespace Molten
 {
-    public class Triangle
+    internal class Triangle
     {
         public TriPoint[] Points;
         public bool[] ConstrainedEdge;
         public bool[] DelaunayEdge;
         Triangle[] _neighbours;
-        bool _interior;
 
         public Triangle(TriPoint a, TriPoint b, TriPoint c)
         {
@@ -28,24 +27,14 @@ namespace Molten
             return Points[0].Equals(p) || Points[1].Equals(p) || Points[2].Equals(p);
         }
 
-        public bool Contains(Edge e)
+        public bool Contains(TriEdge e)
         {
-            return Contains(e.P) && Contains(e.Q);
+            return Contains(e.P1) && Contains(e.P2);
         }
 
         public bool Contains(TriPoint p, TriPoint q)
         {
             return Contains(p) && Contains(q);
-        }
-
-        public bool IsInterior()
-        {
-            return _interior;
-        }
-
-        public void IsInterior(bool b)
-        {
-            _interior = b;
         }
 
         /// <summary>
@@ -216,9 +205,9 @@ namespace Molten
             ConstrainedEdge[index] = true;
         }
 
-        public void MarkConstrainedEdge(Edge edge)
+        public void MarkConstrainedEdge(TriEdge edge)
         {
-            MarkConstrainedEdge(edge.P, edge.Q);
+            MarkConstrainedEdge(edge.P1, edge.P2);
         }
 
         /// <summary>
@@ -435,5 +424,7 @@ namespace Molten
             }
             return true;
         }
+
+        public bool IsInterior { get; set; }
     }
 }

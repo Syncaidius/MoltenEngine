@@ -1,6 +1,7 @@
 ﻿using Molten.Font;
 using Molten.Graphics;
 using Molten.Input;
+using Molten.Shapes;
 
 namespace Molten.Examples
 {
@@ -17,7 +18,7 @@ namespace Molten.Examples
 
         Vector2F _clickPoint;
         Color _clickColor = Color.Red;
-        Shape _shape;
+        CompoundShape _shape;
         RectangleF _glyphBounds;
         RectangleF _fontBounds;
         float _scale = 0.3f;
@@ -191,7 +192,7 @@ namespace Molten.Examples
         private void GenerateChar(char glyphChar, int curveResolution = 16)
         {
             Glyph glyph = _fontFile.GetGlyph(glyphChar);
-            _shape = glyph.CreateShape();
+            _shape = glyph.CreateShape(curveResolution);
             _shape.ScaleAndOffset(_charOffset, _scale);
 
             _glyphBounds = (RectangleF)glyph.Bounds;
@@ -203,7 +204,7 @@ namespace Molten.Examples
             _glyphBounds.Y += _charOffset.Y;
             _glyphTriPoints = new List<Vector2F>();
 
-            _shape.Triangulate(_glyphTriPoints, CHAR_CURVE_RESOLUTION);
+            _shape.Triangulate(_glyphTriPoints);
         }
 
         protected override void OnUpdate(Timing time)
@@ -219,7 +220,7 @@ namespace Molten.Examples
 
                 if (_shape != null)
                 {
-                    if (_shape.Contains(_clickPoint, CHAR_CURVE_RESOLUTION))
+                    if (_shape.Contains(_clickPoint))
                         _clickColor = Color.Green;
                 }
             }

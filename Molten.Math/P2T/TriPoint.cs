@@ -2,7 +2,7 @@
 
 namespace Molten
 {
-    public class TriPoint : IEquatable<TriPoint>
+    internal class TriPoint : IEquatable<TriPoint>
     {
         /// <summary>
         /// An empty <see cref="TriPoint"/> with <see cref="EdgeList"/> uninitialized (null).
@@ -13,7 +13,7 @@ namespace Molten
 
         public double Y;
 
-        public List<Edge> EdgeList;
+        public List<TriEdge> EdgeList;
 
         public TriPoint() { }
 
