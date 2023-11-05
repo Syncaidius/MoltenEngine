@@ -18,7 +18,7 @@ namespace Molten.Examples
 
         Vector2F _clickPoint;
         Color _clickColor = Color.Red;
-        CompoundShape _shape;
+        Shape _shape;
         RectangleF _glyphBounds;
         RectangleF _fontBounds;
         float _scale = 0.3f;

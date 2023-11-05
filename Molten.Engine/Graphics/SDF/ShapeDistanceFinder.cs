@@ -10,11 +10,11 @@ namespace Molten.Graphics.SDF
     /// <typeparam name="DT">Distance Type</typeparam>
     public class ShapeDistanceFinder
     {
-        CompoundShape _shape;
+        Shape _shape;
         ContourCombiner _combiner;
         EdgeCache[] _EdgeCache;
 
-        public ShapeDistanceFinder(CompoundShape shape)
+        public ShapeDistanceFinder(Shape shape)
         {
             _shape = shape;
             _combiner = new ContourCombiner(shape);

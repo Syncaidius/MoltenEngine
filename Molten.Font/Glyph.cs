@@ -77,13 +77,13 @@ namespace Molten.Font
         /// </summary>
         /// <param name="curveResolution">The maximum number of points per curve in a glyph contour.</param>
         /// <returns></returns>
-        public CompoundShape CreateShape(int curveResolution)
+        public Shape CreateShape(int curveResolution)
         {
             List<Vector2D> cp = new List<Vector2D>();
             int start = 0;
             GlyphPoint p = GlyphPoint.Empty;
 
-            CompoundShape glyphShape = new CompoundShape();
+            Shape glyphShape = new Shape();
 
             for (int i = 0; i < ContourEndPoints.Length; i++)
             {
@@ -148,7 +148,7 @@ namespace Molten.Font
                         if (cp.Count > 0)
                             AddCurve(contour, prevCurvePoint, startPoint, cp);
                         else
-                            contour.Edges.Add(new LinearEdge((Vector2D)p.Point, startPoint));
+                            contour.Add(new LinearEdge((Vector2D)p.Point, startPoint));
                     }
                 }
 
@@ -163,15 +163,15 @@ namespace Molten.Font
             switch (cp.Count)
             {
                 case 0: // Line
-                    contour.Edges.Add(new LinearEdge(prevPoint, curPoint));
+                    contour.Add(new LinearEdge(prevPoint, curPoint));
                     break;
 
                 case 1: // Quadratic bezier curve
-                    contour.Edges.Add(new QuadraticEdge(prevPoint, curPoint, cp[0]));
+                    contour.Add(new QuadraticEdge(prevPoint, curPoint, cp[0]));
                     break;
 
                 case 2: // Cubic curve
-                    contour.Edges.Add(new CubicEdge(prevPoint, curPoint, cp[0], cp[1]));
+                    contour.Add(new CubicEdge(prevPoint, curPoint, cp[0], cp[1]));
                     break;
 
                 default:
@@ -179,12 +179,12 @@ namespace Molten.Font
                     for (int i = 0; i < cp.Count - 1; i++)
                     {
                         Vector2D midPoint = (cp[i] + cp[i + 1]) / 2.0;
-                        contour.Edges.Add(new QuadraticEdge(prevPoint, midPoint, cp[i]));
+                        contour.Add(new QuadraticEdge(prevPoint, midPoint, cp[i]));
                         prevPoint = midPoint;
                     }
 
                     // Calculate last bezier 
-                    contour.Edges.Add(new QuadraticEdge(prevPoint, curPoint, cp[cp.Count - 1]));
+                    contour.Add(new QuadraticEdge(prevPoint, curPoint, cp[cp.Count - 1]));
                     break;
             }
 

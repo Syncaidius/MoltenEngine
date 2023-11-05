@@ -4,12 +4,12 @@ namespace Molten.Graphics
 {
     public partial class SpriteBatcher
     {
-        public void DrawShapeOutline(CompoundShape shape, Color color, float thickness, uint surfaceSlice = 0)
+        public void DrawShapeOutline(Shape shape, Color color, float thickness, uint surfaceSlice = 0)
         {
             DrawShapeOutline(shape, color, color, thickness, surfaceSlice);
         }
 
-        public void DrawShapeOutline(CompoundShape shape, Color edgeColor, Color holeColor, float thickness, uint surfaceSlice = 0)
+        public void DrawShapeOutline(Shape shape, Color edgeColor, Color holeColor, float thickness, uint surfaceSlice = 0)
         {
             foreach (Contour c in shape.Contours)
             {
@@ -20,7 +20,7 @@ namespace Molten.Graphics
             }
         }
 
-        public void DrawShapeOutline(CompoundShape shape, Vector2F position, ref LineStyle style, uint surfaceSlice = 0)
+        public void DrawShapeOutline(Shape shape, Vector2F position, ref LineStyle style, uint surfaceSlice = 0)
         {
             LineStyle edgeStyle = style;
 

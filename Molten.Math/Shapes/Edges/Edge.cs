@@ -58,7 +58,7 @@ namespace Molten.Shapes
 
         public override string ToString()
         {
-            return $"{this.GetType().Name} - P0: {Start} -- P1: {End}";
+            return $"{GetType().Name} - P0: {Start} -- P1: {End}";
         }
 
         public abstract Vector2D Point(double param);

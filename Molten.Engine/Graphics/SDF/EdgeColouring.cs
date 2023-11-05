@@ -142,9 +142,9 @@ namespace Molten.Graphics.SDF
                             parts[1].Color = colors[1];
                             parts[2].Color = colors[2];
                         }
-                        contour.Edges.Clear();
+                        contour.Clear();
                         for (int i = 0; i < parts.Length && parts[i] != null; ++i)
-                            contour.Edges.Add(parts[i]);
+                            contour.Add(parts[i]);
                     }
                 }
                 // Multiple corners
@@ -239,9 +239,9 @@ namespace Molten.Graphics.SDF
                             parts[1].Color = colors[1];
                             parts[2].Color = colors[2];
                         }
-                        contour.Edges.Clear();
+                        contour.Clear();
                         for (int i = 0; i < parts.Length && parts[i] != null; ++i)
-                            contour.Edges.Add(parts[i]);
+                            contour.Add(parts[i]);
                     }
                 }
                 // Multiple corners
@@ -535,9 +535,9 @@ namespace Molten.Graphics.SDF
                                 splineStarts.Add(edgeSegments.Count);
                                 edgeSegments.Add(parts[2]);
                             }
-                            contour.Edges.Clear();
+                            contour.Clear();
                             for (int i = 0; i < parts.Length && parts[i] != null; ++i)
-                                contour.Edges.Add(parts[i]);
+                                contour.Add(parts[i]);
                         }
                     }
                     else // Multiple corners

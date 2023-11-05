@@ -100,7 +100,7 @@ namespace Molten.Graphics
                     Y = -binding.YOffset,
                 };
 
-                CompoundShape shape = binding.Glyph.CreateShape(GLYPH_EDGE_RESOLUTION);
+                Shape shape = binding.Glyph.CreateShape(GLYPH_EDGE_RESOLUTION);
                 _sdf.Normalize(shape);
                 shape.ScaleAndOffset(glyphOffset, glyphScale);
 

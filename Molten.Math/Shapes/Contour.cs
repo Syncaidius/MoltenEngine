@@ -4,43 +4,59 @@ namespace Molten.Shapes
 {
     public class Contour
     {
-        public List<Edge> Edges { get; } = new List<Edge>();
+        List<Edge> _edges = new List<Edge>();
 
-        public void AddEdge(Edge edge)
+        public void Clear()
         {
-            Edges.Add(edge);
+            _edges.Clear();
         }
 
-        public void AddLinearEdge(Vector2D p1, Vector2D p2, EdgeColor color = EdgeColor.White)
+        public void Add(Edge edge)
         {
-            Edges.Add(new LinearEdge(p1, p2, color));
+            _edges.Add(edge);
         }
 
-        public void AppendLinearPoint(Vector2D p, EdgeColor color = EdgeColor.White)
+        public LinearEdge Add(Vector2D pStart, Vector2D pEnd, EdgeColor color = EdgeColor.White)
         {
-            if (Edges.Count == 0)
+            LinearEdge edge = new LinearEdge(pStart, pEnd, color);
+            _edges.Add(edge);
+            return edge;
+        }
+
+        public LinearEdge Append(Vector2D pEnd, EdgeColor color = EdgeColor.White)
+        {
+            if (_edges.Count == 0)
                 throw new Exception("Cannot append edge point without at least 1 existing edge.");
 
-            Edge last = Edges.Last();
-            Edges.Add(new LinearEdge(last.End, p, color));
+            Edge last = _edges.Last();
+            LinearEdge edge = new LinearEdge(last.End, pEnd, color);
+            _edges.Add(edge);
+
+            return edge;
         }
 
-        public void AppendQuadraticPoint(Vector2D p, Vector2D pControl, EdgeColor color = EdgeColor.White)
+        public QuadraticEdge Append(Vector2D pEnd, Vector2D pControl, EdgeColor color = EdgeColor.White)
         {
-            if (Edges.Count == 0)
+            if (_edges.Count == 0)
                 throw new Exception("Cannot append edge point without at least 1 existing edge.");
 
-            Edge last = Edges.Last();
-            Edges.Add(new QuadraticEdge(last.End, p, pControl, color));
+            Edge last = _edges.Last();
+            QuadraticEdge edge = new QuadraticEdge(last.End, pEnd, pControl, color);
+            _edges.Add(edge);
+
+            return edge;
         }
 
-        public void AppendCubicPoint(Vector2D p, Vector2D pControl1, Vector2D pControl2, EdgeColor color = EdgeColor.White)
+        public CubicEdge Append(Vector2D pEnd, Vector2D pControl1, Vector2D pControl2, EdgeColor color = EdgeColor.White)
         {
-            if (Edges.Count == 0)
+            if (_edges.Count == 0)
                 throw new Exception("Cannot append edge point without at least 1 existing edge.");
 
-            Edge last = Edges.Last();
-            Edges.Add(new CubicEdge(last.End, p, pControl1, pControl2, color));
+            Edge last = _edges.Last();
+            CubicEdge edge = new CubicEdge(last.End, pEnd, pControl1, pControl2, color);
+            _edges.Add(edge);
+
+            return edge;
         }
 
         private double Shoelace(Vector2D a, Vector2D b)
@@ -50,20 +66,20 @@ namespace Molten.Shapes
 
         public int GetWinding()
         {
-            if (Edges.Count == 0)
+            if (_edges.Count == 0)
                 return 0;
 
             double total = 0;
-            if (Edges.Count == 1)
+            if (_edges.Count == 1)
             {
-                Vector2D a = Edges[0].Point(0), b = Edges[0].Point(1 / 3.0), c = Edges[0].Point(2 / 3.0);
+                Vector2D a = _edges[0].Point(0), b = _edges[0].Point(1 / 3.0), c = _edges[0].Point(2 / 3.0);
                 total += Shoelace(a, b);
                 total += Shoelace(b, c);
                 total += Shoelace(c, a);
             }
-            else if (Edges.Count == 2)
+            else if (_edges.Count == 2)
             {
-                Vector2D a = Edges[0].Point(0), b = Edges[0].Point(.5), c = Edges[1].Point(0), d = Edges[1].Point(.5);
+                Vector2D a = _edges[0].Point(0), b = _edges[0].Point(.5), c = _edges[1].Point(0), d = _edges[1].Point(.5);
                 total += Shoelace(a, b);
                 total += Shoelace(b, c);
                 total += Shoelace(c, d);
@@ -71,7 +87,7 @@ namespace Molten.Shapes
             }
             else
             {
-                Vector2D prev = Edges.Last().Point(0);
+                Vector2D prev = _edges.Last().Point(0);
                 foreach (Edge edge in Edges)
                 {
                     Vector2D cur = edge.Point(0);
@@ -92,7 +108,7 @@ namespace Molten.Shapes
             int incPoints = EdgeResolution - 1;
             double distInc = 1.0 / incPoints;
 
-            for (int i = 0; i < other.Edges.Count; i++)
+            for (int i = 0; i < other._edges.Count; i++)
             {
                 Edge e = other.Edges[i];
 
@@ -116,7 +132,7 @@ namespace Molten.Shapes
                     }
                 }
 
-                if (i != Edges.Count - 1)
+                if (i != _edges.Count - 1)
                 {
                     bool rl = Contains(e.P[0]);
                     contains = rl && contains;
@@ -137,7 +153,7 @@ namespace Molten.Shapes
         public bool Contains(Vector2D point, int edgeResolution = 3)
         {
             // Thanks to: https://codereview.stackexchange.com/a/108903
-            int eCount = Edges.Count;
+            int eCount = _edges.Count;
             int j = 0;
             bool inside = false;
             double pointX = point.X, pointY = point.Y; // x, y for tested point.
@@ -183,37 +199,6 @@ namespace Molten.Shapes
             return inside;
         }
 
-        /// <summary>
-        /// Produces a <see cref="RectangleF"/> which contains all of the shape's points.
-        /// </summary>
-        public RectangleF CalculateBounds()
-        {
-            throw new NotImplementedException();
-
-            /*RectangleF b = new RectangleF()
-            {
-                Left = float.MaxValue,
-                Top = float.MaxValue,
-                Right = float.MinValue,
-                Bottom = float.MinValue,
-            };
-
-            foreach (TriPoint p in Points)
-            {
-                if (p.X < b.Left)
-                    b.Left = p.X;
-                else if (p.X > b.Right)
-                    b.Right = p.Y;
-
-                if (p.Y < b.Top)
-                    b.Top = p.Y;
-                else if (p.Y > b.Bottom)
-                    b.Bottom = p.Y;
-            }
-
-            return b;*/
-        }
-
         internal List<TriPoint> GetEdgePoints()
         {
             if (EdgeResolution < 3)
@@ -226,7 +211,7 @@ namespace Molten.Shapes
             int incPoints = EdgeResolution - 1;
             double distInc = 1.0 / incPoints;
 
-            for (int i = 0; i < Edges.Count; i++)
+            for (int i = 0; i < _edges.Count; i++)
             {
                 Edge e = Edges[i];
 
@@ -254,5 +239,10 @@ namespace Molten.Shapes
         /// Gets 9r sets the maximum number of points that are allowed to represent an edge. For bezier curves, this will affect the curve smoothness.
         /// </summary>
         public int EdgeResolution { get; set; } = 3;
+
+        /// <summary>
+        /// Gets a read-only list of edges that make up the current <see cref="Contour"/>.
+        /// </summary>
+        public IReadOnlyList<Edge> Edges => _edges;
     }
 }

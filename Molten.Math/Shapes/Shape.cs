@@ -2,35 +2,37 @@
 
 namespace Molten.Shapes
 {
-    public partial class CompoundShape
+    public partial class Shape
     {
         /// <summary>
-        /// A list of shapes that make up the current <see cref="CompoundShape"/>.
+        /// A list of shapes that make up the current <see cref="Shape"/>.
         /// </summary>
         public List<Contour> Contours { get; } = new List<Contour>();
 
         /// <summary>
-        /// Creates a new instance of <see cref="CompoundShape"/>.
+        /// Creates a new instance of <see cref="Shape"/>.
         /// </summary>
-        public CompoundShape() { }
+        public Shape() { }
 
         /// <summary>
-        /// Creates a new instance of <see cref="CompoundShape"/> from a list of linear points.
+        /// Creates a new instance of <see cref="Shape"/> from a list of linear points.
         /// </summary>
         /// <param name="points"></param>
-        public CompoundShape(List<Vector2F> points) : this(points, Vector2F.Zero, 1f) { }
+        public Shape(List<Vector2F> points) : this(points, Vector2F.Zero, 1f) { }
 
         /// <summary>
-        /// Creates a new instance of <see cref="CompoundShape"/> from a list of linear points.
+        /// Creates a new instance of <see cref="Shape"/> from a list of linear points.
         /// </summary>
         /// <param name="points"></param>
-        public CompoundShape(List<Vector2F> points, Vector2F offset, float scale = 1.0f)
+        /// <param name="offset"></param>
+        /// <param name="scale"></param>
+        public Shape(List<Vector2F> points, Vector2F offset, float scale = 1.0f)
         {
             Contour c = new Contour();
             Contours.Add(c);
-            c.AddLinearEdge((Vector2D)points[0], (Vector2D)points[1]);
+            c.Add((Vector2D)points[0], (Vector2D)points[1]);
             for (int i = 2; i < points.Count; i++)
-                c.AppendLinearPoint((Vector2D)(offset + (points[i] * scale)), EdgeColor.White);
+                c.Append((Vector2D)(offset + (points[i] * scale)), EdgeColor.White);
         }
 
         /// <summary>
@@ -50,9 +52,8 @@ namespace Molten.Shapes
             }
         }
 
-        /// <summary>Triangulates the area inside the edge perimeter of the current <see cref="CompoundShape"/>.</summary>
-        /// <param name="output">A list to output the <see cref="Triangle"/> ojects which make up the interior mesh.</param>
-        
+        /// <summary>Triangulates the area inside the edge perimeter of the current <see cref="Shape"/>.</summary>
+        /// <param name="output">A list to output the <see cref="Triangle"/> ojects which make up the interior mesh.</param>   
         internal void Triangulate(List<Triangle> output)
         {
             // Group contours
@@ -143,7 +144,7 @@ namespace Molten.Shapes
         }
 
         /// <summary>
-        /// Returns the total number of edges in the current <see cref="CompoundShape"/>.
+        /// Returns the total number of edges in the current <see cref="Shape"/>.
         /// </summary>
         /// <returns></returns>
         public int GetEdgeCount()
@@ -211,7 +212,7 @@ namespace Molten.Shapes
             }
         }
 
-        public bool Contains(CompoundShape other)
+        public bool Contains(Shape other)
         {
             foreach(Contour contour in Contours)
             {
@@ -226,7 +227,7 @@ namespace Molten.Shapes
         }
 
         /// <summary>
-        /// Tests whether or not the current <see cref="CompoundShape"/> contains the provided double-precision point.  
+        /// Tests whether or not the current <see cref="Shape"/> contains the provided double-precision point.  
         /// </summary>
         /// <param name="point">The point to be tested.</param>
         /// <returns></returns>

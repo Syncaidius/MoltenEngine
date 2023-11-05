@@ -137,10 +137,10 @@ namespace Molten.Graphics.SDF
                     Edge[] parts = new Edge[3];
 
                     contour.Edges[0].SplitInThirds(ref parts[0], ref parts[1], ref parts[2]);
-                    contour.Edges.Clear();
-                    contour.Edges.Add(parts[0]);
-                    contour.Edges.Add(parts[1]);
-                    contour.Edges.Add(parts[2]);
+                    contour.Clear();
+                    contour.Add(parts[0]);
+                    contour.Add(parts[1]);
+                    contour.Add(parts[2]);
                 }
                 else
                 {
