@@ -11,7 +11,7 @@ namespace Molten
 	///<summary>A <see cref="sbyte"/> vector comprised of four components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=1)]
     [Serializable]
-	public partial struct SByte4 : IFormattable, IVector<sbyte>, IEquatable<SByte4>
+	public partial struct SByte4 : IFormattable, IVector<SByte4, sbyte>, IEquatable<SByte4>
 	{
 		///<summary>The size of <see cref="SByte4"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(SByte4));
@@ -1030,6 +1030,18 @@ namespace Molten
 				Z = value.Z < min.Z ? min.Z : value.Z > max.Z ? max.Z : value.Z,
 				W = value.W < min.W ? min.W : value.W > max.W ? max.W : value.W,
 			};
+        }
+
+        /// <summary>
+        /// Returns the reflection of a vector off a surface that has the specified normal. 
+        /// </summary>
+        /// <param name="vector">The source vector.</param>
+        /// <param name="normal">Normal of the surface.</param>
+        /// <remarks>Reflect only gives the direction of a reflection off a surface, it does not determine 
+        /// whether the original vector was close enough to the surface to hit it.</remarks>
+        public static SByte4 Reflect(SByte4 vector, SByte4 normal)
+        {
+            return Reflect(ref vector, ref normal);
         }
 
         /// <summary>

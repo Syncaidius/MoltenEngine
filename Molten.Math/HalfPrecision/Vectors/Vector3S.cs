@@ -11,7 +11,7 @@ namespace Molten.HalfPrecision
 	///<summary>A <see cref="short"/> vector comprised of three components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=2)]
     [Serializable]
-	public partial struct Vector3S : IFormattable, IVector<short>, IEquatable<Vector3S>
+	public partial struct Vector3S : IFormattable, IVector<Vector3S, short>, IEquatable<Vector3S>
 	{
 		///<summary>The size of <see cref="Vector3S"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector3S));
@@ -978,6 +978,18 @@ namespace Molten.HalfPrecision
 				Y = value.Y < min.Y ? min.Y : value.Y > max.Y ? max.Y : value.Y,
 				Z = value.Z < min.Z ? min.Z : value.Z > max.Z ? max.Z : value.Z,
 			};
+        }
+
+        /// <summary>
+        /// Returns the reflection of a vector off a surface that has the specified normal. 
+        /// </summary>
+        /// <param name="vector">The source vector.</param>
+        /// <param name="normal">Normal of the surface.</param>
+        /// <remarks>Reflect only gives the direction of a reflection off a surface, it does not determine 
+        /// whether the original vector was close enough to the surface to hit it.</remarks>
+        public static Vector3S Reflect(Vector3S vector, Vector3S normal)
+        {
+            return Reflect(ref vector, ref normal);
         }
 
         /// <summary>

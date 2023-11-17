@@ -11,7 +11,7 @@ namespace Molten
 	///<summary>A <see cref="uint"/> vector comprised of three components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=4)]
     [Serializable]
-	public partial struct Vector3UI : IFormattable, IVector<uint>, IEquatable<Vector3UI>
+	public partial struct Vector3UI : IFormattable, IVector<Vector3UI, uint>, IEquatable<Vector3UI>
 	{
 		///<summary>The size of <see cref="Vector3UI"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector3UI));
@@ -947,6 +947,18 @@ namespace Molten
 				Y = value.Y < min.Y ? min.Y : value.Y > max.Y ? max.Y : value.Y,
 				Z = value.Z < min.Z ? min.Z : value.Z > max.Z ? max.Z : value.Z,
 			};
+        }
+
+        /// <summary>
+        /// Returns the reflection of a vector off a surface that has the specified normal. 
+        /// </summary>
+        /// <param name="vector">The source vector.</param>
+        /// <param name="normal">Normal of the surface.</param>
+        /// <remarks>Reflect only gives the direction of a reflection off a surface, it does not determine 
+        /// whether the original vector was close enough to the surface to hit it.</remarks>
+        public static Vector3UI Reflect(Vector3UI vector, Vector3UI normal)
+        {
+            return Reflect(ref vector, ref normal);
         }
 
         /// <summary>

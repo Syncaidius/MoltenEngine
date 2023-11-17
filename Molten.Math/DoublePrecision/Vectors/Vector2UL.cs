@@ -11,7 +11,7 @@ namespace Molten.DoublePrecision
 	///<summary>A <see cref="ulong"/> vector comprised of two components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=8)]
     [Serializable]
-	public partial struct Vector2UL : IFormattable, IVector<ulong>, IEquatable<Vector2UL>
+	public partial struct Vector2UL : IFormattable, IVector<Vector2UL, ulong>, IEquatable<Vector2UL>
 	{
 		///<summary>The size of <see cref="Vector2UL"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector2UL));
@@ -898,6 +898,18 @@ namespace Molten.DoublePrecision
 				X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X,
 				Y = value.Y < min.Y ? min.Y : value.Y > max.Y ? max.Y : value.Y,
 			};
+        }
+
+        /// <summary>
+        /// Returns the reflection of a vector off a surface that has the specified normal. 
+        /// </summary>
+        /// <param name="vector">The source vector.</param>
+        /// <param name="normal">Normal of the surface.</param>
+        /// <remarks>Reflect only gives the direction of a reflection off a surface, it does not determine 
+        /// whether the original vector was close enough to the surface to hit it.</remarks>
+        public static Vector2UL Reflect(Vector2UL vector, Vector2UL normal)
+        {
+            return Reflect(ref vector, ref normal);
         }
 
         /// <summary>
