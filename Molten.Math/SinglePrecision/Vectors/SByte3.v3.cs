@@ -1,7 +1,9 @@
+using System.Runtime.InteropServices;
+
 namespace Molten
 {
-    ///<summary>A <see cref = "sbyte"/> vector comprised of 3 components.</summary>
-    public partial struct SByte3
+	///<summary>A <see cref = "sbyte"/> vector comprised of 3 components.</summary>
+	public partial struct SByte3
 	{
         /// <summary>
         /// A unit <see cref="SByte3"/> designating up (0, 1, 0).

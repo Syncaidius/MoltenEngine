@@ -1,7 +1,7 @@
 namespace Molten
 {
-    ///<summary>A <see cref = "float"/> vector comprised of 3 components.</summary>
-    public partial struct Vector3F
+	///<summary>A <see cref = "float"/> vector comprised of 3 components.</summary>
+	public partial struct Vector3F
 	{
 #region Instance methods
         

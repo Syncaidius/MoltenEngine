@@ -2,8 +2,8 @@ using System.Runtime.CompilerServices;
 
 namespace Molten.DoublePrecision
 {
-    ///<summary>A <see cref = "double"/> vector comprised of 2 components.</summary>
-    public partial struct Vector2D
+	///<summary>A <see cref = "double"/> vector comprised of 2 components.</summary>
+	public partial struct Vector2D
 	{
 #region Instance methods
         public Vector2D GetOrthonormal(bool polarity = true, bool allowZero = false)

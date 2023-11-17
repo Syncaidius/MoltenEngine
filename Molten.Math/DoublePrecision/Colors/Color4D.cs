@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -5,7 +6,7 @@ using System.Runtime.Serialization;
 
 namespace Molten.DoublePrecision
 {
-    /// <summary>
+	/// <summary>
     /// Represents a color in the form of red, green, blue, alpha.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 8)]

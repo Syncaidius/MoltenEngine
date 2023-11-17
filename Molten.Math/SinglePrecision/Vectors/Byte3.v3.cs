@@ -1,7 +1,9 @@
+using System.Runtime.InteropServices;
+
 namespace Molten
 {
-    ///<summary>A <see cref = "byte"/> vector comprised of 3 components.</summary>
-    public partial struct Byte3
+	///<summary>A <see cref = "byte"/> vector comprised of 3 components.</summary>
+	public partial struct Byte3
 	{
 
 #region Static Methods

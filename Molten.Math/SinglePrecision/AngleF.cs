@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -5,8 +6,8 @@ using System.Runtime.Serialization;
 
 namespace Molten
 {
-    ///<summary>Represents a four dimensional mathematical AngleF.</summary>
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
+	///<summary>Represents a four dimensional mathematical AngleF.</summary>
+	[StructLayout(LayoutKind.Sequential, Pack = 4)]
     [Serializable]
 	public partial struct AngleF : IFormattable, IEquatable<AngleF>
 	{

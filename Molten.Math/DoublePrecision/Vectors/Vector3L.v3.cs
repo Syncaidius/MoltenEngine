@@ -1,7 +1,9 @@
+using System.Runtime.InteropServices;
+
 namespace Molten.DoublePrecision
 {
-    ///<summary>A <see cref = "long"/> vector comprised of 3 components.</summary>
-    public partial struct Vector3L
+	///<summary>A <see cref = "long"/> vector comprised of 3 components.</summary>
+	public partial struct Vector3L
 	{
         /// <summary>
         /// A unit <see cref="Vector3L"/> designating up (0, 1, 0).

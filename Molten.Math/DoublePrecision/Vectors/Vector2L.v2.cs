@@ -1,7 +1,7 @@
 namespace Molten.DoublePrecision
 {
-    ///<summary>A <see cref = "long"/> vector comprised of 2 components.</summary>
-    public partial struct Vector2L
+	///<summary>A <see cref = "long"/> vector comprised of 2 components.</summary>
+	public partial struct Vector2L
 	{
 #region Static Methods
         /// <summary>

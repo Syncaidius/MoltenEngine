@@ -1,7 +1,9 @@
+using System;
+
 namespace Molten
 {
-    ///<summary>A <see cref = "float"/> vector comprised of 2 components.</summary>
-    public partial struct Vector2F
+	///<summary>A <see cref = "float"/> vector comprised of 2 components.</summary>
+	public partial struct Vector2F
 	{
     	/// <summary>
         /// Gets a value indicting whether this instance is normalized.

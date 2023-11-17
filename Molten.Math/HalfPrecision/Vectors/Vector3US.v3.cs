@@ -1,7 +1,9 @@
+using System.Runtime.InteropServices;
+
 namespace Molten.HalfPrecision
 {
-    ///<summary>A <see cref = "ushort"/> vector comprised of 3 components.</summary>
-    public partial struct Vector3US
+	///<summary>A <see cref = "ushort"/> vector comprised of 3 components.</summary>
+	public partial struct Vector3US
 	{
 
 #region Static Methods

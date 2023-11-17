@@ -1,7 +1,9 @@
+using System.Runtime.InteropServices;
+
 namespace Molten.HalfPrecision
 {
-    ///<summary>A <see cref = "short"/> vector comprised of 3 components.</summary>
-    public partial struct Vector3S
+	///<summary>A <see cref = "short"/> vector comprised of 3 components.</summary>
+	public partial struct Vector3S
 	{
         /// <summary>
         /// A unit <see cref="Vector3S"/> designating up (0, 1, 0).
