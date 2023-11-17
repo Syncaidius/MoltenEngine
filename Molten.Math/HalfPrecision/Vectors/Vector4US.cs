@@ -11,7 +11,7 @@ namespace Molten.HalfPrecision
 	///<summary>A <see cref="ushort"/> vector comprised of four components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=2)]
     [Serializable]
-	public partial struct Vector4US : IFormattable, IVector<Vector4US, ushort>, IEquatable<Vector4US>
+	public partial struct Vector4US : IFormattable, IUnsignedVector<Vector4US, ushort>, IEquatable<Vector4US>
 	{
 		///<summary>The size of <see cref="Vector4US"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector4US));
@@ -353,7 +353,7 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="Vector4US"/> and a $<see cref="ushort"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="Vector4US"/> and a <see cref="ushort"/>.</summary>
 		///<param name="a">The <see cref="Vector4US"/> to add.</param>
 		///<param name="b">The <see cref="ushort"/> to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -365,7 +365,7 @@ namespace Molten.HalfPrecision
 			result.W = (ushort)(a.W + b);
 		}
 
-		///<summary>Performs a add operation on a $<see cref="Vector4US"/> and a $<see cref="ushort"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="Vector4US"/> and a <see cref="ushort"/>.</summary>
 		///<param name="a">The <see cref="Vector4US"/> to add.</param>
 		///<param name="b">The <see cref="ushort"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -376,7 +376,7 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="ushort"/> and a $<see cref="Vector4US"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="ushort"/> and a <see cref="Vector4US"/>.</summary>
 		///<param name="a">The <see cref="ushort"/> to add.</param>
 		///<param name="b">The <see cref="Vector4US"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -423,7 +423,7 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="Vector4US"/> and a $<see cref="ushort"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="Vector4US"/> and a <see cref="ushort"/>.</summary>
 		///<param name="a">The <see cref="Vector4US"/> to subtract.</param>
 		///<param name="b">The <see cref="ushort"/> to subtract.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -435,7 +435,7 @@ namespace Molten.HalfPrecision
 			result.W = (ushort)(a.W - b);
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="Vector4US"/> and a $<see cref="ushort"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="Vector4US"/> and a <see cref="ushort"/>.</summary>
 		///<param name="a">The <see cref="Vector4US"/> to subtract.</param>
 		///<param name="b">The <see cref="ushort"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -446,7 +446,7 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="ushort"/> and a $<see cref="Vector4US"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="ushort"/> and a <see cref="Vector4US"/>.</summary>
 		///<param name="a">The <see cref="ushort"/> to subtract.</param>
 		///<param name="b">The <see cref="Vector4US"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -484,7 +484,7 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="Vector4US"/> and a $<see cref="ushort"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="Vector4US"/> and a <see cref="ushort"/>.</summary>
 		///<param name="a">The <see cref="Vector4US"/> to divide.</param>
 		///<param name="b">The <see cref="ushort"/> to divide.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -496,7 +496,7 @@ namespace Molten.HalfPrecision
 			result.W = (ushort)(a.W / b);
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="Vector4US"/> and a $<see cref="ushort"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="Vector4US"/> and a <see cref="ushort"/>.</summary>
 		///<param name="a">The <see cref="Vector4US"/> to divide.</param>
 		///<param name="b">The <see cref="ushort"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
@@ -507,7 +507,7 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="ushort"/> and a $<see cref="Vector4US"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="ushort"/> and a <see cref="Vector4US"/>.</summary>
 		///<param name="a">The <see cref="ushort"/> to divide.</param>
 		///<param name="b">The <see cref="Vector4US"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
@@ -544,7 +544,7 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="Vector4US"/> and a $<see cref="ushort"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="Vector4US"/> and a <see cref="ushort"/>.</summary>
 		///<param name="a">The <see cref="Vector4US"/> to multiply.</param>
 		///<param name="b">The <see cref="ushort"/> to multiply.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -556,7 +556,7 @@ namespace Molten.HalfPrecision
 			result.W = (ushort)(a.W * b);
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="Vector4US"/> and a $<see cref="ushort"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="Vector4US"/> and a <see cref="ushort"/>.</summary>
 		///<param name="a">The <see cref="Vector4US"/> to multiply.</param>
 		///<param name="b">The <see cref="ushort"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>
@@ -567,7 +567,7 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="ushort"/> and a $<see cref="Vector4US"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="ushort"/> and a <see cref="Vector4US"/>.</summary>
 		///<param name="a">The <see cref="ushort"/> to multiply.</param>
 		///<param name="b">The <see cref="Vector4US"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>

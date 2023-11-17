@@ -11,7 +11,7 @@ namespace Molten.HalfPrecision
 	///<summary>A <see cref="short"/> vector comprised of two components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=2)]
     [Serializable]
-	public partial struct Vector2S : IFormattable, IVector<Vector2S, short>, IEquatable<Vector2S>
+	public partial struct Vector2S : IFormattable, ISignedVector<Vector2S, short>, IEquatable<Vector2S>
 	{
 		///<summary>The size of <see cref="Vector2S"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector2S));
@@ -188,6 +188,7 @@ namespace Molten.HalfPrecision
         {
             return new short[] { X, Y };
         }
+
 		/// <summary>
         /// Reverses the direction of the current <see cref="Vector2S"/>.
         /// </summary>
@@ -307,7 +308,7 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="Vector2S"/> and a $<see cref="short"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="Vector2S"/> and a <see cref="short"/>.</summary>
 		///<param name="a">The <see cref="Vector2S"/> to add.</param>
 		///<param name="b">The <see cref="short"/> to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -317,7 +318,7 @@ namespace Molten.HalfPrecision
 			result.Y = (short)(a.Y + b);
 		}
 
-		///<summary>Performs a add operation on a $<see cref="Vector2S"/> and a $<see cref="short"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="Vector2S"/> and a <see cref="short"/>.</summary>
 		///<param name="a">The <see cref="Vector2S"/> to add.</param>
 		///<param name="b">The <see cref="short"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -328,7 +329,7 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="short"/> and a $<see cref="Vector2S"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="short"/> and a <see cref="Vector2S"/>.</summary>
 		///<param name="a">The <see cref="short"/> to add.</param>
 		///<param name="b">The <see cref="Vector2S"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -373,7 +374,7 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="Vector2S"/> and a $<see cref="short"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="Vector2S"/> and a <see cref="short"/>.</summary>
 		///<param name="a">The <see cref="Vector2S"/> to subtract.</param>
 		///<param name="b">The <see cref="short"/> to subtract.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -383,7 +384,7 @@ namespace Molten.HalfPrecision
 			result.Y = (short)(a.Y - b);
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="Vector2S"/> and a $<see cref="short"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="Vector2S"/> and a <see cref="short"/>.</summary>
 		///<param name="a">The <see cref="Vector2S"/> to subtract.</param>
 		///<param name="b">The <see cref="short"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -394,7 +395,7 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="short"/> and a $<see cref="Vector2S"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="short"/> and a <see cref="Vector2S"/>.</summary>
 		///<param name="a">The <see cref="short"/> to subtract.</param>
 		///<param name="b">The <see cref="Vector2S"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -407,7 +408,7 @@ namespace Molten.HalfPrecision
 
 
         /// <summary>
-        /// Negate/reverse the direction of a <see cref="Vector3D"/>.
+        /// Negate/reverse the direction of a <see cref="Vector2S"/>.
         /// </summary>
         /// <param name="value">The <see cref="Vector2S"/> to reverse.</param>
         /// <param name="result">The output for the reversed <see cref="Vector2S"/>.</param>
@@ -452,7 +453,7 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="Vector2S"/> and a $<see cref="short"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="Vector2S"/> and a <see cref="short"/>.</summary>
 		///<param name="a">The <see cref="Vector2S"/> to divide.</param>
 		///<param name="b">The <see cref="short"/> to divide.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -462,7 +463,7 @@ namespace Molten.HalfPrecision
 			result.Y = (short)(a.Y / b);
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="Vector2S"/> and a $<see cref="short"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="Vector2S"/> and a <see cref="short"/>.</summary>
 		///<param name="a">The <see cref="Vector2S"/> to divide.</param>
 		///<param name="b">The <see cref="short"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
@@ -473,7 +474,7 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="short"/> and a $<see cref="Vector2S"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="short"/> and a <see cref="Vector2S"/>.</summary>
 		///<param name="a">The <see cref="short"/> to divide.</param>
 		///<param name="b">The <see cref="Vector2S"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
@@ -508,7 +509,7 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="Vector2S"/> and a $<see cref="short"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="Vector2S"/> and a <see cref="short"/>.</summary>
 		///<param name="a">The <see cref="Vector2S"/> to multiply.</param>
 		///<param name="b">The <see cref="short"/> to multiply.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -518,7 +519,7 @@ namespace Molten.HalfPrecision
 			result.Y = (short)(a.Y * b);
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="Vector2S"/> and a $<see cref="short"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="Vector2S"/> and a <see cref="short"/>.</summary>
 		///<param name="a">The <see cref="Vector2S"/> to multiply.</param>
 		///<param name="b">The <see cref="short"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>
@@ -529,7 +530,7 @@ namespace Molten.HalfPrecision
 			return result;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="short"/> and a $<see cref="Vector2S"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="short"/> and a <see cref="Vector2S"/>.</summary>
 		///<param name="a">The <see cref="short"/> to multiply.</param>
 		///<param name="b">The <see cref="Vector2S"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>

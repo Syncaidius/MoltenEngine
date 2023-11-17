@@ -11,7 +11,7 @@ namespace Molten.DoublePrecision
 	///<summary>A <see cref="double"/> vector comprised of three components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=8)]
     [Serializable]
-	public partial struct Vector3D : IFormattable, IVector<Vector3D, double>, IEquatable<Vector3D>
+	public partial struct Vector3D : IFormattable, ISignedVector<Vector3D, double>, IEquatable<Vector3D>
 	{
 		///<summary>The size of <see cref="Vector3D"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector3D));
@@ -210,6 +210,7 @@ namespace Molten.DoublePrecision
         {
             return new double[] { X, Y, Z };
         }
+
 		/// <summary>
         /// Reverses the direction of the current <see cref="Vector3D"/>.
         /// </summary>
@@ -333,7 +334,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="Vector3D"/> and a $<see cref="double"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="Vector3D"/> and a <see cref="double"/>.</summary>
 		///<param name="a">The <see cref="Vector3D"/> to add.</param>
 		///<param name="b">The <see cref="double"/> to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -344,7 +345,7 @@ namespace Molten.DoublePrecision
 			result.Z = a.Z + b;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="Vector3D"/> and a $<see cref="double"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="Vector3D"/> and a <see cref="double"/>.</summary>
 		///<param name="a">The <see cref="Vector3D"/> to add.</param>
 		///<param name="b">The <see cref="double"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -355,7 +356,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="double"/> and a $<see cref="Vector3D"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="double"/> and a <see cref="Vector3D"/>.</summary>
 		///<param name="a">The <see cref="double"/> to add.</param>
 		///<param name="b">The <see cref="Vector3D"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -401,7 +402,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="Vector3D"/> and a $<see cref="double"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="Vector3D"/> and a <see cref="double"/>.</summary>
 		///<param name="a">The <see cref="Vector3D"/> to subtract.</param>
 		///<param name="b">The <see cref="double"/> to subtract.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -412,7 +413,7 @@ namespace Molten.DoublePrecision
 			result.Z = a.Z - b;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="Vector3D"/> and a $<see cref="double"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="Vector3D"/> and a <see cref="double"/>.</summary>
 		///<param name="a">The <see cref="Vector3D"/> to subtract.</param>
 		///<param name="b">The <see cref="double"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -423,7 +424,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="double"/> and a $<see cref="Vector3D"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="double"/> and a <see cref="Vector3D"/>.</summary>
 		///<param name="a">The <see cref="double"/> to subtract.</param>
 		///<param name="b">The <see cref="Vector3D"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -483,7 +484,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="Vector3D"/> and a $<see cref="double"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="Vector3D"/> and a <see cref="double"/>.</summary>
 		///<param name="a">The <see cref="Vector3D"/> to divide.</param>
 		///<param name="b">The <see cref="double"/> to divide.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -494,7 +495,7 @@ namespace Molten.DoublePrecision
 			result.Z = a.Z / b;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="Vector3D"/> and a $<see cref="double"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="Vector3D"/> and a <see cref="double"/>.</summary>
 		///<param name="a">The <see cref="Vector3D"/> to divide.</param>
 		///<param name="b">The <see cref="double"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
@@ -505,7 +506,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="double"/> and a $<see cref="Vector3D"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="double"/> and a <see cref="Vector3D"/>.</summary>
 		///<param name="a">The <see cref="double"/> to divide.</param>
 		///<param name="b">The <see cref="Vector3D"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
@@ -541,7 +542,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="Vector3D"/> and a $<see cref="double"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="Vector3D"/> and a <see cref="double"/>.</summary>
 		///<param name="a">The <see cref="Vector3D"/> to multiply.</param>
 		///<param name="b">The <see cref="double"/> to multiply.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -552,7 +553,7 @@ namespace Molten.DoublePrecision
 			result.Z = a.Z * b;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="Vector3D"/> and a $<see cref="double"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="Vector3D"/> and a <see cref="double"/>.</summary>
 		///<param name="a">The <see cref="Vector3D"/> to multiply.</param>
 		///<param name="b">The <see cref="double"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>
@@ -563,7 +564,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="double"/> and a $<see cref="Vector3D"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="double"/> and a <see cref="Vector3D"/>.</summary>
 		///<param name="a">The <see cref="double"/> to multiply.</param>
 		///<param name="b">The <see cref="Vector3D"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>

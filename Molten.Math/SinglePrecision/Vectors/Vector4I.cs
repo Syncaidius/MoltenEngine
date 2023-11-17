@@ -11,7 +11,7 @@ namespace Molten
 	///<summary>A <see cref="int"/> vector comprised of four components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=4)]
     [Serializable]
-	public partial struct Vector4I : IFormattable, IVector<Vector4I, int>, IEquatable<Vector4I>
+	public partial struct Vector4I : IFormattable, ISignedVector<Vector4I, int>, IEquatable<Vector4I>
 	{
 		///<summary>The size of <see cref="Vector4I"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector4I));
@@ -234,6 +234,7 @@ namespace Molten
         {
             return new int[] { X, Y, Z, W };
         }
+
 		/// <summary>
         /// Reverses the direction of the current <see cref="Vector4I"/>.
         /// </summary>
@@ -361,7 +362,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="Vector4I"/> and a $<see cref="int"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="Vector4I"/> and a <see cref="int"/>.</summary>
 		///<param name="a">The <see cref="Vector4I"/> to add.</param>
 		///<param name="b">The <see cref="int"/> to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -373,7 +374,7 @@ namespace Molten
 			result.W = a.W + b;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="Vector4I"/> and a $<see cref="int"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="Vector4I"/> and a <see cref="int"/>.</summary>
 		///<param name="a">The <see cref="Vector4I"/> to add.</param>
 		///<param name="b">The <see cref="int"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -384,7 +385,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="int"/> and a $<see cref="Vector4I"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="int"/> and a <see cref="Vector4I"/>.</summary>
 		///<param name="a">The <see cref="int"/> to add.</param>
 		///<param name="b">The <see cref="Vector4I"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -431,7 +432,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="Vector4I"/> and a $<see cref="int"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="Vector4I"/> and a <see cref="int"/>.</summary>
 		///<param name="a">The <see cref="Vector4I"/> to subtract.</param>
 		///<param name="b">The <see cref="int"/> to subtract.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -443,7 +444,7 @@ namespace Molten
 			result.W = a.W - b;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="Vector4I"/> and a $<see cref="int"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="Vector4I"/> and a <see cref="int"/>.</summary>
 		///<param name="a">The <see cref="Vector4I"/> to subtract.</param>
 		///<param name="b">The <see cref="int"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -454,7 +455,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="int"/> and a $<see cref="Vector4I"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="int"/> and a <see cref="Vector4I"/>.</summary>
 		///<param name="a">The <see cref="int"/> to subtract.</param>
 		///<param name="b">The <see cref="Vector4I"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -467,7 +468,7 @@ namespace Molten
 
 
         /// <summary>
-        /// Negate/reverse the direction of a <see cref="Vector3D"/>.
+        /// Negate/reverse the direction of a <see cref="Vector4I"/>.
         /// </summary>
         /// <param name="value">The <see cref="Vector4I"/> to reverse.</param>
         /// <param name="result">The output for the reversed <see cref="Vector4I"/>.</param>
@@ -516,7 +517,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="Vector4I"/> and a $<see cref="int"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="Vector4I"/> and a <see cref="int"/>.</summary>
 		///<param name="a">The <see cref="Vector4I"/> to divide.</param>
 		///<param name="b">The <see cref="int"/> to divide.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -528,7 +529,7 @@ namespace Molten
 			result.W = a.W / b;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="Vector4I"/> and a $<see cref="int"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="Vector4I"/> and a <see cref="int"/>.</summary>
 		///<param name="a">The <see cref="Vector4I"/> to divide.</param>
 		///<param name="b">The <see cref="int"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
@@ -539,7 +540,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="int"/> and a $<see cref="Vector4I"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="int"/> and a <see cref="Vector4I"/>.</summary>
 		///<param name="a">The <see cref="int"/> to divide.</param>
 		///<param name="b">The <see cref="Vector4I"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
@@ -576,7 +577,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="Vector4I"/> and a $<see cref="int"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="Vector4I"/> and a <see cref="int"/>.</summary>
 		///<param name="a">The <see cref="Vector4I"/> to multiply.</param>
 		///<param name="b">The <see cref="int"/> to multiply.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -588,7 +589,7 @@ namespace Molten
 			result.W = a.W * b;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="Vector4I"/> and a $<see cref="int"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="Vector4I"/> and a <see cref="int"/>.</summary>
 		///<param name="a">The <see cref="Vector4I"/> to multiply.</param>
 		///<param name="b">The <see cref="int"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>
@@ -599,7 +600,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="int"/> and a $<see cref="Vector4I"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="int"/> and a <see cref="Vector4I"/>.</summary>
 		///<param name="a">The <see cref="int"/> to multiply.</param>
 		///<param name="b">The <see cref="Vector4I"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>

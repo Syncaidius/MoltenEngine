@@ -11,7 +11,7 @@ namespace Molten
 	///<summary>A <see cref="uint"/> vector comprised of three components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=4)]
     [Serializable]
-	public partial struct Vector3UI : IFormattable, IVector<Vector3UI, uint>, IEquatable<Vector3UI>
+	public partial struct Vector3UI : IFormattable, IUnsignedVector<Vector3UI, uint>, IEquatable<Vector3UI>
 	{
 		///<summary>The size of <see cref="Vector3UI"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector3UI));
@@ -325,7 +325,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="Vector3UI"/> and a $<see cref="uint"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="Vector3UI"/> and a <see cref="uint"/>.</summary>
 		///<param name="a">The <see cref="Vector3UI"/> to add.</param>
 		///<param name="b">The <see cref="uint"/> to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -336,7 +336,7 @@ namespace Molten
 			result.Z = a.Z + b;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="Vector3UI"/> and a $<see cref="uint"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="Vector3UI"/> and a <see cref="uint"/>.</summary>
 		///<param name="a">The <see cref="Vector3UI"/> to add.</param>
 		///<param name="b">The <see cref="uint"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -347,7 +347,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="uint"/> and a $<see cref="Vector3UI"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="uint"/> and a <see cref="Vector3UI"/>.</summary>
 		///<param name="a">The <see cref="uint"/> to add.</param>
 		///<param name="b">The <see cref="Vector3UI"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -393,7 +393,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="Vector3UI"/> and a $<see cref="uint"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="Vector3UI"/> and a <see cref="uint"/>.</summary>
 		///<param name="a">The <see cref="Vector3UI"/> to subtract.</param>
 		///<param name="b">The <see cref="uint"/> to subtract.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -404,7 +404,7 @@ namespace Molten
 			result.Z = a.Z - b;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="Vector3UI"/> and a $<see cref="uint"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="Vector3UI"/> and a <see cref="uint"/>.</summary>
 		///<param name="a">The <see cref="Vector3UI"/> to subtract.</param>
 		///<param name="b">The <see cref="uint"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -415,7 +415,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="uint"/> and a $<see cref="Vector3UI"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="uint"/> and a <see cref="Vector3UI"/>.</summary>
 		///<param name="a">The <see cref="uint"/> to subtract.</param>
 		///<param name="b">The <see cref="Vector3UI"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -452,7 +452,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="Vector3UI"/> and a $<see cref="uint"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="Vector3UI"/> and a <see cref="uint"/>.</summary>
 		///<param name="a">The <see cref="Vector3UI"/> to divide.</param>
 		///<param name="b">The <see cref="uint"/> to divide.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -463,7 +463,7 @@ namespace Molten
 			result.Z = a.Z / b;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="Vector3UI"/> and a $<see cref="uint"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="Vector3UI"/> and a <see cref="uint"/>.</summary>
 		///<param name="a">The <see cref="Vector3UI"/> to divide.</param>
 		///<param name="b">The <see cref="uint"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
@@ -474,7 +474,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="uint"/> and a $<see cref="Vector3UI"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="uint"/> and a <see cref="Vector3UI"/>.</summary>
 		///<param name="a">The <see cref="uint"/> to divide.</param>
 		///<param name="b">The <see cref="Vector3UI"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
@@ -510,7 +510,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="Vector3UI"/> and a $<see cref="uint"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="Vector3UI"/> and a <see cref="uint"/>.</summary>
 		///<param name="a">The <see cref="Vector3UI"/> to multiply.</param>
 		///<param name="b">The <see cref="uint"/> to multiply.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -521,7 +521,7 @@ namespace Molten
 			result.Z = a.Z * b;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="Vector3UI"/> and a $<see cref="uint"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="Vector3UI"/> and a <see cref="uint"/>.</summary>
 		///<param name="a">The <see cref="Vector3UI"/> to multiply.</param>
 		///<param name="b">The <see cref="uint"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>
@@ -532,7 +532,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="uint"/> and a $<see cref="Vector3UI"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="uint"/> and a <see cref="Vector3UI"/>.</summary>
 		///<param name="a">The <see cref="uint"/> to multiply.</param>
 		///<param name="b">The <see cref="Vector3UI"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>

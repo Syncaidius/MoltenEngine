@@ -11,7 +11,7 @@ namespace Molten
 	///<summary>A <see cref="uint"/> vector comprised of four components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=4)]
     [Serializable]
-	public partial struct Vector4UI : IFormattable, IVector<Vector4UI, uint>, IEquatable<Vector4UI>
+	public partial struct Vector4UI : IFormattable, IUnsignedVector<Vector4UI, uint>, IEquatable<Vector4UI>
 	{
 		///<summary>The size of <see cref="Vector4UI"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector4UI));
@@ -353,7 +353,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="Vector4UI"/> and a $<see cref="uint"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="Vector4UI"/> and a <see cref="uint"/>.</summary>
 		///<param name="a">The <see cref="Vector4UI"/> to add.</param>
 		///<param name="b">The <see cref="uint"/> to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -365,7 +365,7 @@ namespace Molten
 			result.W = a.W + b;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="Vector4UI"/> and a $<see cref="uint"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="Vector4UI"/> and a <see cref="uint"/>.</summary>
 		///<param name="a">The <see cref="Vector4UI"/> to add.</param>
 		///<param name="b">The <see cref="uint"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -376,7 +376,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="uint"/> and a $<see cref="Vector4UI"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="uint"/> and a <see cref="Vector4UI"/>.</summary>
 		///<param name="a">The <see cref="uint"/> to add.</param>
 		///<param name="b">The <see cref="Vector4UI"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -423,7 +423,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="Vector4UI"/> and a $<see cref="uint"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="Vector4UI"/> and a <see cref="uint"/>.</summary>
 		///<param name="a">The <see cref="Vector4UI"/> to subtract.</param>
 		///<param name="b">The <see cref="uint"/> to subtract.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -435,7 +435,7 @@ namespace Molten
 			result.W = a.W - b;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="Vector4UI"/> and a $<see cref="uint"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="Vector4UI"/> and a <see cref="uint"/>.</summary>
 		///<param name="a">The <see cref="Vector4UI"/> to subtract.</param>
 		///<param name="b">The <see cref="uint"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -446,7 +446,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="uint"/> and a $<see cref="Vector4UI"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="uint"/> and a <see cref="Vector4UI"/>.</summary>
 		///<param name="a">The <see cref="uint"/> to subtract.</param>
 		///<param name="b">The <see cref="Vector4UI"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -484,7 +484,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="Vector4UI"/> and a $<see cref="uint"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="Vector4UI"/> and a <see cref="uint"/>.</summary>
 		///<param name="a">The <see cref="Vector4UI"/> to divide.</param>
 		///<param name="b">The <see cref="uint"/> to divide.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -496,7 +496,7 @@ namespace Molten
 			result.W = a.W / b;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="Vector4UI"/> and a $<see cref="uint"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="Vector4UI"/> and a <see cref="uint"/>.</summary>
 		///<param name="a">The <see cref="Vector4UI"/> to divide.</param>
 		///<param name="b">The <see cref="uint"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
@@ -507,7 +507,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="uint"/> and a $<see cref="Vector4UI"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="uint"/> and a <see cref="Vector4UI"/>.</summary>
 		///<param name="a">The <see cref="uint"/> to divide.</param>
 		///<param name="b">The <see cref="Vector4UI"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
@@ -544,7 +544,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="Vector4UI"/> and a $<see cref="uint"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="Vector4UI"/> and a <see cref="uint"/>.</summary>
 		///<param name="a">The <see cref="Vector4UI"/> to multiply.</param>
 		///<param name="b">The <see cref="uint"/> to multiply.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -556,7 +556,7 @@ namespace Molten
 			result.W = a.W * b;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="Vector4UI"/> and a $<see cref="uint"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="Vector4UI"/> and a <see cref="uint"/>.</summary>
 		///<param name="a">The <see cref="Vector4UI"/> to multiply.</param>
 		///<param name="b">The <see cref="uint"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>
@@ -567,7 +567,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="uint"/> and a $<see cref="Vector4UI"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="uint"/> and a <see cref="Vector4UI"/>.</summary>
 		///<param name="a">The <see cref="uint"/> to multiply.</param>
 		///<param name="b">The <see cref="Vector4UI"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>

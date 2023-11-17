@@ -11,7 +11,7 @@ namespace Molten
 	///<summary>A <see cref="byte"/> vector comprised of two components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=1)]
     [Serializable]
-	public partial struct Byte2 : IFormattable, IVector<Byte2, byte>, IEquatable<Byte2>
+	public partial struct Byte2 : IFormattable, IUnsignedVector<Byte2, byte>, IEquatable<Byte2>
 	{
 		///<summary>The size of <see cref="Byte2"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Byte2));
@@ -299,7 +299,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="Byte2"/> and a $<see cref="byte"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="Byte2"/> and a <see cref="byte"/>.</summary>
 		///<param name="a">The <see cref="Byte2"/> to add.</param>
 		///<param name="b">The <see cref="byte"/> to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -309,7 +309,7 @@ namespace Molten
 			result.Y = (byte)(a.Y + b);
 		}
 
-		///<summary>Performs a add operation on a $<see cref="Byte2"/> and a $<see cref="byte"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="Byte2"/> and a <see cref="byte"/>.</summary>
 		///<param name="a">The <see cref="Byte2"/> to add.</param>
 		///<param name="b">The <see cref="byte"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -320,7 +320,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="byte"/> and a $<see cref="Byte2"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="byte"/> and a <see cref="Byte2"/>.</summary>
 		///<param name="a">The <see cref="byte"/> to add.</param>
 		///<param name="b">The <see cref="Byte2"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -365,7 +365,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="Byte2"/> and a $<see cref="byte"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="Byte2"/> and a <see cref="byte"/>.</summary>
 		///<param name="a">The <see cref="Byte2"/> to subtract.</param>
 		///<param name="b">The <see cref="byte"/> to subtract.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -375,7 +375,7 @@ namespace Molten
 			result.Y = (byte)(a.Y - b);
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="Byte2"/> and a $<see cref="byte"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="Byte2"/> and a <see cref="byte"/>.</summary>
 		///<param name="a">The <see cref="Byte2"/> to subtract.</param>
 		///<param name="b">The <see cref="byte"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -386,7 +386,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="byte"/> and a $<see cref="Byte2"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="byte"/> and a <see cref="Byte2"/>.</summary>
 		///<param name="a">The <see cref="byte"/> to subtract.</param>
 		///<param name="b">The <see cref="Byte2"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -422,7 +422,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="Byte2"/> and a $<see cref="byte"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="Byte2"/> and a <see cref="byte"/>.</summary>
 		///<param name="a">The <see cref="Byte2"/> to divide.</param>
 		///<param name="b">The <see cref="byte"/> to divide.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -432,7 +432,7 @@ namespace Molten
 			result.Y = (byte)(a.Y / b);
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="Byte2"/> and a $<see cref="byte"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="Byte2"/> and a <see cref="byte"/>.</summary>
 		///<param name="a">The <see cref="Byte2"/> to divide.</param>
 		///<param name="b">The <see cref="byte"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
@@ -443,7 +443,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="byte"/> and a $<see cref="Byte2"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="byte"/> and a <see cref="Byte2"/>.</summary>
 		///<param name="a">The <see cref="byte"/> to divide.</param>
 		///<param name="b">The <see cref="Byte2"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
@@ -478,7 +478,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="Byte2"/> and a $<see cref="byte"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="Byte2"/> and a <see cref="byte"/>.</summary>
 		///<param name="a">The <see cref="Byte2"/> to multiply.</param>
 		///<param name="b">The <see cref="byte"/> to multiply.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -488,7 +488,7 @@ namespace Molten
 			result.Y = (byte)(a.Y * b);
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="Byte2"/> and a $<see cref="byte"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="Byte2"/> and a <see cref="byte"/>.</summary>
 		///<param name="a">The <see cref="Byte2"/> to multiply.</param>
 		///<param name="b">The <see cref="byte"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>
@@ -499,7 +499,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="byte"/> and a $<see cref="Byte2"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="byte"/> and a <see cref="Byte2"/>.</summary>
 		///<param name="a">The <see cref="byte"/> to multiply.</param>
 		///<param name="b">The <see cref="Byte2"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>

@@ -11,7 +11,7 @@ namespace Molten.DoublePrecision
 	///<summary>A <see cref="long"/> vector comprised of four components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=8)]
     [Serializable]
-	public partial struct Vector4L : IFormattable, IVector<Vector4L, long>, IEquatable<Vector4L>
+	public partial struct Vector4L : IFormattable, ISignedVector<Vector4L, long>, IEquatable<Vector4L>
 	{
 		///<summary>The size of <see cref="Vector4L"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector4L));
@@ -234,6 +234,7 @@ namespace Molten.DoublePrecision
         {
             return new long[] { X, Y, Z, W };
         }
+
 		/// <summary>
         /// Reverses the direction of the current <see cref="Vector4L"/>.
         /// </summary>
@@ -361,7 +362,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="Vector4L"/> and a $<see cref="long"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="Vector4L"/> and a <see cref="long"/>.</summary>
 		///<param name="a">The <see cref="Vector4L"/> to add.</param>
 		///<param name="b">The <see cref="long"/> to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -373,7 +374,7 @@ namespace Molten.DoublePrecision
 			result.W = a.W + b;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="Vector4L"/> and a $<see cref="long"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="Vector4L"/> and a <see cref="long"/>.</summary>
 		///<param name="a">The <see cref="Vector4L"/> to add.</param>
 		///<param name="b">The <see cref="long"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -384,7 +385,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="long"/> and a $<see cref="Vector4L"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="long"/> and a <see cref="Vector4L"/>.</summary>
 		///<param name="a">The <see cref="long"/> to add.</param>
 		///<param name="b">The <see cref="Vector4L"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -431,7 +432,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="Vector4L"/> and a $<see cref="long"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="Vector4L"/> and a <see cref="long"/>.</summary>
 		///<param name="a">The <see cref="Vector4L"/> to subtract.</param>
 		///<param name="b">The <see cref="long"/> to subtract.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -443,7 +444,7 @@ namespace Molten.DoublePrecision
 			result.W = a.W - b;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="Vector4L"/> and a $<see cref="long"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="Vector4L"/> and a <see cref="long"/>.</summary>
 		///<param name="a">The <see cref="Vector4L"/> to subtract.</param>
 		///<param name="b">The <see cref="long"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -454,7 +455,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="long"/> and a $<see cref="Vector4L"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="long"/> and a <see cref="Vector4L"/>.</summary>
 		///<param name="a">The <see cref="long"/> to subtract.</param>
 		///<param name="b">The <see cref="Vector4L"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -467,7 +468,7 @@ namespace Molten.DoublePrecision
 
 
         /// <summary>
-        /// Negate/reverse the direction of a <see cref="Vector3D"/>.
+        /// Negate/reverse the direction of a <see cref="Vector4L"/>.
         /// </summary>
         /// <param name="value">The <see cref="Vector4L"/> to reverse.</param>
         /// <param name="result">The output for the reversed <see cref="Vector4L"/>.</param>
@@ -516,7 +517,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="Vector4L"/> and a $<see cref="long"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="Vector4L"/> and a <see cref="long"/>.</summary>
 		///<param name="a">The <see cref="Vector4L"/> to divide.</param>
 		///<param name="b">The <see cref="long"/> to divide.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -528,7 +529,7 @@ namespace Molten.DoublePrecision
 			result.W = a.W / b;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="Vector4L"/> and a $<see cref="long"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="Vector4L"/> and a <see cref="long"/>.</summary>
 		///<param name="a">The <see cref="Vector4L"/> to divide.</param>
 		///<param name="b">The <see cref="long"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
@@ -539,7 +540,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="long"/> and a $<see cref="Vector4L"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="long"/> and a <see cref="Vector4L"/>.</summary>
 		///<param name="a">The <see cref="long"/> to divide.</param>
 		///<param name="b">The <see cref="Vector4L"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
@@ -576,7 +577,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="Vector4L"/> and a $<see cref="long"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="Vector4L"/> and a <see cref="long"/>.</summary>
 		///<param name="a">The <see cref="Vector4L"/> to multiply.</param>
 		///<param name="b">The <see cref="long"/> to multiply.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -588,7 +589,7 @@ namespace Molten.DoublePrecision
 			result.W = a.W * b;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="Vector4L"/> and a $<see cref="long"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="Vector4L"/> and a <see cref="long"/>.</summary>
 		///<param name="a">The <see cref="Vector4L"/> to multiply.</param>
 		///<param name="b">The <see cref="long"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>
@@ -599,7 +600,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="long"/> and a $<see cref="Vector4L"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="long"/> and a <see cref="Vector4L"/>.</summary>
 		///<param name="a">The <see cref="long"/> to multiply.</param>
 		///<param name="b">The <see cref="Vector4L"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>

@@ -11,7 +11,7 @@ namespace Molten.DoublePrecision
 	///<summary>A <see cref="ulong"/> vector comprised of three components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=8)]
     [Serializable]
-	public partial struct Vector3UL : IFormattable, IVector<Vector3UL, ulong>, IEquatable<Vector3UL>
+	public partial struct Vector3UL : IFormattable, IUnsignedVector<Vector3UL, ulong>, IEquatable<Vector3UL>
 	{
 		///<summary>The size of <see cref="Vector3UL"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector3UL));
@@ -325,7 +325,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="Vector3UL"/> and a $<see cref="ulong"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="Vector3UL"/> and a <see cref="ulong"/>.</summary>
 		///<param name="a">The <see cref="Vector3UL"/> to add.</param>
 		///<param name="b">The <see cref="ulong"/> to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -336,7 +336,7 @@ namespace Molten.DoublePrecision
 			result.Z = a.Z + b;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="Vector3UL"/> and a $<see cref="ulong"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="Vector3UL"/> and a <see cref="ulong"/>.</summary>
 		///<param name="a">The <see cref="Vector3UL"/> to add.</param>
 		///<param name="b">The <see cref="ulong"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -347,7 +347,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="ulong"/> and a $<see cref="Vector3UL"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="ulong"/> and a <see cref="Vector3UL"/>.</summary>
 		///<param name="a">The <see cref="ulong"/> to add.</param>
 		///<param name="b">The <see cref="Vector3UL"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -393,7 +393,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="Vector3UL"/> and a $<see cref="ulong"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="Vector3UL"/> and a <see cref="ulong"/>.</summary>
 		///<param name="a">The <see cref="Vector3UL"/> to subtract.</param>
 		///<param name="b">The <see cref="ulong"/> to subtract.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -404,7 +404,7 @@ namespace Molten.DoublePrecision
 			result.Z = a.Z - b;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="Vector3UL"/> and a $<see cref="ulong"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="Vector3UL"/> and a <see cref="ulong"/>.</summary>
 		///<param name="a">The <see cref="Vector3UL"/> to subtract.</param>
 		///<param name="b">The <see cref="ulong"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -415,7 +415,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="ulong"/> and a $<see cref="Vector3UL"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="ulong"/> and a <see cref="Vector3UL"/>.</summary>
 		///<param name="a">The <see cref="ulong"/> to subtract.</param>
 		///<param name="b">The <see cref="Vector3UL"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -452,7 +452,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="Vector3UL"/> and a $<see cref="ulong"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="Vector3UL"/> and a <see cref="ulong"/>.</summary>
 		///<param name="a">The <see cref="Vector3UL"/> to divide.</param>
 		///<param name="b">The <see cref="ulong"/> to divide.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -463,7 +463,7 @@ namespace Molten.DoublePrecision
 			result.Z = a.Z / b;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="Vector3UL"/> and a $<see cref="ulong"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="Vector3UL"/> and a <see cref="ulong"/>.</summary>
 		///<param name="a">The <see cref="Vector3UL"/> to divide.</param>
 		///<param name="b">The <see cref="ulong"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
@@ -474,7 +474,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="ulong"/> and a $<see cref="Vector3UL"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="ulong"/> and a <see cref="Vector3UL"/>.</summary>
 		///<param name="a">The <see cref="ulong"/> to divide.</param>
 		///<param name="b">The <see cref="Vector3UL"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
@@ -510,7 +510,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="Vector3UL"/> and a $<see cref="ulong"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="Vector3UL"/> and a <see cref="ulong"/>.</summary>
 		///<param name="a">The <see cref="Vector3UL"/> to multiply.</param>
 		///<param name="b">The <see cref="ulong"/> to multiply.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -521,7 +521,7 @@ namespace Molten.DoublePrecision
 			result.Z = a.Z * b;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="Vector3UL"/> and a $<see cref="ulong"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="Vector3UL"/> and a <see cref="ulong"/>.</summary>
 		///<param name="a">The <see cref="Vector3UL"/> to multiply.</param>
 		///<param name="b">The <see cref="ulong"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>
@@ -532,7 +532,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="ulong"/> and a $<see cref="Vector3UL"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="ulong"/> and a <see cref="Vector3UL"/>.</summary>
 		///<param name="a">The <see cref="ulong"/> to multiply.</param>
 		///<param name="b">The <see cref="Vector3UL"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>

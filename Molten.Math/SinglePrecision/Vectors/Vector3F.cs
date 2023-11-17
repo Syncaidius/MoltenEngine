@@ -11,7 +11,7 @@ namespace Molten
 	///<summary>A <see cref="float"/> vector comprised of three components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=4)]
     [Serializable]
-	public partial struct Vector3F : IFormattable, IVector<Vector3F, float>, IEquatable<Vector3F>
+	public partial struct Vector3F : IFormattable, ISignedVector<Vector3F, float>, IEquatable<Vector3F>
 	{
 		///<summary>The size of <see cref="Vector3F"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector3F));
@@ -210,6 +210,7 @@ namespace Molten
         {
             return new float[] { X, Y, Z };
         }
+
 		/// <summary>
         /// Reverses the direction of the current <see cref="Vector3F"/>.
         /// </summary>
@@ -333,7 +334,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="Vector3F"/> and a $<see cref="float"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="Vector3F"/> and a <see cref="float"/>.</summary>
 		///<param name="a">The <see cref="Vector3F"/> to add.</param>
 		///<param name="b">The <see cref="float"/> to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -344,7 +345,7 @@ namespace Molten
 			result.Z = a.Z + b;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="Vector3F"/> and a $<see cref="float"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="Vector3F"/> and a <see cref="float"/>.</summary>
 		///<param name="a">The <see cref="Vector3F"/> to add.</param>
 		///<param name="b">The <see cref="float"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -355,7 +356,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="float"/> and a $<see cref="Vector3F"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="float"/> and a <see cref="Vector3F"/>.</summary>
 		///<param name="a">The <see cref="float"/> to add.</param>
 		///<param name="b">The <see cref="Vector3F"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -401,7 +402,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="Vector3F"/> and a $<see cref="float"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="Vector3F"/> and a <see cref="float"/>.</summary>
 		///<param name="a">The <see cref="Vector3F"/> to subtract.</param>
 		///<param name="b">The <see cref="float"/> to subtract.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -412,7 +413,7 @@ namespace Molten
 			result.Z = a.Z - b;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="Vector3F"/> and a $<see cref="float"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="Vector3F"/> and a <see cref="float"/>.</summary>
 		///<param name="a">The <see cref="Vector3F"/> to subtract.</param>
 		///<param name="b">The <see cref="float"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -423,7 +424,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="float"/> and a $<see cref="Vector3F"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="float"/> and a <see cref="Vector3F"/>.</summary>
 		///<param name="a">The <see cref="float"/> to subtract.</param>
 		///<param name="b">The <see cref="Vector3F"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -436,7 +437,7 @@ namespace Molten
 
 
         /// <summary>
-        /// Negate/reverse the direction of a <see cref="Vector3D"/>.
+        /// Negate/reverse the direction of a <see cref="Vector3F"/>.
         /// </summary>
         /// <param name="value">The <see cref="Vector3F"/> to reverse.</param>
         /// <param name="result">The output for the reversed <see cref="Vector3F"/>.</param>
@@ -483,7 +484,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="Vector3F"/> and a $<see cref="float"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="Vector3F"/> and a <see cref="float"/>.</summary>
 		///<param name="a">The <see cref="Vector3F"/> to divide.</param>
 		///<param name="b">The <see cref="float"/> to divide.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -494,7 +495,7 @@ namespace Molten
 			result.Z = a.Z / b;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="Vector3F"/> and a $<see cref="float"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="Vector3F"/> and a <see cref="float"/>.</summary>
 		///<param name="a">The <see cref="Vector3F"/> to divide.</param>
 		///<param name="b">The <see cref="float"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
@@ -505,7 +506,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="float"/> and a $<see cref="Vector3F"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="float"/> and a <see cref="Vector3F"/>.</summary>
 		///<param name="a">The <see cref="float"/> to divide.</param>
 		///<param name="b">The <see cref="Vector3F"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
@@ -541,7 +542,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="Vector3F"/> and a $<see cref="float"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="Vector3F"/> and a <see cref="float"/>.</summary>
 		///<param name="a">The <see cref="Vector3F"/> to multiply.</param>
 		///<param name="b">The <see cref="float"/> to multiply.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -552,7 +553,7 @@ namespace Molten
 			result.Z = a.Z * b;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="Vector3F"/> and a $<see cref="float"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="Vector3F"/> and a <see cref="float"/>.</summary>
 		///<param name="a">The <see cref="Vector3F"/> to multiply.</param>
 		///<param name="b">The <see cref="float"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>
@@ -563,7 +564,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="float"/> and a $<see cref="Vector3F"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="float"/> and a <see cref="Vector3F"/>.</summary>
 		///<param name="a">The <see cref="float"/> to multiply.</param>
 		///<param name="b">The <see cref="Vector3F"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>

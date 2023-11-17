@@ -11,7 +11,7 @@ namespace Molten
 	///<summary>A <see cref="sbyte"/> vector comprised of two components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=1)]
     [Serializable]
-	public partial struct SByte2 : IFormattable, IVector<SByte2, sbyte>, IEquatable<SByte2>
+	public partial struct SByte2 : IFormattable, ISignedVector<SByte2, sbyte>, IEquatable<SByte2>
 	{
 		///<summary>The size of <see cref="SByte2"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(SByte2));
@@ -188,6 +188,7 @@ namespace Molten
         {
             return new sbyte[] { X, Y };
         }
+
 		/// <summary>
         /// Reverses the direction of the current <see cref="SByte2"/>.
         /// </summary>
@@ -307,7 +308,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="SByte2"/> and a $<see cref="sbyte"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="SByte2"/> and a <see cref="sbyte"/>.</summary>
 		///<param name="a">The <see cref="SByte2"/> to add.</param>
 		///<param name="b">The <see cref="sbyte"/> to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -317,7 +318,7 @@ namespace Molten
 			result.Y = (sbyte)(a.Y + b);
 		}
 
-		///<summary>Performs a add operation on a $<see cref="SByte2"/> and a $<see cref="sbyte"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="SByte2"/> and a <see cref="sbyte"/>.</summary>
 		///<param name="a">The <see cref="SByte2"/> to add.</param>
 		///<param name="b">The <see cref="sbyte"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -328,7 +329,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="sbyte"/> and a $<see cref="SByte2"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="sbyte"/> and a <see cref="SByte2"/>.</summary>
 		///<param name="a">The <see cref="sbyte"/> to add.</param>
 		///<param name="b">The <see cref="SByte2"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -373,7 +374,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="SByte2"/> and a $<see cref="sbyte"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="SByte2"/> and a <see cref="sbyte"/>.</summary>
 		///<param name="a">The <see cref="SByte2"/> to subtract.</param>
 		///<param name="b">The <see cref="sbyte"/> to subtract.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -383,7 +384,7 @@ namespace Molten
 			result.Y = (sbyte)(a.Y - b);
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="SByte2"/> and a $<see cref="sbyte"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="SByte2"/> and a <see cref="sbyte"/>.</summary>
 		///<param name="a">The <see cref="SByte2"/> to subtract.</param>
 		///<param name="b">The <see cref="sbyte"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -394,7 +395,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="sbyte"/> and a $<see cref="SByte2"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="sbyte"/> and a <see cref="SByte2"/>.</summary>
 		///<param name="a">The <see cref="sbyte"/> to subtract.</param>
 		///<param name="b">The <see cref="SByte2"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -407,7 +408,7 @@ namespace Molten
 
 
         /// <summary>
-        /// Negate/reverse the direction of a <see cref="Vector3D"/>.
+        /// Negate/reverse the direction of a <see cref="SByte2"/>.
         /// </summary>
         /// <param name="value">The <see cref="SByte2"/> to reverse.</param>
         /// <param name="result">The output for the reversed <see cref="SByte2"/>.</param>
@@ -452,7 +453,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="SByte2"/> and a $<see cref="sbyte"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="SByte2"/> and a <see cref="sbyte"/>.</summary>
 		///<param name="a">The <see cref="SByte2"/> to divide.</param>
 		///<param name="b">The <see cref="sbyte"/> to divide.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -462,7 +463,7 @@ namespace Molten
 			result.Y = (sbyte)(a.Y / b);
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="SByte2"/> and a $<see cref="sbyte"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="SByte2"/> and a <see cref="sbyte"/>.</summary>
 		///<param name="a">The <see cref="SByte2"/> to divide.</param>
 		///<param name="b">The <see cref="sbyte"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
@@ -473,7 +474,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="sbyte"/> and a $<see cref="SByte2"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="sbyte"/> and a <see cref="SByte2"/>.</summary>
 		///<param name="a">The <see cref="sbyte"/> to divide.</param>
 		///<param name="b">The <see cref="SByte2"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
@@ -508,7 +509,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="SByte2"/> and a $<see cref="sbyte"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="SByte2"/> and a <see cref="sbyte"/>.</summary>
 		///<param name="a">The <see cref="SByte2"/> to multiply.</param>
 		///<param name="b">The <see cref="sbyte"/> to multiply.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -518,7 +519,7 @@ namespace Molten
 			result.Y = (sbyte)(a.Y * b);
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="SByte2"/> and a $<see cref="sbyte"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="SByte2"/> and a <see cref="sbyte"/>.</summary>
 		///<param name="a">The <see cref="SByte2"/> to multiply.</param>
 		///<param name="b">The <see cref="sbyte"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>
@@ -529,7 +530,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a multiply operation on a $<see cref="sbyte"/> and a $<see cref="SByte2"/>.</summary>
+		///<summary>Performs a multiply operation on a <see cref="sbyte"/> and a <see cref="SByte2"/>.</summary>
 		///<param name="a">The <see cref="sbyte"/> to multiply.</param>
 		///<param name="b">The <see cref="SByte2"/> to multiply.</param>
 		///<returns>The result of the operation.</returns>

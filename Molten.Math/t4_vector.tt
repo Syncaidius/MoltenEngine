@@ -11,6 +11,7 @@ TypeGenerator gen = new TypeGenerator(this.GenerationEnvironment, this.Host, "de
 
 gen.Generate(null, (d, def) =>
 {
+    string vectorInterface = d.DT.IsUnsigned ? "IUnsignedVector" : "ISignedVector";
 #>
 using System;
 using System.Globalization;
@@ -25,7 +26,7 @@ namespace Molten<#=d.SubNamespace#>
 	///<summary>A <#=gen.See(d.DT.Name)#> vector comprised of <#=def.SizeNames[d.Size]#> components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=<#=d.DT.Pack#>)]
     [Serializable]
-	public partial struct <#=d.Name#> : IFormattable, IVector<<#=d.Name#>, <#=d.DT#>>, IEquatable<<#=d.Name#>>
+	public partial struct <#=d.Name#> : IFormattable, <#=vectorInterface#><<#=d.Name#>, <#=d.DT#>>, IEquatable<<#=d.Name#>>
 	{
 		///<summary>The size of <#=gen.See()#>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(<#=d.Name#>));
@@ -166,6 +167,7 @@ namespace Molten<#=d.SubNamespace#>
     if(!d.DT.IsUnsigned)
     {
 #>
+
 		/// <summary>
         /// Reverses the direction of the current <#=gen.See()#>.
         /// </summary>
@@ -300,7 +302,7 @@ namespace Molten<#=d.SubNamespace#>
         {
 #>
         /// <summary>
-        /// Negate/reverse the direction of a <see cref="Vector3D"/>.
+        /// Negate/reverse the direction of a <#=gen.See()#>.
         /// </summary>
         /// <param name="value">The <#=gen.See()#> to reverse.</param>
         /// <param name="result">The output for the reversed <#=gen.See()#>.</param>

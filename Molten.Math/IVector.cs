@@ -1,13 +1,13 @@
 ﻿using System.Numerics;
 
 namespace Molten
-{    
+{
     /// <summary>
     /// Represents a vector of any size.
     /// </summary>
     /// <typeparam name="N">The number type of each vector component.</typeparam>
     public interface IVector<N> : IFormattable
-        where N : INumber<N>
+        where N : struct, INumber<N>
     {
         /// <summary>Clamps the component values to within the given range.</summary>
         /// <param name="min">The minimum value of each component.</param>
@@ -46,7 +46,7 @@ namespace Molten
     /// <typeparam name="V">The vector type.</typeparam>
     /// <typeparam name="N">The number type of each vector component.</typeparam>
     public interface IVector<V, N> : IVector<N>, IEquatable<V>
-        where N : INumber<N>
+        where N : struct, INumber<N>
         where V : IVector<V, N>
     {
         #region Methods
@@ -172,8 +172,126 @@ namespace Molten
         static abstract V Reflect(ref V vector, ref V normal);
         #endregion
 
-        #region Operators
+        #region Operators - Equality
+        static abstract bool operator ==(V left, V right);
+
+        static abstract bool operator !=(V left, V right);
+        #endregion
+
+        #region Operators - Addition
+        ///<summary>Performs a add operation on two <see cref="IVector{V, N}"/>.</summary>
+        ///<param name="a">The first <see cref="IVector{V, N}"/> to add.</param>
+        ///<param name="b">The second <see cref="IVector{V, N}"/> to add.</param>
+        ///<param name="result">Output for the result of the operation.</param>
+        static abstract void Add(ref V a, ref V b, out V result);
+
+        ///<summary>Performs a add operation on a <see cref="IVector{V, N}"/> and a <typeparamref name="N"/>.</summary>
+        ///<param name="a">The <see cref="IVector{V, N}"/> to add.</param>
+        ///<param name="b">The <typeparamref name="N"/> to add.</param>
+        ///<param name="result">Output for the result of the operation.</param>
+        static abstract void Add(ref V a, N b, out V result);
+
+        static abstract V operator +(V a, V b);
+
+        static abstract V operator +(V a, N b);
+
+        static abstract V operator +(N a, V b);
+
+        static abstract V operator +(V value);
 
         #endregion
+
+        #region Operators - Subtraction
+        ///<summary>Performs a subtract operation on two <see cref="IVector{V, N}"/>.</summary>
+        ///<param name="a">The first <see cref="IVector{V, N}"/> to subtract.</param>
+        ///<param name="b">The second <see cref="IVector{V, N}"/> to subtract.</param>
+        ///<param name="result">Output for the result of the operation.</param>
+        static abstract void Subtract(ref V a, ref V b, out V result);
+
+        ///<summary>Performs a subtract operation on a <see cref="IVector{V, N}"/> and a <typeparamref name="N"/>.</summary>
+        ///<param name="a">The <see cref="IVector{V, N}"/> to subtract.</param>
+        ///<param name="b">The <typeparamref name="N"/> to subtract.</param>
+        ///<param name="result">Output for the result of the operation.</param>
+        static abstract void Subtract(ref V a, N b, out V result);
+
+        static abstract V operator -(V a, V b);
+
+        static abstract V operator -(V a, N b);
+
+        static abstract V operator -(N a, V b);
+
+        #endregion
+
+        #region Operators - Multiply
+        ///<summary>Performs a multiply operation on two <see cref="IVector{V, N}"/>.</summary>
+        ///<param name="a">The first <see cref="IVector{V, N}"/> to multiply.</param>
+        ///<param name="b">The second <see cref="IVector{V, N}"/> to multiply.</param>
+        ///<param name="result">Output for the result of the operation.</param>
+        static abstract void Multiply(ref V a, ref V b, out V result);
+
+        ///<summary>Performs a multiply operation on a <see cref="IVector{V, N}"/> and a <typeparamref name="N"/>.</summary>
+        ///<param name="a">The <see cref="IVector{V, N}"/> to multiply.</param>
+        ///<param name="b">The <typeparamref name="N"/> to multiply.</param>
+        ///<param name="result">Output for the result of the operation.</param>
+        static abstract void Multiply(ref V a, N b, out V result);
+
+        static abstract V operator *(V a, V b);
+
+        static abstract V operator *(V a, N b);
+
+        static abstract V operator *(N a, V b);
+
+        #endregion
+
+        #region Operators - Division
+        ///<summary>Performs a divide operation on two <see cref="IVector{V, N}"/>.</summary>
+		///<param name="a">The first <see cref="IVector{V, N}"/> to divide.</param>
+		///<param name="b">The <see cref="IVector{V, N}"/> divisor.</param>
+		///<param name="result">Output for the result of the operation.</param>
+        static abstract void Divide(ref V a, ref V b, out V result);
+
+        ///<summary>Performs a divide operation on a <see cref="IVector{V, N}"/> and a <typeparamref name="N"/>.</summary>
+		///<param name="a">The first <see cref="IVector{V, N}"/> to divide.</param>
+		///<param name="b">The <typeparamref name="N"/> divisor.</param>
+		///<param name="result">Output for the result of the operation.</param>
+        static abstract void Divide(ref V a, N b, out V result);
+
+        ///<summary>Performs a divide operation on two <see cref="IVector{V, N}"/>s.</summary>
+		///<param name="a">The <see cref="IVector{V, N}"/> to divide.</param>
+		///<param name="b">The <see cref="IVector{V, N}"/> divisor.</param>
+        static abstract V operator /(V a, V b);
+
+        ///<summary>Performs a divide operation on a <see cref="IVector{V, N}"/> and a <typeparamref name="N"/>.</summary>
+		///<param name="a">The <see cref="IVector{V, N}"/> to divide.</param>
+		///<param name="b">The <typeparamref name="N"/> to divide.</param>
+		///<returns>The result of the operation.</returns>
+        static abstract V operator /(V a, N b);
+
+        ///<summary>Performs a divide operation on a <typeparamref name="N"/> and a $<see cref="IVector{V, N}"/>.</summary>
+        ///<param name="a">The <typeparamref name="N"/> to divide.</param>
+        ///<param name="b">The <see cref="IVector{V, N}"/> to divide.</param>
+        ///<returns>The result of the operation.</returns>
+        static abstract V operator /(N a, V b);
+
+        #endregion
+    }
+
+    public interface IUnsignedVector<V, N> : IVector<N>
+        where N : struct, INumber<N>, IUnsignedNumber<N>
+        where V : IUnsignedVector<V, N>
+    {
+    }
+
+    public interface ISignedVector<V, N> : IVector<N>
+    where N : struct, INumber<N>, ISignedNumber<N>
+    where V : ISignedVector<V, N>
+    {
+        /// <summary>
+        /// Reverses the direction of the current <see cref="ISignedVector{V, N}"/>.
+        /// </summary>
+        /// <returns>A <see cref="ISignedVector{V, N}"/> facing the opposite direction.</returns>
+        V Negate();
+
+        static abstract V operator -(V value);
     }
 }

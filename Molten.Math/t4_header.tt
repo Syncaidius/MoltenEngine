@@ -527,7 +527,7 @@ public class TypeGenerator
         {
             first = See();
             second = See(otherName);
-            opDesc = $"a ${See()} and a ${See(otherName)}";
+            opDesc = $"a {See()} and a {See(otherName)}";
             if(otherFields == null || otherFields.Length == 0)
                 otherByRef = "";
         }
@@ -566,7 +566,7 @@ public class TypeGenerator
         // Generate inverted version of the above operator.
         if(otherName != _curDef.Name && (otherFields == null || otherFields.Length == 0))
         {
-            opDesc = $"a ${See(otherName)} and a ${See()}";
+            opDesc = $"a {See(otherName)} and a {See()}";
 
             Out(indent, $"///<summary>Performs a {name} operation on {opDesc}.</summary>");
             Out(indent, $"///<param name=\"a\">The {second} to {name}.</param>");
