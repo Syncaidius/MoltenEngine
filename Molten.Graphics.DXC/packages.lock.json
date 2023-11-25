@@ -4,11 +4,11 @@
     "net8.0": {
       "Silk.NET.Direct3D.Compilers": {
         "type": "Direct",
-        "requested": "[2.18.0, )",
-        "resolved": "2.18.0",
-        "contentHash": "3QwhMFjQdcni7HElgbcC/JDOj8qFUNyI9ObAQPMR7mWESYOhJ20tg8/ttIw8fX50c59ghVL+F4GIw616/xc/3A==",
+        "requested": "[2.19.0, )",
+        "resolved": "2.19.0",
+        "contentHash": "udNlu+NZgDm3XRWd+ddfmkdJFwO02RPipdUpUOVX9sk9OLA6IFdssstE73v1r2pbSqPZaJs6IDHKML+b35yo6A==",
         "dependencies": {
-          "Silk.NET.Core": "2.18.0"
+          "Silk.NET.Core": "2.19.0"
         }
       },
       "Magick.NET-Q8-AnyCPU": {

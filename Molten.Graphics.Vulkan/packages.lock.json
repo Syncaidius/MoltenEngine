@@ -4,41 +4,41 @@
     "net8.0": {
       "Silk.NET.GLFW": {
         "type": "Direct",
-        "requested": "[2.18.0, )",
-        "resolved": "2.18.0",
-        "contentHash": "pP1bH51AUEeR2ZR58GB61A6fqEqpsoAzu2rp2wWC9Gz9y7h+jjdOgQb9rxYHFS8JFmAq3wSKiUEDXI6Y/aW/gg==",
+        "requested": "[2.19.0, )",
+        "resolved": "2.19.0",
+        "contentHash": "7lOsEuW9FI2SthE923/NS8w7PNP6u8X4i/iI7eZLbzcXnZb7pCYNn7tyjm+0NTTzKvWDYT8r7aiIff/MIz7XwA==",
         "dependencies": {
-          "Silk.NET.Core": "2.18.0",
-          "Ultz.Native.GLFW": "3.3.9.1"
+          "Silk.NET.Core": "2.19.0",
+          "Ultz.Native.GLFW": "3.3.9.2"
         }
       },
       "Silk.NET.Vulkan": {
         "type": "Direct",
-        "requested": "[2.18.0, )",
-        "resolved": "2.18.0",
-        "contentHash": "I4tkWiN4JJo/7/4A0lsSruDJJ6Yo6nFUvs2BBFQmbG01UtEXuboQPRlFQKceYGXYmvXpCqHB0E117ZA/hdx5iA==",
+        "requested": "[2.19.0, )",
+        "resolved": "2.19.0",
+        "contentHash": "VO4voZpIHPTlHTP0gLHm1MLA/Zpr6Yq+NuhEC0TLs6C1WqwwrcZD9W0Zso6NfQmzJTut6VoJEF9XJYoCJ7FwsA==",
         "dependencies": {
-          "Silk.NET.Core": "2.18.0"
+          "Silk.NET.Core": "2.19.0"
         }
       },
       "Silk.NET.Vulkan.Extensions.EXT": {
         "type": "Direct",
-        "requested": "[2.18.0, )",
-        "resolved": "2.18.0",
-        "contentHash": "cbTwPFNhrvI49MPFRx34oE43BP3y3DXy0crsAyz49P6wyQrlj19202MywGifXf7sClv/ndBRX4cwAnUD0FrldA==",
+        "requested": "[2.19.0, )",
+        "resolved": "2.19.0",
+        "contentHash": "X1ByH9JeTbwC8RJlrD5FReW89rdZoDYP5dgGLpVRShJDjP8wP2/4R1oCvTZZIn+8Q+/CkwN0h1IvT9zPrt9F3Q==",
         "dependencies": {
-          "Silk.NET.Core": "2.18.0",
-          "Silk.NET.Vulkan": "2.18.0"
+          "Silk.NET.Core": "2.19.0",
+          "Silk.NET.Vulkan": "2.19.0"
         }
       },
       "Silk.NET.Vulkan.Extensions.KHR": {
         "type": "Direct",
-        "requested": "[2.18.0, )",
-        "resolved": "2.18.0",
-        "contentHash": "FisTUYXqEr94O1BVlo8xMAxsLuR9uWO15r0ZRdsfkJygJVThTd79Jrn9za2nXFKsVrw5SQZFTYgPXIzM/ugc1w==",
+        "requested": "[2.19.0, )",
+        "resolved": "2.19.0",
+        "contentHash": "/sy/SrWtZBTx0WTBROmuCi+Zsla3k4IXiytbZvtjOa7C4FF7WaD22L5U6TQ4JcANTI8NMiu0XfljdgXwysY0Sw==",
         "dependencies": {
-          "Silk.NET.Core": "2.18.0",
-          "Silk.NET.Vulkan": "2.18.0"
+          "Silk.NET.Core": "2.19.0",
+          "Silk.NET.Vulkan": "2.19.0"
         }
       },
       "SpirvReflector": {
@@ -102,10 +102,10 @@
       },
       "Silk.NET.Direct3D.Compilers": {
         "type": "Transitive",
-        "resolved": "2.18.0",
-        "contentHash": "3QwhMFjQdcni7HElgbcC/JDOj8qFUNyI9ObAQPMR7mWESYOhJ20tg8/ttIw8fX50c59ghVL+F4GIw616/xc/3A==",
+        "resolved": "2.19.0",
+        "contentHash": "udNlu+NZgDm3XRWd+ddfmkdJFwO02RPipdUpUOVX9sk9OLA6IFdssstE73v1r2pbSqPZaJs6IDHKML+b35yo6A==",
         "dependencies": {
-          "Silk.NET.Core": "2.18.0"
+          "Silk.NET.Core": "2.19.0"
         }
       },
       "System.Memory": {
@@ -138,8 +138,8 @@
       },
       "Ultz.Native.GLFW": {
         "type": "Transitive",
-        "resolved": "3.3.9.1",
-        "contentHash": "wkqVEmYbIsp34ApLXu0+tqsypsB7jvsy4kng8nlcnGnpwpt67yKwg87X76tQpzI4XJBCCLDnE9yCM80LiGKmcg=="
+        "resolved": "3.3.9.2",
+        "contentHash": "4b7gJEfMZcw207CZkFV3VUBagmHlX9jYVkk1mrzacnAOgr90JoZSILTEFPc5lz5LT7yFKxQnsnqqIsFnVO7k/Q=="
       },
       "molten.engine": {
         "type": "Project",
@@ -166,7 +166,7 @@
           "Molten.Engine": "[0.8.0, )",
           "Molten.Math": "[0.8.0, )",
           "Molten.Utility": "[0.8.0, )",
-          "Silk.NET.Direct3D.Compilers": "[2.18.0, )"
+          "Silk.NET.Direct3D.Compilers": "[2.19.0, )"
         }
       },
       "molten.io": {
