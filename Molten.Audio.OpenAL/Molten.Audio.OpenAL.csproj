@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net7.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net8.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
@@ -34,9 +34,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Silk.NET.OpenAL" Version="2.18.0" />
-    <PackageReference Include="Silk.NET.OpenAL.Extensions.Enumeration" Version="2.18.0" />
-    <PackageReference Include="Silk.NET.OpenAL.Extensions.EXT" Version="2.18.0" />
+    <PackageReference Include="Silk.NET.OpenAL" Version="2.19.0" />
+    <PackageReference Include="Silk.NET.OpenAL.Extensions.Enumeration" Version="2.19.0" />
+    <PackageReference Include="Silk.NET.OpenAL.Extensions.EXT" Version="2.19.0" />
     <PackageReference Include="Silk.NET.OpenAL.Extensions.Soft" Version="2.19.0" />
     <PackageReference Include="Silk.NET.OpenAL.Soft.Native" Version="1.21.1.2" />
   </ItemGroup>
