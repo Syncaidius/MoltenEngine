@@ -35,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Silk.NET.Core" Version="2.18.0" />
+    <PackageReference Include="Silk.NET.Core" Version="2.19.0" />
   </ItemGroup>
 
 </Project>
