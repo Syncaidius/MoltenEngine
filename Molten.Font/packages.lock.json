@@ -65,8 +65,8 @@
       "molten.io": {
         "type": "Project",
         "dependencies": {
-          "Molten.Math": "[0.7.0, )",
-          "Molten.Utility": "[0.7.0, )"
+          "Molten.Math": "[0.8.0, )",
+          "Molten.Utility": "[0.8.0, )"
         }
       },
       "molten.math": {
@@ -143,8 +143,8 @@
       "molten.io": {
         "type": "Project",
         "dependencies": {
-          "Molten.Math": "[0.7.0, )",
-          "Molten.Utility": "[0.7.0, )"
+          "Molten.Math": "[0.8.0, )",
+          "Molten.Utility": "[0.8.0, )"
         }
       },
       "molten.math": {

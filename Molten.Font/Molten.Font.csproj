@@ -19,7 +19,7 @@
     <PackageTags>game engine;cross platform;windows;android;font</PackageTags>
     <PackageReleaseNotes>Initial release of Molten Engine.</PackageReleaseNotes>
     <PackageIcon>logo_128.png</PackageIcon>
-    <Version>0.7.0</Version>
+    <Version>0.8.0</Version>
     <Authors>James Yarwood</Authors>
   </PropertyGroup>
 	
