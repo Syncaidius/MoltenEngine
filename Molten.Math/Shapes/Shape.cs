@@ -199,14 +199,16 @@ namespace Molten.Shapes
             Vector2D dOffset = (Vector2D)offset;
             Vector2D dScale = (Vector2D)scale;
 
-            foreach (Contour contour in Contours)
+            Contour contour;
+            for (int i = 0; i < Contours.Count; i++)
             {
+                contour = Contours[i];
                 foreach (Edge e in contour.Edges)
                 {
-                    for (int i = 0; i < e.P.Length; i++)
+                    for (int j = 0; j < e.P.Length; j++)
                     {
-                        e.P[i] *= dScale;
-                        e.P[i] += dOffset;
+                        e.P[j] *= dScale;
+                        e.P[j] += dOffset;
                     }
                 }
             }
@@ -214,11 +216,11 @@ namespace Molten.Shapes
 
         public bool Contains(Shape other)
         {
-            foreach(Contour contour in Contours)
+            for(int i = 0; i < Contours.Count; i++)
             {
-                foreach(Contour otherContour in other.Contours)
+                for(int j = 0; j < other.Contours.Count; j++)
                 {
-                    if (contour.Contains(otherContour) != ContainmentType.Contains)
+                    if (Contours[i].Contains(other.Contours[j]) != ContainmentType.Contains)
                         return false;
                 }
             }
@@ -234,8 +236,10 @@ namespace Molten.Shapes
         public bool Contains(Vector2D point)
         {
             // Check hole contours first.
-            foreach (Contour c in Contours)
+            Contour c;
+            for (int i = 0; i < Contours.Count; i++)
             {
+                c = Contours[i];
                 if (c.GetWinding() == -1)
                 {
                     if (c.Contains(point))
@@ -244,8 +248,9 @@ namespace Molten.Shapes
             }
 
             // Now check main contour(s)
-            foreach (Contour c in Contours)
+            for (int i = 0; i < Contours.Count; i++)
             {
+                c = Contours[i];
                 if (c.GetWinding() > -1)
                 {
                     if (c.Contains(point))

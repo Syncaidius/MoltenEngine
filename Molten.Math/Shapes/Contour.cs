@@ -87,10 +87,10 @@ namespace Molten.Shapes
             }
             else
             {
-                Vector2D prev = _edges.Last().Point(0);
-                foreach (Edge edge in Edges)
+                Vector2D prev = _edges.Last().Point(0); 
+                for(int i = 0; i < _edges.Count; i++)
                 {
-                    Vector2D cur = edge.Point(0);
+                    Vector2D cur = _edges[i].Point(0);
                     total += Shoelace(prev, cur);
                     prev = cur;
                 }
