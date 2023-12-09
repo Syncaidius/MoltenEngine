@@ -14,16 +14,16 @@
       },
       "Magick.NET-Q8-AnyCPU": {
         "type": "Transitive",
-        "resolved": "13.4.0",
-        "contentHash": "iOHL6liGt2m5XAuDOL/e43FIibB6wU2Wj17N2MocsEIfIROFsKfGbTGEGINGLSgiG7cR3kCar1w3M6cjzHTlIg==",
+        "resolved": "13.5.0",
+        "contentHash": "sligcmLf6Re91Z8XO15HbTADc9GZbZmJK+0jpm8lK+x3IVb2nIAUy4mmBzstADeIIkN5FShC7V/Ij4mygogxSg==",
         "dependencies": {
-          "Magick.NET.Core": "13.4.0"
+          "Magick.NET.Core": "13.5.0"
         }
       },
       "Magick.NET.Core": {
         "type": "Transitive",
-        "resolved": "13.4.0",
-        "contentHash": "Z1om0NiXREKUUI2BYKM86RSgMpBJFuc+OCI25fPtF/evpWsWm83kpACMODuNs60Bv/I4sn8VCGqezQA2/azWKA=="
+        "resolved": "13.5.0",
+        "contentHash": "/jKqfhbLvaVqxsV+DkOA5TjfrbO/Q3LdN3OL/xuewdC2EVBN4pTnAekAetn3CsbHOolfvc1xQLxY0MUN3nfwsg=="
       },
       "Microsoft.CSharp": {
         "type": "Transitive",
@@ -119,20 +119,20 @@
       "molten.engine": {
         "type": "Project",
         "dependencies": {
-          "Magick.NET-Q8-AnyCPU": "[13.4.0, )",
-          "Molten.Font": "[0.8.0, )",
-          "Molten.IO": "[0.8.0, )",
-          "Molten.Math": "[0.8.0, )",
-          "Molten.Utility": "[0.8.0, )",
+          "Magick.NET-Q8-AnyCPU": "[13.5.0, )",
+          "Molten.Font": "[0.7.1, )",
+          "Molten.IO": "[0.7.1, )",
+          "Molten.Math": "[0.7.1, )",
+          "Molten.Utility": "[0.7.1, )",
           "Newtonsoft.Json": "[13.0.3, )"
         }
       },
       "molten.engine.windows": {
         "type": "Project",
         "dependencies": {
-          "Molten.Engine": "[0.8.0, )",
-          "Molten.Math": "[0.8.0, )",
-          "Molten.Utility": "[0.8.0, )",
+          "Molten.Engine": "[0.7.1, )",
+          "Molten.Math": "[0.7.1, )",
+          "Molten.Utility": "[0.7.1, )",
           "Silk.NET.XInput": "[2.19.0, )",
           "System.Management": "[8.0.0, )"
         }
@@ -140,16 +140,16 @@
       "molten.font": {
         "type": "Project",
         "dependencies": {
-          "Molten.IO": "[0.8.0, )",
-          "Molten.Math": "[0.8.0, )",
-          "Molten.Utility": "[0.8.0, )"
+          "Molten.IO": "[0.7.1, )",
+          "Molten.Math": "[0.7.1, )",
+          "Molten.Utility": "[0.7.1, )"
         }
       },
       "molten.io": {
         "type": "Project",
         "dependencies": {
-          "Molten.Math": "[0.8.0, )",
-          "Molten.Utility": "[0.8.0, )"
+          "Molten.Math": "[0.7.1, )",
+          "Molten.Utility": "[0.7.1, )"
         }
       },
       "molten.math": {
