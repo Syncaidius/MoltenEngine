@@ -59,7 +59,7 @@ namespace Molten.Shapes
             return edge;
         }
 
-        private double Shoelace(Vector2D a, Vector2D b)
+        private double Shoelace(ref readonly Vector2D a, ref readonly Vector2D b)
         {
             return (b.X - a.X) * (a.Y + b.Y);
         }
@@ -73,17 +73,17 @@ namespace Molten.Shapes
             if (_edges.Count == 1)
             {
                 Vector2D a = _edges[0].Point(0), b = _edges[0].Point(1 / 3.0), c = _edges[0].Point(2 / 3.0);
-                total += Shoelace(a, b);
-                total += Shoelace(b, c);
-                total += Shoelace(c, a);
+                total += Shoelace(ref a, ref b);
+                total += Shoelace(ref b, ref c);
+                total += Shoelace(ref c, ref a);
             }
             else if (_edges.Count == 2)
             {
                 Vector2D a = _edges[0].Point(0), b = _edges[0].Point(.5), c = _edges[1].Point(0), d = _edges[1].Point(.5);
-                total += Shoelace(a, b);
-                total += Shoelace(b, c);
-                total += Shoelace(c, d);
-                total += Shoelace(d, a);
+                total += Shoelace(ref a, ref b);
+                total += Shoelace(ref b, ref c);
+                total += Shoelace(ref c, ref d);
+                total += Shoelace(ref d, ref a);
             }
             else
             {
@@ -91,7 +91,7 @@ namespace Molten.Shapes
                 for(int i = 0; i < _edges.Count; i++)
                 {
                     Vector2D cur = _edges[i].Point(0);
-                    total += Shoelace(prev, cur);
+                    total += Shoelace(ref prev, ref cur);
                     prev = cur;
                 }
             }

@@ -62,9 +62,7 @@ namespace Molten
             }
 
             comByType.Add(component);
-
             Add(component);
-
             return component;
         }
 
@@ -72,8 +70,6 @@ namespace Molten
         {
             if (component.Object != Parent)
                 throw new Exception("Failed to remove component; It is owned by a different object.");
-
-            
 
             if (Parent.Layer != null)
                 component.UnregisterFromLayer();

@@ -192,7 +192,7 @@ namespace Molten
             for(int i = 0; i < Layers.Count; i++)
             {
                 layer = Layers[i];
-                for(int o = 0; i < layer.Objects.Count; o++)
+                for(int o = 0; o < layer.Objects.Count; o++)
                 {
                     obj = layer.Objects[o];
                     if (obj.IsEnabled)

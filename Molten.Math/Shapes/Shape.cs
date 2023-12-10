@@ -150,8 +150,8 @@ namespace Molten.Shapes
         public int GetEdgeCount()
         {
             int total = 0;
-            foreach (Contour contour in Contours)
-                total += contour.Edges.Count;
+            for(int i = 0; i < Contours.Count; i++)
+                total += Contours[i].Edges.Count;
 
             return total;
         }
@@ -164,13 +164,17 @@ namespace Molten.Shapes
         public void Scale(Vector2F scale)
         {
             Vector2D dScale = (Vector2D)scale;
+            Contour contour;
+            Edge edge;
 
-            foreach (Contour contour in Contours)
+            for(int i = 0; i < Contours.Count; i++)
             {
-                foreach (Edge e in contour.Edges)
+                contour = Contours[i];
+                for(int j = 0; j < contour.Edges.Count; j++)
                 {
-                    for (int i = 0; i < e.P.Length; i++)
-                        e.P[i] *= dScale;
+                    edge = contour.Edges[j];
+                    for (int p = 0; p < edge.P.Length; p++)
+                        edge.P[p] *= dScale;
                 }
             }
         }
@@ -178,13 +182,17 @@ namespace Molten.Shapes
         public void Offset(Vector2F offset)
         {
             Vector2D dOffset = (Vector2D)offset;
+            Contour contour;
+            Edge edge;
 
-            foreach (Contour contour in Contours)
+            for (int i = 0; i < Contours.Count; i++)
             {
-                foreach (Edge e in contour.Edges)
+                contour = Contours[i];
+                for (int j = 0; j < contour.Edges.Count; j++)
                 {
-                    for (int i = 0; i < e.P.Length; i++)
-                        e.P[i] += dOffset;
+                    edge = contour.Edges[j];
+                    for (int p = 0; p < edge.P.Length; p++)
+                        edge.P[p] += dOffset;
                 }
             }
         }
@@ -200,15 +208,17 @@ namespace Molten.Shapes
             Vector2D dScale = (Vector2D)scale;
 
             Contour contour;
+            Edge edge;
             for (int i = 0; i < Contours.Count; i++)
             {
                 contour = Contours[i];
-                foreach (Edge e in contour.Edges)
+                for(int e = 0; e < contour.Edges.Count; e++)
                 {
-                    for (int j = 0; j < e.P.Length; j++)
+                    edge = contour.Edges[e];
+                    for (int p = 0; p < edge.P.Length; p++)
                     {
-                        e.P[j] *= dScale;
-                        e.P[j] += dOffset;
+                        edge.P[p] *= dScale;
+                        edge.P[p] += dOffset;
                     }
                 }
             }
@@ -263,8 +273,7 @@ namespace Molten.Shapes
 
         public bool Contains(Vector2F point)
         {
-            Vector2D dPoint = (Vector2D)point;
-            return Contains(dPoint);
+            return Contains((Vector2D)point);
         }
     }
 }

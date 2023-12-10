@@ -156,12 +156,18 @@ namespace Molten.Graphics
 
             // Perform preliminary checks on active scene data.
             // Also ensure the backbuffer is always big enough for the largest scene render surface.
-            foreach (SceneRenderData data in Scenes)
+            SceneRenderData data;
+            RenderCamera camera;
+            GraphicsDevice device;
+
+            for (int i =0; i < Scenes.Count; i++)
             {
+                data = Scenes[i];
                 data.ProcessChanges();
 
-                foreach (RenderCamera camera in data.Cameras)
+                for(int c = 0; c < data.Cameras.Count; c++)
                 {
+                    camera = data.Cameras[c];
                     camera.Skip = false;
 
                     if (camera.Surface == null)
@@ -190,17 +196,19 @@ namespace Molten.Graphics
                 Surfaces.Rebuild(BiggestWidth, BiggestHeight);
                 _surfaceResizeRequired = false;
             }
-            
-            foreach (SceneRenderData sceneData in Scenes)
+
+            for (int i = 0; i < Scenes.Count; i++)
             {
-                if (!sceneData.IsVisible)
+                data = Scenes[i];
+
+                if (!data.IsVisible)
                     continue;
 
                 Device.Queue.BeginEvent("Draw Scene");
-                sceneData.PreRenderInvoke(this);
+                data.PreRenderInvoke(this);
 
                 // Sort cameras into ascending order-depth.
-                sceneData.Cameras.Sort((a, b) =>
+                data.Cameras.Sort((a, b) =>
                 {
                     if (a.OrderDepth > b.OrderDepth)
                         return 1;
@@ -210,15 +218,17 @@ namespace Molten.Graphics
                         return 0;
                 });
 
-                foreach (RenderCamera camera in sceneData.Cameras)
+                for (int c = 0; c < data.Cameras.Count; c++)
                 {
+                    camera = data.Cameras[c];
+
                     if (camera.Skip)
                         continue;
 
-                    _chain.Render(Device.Queue, sceneData, camera, time);
+                    _chain.Render(Device.Queue, data, camera, time);
                 }
 
-                sceneData.PostRenderInvoke(this);
+                data.PostRenderInvoke(this);
                 Device.Queue.EndEvent();
             }
 
@@ -227,8 +237,9 @@ namespace Molten.Graphics
             Surfaces.ResetFirstCleared();
 
             // Accumulate profiling information.
-            foreach (GraphicsDevice device in _devices)
+            for(int i = 0; i < _devices.Count; i++)
             {
+                device = _devices[i];
                 device.Profiler.Accumulate(device.Queue.Profiler);
                 Profiler.Accumulate(device.Profiler);
             }
