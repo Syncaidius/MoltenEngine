@@ -186,12 +186,17 @@ namespace Molten
         /// <param name="time">A <see cref="Timing"/> instance.</param>
         internal void Update(Timing time)
         {
-            foreach (SceneLayer layer in Layers)
+            SceneLayer layer;
+            SceneObject obj;
+
+            for(int i = 0; i < Layers.Count; i++)
             {
-                foreach (SceneObject up in layer.Objects)
+                layer = Layers[i];
+                for(int o = 0; i < layer.Objects.Count; o++)
                 {
-                    if (up.IsEnabled)
-                        up.Update(time);
+                    obj = layer.Objects[o];
+                    if (obj.IsEnabled)
+                        obj.Update(time);
                 }
             }
         }

@@ -87,9 +87,8 @@ namespace Molten
         {
             if (_componentsByType.TryGetValue(typeof(T), out List<SceneComponent> comByType))
             {
-                comByType = new List<SceneComponent>();
-                foreach (SceneComponent com in comByType)
-                    Objects.Remove(com);
+                for(int i = comByType.Count - 1; i >=0; i--)
+                    Objects.Remove(comByType[i]);
             }
         }
     }
