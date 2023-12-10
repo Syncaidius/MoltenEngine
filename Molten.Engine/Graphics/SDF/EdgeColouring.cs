@@ -88,18 +88,24 @@ namespace Molten.Graphics.SDF
             double crossThreshold = Math.Sin(angleThreshold);
             List<int> corners = new List<int>();
 
-            foreach (Contour contour in shape.Contours)
+            Contour contour;
+            Edge edge;
+            for (int i = 0; i < shape.Contours.Count; i++)
             {
+                contour = shape.Contours[i];
+
                 // Identify corners
                 corners.Clear();
                 if (contour.Edges.Count > 0)
                 {
                     Vector2D prevDirection = contour.Edges.Last().GetDirection(1);
                     int index = 0;
-                    foreach (Edge edge in contour.Edges)
+                    for (int j = 0; j < contour.Edges.Count; j++)
                     {
+                        edge = contour.Edges[j];
                         if (IsCorner(prevDirection.GetNormalized(), edge.GetDirection(0).GetNormalized(), crossThreshold))
                             corners.Add(index);
+
                         prevDirection = edge.GetDirection(1);
                     }
                 }
@@ -107,8 +113,8 @@ namespace Molten.Graphics.SDF
                 // Smooth contour
                 if (corners.Count == 0)
                 {
-                    foreach (Edge edge in contour.Edges)
-                        edge.Color = EdgeColor.White;
+                    for (int j = 0; j < contour.Edges.Count; j++)
+                        contour.Edges[j].Color = EdgeColor.White;
                 }
                 else if (corners.Count == 1) // "Teardrop" case
                 {
@@ -120,15 +126,16 @@ namespace Molten.Graphics.SDF
                     int corner = corners[0];
                     if (contour.Edges.Count >= 3)
                     {
-                        int m = contour.Edges.Count;
-                        for (int i = 0; i < m; ++i)
-                            contour.Edges[(corner + i) % m].Color = (colors + 1)[(int)(3 + 2.875 * i / (m - 1) - 1.4375 + .5) - 3];
+                        int edgeCount = contour.Edges.Count;
+                        for (int e = 0; e < edgeCount; ++e)
+                            contour.Edges[(corner + e) % edgeCount].Color = (colors + 1)[(int)(3 + 2.875 * e / (edgeCount - 1) - 1.4375 + .5) - 3];
                     }
                     else if (contour.Edges.Count >= 1)
                     {
                         // Less than three edge segments for three colors => edges must be split
                         Edge[] parts = new Edge[7];
                         contour.Edges[0].SplitInThirds(ref parts[0 + 3 * corner], ref parts[1 + 3 * corner], ref parts[2 + 3 * corner]);
+
                         if (contour.Edges.Count >= 2)
                         {
                             contour.Edges[1].SplitInThirds(ref parts[3 - 3 * corner], ref parts[4 - 3 * corner], ref parts[5 - 3 * corner]);
@@ -142,24 +149,26 @@ namespace Molten.Graphics.SDF
                             parts[1].Color = colors[1];
                             parts[2].Color = colors[2];
                         }
+
                         contour.Clear();
-                        for (int i = 0; i < parts.Length && parts[i] != null; ++i)
-                            contour.Add(parts[i]);
+
+                        for (int p = 0; p < parts.Length && parts[p] != null; ++p)
+                            contour.Add(parts[p]);
                     }
                 }
-                // Multiple corners
-                else
+                else // Multiple corners
                 {
                     int cornerCount = corners.Count;
                     int spline = 0;
                     int start = corners[0];
-                    int m = contour.Edges.Count;
+                    int edgeCount = contour.Edges.Count;
                     EdgeColor color = EdgeColor.White;
                     SwitchColor(ref color, ref seed);
                     EdgeColor initialColor = color;
-                    for (int i = 0; i < m; ++i)
+
+                    for (int e = 0; e < edgeCount; ++e)
                     {
-                        int index = (start + i) % m;
+                        int index = (start + e) % edgeCount;
                         if (spline + 1 < cornerCount && corners[spline + 1] == index)
                         {
                             ++spline;
@@ -176,18 +185,25 @@ namespace Molten.Graphics.SDF
             double crossThreshold = Math.Sin(angleThreshold);
             List<EdgeColoringInkTrapCorner> corners = new List<EdgeColoringInkTrapCorner>();
 
-            foreach (Contour contour in shape.Contours)
+            Contour contour;
+            Edge edge;
+
+            for(int i = 0; i < shape.Contours.Count; i++)
             {
                 // Identify corners
                 double splineLength = 0;
+                contour = shape.Contours[i];
                 corners.Clear();
 
                 if (contour.Edges.Count > 0)
                 {
                     Vector2D prevDirection = contour.Edges.Last().GetDirection(1);
                     int index = 0;
-                    foreach (Edge edge in contour.Edges)
+
+                    for(int j = 0; j < contour.Edges.Count; j++)
                     {
+                        edge = contour.Edges[j];
+
                         if (IsCorner(prevDirection.GetNormalized(), edge.GetDirection(0).GetNormalized(), crossThreshold))
                         {
                             EdgeColoringInkTrapCorner corner = new EdgeColoringInkTrapCorner(index, splineLength);
@@ -203,8 +219,8 @@ namespace Molten.Graphics.SDF
                 // Smooth contour
                 if (corners.Count == 0)
                 {
-                    foreach (Edge edge in contour.Edges)
-                        edge.Color = EdgeColor.White;
+                    for (int j = 0; j < contour.Edges.Count; j++)
+                        contour.Edges[j].Color = EdgeColor.White;
                 }
                 else if (corners.Count == 1) // "Teardrop" case
                 {
@@ -217,9 +233,9 @@ namespace Molten.Graphics.SDF
                     int corner = corners[0].index;
                     if (contour.Edges.Count >= 3)
                     {
-                        int m = contour.Edges.Count;
-                        for (int i = 0; i < m; ++i)
-                            contour.Edges[(corner + i) % m].Color = (colors + 1)[(int)(3 + 2.875 * i / (m - 1) - 1.4375 + .5) - 3];
+                        int edgeCount = contour.Edges.Count;
+                        for (int e = 0; e < edgeCount; ++e)
+                            contour.Edges[(corner + e) % edgeCount].Color = (colors + 1)[(int)(3 + 2.875 * e / (edgeCount - 1) - 1.4375 + .5) - 3];
                     }
                     else if (contour.Edges.Count >= 1)
                     {
@@ -239,9 +255,11 @@ namespace Molten.Graphics.SDF
                             parts[1].Color = colors[1];
                             parts[2].Color = colors[2];
                         }
+
                         contour.Clear();
-                        for (int i = 0; i < parts.Length && parts[i] != null; ++i)
-                            contour.Add(parts[i]);
+
+                        for (int p = 0; p < parts.Length && parts[p] != null; ++p)
+                            contour.Add(parts[p]);
                     }
                 }
                 // Multiple corners
@@ -252,14 +270,14 @@ namespace Molten.Graphics.SDF
                     if (cornerCount > 3)
                     {
                         corners.First().prevEdgeLengthEstimate += splineLength;
-                        for (int i = 0; i < cornerCount; ++i)
+                        for (int c = 0; c < cornerCount; ++c)
                         {
                             if (
-                                corners[i].prevEdgeLengthEstimate > corners[(i + 1) % cornerCount].prevEdgeLengthEstimate &&
-                                corners[(i + 1) % cornerCount].prevEdgeLengthEstimate < corners[(i + 2) % cornerCount].prevEdgeLengthEstimate
+                                corners[c].prevEdgeLengthEstimate > corners[(c + 1) % cornerCount].prevEdgeLengthEstimate &&
+                                corners[(c + 1) % cornerCount].prevEdgeLengthEstimate < corners[(c + 2) % cornerCount].prevEdgeLengthEstimate
                             )
                             {
-                                corners[i].minor = true;
+                                corners[c].minor = true;
                                 --majorCornerCount;
                             }
                         }
@@ -267,37 +285,42 @@ namespace Molten.Graphics.SDF
                     EdgeColor color = EdgeColor.White;
                     EdgeColor initialColor = EdgeColor.Black;
 
-                    for (int i = 0; i < cornerCount; ++i)
+                    for (int c = 0; c < cornerCount; ++c)
                     {
-                        if (!corners[i].minor)
+                        if (!corners[c].minor)
                         {
                             --majorCornerCount;
+
                             SwitchColor(ref color, ref seed, (EdgeColor)(majorCornerCount == 0 ? 1 : 0 * (int)initialColor));
-                            corners[i].color = color;
+
+                            corners[c].color = color;
+
                             if (initialColor == 0)
                                 initialColor = color;
                         }
                     }
 
-                    for (int i = 0; i < cornerCount; ++i)
+                    for (int c = 0; c < cornerCount; ++c)
                     {
-                        if (corners[i].minor)
+                        if (corners[c].minor)
                         {
-                            EdgeColor nextColor = corners[(i + 1) % cornerCount].color;
-                            corners[i].color = ((color & nextColor) ^ EdgeColor.White);
+                            EdgeColor nextColor = corners[(c + 1) % cornerCount].color;
+                            corners[c].color = ((color & nextColor) ^ EdgeColor.White);
                         }
                         else
-                            color = corners[i].color;
+                        {
+                            color = corners[c].color;
+                        }
                     }
 
                     int spline = 0;
                     int start = corners[0].index;
                     color = corners[0].color;
-                    int m = contour.Edges.Count;
+                    int edgeCount = contour.Edges.Count;
 
-                    for (int i = 0; i < m; ++i)
+                    for (int e = 0; e < edgeCount; ++e)
                     {
-                        int index = (start + i) % m;
+                        int index = (start + e) % edgeCount;
                         if (spline + 1 < cornerCount && corners[spline + 1].index == index)
                             color = corners[++spline].color;
                         contour.Edges[index].Color = color;

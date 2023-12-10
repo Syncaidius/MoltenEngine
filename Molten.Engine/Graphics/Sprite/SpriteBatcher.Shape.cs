@@ -11,8 +11,10 @@ namespace Molten.Graphics
 
         public void DrawShapeOutline(Shape shape, Color edgeColor, Color holeColor, float thickness, uint surfaceSlice = 0)
         {
-            foreach (Contour c in shape.Contours)
+            Contour c;
+            for(int i = 0; i < shape.Contours.Count; i++)
             {
+                c = shape.Contours[i];
                 Color col = c.GetWinding() < 1 ? edgeColor : holeColor;
 
                 foreach (Edge e in c.Edges)
@@ -24,12 +26,15 @@ namespace Molten.Graphics
         {
             LineStyle edgeStyle = style;
 
-            foreach (Contour c in shape.Contours)
+            Contour c;
+            for (int i = 0; i < shape.Contours.Count; i++)
             {
+                c = shape.Contours[i];
                 edgeStyle.Color1 = edgeStyle.Color2 = c.GetWinding() < 1 ? style.Color1 : style.Color2;
 
-                foreach (Edge e in c.Edges)
-                    DrawEdge(e, ref style, surfaceSlice);
+
+                for (int j = 0; j < c.Edges.Count; j++)
+                    DrawEdge(c.Edges[j], ref style, surfaceSlice);
             }
         }
     }

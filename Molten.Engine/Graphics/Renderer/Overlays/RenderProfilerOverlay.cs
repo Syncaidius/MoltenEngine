@@ -38,20 +38,20 @@
 
             sb.DrawString(font, title, textPos, _colText);
             textPos.Y += 5;
-            textPos.Y += lineHeight; sb.DrawString(font, $"FPS:                 {time.FPS} -- Frame: {time.FrameID}", textPos, _colText);
-            textPos.Y += lineHeight; sb.DrawString(font, $"Time:                {frame.TimeTaken:N2}ms", textPos, _colText);
-            textPos.Y += lineHeight; sb.DrawString(font, $"Target:              {frame.TargetTime:N2}ms", textPos, _colText);
-            textPos.Y += lineHeight; sb.DrawString(font, $"Delta:               {(frame.TimeTaken / frame.TargetTime):N2}ms", textPos, _colText);
-            textPos.Y += lineHeight; sb.DrawString(font, $"VRAM usage:          {frame.VideoMemoryAllocated}", textPos, _colText);
-            textPos.Y += lineHeight; sb.DrawString(font, $"Draw calls:          {frame.DrawCalls}", textPos, _colText);
+            textPos.Y += lineHeight; sb.DrawString(font, $"FPS: {time.FPS} -- Frame: {time.FrameID}", textPos, _colText);
+            textPos.Y += lineHeight; sb.DrawString(font, $"Time: {frame.TimeTaken.TotalMilliseconds:N2}ms", textPos, _colText);
+            textPos.Y += lineHeight; sb.DrawString(font, $"Target: {frame.TargetTime.TotalMilliseconds:N2}ms", textPos, _colText);
+            textPos.Y += lineHeight; sb.DrawString(font, $"Delta: {(frame.TimeTaken / frame.TargetTime):N2}ms", textPos, _colText);
+            textPos.Y += lineHeight; sb.DrawString(font, $"VRAM usage: {frame.VideoMemoryAllocated}", textPos, _colText);
+            textPos.Y += lineHeight; sb.DrawString(font, $"Draw calls: {frame.DrawCalls}", textPos, _colText);
             //textPos.Y += lineHeight; sb.DrawString(font, $"Primatives:        {frame.PrimitiveCount}", textPos, _colText);
-            textPos.Y += lineHeight; sb.DrawString(font, $"Binds - Buffers:     {frame.BindBufferCalls}", textPos, _colText);
-            textPos.Y += lineHeight; sb.DrawString(font, $"Binds - Shaders:     {frame.BindShaderCalls}", textPos, _colText);
-            textPos.Y += lineHeight; sb.DrawString(font, $"Binds - Surfaces:    {frame.BindSurfaceCalls}", textPos, _colText);
-            textPos.Y += lineHeight; sb.DrawString(font, $"Binds - Resources:   {frame.BindResourceCalls}", textPos, _colText);
+            textPos.Y += lineHeight; sb.DrawString(font, $"Binds - Buffers: {frame.BindBufferCalls}", textPos, _colText);
+            textPos.Y += lineHeight; sb.DrawString(font, $"Binds - Shaders: {frame.BindShaderCalls}", textPos, _colText);
+            textPos.Y += lineHeight; sb.DrawString(font, $"Binds - Surfaces: {frame.BindSurfaceCalls}", textPos, _colText);
+            textPos.Y += lineHeight; sb.DrawString(font, $"Binds - Resources: {frame.BindResourceCalls}", textPos, _colText);
             textPos.Y += lineHeight; sb.DrawString(font, $"Sub-resource update: {frame.SubResourceUpdateCalls}", textPos, _colText);
-            textPos.Y += lineHeight; sb.DrawString(font, $"Sub-resource copy:   {frame.SubResourceCopyCalls}", textPos, _colText);
-            textPos.Y += lineHeight; sb.DrawString(font, $"Map discard:         {frame.ResourceMapCalls}", textPos, _colText);
+            textPos.Y += lineHeight; sb.DrawString(font, $"Sub-resource copy: {frame.SubResourceCopyCalls}", textPos, _colText);
+            textPos.Y += lineHeight; sb.DrawString(font, $"Map discard: {frame.ResourceMapCalls}", textPos, _colText);
         }
 
         public string Title => "Render Statistics";
