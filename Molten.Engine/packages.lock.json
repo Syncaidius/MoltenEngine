@@ -85,16 +85,16 @@
       "molten.font": {
         "type": "Project",
         "dependencies": {
-          "Molten.IO": "[0.7.1, )",
-          "Molten.Math": "[0.7.1, )",
-          "Molten.Utility": "[0.7.1, )"
+          "Molten.IO": "[0.7.2, )",
+          "Molten.Math": "[0.7.2, )",
+          "Molten.Utility": "[0.7.2, )"
         }
       },
       "molten.io": {
         "type": "Project",
         "dependencies": {
-          "Molten.Math": "[0.7.1, )",
-          "Molten.Utility": "[0.7.1, )"
+          "Molten.Math": "[0.7.2, )",
+          "Molten.Utility": "[0.7.2, )"
         }
       },
       "molten.math": {
