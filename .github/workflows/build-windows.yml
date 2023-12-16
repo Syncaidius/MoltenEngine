@@ -17,7 +17,7 @@ jobs:
      RELEASE_NAME: Windows-dev
   
      DOTNET_INSTALL_DIR: ./dotnet
-     DOTNET_VERSION: 7.0.x
+     DOTNET_VERSION: 8.0.x
 
      # If true, the dotnet workload of WORKLOAD_NAME will be installed.
      INSTALL_WORKLOAD: false
