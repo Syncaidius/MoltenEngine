@@ -1203,7 +1203,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="QuaternionF"/> and a $<see cref="float"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="QuaternionF"/> and a <see cref="float"/>.</summary>
 		///<param name="a">The <see cref="QuaternionF"/> to subtract.</param>
 		///<param name="b">The <see cref="float"/> to subtract.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -1215,7 +1215,7 @@ namespace Molten
 			result.W = a.W - b;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="QuaternionF"/> and a $<see cref="float"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="QuaternionF"/> and a <see cref="float"/>.</summary>
 		///<param name="a">The <see cref="QuaternionF"/> to subtract.</param>
 		///<param name="b">The <see cref="float"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -1226,7 +1226,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="float"/> and a $<see cref="QuaternionF"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="float"/> and a <see cref="QuaternionF"/>.</summary>
 		///<param name="a">The <see cref="float"/> to subtract.</param>
 		///<param name="b">The <see cref="QuaternionF"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -1279,7 +1279,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="QuaternionF"/> and a $<see cref="float"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="QuaternionF"/> and a <see cref="float"/>.</summary>
 		///<param name="a">The <see cref="QuaternionF"/> to divide.</param>
 		///<param name="b">The <see cref="float"/> to divide.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -1291,7 +1291,7 @@ namespace Molten
 			result.W = a.W / b;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="QuaternionF"/> and a $<see cref="float"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="QuaternionF"/> and a <see cref="float"/>.</summary>
 		///<param name="a">The <see cref="QuaternionF"/> to divide.</param>
 		///<param name="b">The <see cref="float"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
@@ -1302,7 +1302,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="float"/> and a $<see cref="QuaternionF"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="float"/> and a <see cref="QuaternionF"/>.</summary>
 		///<param name="a">The <see cref="float"/> to divide.</param>
 		///<param name="b">The <see cref="QuaternionF"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
@@ -1339,7 +1339,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="QuaternionF"/> and a $<see cref="float"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="QuaternionF"/> and a <see cref="float"/>.</summary>
 		///<param name="a">The <see cref="QuaternionF"/> to add.</param>
 		///<param name="b">The <see cref="float"/> to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -1351,7 +1351,7 @@ namespace Molten
 			result.W = a.W + b;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="QuaternionF"/> and a $<see cref="float"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="QuaternionF"/> and a <see cref="float"/>.</summary>
 		///<param name="a">The <see cref="QuaternionF"/> to add.</param>
 		///<param name="b">The <see cref="float"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -1362,7 +1362,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="float"/> and a $<see cref="QuaternionF"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="float"/> and a <see cref="QuaternionF"/>.</summary>
 		///<param name="a">The <see cref="float"/> to add.</param>
 		///<param name="b">The <see cref="QuaternionF"/> to add.</param>
 		///<returns>The result of the operation.</returns>

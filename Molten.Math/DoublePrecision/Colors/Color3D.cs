@@ -243,7 +243,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="Color3D"/> and a $<see cref="double"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="Color3D"/> and a <see cref="double"/>.</summary>
 		///<param name="a">The <see cref="Color3D"/> to add.</param>
 		///<param name="b">The <see cref="double"/> to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -254,7 +254,7 @@ namespace Molten.DoublePrecision
 			result.B = a.B + b;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="Color3D"/> and a $<see cref="double"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="Color3D"/> and a <see cref="double"/>.</summary>
 		///<param name="a">The <see cref="Color3D"/> to add.</param>
 		///<param name="b">The <see cref="double"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -265,7 +265,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="double"/> and a $<see cref="Color3D"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="double"/> and a <see cref="Color3D"/>.</summary>
 		///<param name="a">The <see cref="double"/> to add.</param>
 		///<param name="b">The <see cref="Color3D"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -299,7 +299,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="Color3D"/> and a $<see cref="double"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="Color3D"/> and a <see cref="double"/>.</summary>
 		///<param name="a">The <see cref="Color3D"/> to subtract.</param>
 		///<param name="b">The <see cref="double"/> to subtract.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -310,7 +310,7 @@ namespace Molten.DoublePrecision
 			result.B = a.B - b;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="Color3D"/> and a $<see cref="double"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="Color3D"/> and a <see cref="double"/>.</summary>
 		///<param name="a">The <see cref="Color3D"/> to subtract.</param>
 		///<param name="b">The <see cref="double"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -321,7 +321,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="double"/> and a $<see cref="Color3D"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="double"/> and a <see cref="Color3D"/>.</summary>
 		///<param name="a">The <see cref="double"/> to subtract.</param>
 		///<param name="b">The <see cref="Color3D"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -355,7 +355,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a modulate operation on a $<see cref="Color3D"/> and a $<see cref="double"/>.</summary>
+		///<summary>Performs a modulate operation on a <see cref="Color3D"/> and a <see cref="double"/>.</summary>
 		///<param name="a">The <see cref="Color3D"/> to modulate.</param>
 		///<param name="b">The <see cref="double"/> to modulate.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -366,7 +366,7 @@ namespace Molten.DoublePrecision
 			result.B = a.B * b;
 		}
 
-		///<summary>Performs a modulate operation on a $<see cref="Color3D"/> and a $<see cref="double"/>.</summary>
+		///<summary>Performs a modulate operation on a <see cref="Color3D"/> and a <see cref="double"/>.</summary>
 		///<param name="a">The <see cref="Color3D"/> to modulate.</param>
 		///<param name="b">The <see cref="double"/> to modulate.</param>
 		///<returns>The result of the operation.</returns>
@@ -377,7 +377,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a modulate operation on a $<see cref="double"/> and a $<see cref="Color3D"/>.</summary>
+		///<summary>Performs a modulate operation on a <see cref="double"/> and a <see cref="Color3D"/>.</summary>
 		///<param name="a">The <see cref="double"/> to modulate.</param>
 		///<param name="b">The <see cref="Color3D"/> to modulate.</param>
 		///<returns>The result of the operation.</returns>
@@ -411,7 +411,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="Color3D"/> and a $<see cref="double"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="Color3D"/> and a <see cref="double"/>.</summary>
 		///<param name="a">The <see cref="Color3D"/> to divide.</param>
 		///<param name="b">The <see cref="double"/> to divide.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -422,7 +422,7 @@ namespace Molten.DoublePrecision
 			result.B = a.B / b;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="Color3D"/> and a $<see cref="double"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="Color3D"/> and a <see cref="double"/>.</summary>
 		///<param name="a">The <see cref="Color3D"/> to divide.</param>
 		///<param name="b">The <see cref="double"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
@@ -433,7 +433,7 @@ namespace Molten.DoublePrecision
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="double"/> and a $<see cref="Color3D"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="double"/> and a <see cref="Color3D"/>.</summary>
 		///<param name="a">The <see cref="double"/> to divide.</param>
 		///<param name="b">The <see cref="Color3D"/> to divide.</param>
 		///<returns>The result of the operation.</returns>

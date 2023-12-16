@@ -265,7 +265,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="Color4"/> and a $<see cref="float"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="Color4"/> and a <see cref="float"/>.</summary>
 		///<param name="a">The <see cref="Color4"/> to add.</param>
 		///<param name="b">The <see cref="float"/> to add.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -277,7 +277,7 @@ namespace Molten
 			result.A = a.A + b;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="Color4"/> and a $<see cref="float"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="Color4"/> and a <see cref="float"/>.</summary>
 		///<param name="a">The <see cref="Color4"/> to add.</param>
 		///<param name="b">The <see cref="float"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -288,7 +288,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a add operation on a $<see cref="float"/> and a $<see cref="Color4"/>.</summary>
+		///<summary>Performs a add operation on a <see cref="float"/> and a <see cref="Color4"/>.</summary>
 		///<param name="a">The <see cref="float"/> to add.</param>
 		///<param name="b">The <see cref="Color4"/> to add.</param>
 		///<returns>The result of the operation.</returns>
@@ -323,7 +323,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="Color4"/> and a $<see cref="float"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="Color4"/> and a <see cref="float"/>.</summary>
 		///<param name="a">The <see cref="Color4"/> to subtract.</param>
 		///<param name="b">The <see cref="float"/> to subtract.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -335,7 +335,7 @@ namespace Molten
 			result.A = a.A - b;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="Color4"/> and a $<see cref="float"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="Color4"/> and a <see cref="float"/>.</summary>
 		///<param name="a">The <see cref="Color4"/> to subtract.</param>
 		///<param name="b">The <see cref="float"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -346,7 +346,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a subtract operation on a $<see cref="float"/> and a $<see cref="Color4"/>.</summary>
+		///<summary>Performs a subtract operation on a <see cref="float"/> and a <see cref="Color4"/>.</summary>
 		///<param name="a">The <see cref="float"/> to subtract.</param>
 		///<param name="b">The <see cref="Color4"/> to subtract.</param>
 		///<returns>The result of the operation.</returns>
@@ -381,7 +381,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a modulate operation on a $<see cref="Color4"/> and a $<see cref="float"/>.</summary>
+		///<summary>Performs a modulate operation on a <see cref="Color4"/> and a <see cref="float"/>.</summary>
 		///<param name="a">The <see cref="Color4"/> to modulate.</param>
 		///<param name="b">The <see cref="float"/> to modulate.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -393,7 +393,7 @@ namespace Molten
 			result.A = a.A * b;
 		}
 
-		///<summary>Performs a modulate operation on a $<see cref="Color4"/> and a $<see cref="float"/>.</summary>
+		///<summary>Performs a modulate operation on a <see cref="Color4"/> and a <see cref="float"/>.</summary>
 		///<param name="a">The <see cref="Color4"/> to modulate.</param>
 		///<param name="b">The <see cref="float"/> to modulate.</param>
 		///<returns>The result of the operation.</returns>
@@ -404,7 +404,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a modulate operation on a $<see cref="float"/> and a $<see cref="Color4"/>.</summary>
+		///<summary>Performs a modulate operation on a <see cref="float"/> and a <see cref="Color4"/>.</summary>
 		///<param name="a">The <see cref="float"/> to modulate.</param>
 		///<param name="b">The <see cref="Color4"/> to modulate.</param>
 		///<returns>The result of the operation.</returns>
@@ -439,7 +439,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="Color4"/> and a $<see cref="float"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="Color4"/> and a <see cref="float"/>.</summary>
 		///<param name="a">The <see cref="Color4"/> to divide.</param>
 		///<param name="b">The <see cref="float"/> to divide.</param>
 		///<param name="result">Output for the result of the operation.</param>
@@ -451,7 +451,7 @@ namespace Molten
 			result.A = a.A / b;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="Color4"/> and a $<see cref="float"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="Color4"/> and a <see cref="float"/>.</summary>
 		///<param name="a">The <see cref="Color4"/> to divide.</param>
 		///<param name="b">The <see cref="float"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
@@ -462,7 +462,7 @@ namespace Molten
 			return result;
 		}
 
-		///<summary>Performs a divide operation on a $<see cref="float"/> and a $<see cref="Color4"/>.</summary>
+		///<summary>Performs a divide operation on a <see cref="float"/> and a <see cref="Color4"/>.</summary>
 		///<param name="a">The <see cref="float"/> to divide.</param>
 		///<param name="b">The <see cref="Color4"/> to divide.</param>
 		///<returns>The result of the operation.</returns>
