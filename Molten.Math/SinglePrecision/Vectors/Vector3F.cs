@@ -9,12 +9,15 @@ using Molten.DoublePrecision;
 namespace Molten
 {
 	///<summary>A <see cref="float"/> vector comprised of three components.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack=4)]
+	[StructLayout(LayoutKind.Explicit)]
     [Serializable]
 	public partial struct Vector3F : IFormattable, ISignedVector<Vector3F, float>, IEquatable<Vector3F>
 	{
 		///<summary>The size of <see cref="Vector3F"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector3F));
+
+        ///<summary>The number of elements in the current vector type.</summary>
+        public static readonly int NumElements = 3;
 
 		///<summary>A Vector3F with every component set to 1F.</summary>
 		public static readonly Vector3F One = new Vector3F(1F, 1F, 1F);
@@ -35,15 +38,22 @@ namespace Molten
 
 		/// <summary>The X component.</summary>
 		[DataMember]
+		[FieldOffset(0)]
 		public float X;
 
 		/// <summary>The Y component.</summary>
 		[DataMember]
+		[FieldOffset(4)]
 		public float Y;
 
 		/// <summary>The Z component.</summary>
 		[DataMember]
+		[FieldOffset(8)]
 		public float Z;
+
+		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[FieldOffset(0)]
+		public unsafe fixed float Values[3];
 
 
         /// <summary>
@@ -1032,30 +1042,48 @@ namespace Molten
         /// <value>The value of a component, depending on the index.</value>
         /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 2</param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 2].</exception>  
-		public float this[int index]
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, 2].</exception>  
+		public unsafe float this[int index]
 		{
 			get
-			{
-				switch(index)
-				{
-					case 0: return X;
-					case 1: return Y;
-					case 2: return Z;
-				}
-				throw new ArgumentOutOfRangeException("index", "Indices for Vector3F run from 0 to 2, inclusive.");
-			}
+            {
+                if(index > 2 || index < 0)
+                    throw new IndexOutOfRangeException("Index for Vector3F must be between from 0 to 2, inclusive.");
 
-			set
-			{
-				switch(index)
-				{
-					case 0: X = value; break;
-					case 1: Y = value; break;
-					case 2: Z = value; break;
-				}
-				throw new ArgumentOutOfRangeException("index", "Indices for Vector3F run from 0 to 2, inclusive.");
-			}
+                return Values[index];
+            }
+            set
+            {
+                if (index > 2 || index < 0)
+                    throw new IndexOutOfRangeException("Index for Vector3F must be between from 0 to 2, inclusive.");
+
+                Values[index] = value;
+            }
+		}
+
+        /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of a component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 2</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is greater than 2.</exception>  
+		public unsafe float this[uint index]
+		{
+			get
+            {
+                if(index > 2)
+                    throw new IndexOutOfRangeException("Index for Vector3F must be between from 0 to 2, inclusive.");
+
+                return Values[index];
+            }
+            set
+            {
+                if (index > 2)
+                    throw new IndexOutOfRangeException("Index for Vector3F must be between from 0 to 2, inclusive.");
+
+                Values[index] = value;
+            }
 		}
 #endregion
 

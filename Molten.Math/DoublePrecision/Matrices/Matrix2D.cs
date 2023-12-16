@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 namespace Molten.DoublePrecision
 {
     /// <summary>Represents a double-precision 2x2 Matrix. Contains only scale and rotation.</summary>
-    [StructLayout(LayoutKind.Sequential, Pack=8)]
+    [StructLayout(LayoutKind.Explicit)]
     [Serializable]
 	public struct Matrix2D : ITransposedMatrix<Matrix2D>
     {
@@ -18,19 +18,27 @@ namespace Molten.DoublePrecision
 
 		/// <summary>The value at row 1, column 1 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(0)]
 		public double M11;
 
 		/// <summary>The value at row 1, column 2 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(8)]
 		public double M12;
 
 		/// <summary>The value at row 2, column 1 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(16)]
 		public double M21;
 
 		/// <summary>The value at row 2, column 2 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(24)]
 		public double M22;
+
+		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[FieldOffset(0)]
+		public unsafe fixed double Values[4];
 
 
         /// <summary>
@@ -291,6 +299,56 @@ namespace Molten.DoublePrecision
             else
                 return false;
         }
+
+        /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of a component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 1</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, 3].</exception>  
+		public unsafe double this[int index]
+		{
+			get
+            {
+                if(index > 3 || index < 0)
+                    throw new IndexOutOfRangeException("Index for Matrix2D must be between from 0 to 3, inclusive.");
+
+                return Values[index];
+            }
+            set
+            {
+                if (index > 3 || index < 0)
+                    throw new IndexOutOfRangeException("Index for Matrix2D must be between from 0 to 3, inclusive.");
+
+                Values[index] = value;
+            }
+		}
+
+        /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of a component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 1</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is greater than 3.</exception>  
+		public unsafe double this[uint index]
+		{
+			get
+            {
+                if(index > 3)
+                    throw new IndexOutOfRangeException("Index for Matrix2D must less than 4.");
+
+                return Values[index];
+            }
+            set
+            {
+                if (index > 3)
+                    throw new IndexOutOfRangeException("Index for Matrix2D must less than 4.");
+
+                Values[index] = value;
+            }
+		}
 
         public static bool operator ==(Matrix2D matrix1, Matrix2D matrix2)
         {

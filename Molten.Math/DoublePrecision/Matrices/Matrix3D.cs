@@ -53,7 +53,7 @@ using System.Runtime.Serialization;
 namespace Molten.DoublePrecision
 {
     /// <summary>Represents a double-precision 3x3 Matrix. Contains position, scale and rotation.</summary>
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
+    [StructLayout(LayoutKind.Explicit)]
     [Serializable]
     public struct Matrix3D : IEquatable<Matrix3D>, IFormattable, ITransposedMatrix<Matrix3D>
     {
@@ -74,39 +74,52 @@ namespace Molten.DoublePrecision
 
 		/// <summary>The value at row 1, column 1 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(0)]
 		public double M11;
 
 		/// <summary>The value at row 1, column 2 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(8)]
 		public double M12;
 
 		/// <summary>The value at row 1, column 3 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(16)]
 		public double M13;
 
 		/// <summary>The value at row 2, column 1 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(24)]
 		public double M21;
 
 		/// <summary>The value at row 2, column 2 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(32)]
 		public double M22;
 
 		/// <summary>The value at row 2, column 3 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(40)]
 		public double M23;
 
 		/// <summary>The value at row 3, column 1 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(48)]
 		public double M31;
 
 		/// <summary>The value at row 3, column 2 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(56)]
 		public double M32;
 
 		/// <summary>The value at row 3, column 3 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(64)]
 		public double M33;
+
+		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[FieldOffset(0)]
+		public unsafe fixed double Values[9];
 
 
         /// <summary>
@@ -244,47 +257,52 @@ namespace Molten.DoublePrecision
         /// <summary>
         /// Gets or sets the component at the specified index.
         /// </summary>
-        /// <value>The value of the Matrix3x3 component, depending on the index.</value>
-        /// <param name="index">The zero-based index of the component to access.</param>
+        /// <value>The value of a component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 2</param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 15].</exception>
-        public double this[int index]
-        {
-            get
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, 8].</exception>  
+		public unsafe double this[int index]
+		{
+			get
             {
-                switch (index)
-                {
-                    case 0: return M11;
-                    case 1: return M12;
-                    case 2: return M13;
-                    case 3: return M21;
-                    case 4: return M22;
-                    case 5: return M23;
-                    case 6: return M31;
-                    case 7: return M32;
-                    case 8: return M33;
-                }
+                if(index > 8 || index < 0)
+                    throw new IndexOutOfRangeException("Index for Matrix3D must be between from 0 to 8, inclusive.");
 
-                throw new ArgumentOutOfRangeException("index", "Indices for Matrix3x3 run from 0 to 8, inclusive.");
+                return Values[index];
             }
-
             set
             {
-                switch (index)
-                {
-                    case 0: M11 = value; break;
-                    case 1: M12 = value; break;
-                    case 2: M13 = value; break;
-                    case 3: M21 = value; break;
-                    case 4: M22 = value; break;
-                    case 5: M23 = value; break;
-                    case 6: M31 = value; break;
-                    case 7: M32 = value; break;
-                    case 8: M33 = value; break;
-                    default: throw new ArgumentOutOfRangeException("index", "Indices for Matrix3x3 run from 0 to 8, inclusive.");
-                }
+                if (index > 8 || index < 0)
+                    throw new IndexOutOfRangeException("Index for Matrix3D must be between from 0 to 8, inclusive.");
+
+                Values[index] = value;
             }
-        }
+		}
+
+        /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of a component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 2</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is greater than 8.</exception>  
+		public unsafe double this[uint index]
+		{
+			get
+            {
+                if(index > 8)
+                    throw new IndexOutOfRangeException("Index for Matrix3D must less than 9.");
+
+                return Values[index];
+            }
+            set
+            {
+                if (index > 8)
+                    throw new IndexOutOfRangeException("Index for Matrix3D must less than 9.");
+
+                Values[index] = value;
+            }
+		}
 
         /// <summary>
         /// Gets or sets the component at the specified index.

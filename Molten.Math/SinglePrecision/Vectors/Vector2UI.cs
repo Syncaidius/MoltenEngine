@@ -9,12 +9,15 @@ using Molten.DoublePrecision;
 namespace Molten
 {
 	///<summary>A <see cref="uint"/> vector comprised of two components.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack=4)]
+	[StructLayout(LayoutKind.Explicit)]
     [Serializable]
 	public partial struct Vector2UI : IFormattable, IUnsignedVector<Vector2UI, uint>, IEquatable<Vector2UI>
 	{
 		///<summary>The size of <see cref="Vector2UI"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector2UI));
+
+        ///<summary>The number of elements in the current vector type.</summary>
+        public static readonly int NumElements = 2;
 
 		///<summary>A Vector2UI with every component set to 1U.</summary>
 		public static readonly Vector2UI One = new Vector2UI(1U, 1U);
@@ -32,11 +35,17 @@ namespace Molten
 
 		/// <summary>The X component.</summary>
 		[DataMember]
+		[FieldOffset(0)]
 		public uint X;
 
 		/// <summary>The Y component.</summary>
 		[DataMember]
+		[FieldOffset(4)]
 		public uint Y;
+
+		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[FieldOffset(0)]
+		public unsafe fixed uint Values[2];
 
 
         /// <summary>
@@ -950,28 +959,48 @@ namespace Molten
         /// <value>The value of a component, depending on the index.</value>
         /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 1</param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 1].</exception>  
-		public uint this[int index]
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, 1].</exception>  
+		public unsafe uint this[int index]
 		{
 			get
-			{
-				switch(index)
-				{
-					case 0: return X;
-					case 1: return Y;
-				}
-				throw new ArgumentOutOfRangeException("index", "Indices for Vector2UI run from 0 to 1, inclusive.");
-			}
+            {
+                if(index > 1 || index < 0)
+                    throw new IndexOutOfRangeException("Index for Vector2UI must be between from 0 to 1, inclusive.");
 
-			set
-			{
-				switch(index)
-				{
-					case 0: X = value; break;
-					case 1: Y = value; break;
-				}
-				throw new ArgumentOutOfRangeException("index", "Indices for Vector2UI run from 0 to 1, inclusive.");
-			}
+                return Values[index];
+            }
+            set
+            {
+                if (index > 1 || index < 0)
+                    throw new IndexOutOfRangeException("Index for Vector2UI must be between from 0 to 1, inclusive.");
+
+                Values[index] = value;
+            }
+		}
+
+        /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of a component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 1</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is greater than 1.</exception>  
+		public unsafe uint this[uint index]
+		{
+			get
+            {
+                if(index > 1)
+                    throw new IndexOutOfRangeException("Index for Vector2UI must be between from 0 to 1, inclusive.");
+
+                return Values[index];
+            }
+            set
+            {
+                if (index > 1)
+                    throw new IndexOutOfRangeException("Index for Vector2UI must be between from 0 to 1, inclusive.");
+
+                Values[index] = value;
+            }
 		}
 #endregion
 

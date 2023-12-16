@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 namespace Molten
 {
     /// <summary>Represents a single-precision 2x2 Matrix. Contains only scale and rotation.</summary>
-    [StructLayout(LayoutKind.Sequential, Pack=4)]
+    [StructLayout(LayoutKind.Explicit)]
     [Serializable]
 	public struct Matrix2F : ITransposedMatrix<Matrix2F>
     {
@@ -18,19 +18,27 @@ namespace Molten
 
 		/// <summary>The value at row 1, column 1 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(0)]
 		public float M11;
 
 		/// <summary>The value at row 1, column 2 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(4)]
 		public float M12;
 
 		/// <summary>The value at row 2, column 1 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(8)]
 		public float M21;
 
 		/// <summary>The value at row 2, column 2 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(12)]
 		public float M22;
+
+		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[FieldOffset(0)]
+		public unsafe fixed float Values[4];
 
 
         /// <summary>
@@ -291,6 +299,56 @@ namespace Molten
             else
                 return false;
         }
+
+        /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of a component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 1</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, 3].</exception>  
+		public unsafe float this[int index]
+		{
+			get
+            {
+                if(index > 3 || index < 0)
+                    throw new IndexOutOfRangeException("Index for Matrix2F must be between from 0 to 3, inclusive.");
+
+                return Values[index];
+            }
+            set
+            {
+                if (index > 3 || index < 0)
+                    throw new IndexOutOfRangeException("Index for Matrix2F must be between from 0 to 3, inclusive.");
+
+                Values[index] = value;
+            }
+		}
+
+        /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of a component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 1</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is greater than 3.</exception>  
+		public unsafe float this[uint index]
+		{
+			get
+            {
+                if(index > 3)
+                    throw new IndexOutOfRangeException("Index for Matrix2F must less than 4.");
+
+                return Values[index];
+            }
+            set
+            {
+                if (index > 3)
+                    throw new IndexOutOfRangeException("Index for Matrix2F must less than 4.");
+
+                Values[index] = value;
+            }
+		}
 
         public static bool operator ==(Matrix2F matrix1, Matrix2F matrix2)
         {

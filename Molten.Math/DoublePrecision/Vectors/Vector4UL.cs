@@ -9,12 +9,15 @@ using Molten.DoublePrecision;
 namespace Molten.DoublePrecision
 {
 	///<summary>A <see cref="ulong"/> vector comprised of four components.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack=8)]
+	[StructLayout(LayoutKind.Explicit)]
     [Serializable]
 	public partial struct Vector4UL : IFormattable, IUnsignedVector<Vector4UL, ulong>, IEquatable<Vector4UL>
 	{
 		///<summary>The size of <see cref="Vector4UL"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector4UL));
+
+        ///<summary>The number of elements in the current vector type.</summary>
+        public static readonly int NumElements = 4;
 
 		///<summary>A Vector4UL with every component set to 1UL.</summary>
 		public static readonly Vector4UL One = new Vector4UL(1UL, 1UL, 1UL, 1UL);
@@ -38,19 +41,27 @@ namespace Molten.DoublePrecision
 
 		/// <summary>The X component.</summary>
 		[DataMember]
+		[FieldOffset(0)]
 		public ulong X;
 
 		/// <summary>The Y component.</summary>
 		[DataMember]
+		[FieldOffset(8)]
 		public ulong Y;
 
 		/// <summary>The Z component.</summary>
 		[DataMember]
+		[FieldOffset(16)]
 		public ulong Z;
 
 		/// <summary>The W component.</summary>
 		[DataMember]
+		[FieldOffset(24)]
 		public ulong W;
+
+		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[FieldOffset(0)]
+		public unsafe fixed ulong Values[4];
 
 
         /// <summary>
@@ -1052,32 +1063,48 @@ namespace Molten.DoublePrecision
         /// <value>The value of a component, depending on the index.</value>
         /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 3</param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 3].</exception>  
-		public ulong this[int index]
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, 3].</exception>  
+		public unsafe ulong this[int index]
 		{
 			get
-			{
-				switch(index)
-				{
-					case 0: return X;
-					case 1: return Y;
-					case 2: return Z;
-					case 3: return W;
-				}
-				throw new ArgumentOutOfRangeException("index", "Indices for Vector4UL run from 0 to 3, inclusive.");
-			}
+            {
+                if(index > 3 || index < 0)
+                    throw new IndexOutOfRangeException("Index for Vector4UL must be between from 0 to 3, inclusive.");
 
-			set
-			{
-				switch(index)
-				{
-					case 0: X = value; break;
-					case 1: Y = value; break;
-					case 2: Z = value; break;
-					case 3: W = value; break;
-				}
-				throw new ArgumentOutOfRangeException("index", "Indices for Vector4UL run from 0 to 3, inclusive.");
-			}
+                return Values[index];
+            }
+            set
+            {
+                if (index > 3 || index < 0)
+                    throw new IndexOutOfRangeException("Index for Vector4UL must be between from 0 to 3, inclusive.");
+
+                Values[index] = value;
+            }
+		}
+
+        /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of a component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 3</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is greater than 3.</exception>  
+		public unsafe ulong this[uint index]
+		{
+			get
+            {
+                if(index > 3)
+                    throw new IndexOutOfRangeException("Index for Vector4UL must be between from 0 to 3, inclusive.");
+
+                return Values[index];
+            }
+            set
+            {
+                if (index > 3)
+                    throw new IndexOutOfRangeException("Index for Vector4UL must be between from 0 to 3, inclusive.");
+
+                Values[index] = value;
+            }
 		}
 #endregion
 

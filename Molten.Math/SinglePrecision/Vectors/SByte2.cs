@@ -9,12 +9,15 @@ using Molten.DoublePrecision;
 namespace Molten
 {
 	///<summary>A <see cref="sbyte"/> vector comprised of two components.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack=1)]
+	[StructLayout(LayoutKind.Explicit)]
     [Serializable]
 	public partial struct SByte2 : IFormattable, ISignedVector<SByte2, sbyte>, IEquatable<SByte2>
 	{
 		///<summary>The size of <see cref="SByte2"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(SByte2));
+
+        ///<summary>The number of elements in the current vector type.</summary>
+        public static readonly int NumElements = 2;
 
 		///<summary>A SByte2 with every component set to (sbyte)1.</summary>
 		public static readonly SByte2 One = new SByte2((sbyte)1, (sbyte)1);
@@ -32,11 +35,17 @@ namespace Molten
 
 		/// <summary>The X component.</summary>
 		[DataMember]
+		[FieldOffset(0)]
 		public sbyte X;
 
 		/// <summary>The Y component.</summary>
 		[DataMember]
+		[FieldOffset(1)]
 		public sbyte Y;
+
+		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[FieldOffset(0)]
+		public unsafe fixed sbyte Values[2];
 
 
         /// <summary>
@@ -981,28 +990,48 @@ namespace Molten
         /// <value>The value of a component, depending on the index.</value>
         /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 1</param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 1].</exception>  
-		public sbyte this[int index]
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, 1].</exception>  
+		public unsafe sbyte this[int index]
 		{
 			get
-			{
-				switch(index)
-				{
-					case 0: return X;
-					case 1: return Y;
-				}
-				throw new ArgumentOutOfRangeException("index", "Indices for SByte2 run from 0 to 1, inclusive.");
-			}
+            {
+                if(index > 1 || index < 0)
+                    throw new IndexOutOfRangeException("Index for SByte2 must be between from 0 to 1, inclusive.");
 
-			set
-			{
-				switch(index)
-				{
-					case 0: X = value; break;
-					case 1: Y = value; break;
-				}
-				throw new ArgumentOutOfRangeException("index", "Indices for SByte2 run from 0 to 1, inclusive.");
-			}
+                return Values[index];
+            }
+            set
+            {
+                if (index > 1 || index < 0)
+                    throw new IndexOutOfRangeException("Index for SByte2 must be between from 0 to 1, inclusive.");
+
+                Values[index] = value;
+            }
+		}
+
+        /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of a component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 1</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is greater than 1.</exception>  
+		public unsafe sbyte this[uint index]
+		{
+			get
+            {
+                if(index > 1)
+                    throw new IndexOutOfRangeException("Index for SByte2 must be between from 0 to 1, inclusive.");
+
+                return Values[index];
+            }
+            set
+            {
+                if (index > 1)
+                    throw new IndexOutOfRangeException("Index for SByte2 must be between from 0 to 1, inclusive.");
+
+                Values[index] = value;
+            }
 		}
 #endregion
 

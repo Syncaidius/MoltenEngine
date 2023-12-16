@@ -1,24 +1,31 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 using BenchmarkDotNet.Attributes;
+using Molten.DoublePrecision;
 
 namespace Molten.Benchmarks
 {
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public unsafe struct NewVector4F
+    [StructLayout(LayoutKind.Explicit, Pack = 4)]
+    public unsafe struct NewVector4D
     {
-        public fixed float Values[4];
+        [FieldOffset(0)]
+        public double X;
 
-        public ref float X => ref Values[0];
+        [FieldOffset(4)]
+        public double Y;
 
-        public ref float Y => ref Values[1];
+        [FieldOffset(8)]
+        public double Z;
 
-        public ref float Z => ref Values[2];
+        [FieldOffset(12)]
+        public double W;
 
-        public ref float W => ref Values[3];
+        [FieldOffset(0)]
+        private Vector256<double> _smid;
 
-        public NewVector4F(float x, float y, float z, float w)
+        public NewVector4D(double x, double y, double z, double w)
         {
             X = x;
             Y = y;
@@ -26,7 +33,7 @@ namespace Molten.Benchmarks
             W = w;
         }
 
-        public NewVector4F(float value)
+        public NewVector4D(double value)
         {
             X = value;
             Y = value;
@@ -34,100 +41,85 @@ namespace Molten.Benchmarks
             W = value;
         }
 
-        ///<summary>Performs a add operation on two <see cref="Vector4F"/>.</summary>
-        ///<param name="a">The first <see cref="Vector4F"/> to add.</param>
-        ///<param name="b">The second <see cref="Vector4F"/> to add.</param>
+        ///<summary>Performs a add operation on two <see cref="Vector4D"/>.</summary>
+        ///<param name="a">The first <see cref="Vector4D"/> to add.</param>
+        ///<param name="b">The second <see cref="Vector4D"/> to add.</param>
         ///<param name="result">Output for the result of the operation.</param>
-        public static void Add(ref NewVector4F a, ref NewVector4F b, out NewVector4F result)
+        public static unsafe void Add(ref NewVector4D a, ref NewVector4D b, out NewVector4D result)
         {
-            NewVector4F r;
-
-            fixed (float* aPtr = a.Values)
-            {
-                fixed (float* bPtr = b.Values)
-                {
-                    Sse.Store(r.Values, Sse.Add(Sse.LoadVector128(aPtr), Sse.LoadVector128(bPtr)));
-                }
-            }
-
-            result = r;
+            Unsafe.SkipInit(out result);
+            result._smid = Avx.Add(a._smid, b._smid);
         }
 
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static NewVector4F operator +(NewVector4F a, NewVector4F b)
+        public static NewVector4D operator +(NewVector4D a, NewVector4D b)
         {
-            Sse.Store(a.Values, Sse.Add(Sse.LoadVector128(a.Values), Sse.LoadVector128(b.Values)));
+            a._smid = Avx.Add(a._smid, b._smid);
             return a;
         }
     }
 
     public class Vector4Benchmarks
     {
-        public const int ITERATIONS = 1000;
+        public const int ITERATIONS = 1000000;
 
         [Benchmark]
-        public void Vector4F_ByOperator()
+        public void Vector4DByOperator()
         {
-            Vector4F a, b, result;
+            Vector4D a, b;
+            Vector4D result = new Vector4D();
+
             for (int i = 0; i < ITERATIONS; i++)
             {
-                a = new Vector4F(85640.1F, 3560.2F, 248.5f, 19.8f);
-                b = new Vector4F(i);
-                result = a + b;
+                a = new Vector4D(85640.1, 3560.2, 248.5, 19.8);
+                b = new Vector4D(i, i * 2, i, i + 1);
+                result += a + b;
             }
         }
 
         [Benchmark]
-        public void Vector4F_ByRef()
+        public void Vector4D_ByRef()
         {
-            Vector4F a, b, result;
+            Vector4D a, b;
+            Vector4D result = new Vector4D();
+
             for (int i = 0; i < ITERATIONS; i++)
             {
-                a = new Vector4F(85640.1F, 3560.2F, 248.5f, 19.8f);
-                b = new Vector4F(i);
-                Vector4F.Add(ref a, ref b, out result);
+                a = new Vector4D(85640.1, 3560.2, 248.5, 19.8);
+                b = new Vector4D(i, i * 2, i, i + 1);
+
+                Vector4D.Add(ref a, ref b, out a);
+                Vector4D.Add(ref a, ref result, out result);
+            }
+        }
+
+        [Benchmark()]
+        public unsafe void NewVector4D_SIMD_ByOperator()
+        {
+            NewVector4D result = new NewVector4D();
+            NewVector4D a, b;
+
+            for (int i = 0; i < ITERATIONS; i++)
+            {
+                a = new NewVector4D(85640.1D, 3560.2D, 248.5D, 19.8D);
+                b = new NewVector4D(i, i * 2, i, i + 1);
+                result += a + b;
             }
         }
 
         [Benchmark]
-        public unsafe void NewVector4F_SIMD_ByOperator()
+        public unsafe void NewVector4D_SIMD_Ref()
         {
-            NewVector4F a, result;
-            NewVector4F b;
+            NewVector4D result = new NewVector4D();
+            NewVector4D a, b;
+
             for (int i = 0; i < ITERATIONS; i++)
             {
-                a = new NewVector4F(85640.1F, 3560.2F, 248.5f, 19.8f);
-                b = new NewVector4F(i);
-                result = a + b;
-            }
-        }
+                a = new NewVector4D(85640.1, 3560.2, 248.5, 19.8D);
+                b = new NewVector4D(i, i * 2, i, i + 1);
 
-
-
-        [Benchmark]
-        public unsafe void NewVector4F_SIMD_Ref()
-        {
-            NewVector4F a, result;
-            NewVector4F b;
-            for (int i = 0; i < ITERATIONS; i++)
-            {
-                a = new NewVector4F(85640.1F, 3560.2F, 248.5f, 19.8f);
-                b = new NewVector4F(i);
-                NewVector4F.Add(ref a, ref b, out result);
-            }
-        }
-
-        [Benchmark]
-        public unsafe void NewVector4F_SIMD()
-        {
-            NewVector4F a;
-            NewVector4F b;
-            for (int i = 0; i < ITERATIONS; i++)
-            {
-                a = new NewVector4F(85640.1F, 3560.2F, 248.5f, 19.8f);
-                b = new NewVector4F(i);
-                Sse.Store(a.Values, Sse.Add(Sse.LoadVector128(a.Values), Sse.LoadVector128(b.Values)));
+                NewVector4D.Add(ref a, ref b, out a);
+                NewVector4D.Add(ref a, ref result, out result);
             }
         }
     }

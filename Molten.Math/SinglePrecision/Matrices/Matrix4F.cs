@@ -53,7 +53,7 @@ using System.Runtime.Serialization;
 namespace Molten
 {
     /// <summary>Represents a single-precision 4x4 Matrix. Contains position, scale, rotation and transform.</summary>
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    [StructLayout(LayoutKind.Explicit)]
     [Serializable]
     public struct Matrix4F : IEquatable<Matrix4F>, IFormattable, ITransposedMatrix<Matrix4F>
     {
@@ -74,67 +74,87 @@ namespace Molten
 
 		/// <summary>The value at row 1, column 1 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(0)]
 		public float M11;
 
 		/// <summary>The value at row 1, column 2 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(4)]
 		public float M12;
 
 		/// <summary>The value at row 1, column 3 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(8)]
 		public float M13;
 
 		/// <summary>The value at row 1, column 4 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(12)]
 		public float M14;
 
 		/// <summary>The value at row 2, column 1 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(16)]
 		public float M21;
 
 		/// <summary>The value at row 2, column 2 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(20)]
 		public float M22;
 
 		/// <summary>The value at row 2, column 3 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(24)]
 		public float M23;
 
 		/// <summary>The value at row 2, column 4 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(28)]
 		public float M24;
 
 		/// <summary>The value at row 3, column 1 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(32)]
 		public float M31;
 
 		/// <summary>The value at row 3, column 2 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(36)]
 		public float M32;
 
 		/// <summary>The value at row 3, column 3 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(40)]
 		public float M33;
 
 		/// <summary>The value at row 3, column 4 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(44)]
 		public float M34;
 
 		/// <summary>The value at row 4, column 1 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(48)]
 		public float M41;
 
 		/// <summary>The value at row 4, column 2 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(52)]
 		public float M42;
 
 		/// <summary>The value at row 4, column 3 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(56)]
 		public float M43;
 
 		/// <summary>The value at row 4, column 4 of the matrix.</summary>
 		[DataMember]
+		[FieldOffset(60)]
 		public float M44;
+
+		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[FieldOffset(0)]
+		public unsafe fixed float Values[16];
 
 
      
@@ -441,61 +461,52 @@ namespace Molten
         /// <summary>
         /// Gets or sets the component at the specified index.
         /// </summary>
-        /// <value>The value of the matrix component, depending on the index.</value>
-        /// <param name="index">The zero-based index of the component to access.</param>
+        /// <value>The value of a component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 3</param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 15].</exception>
-        public float this[int index]
-        {
-            get
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, 15].</exception>  
+		public unsafe float this[int index]
+		{
+			get
             {
-                switch (index)
-                {
-                    case 0:  return M11;
-                    case 1:  return M12;
-                    case 2:  return M13;
-                    case 3:  return M14;
-                    case 4:  return M21;
-                    case 5:  return M22;
-                    case 6:  return M23;
-                    case 7:  return M24;
-                    case 8:  return M31;
-                    case 9:  return M32;
-                    case 10: return M33;
-                    case 11: return M34;
-                    case 12: return M41;
-                    case 13: return M42;
-                    case 14: return M43;
-                    case 15: return M44;
-                }
+                if(index > 15 || index < 0)
+                    throw new IndexOutOfRangeException("Index for Matrix4F must be between from 0 to 15, inclusive.");
 
-                throw new ArgumentOutOfRangeException("index", "Indices for Matrix run from 0 to 15, inclusive.");
+                return Values[index];
             }
-
             set
             {
-                switch (index)
-                {
-                    case 0: M11 = value; break;
-                    case 1: M12 = value; break;
-                    case 2: M13 = value; break;
-                    case 3: M14 = value; break;
-                    case 4: M21 = value; break;
-                    case 5: M22 = value; break;
-                    case 6: M23 = value; break;
-                    case 7: M24 = value; break;
-                    case 8: M31 = value; break;
-                    case 9: M32 = value; break;
-                    case 10: M33 = value; break;
-                    case 11: M34 = value; break;
-                    case 12: M41 = value; break;
-                    case 13: M42 = value; break;
-                    case 14: M43 = value; break;
-                    case 15: M44 = value; break;
-                    default: throw new ArgumentOutOfRangeException("index", "Indices for Matrix run from 0 to 15, inclusive.");
-                }
+                if (index > 15 || index < 0)
+                    throw new IndexOutOfRangeException("Index for Matrix4F must be between from 0 to 15, inclusive.");
+
+                Values[index] = value;
             }
-        }
+		}
+
+        /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of a component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 3</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is greater than 15.</exception>  
+		public unsafe float this[uint index]
+		{
+			get
+            {
+                if(index > 15)
+                    throw new IndexOutOfRangeException("Index for Matrix4F must less than 16.");
+
+                return Values[index];
+            }
+            set
+            {
+                if (index > 15)
+                    throw new IndexOutOfRangeException("Index for Matrix4F must less than 16.");
+
+                Values[index] = value;
+            }
+		}
 
         /// <summary>
         /// Gets or sets the component at the specified index.

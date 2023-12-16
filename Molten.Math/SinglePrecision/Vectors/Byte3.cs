@@ -9,12 +9,15 @@ using Molten.DoublePrecision;
 namespace Molten
 {
 	///<summary>A <see cref="byte"/> vector comprised of three components.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack=1)]
+	[StructLayout(LayoutKind.Explicit)]
     [Serializable]
 	public partial struct Byte3 : IFormattable, IUnsignedVector<Byte3, byte>, IEquatable<Byte3>
 	{
 		///<summary>The size of <see cref="Byte3"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Byte3));
+
+        ///<summary>The number of elements in the current vector type.</summary>
+        public static readonly int NumElements = 3;
 
 		///<summary>A Byte3 with every component set to (byte)1.</summary>
 		public static readonly Byte3 One = new Byte3((byte)1, (byte)1, (byte)1);
@@ -35,15 +38,22 @@ namespace Molten
 
 		/// <summary>The X component.</summary>
 		[DataMember]
+		[FieldOffset(0)]
 		public byte X;
 
 		/// <summary>The Y component.</summary>
 		[DataMember]
+		[FieldOffset(1)]
 		public byte Y;
 
 		/// <summary>The Z component.</summary>
 		[DataMember]
+		[FieldOffset(2)]
 		public byte Z;
+
+		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[FieldOffset(0)]
+		public unsafe fixed byte Values[3];
 
 
         /// <summary>
@@ -1000,30 +1010,48 @@ namespace Molten
         /// <value>The value of a component, depending on the index.</value>
         /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 2</param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 2].</exception>  
-		public byte this[int index]
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, 2].</exception>  
+		public unsafe byte this[int index]
 		{
 			get
-			{
-				switch(index)
-				{
-					case 0: return X;
-					case 1: return Y;
-					case 2: return Z;
-				}
-				throw new ArgumentOutOfRangeException("index", "Indices for Byte3 run from 0 to 2, inclusive.");
-			}
+            {
+                if(index > 2 || index < 0)
+                    throw new IndexOutOfRangeException("Index for Byte3 must be between from 0 to 2, inclusive.");
 
-			set
-			{
-				switch(index)
-				{
-					case 0: X = value; break;
-					case 1: Y = value; break;
-					case 2: Z = value; break;
-				}
-				throw new ArgumentOutOfRangeException("index", "Indices for Byte3 run from 0 to 2, inclusive.");
-			}
+                return Values[index];
+            }
+            set
+            {
+                if (index > 2 || index < 0)
+                    throw new IndexOutOfRangeException("Index for Byte3 must be between from 0 to 2, inclusive.");
+
+                Values[index] = value;
+            }
+		}
+
+        /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of a component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 2</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is greater than 2.</exception>  
+		public unsafe byte this[uint index]
+		{
+			get
+            {
+                if(index > 2)
+                    throw new IndexOutOfRangeException("Index for Byte3 must be between from 0 to 2, inclusive.");
+
+                return Values[index];
+            }
+            set
+            {
+                if (index > 2)
+                    throw new IndexOutOfRangeException("Index for Byte3 must be between from 0 to 2, inclusive.");
+
+                Values[index] = value;
+            }
 		}
 #endregion
 

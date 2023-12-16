@@ -26,7 +26,7 @@ using System.Runtime.Serialization;
 namespace Molten<#=d.SubNamespace#>
 {
     /// <summary>Represents a <#=(d.DT.Bits > 32 ? "double" : "single")#>-precision 2x2 Matrix. Contains only scale and rotation.</summary>
-    [StructLayout(LayoutKind.Sequential, Pack=<#=d.DT.Pack#>)]
+    [StructLayout(LayoutKind.Explicit)]
     [Serializable]
 	public struct <#=d.Name#> : ITransposedMatrix<<#=d.Name#>>
     {
@@ -294,6 +294,56 @@ namespace Molten<#=d.SubNamespace#>
             else
                 return false;
         }
+
+        /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of a component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and <#=(d.Size - 1)#></param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, <#=(d.FieldNames.Length-1)#>].</exception>  
+		public unsafe <#=d.DT#> this[int index]
+		{
+			get
+            {
+                if(index > <#=(d.FieldNames.Length-1)#> || index < 0)
+                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(d.FieldNames.Length-1)#>, inclusive.");
+
+                return Values[index];
+            }
+            set
+            {
+                if (index > <#=(d.FieldNames.Length-1)#> || index < 0)
+                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(d.FieldNames.Length-1)#>, inclusive.");
+
+                Values[index] = value;
+            }
+		}
+
+        /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of a component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and <#=(d.Size - 1)#></param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is greater than <#=(d.FieldNames.Length-1)#>.</exception>  
+		public unsafe <#=d.DT#> this[uint index]
+		{
+			get
+            {
+                if(index > <#=(d.FieldNames.Length-1)#>)
+                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must less than <#=d.FieldNames.Length#>.");
+
+                return Values[index];
+            }
+            set
+            {
+                if (index > <#=(d.FieldNames.Length-1)#>)
+                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must less than <#=d.FieldNames.Length#>.");
+
+                Values[index] = value;
+            }
+		}
 
         public static bool operator ==(<#=d.Name#> matrix1, <#=d.Name#> matrix2)
         {

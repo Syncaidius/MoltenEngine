@@ -38,6 +38,11 @@ namespace Molten
         /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 2</param>
         /// <returns>The value of the component at the specified index.</returns>
         N this[int index] { get; set; }
+
+        /// <summary>
+        /// Gets the number of elements in the vector.
+        /// </summary>
+        static readonly int NumElements;
     }
 
     /// <summary>

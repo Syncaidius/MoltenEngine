@@ -9,12 +9,15 @@ using Molten.DoublePrecision;
 namespace Molten
 {
 	///<summary>A <see cref="sbyte"/> vector comprised of four components.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack=1)]
+	[StructLayout(LayoutKind.Explicit)]
     [Serializable]
 	public partial struct SByte4 : IFormattable, ISignedVector<SByte4, sbyte>, IEquatable<SByte4>
 	{
 		///<summary>The size of <see cref="SByte4"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(SByte4));
+
+        ///<summary>The number of elements in the current vector type.</summary>
+        public static readonly int NumElements = 4;
 
 		///<summary>A SByte4 with every component set to (sbyte)1.</summary>
 		public static readonly SByte4 One = new SByte4((sbyte)1, (sbyte)1, (sbyte)1, (sbyte)1);
@@ -38,19 +41,27 @@ namespace Molten
 
 		/// <summary>The X component.</summary>
 		[DataMember]
+		[FieldOffset(0)]
 		public sbyte X;
 
 		/// <summary>The Y component.</summary>
 		[DataMember]
+		[FieldOffset(1)]
 		public sbyte Y;
 
 		/// <summary>The Z component.</summary>
 		[DataMember]
+		[FieldOffset(2)]
 		public sbyte Z;
 
 		/// <summary>The W component.</summary>
 		[DataMember]
+		[FieldOffset(3)]
 		public sbyte W;
+
+		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[FieldOffset(0)]
+		public unsafe fixed sbyte Values[4];
 
 
         /// <summary>
@@ -1085,8 +1096,8 @@ namespace Molten
         /// <value>The value of a component, depending on the index.</value>
         /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 3</param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 3].</exception>  
-		public sbyte this[int index]
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, 3].</exception>  
+		public unsafe sbyte this[int index]
 		{
 			get
 			{
@@ -1111,6 +1122,31 @@ namespace Molten
 				}
 				throw new ArgumentOutOfRangeException("index", "Indices for SByte4 run from 0 to 3, inclusive.");
 			}
+		}
+
+        /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of a component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 3</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is greater than 3.</exception>  
+		public unsafe sbyte this[uint index]
+		{
+			get
+            {
+                if(index > 3)
+                    throw new IndexOutOfRangeException("Index for SByte4 must be between from 0 to 3, inclusive.");
+
+                return Values[index];
+            }
+            set
+            {
+                if (index > 3)
+                    throw new IndexOutOfRangeException("Index for SByte4 must be between from 0 to 3, inclusive.");
+
+                Values[index] = value;
+            }
 		}
 #endregion
 

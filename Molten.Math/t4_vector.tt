@@ -12,6 +12,7 @@ TypeGenerator gen = new TypeGenerator(this.GenerationEnvironment, this.Host, "de
 gen.Generate(null, (d, def) =>
 {
     string vectorInterface = d.DT.IsUnsigned ? "IUnsignedVector" : "ISignedVector";
+    int packPos = 0;
 #>
 using System;
 using System.Globalization;
@@ -24,12 +25,15 @@ using Molten.DoublePrecision;
 namespace Molten<#=d.SubNamespace#>
 {
 	///<summary>A <#=gen.See(d.DT.Name)#> vector comprised of <#=def.SizeNames[d.Size]#> components.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack=<#=d.DT.Pack#>)]
+	[StructLayout(LayoutKind.Explicit)]
     [Serializable]
 	public partial struct <#=d.Name#> : IFormattable, <#=vectorInterface#><<#=d.Name#>, <#=d.DT#>>, IEquatable<<#=d.Name#>>
 	{
 		///<summary>The size of <#=gen.See()#>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(<#=d.Name#>));
+
+        ///<summary>The number of elements in the current vector type.</summary>
+        public static readonly int NumElements = <#=d.Size#>;
 
 		///<summary>A <#=d.Name#> with every component set to <#=d.DT.One#>.</summary>
 		public static readonly <#=d.Name#> One = new <#=d.Name#>(<#for(int p = 0; p < d.Size; p++){#><#=d.DT.One#><#=(p < (d.Size-1) ? ", " : "")#><#}#>);
@@ -887,40 +891,48 @@ namespace Molten<#=d.SubNamespace#>
         /// <value>The value of a component, depending on the index.</value>
         /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and <#=(d.Size - 1)#></param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, <#=(d.Size-1)#>].</exception>  
-		public <#=d.DT#> this[int index]
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, <#=(d.Size-1)#>].</exception>  
+		public unsafe <#=d.DT#> this[int index]
 		{
 			get
-			{
-				switch(index)
-				{
-<#
-					for(int p = 0; p < d.Size; p++)
-					{
-#>
-					case <#=p#>: return <#=d.FieldNames[p]#>;
-<#
-					}
-#>
-				}
-				throw new ArgumentOutOfRangeException("index", "Indices for <#=d.Name#> run from 0 to <#=(d.Size-1)#>, inclusive.");
-			}
+            {
+                if(index > <#=(d.Size-1)#> || index < 0)
+                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(d.Size-1)#>, inclusive.");
 
-			set
-			{
-				switch(index)
-				{
-<#
-					for(int p = 0; p < d.Size; p++)
-					{
-#>
-					case <#=p#>: <#=d.FieldNames[p]#> = value; break;
-<#
-					}
-#>
-				}
-				throw new ArgumentOutOfRangeException("index", "Indices for <#=d.Name#> run from 0 to <#=(d.Size-1)#>, inclusive.");
-			}
+                return Values[index];
+            }
+            set
+            {
+                if (index > <#=(d.Size-1)#> || index < 0)
+                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(d.Size-1)#>, inclusive.");
+
+                Values[index] = value;
+            }
+		}
+
+        /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of a component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and <#=(d.Size - 1)#></param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is greater than <#=(d.Size-1)#>.</exception>  
+		public unsafe <#=d.DT#> this[uint index]
+		{
+			get
+            {
+                if(index > <#=(d.Size-1)#>)
+                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(d.Size-1)#>, inclusive.");
+
+                return Values[index];
+            }
+            set
+            {
+                if (index > <#=(d.Size-1)#>)
+                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(d.Size-1)#>, inclusive.");
+
+                Values[index] = value;
+            }
 		}
 #endregion
 

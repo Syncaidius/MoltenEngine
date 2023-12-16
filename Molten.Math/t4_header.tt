@@ -298,13 +298,27 @@ public class TypeGenerator
         string r = "";
         string indent = indentLevel > 0 ? new string('\t', indentLevel) : "";
         string n = Environment.NewLine;
+        int packPos = 0;
 
         for(int i = 0; i < _curDef.FieldNames.Length; i++)
         {
             string summary = summaryCallback?.Invoke(_curDef.FieldLabels[i]) ?? $"The {_curDef.FieldLabels[i]} component.";
             r += $"{indent}/// <summary>{summary}</summary>{n}";
             r += $"{indent}[DataMember]{n}";
+
+            if(_curDef.DT.Pack > 0)
+            {
+                r += $"{indent}[FieldOffset({packPos})]{n}";
+                packPos += _curDef.DT.Pack;
+            }
             r += $"{indent}public {_curDef.DT} {_curDef.FieldNames[i]};{n}{n}";
+        }
+
+        if(_curDef.DT.Pack > 0)
+        {
+            r += $"{indent}/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>{n}";
+            r += $"{indent}[FieldOffset(0)]{n}";
+            r += $"{indent}public unsafe fixed {_curDef.DT} Values[{_curDef.FieldNames.Length}];{n}{n}";
         }
 
         return r;
