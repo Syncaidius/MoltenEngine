@@ -55,7 +55,6 @@ namespace Molten.DoublePrecision
 		[FieldOffset(0)]
 		public unsafe fixed ulong Values[3];
 
-
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>

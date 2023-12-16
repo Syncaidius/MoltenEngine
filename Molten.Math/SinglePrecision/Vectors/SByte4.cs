@@ -63,7 +63,6 @@ namespace Molten
 		[FieldOffset(0)]
 		public unsafe fixed sbyte Values[4];
 
-
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
@@ -1100,28 +1099,19 @@ namespace Molten
 		public unsafe sbyte this[int index]
 		{
 			get
-			{
-				switch(index)
-				{
-					case 0: return X;
-					case 1: return Y;
-					case 2: return Z;
-					case 3: return W;
-				}
-				throw new ArgumentOutOfRangeException("index", "Indices for SByte4 run from 0 to 3, inclusive.");
-			}
+            {
+                if(index > 3 || index < 0)
+                    throw new IndexOutOfRangeException("Index for SByte4 must be between from 0 to 3, inclusive.");
 
-			set
-			{
-				switch(index)
-				{
-					case 0: X = value; break;
-					case 1: Y = value; break;
-					case 2: Z = value; break;
-					case 3: W = value; break;
-				}
-				throw new ArgumentOutOfRangeException("index", "Indices for SByte4 run from 0 to 3, inclusive.");
-			}
+                return Values[index];
+            }
+            set
+            {
+                if (index > 3 || index < 0)
+                    throw new IndexOutOfRangeException("Index for SByte4 must be between from 0 to 3, inclusive.");
+
+                Values[index] = value;
+            }
 		}
 
         /// <summary>

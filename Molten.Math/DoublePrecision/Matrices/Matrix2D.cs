@@ -40,7 +40,6 @@ namespace Molten.DoublePrecision
 		[FieldOffset(0)]
 		public unsafe fixed double Values[4];
 
-
         /// <summary>
         /// Constructs a new 2 row, 2 column matrix.
         /// </summary>
@@ -303,10 +302,10 @@ namespace Molten.DoublePrecision
         /// <summary>
         /// Gets or sets the component at the specified index.
         /// </summary>
-        /// <value>The value of a component, depending on the index.</value>
-        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 1</param>
+        /// <value>The value of the matrix component, depending on the index.</value>
+        /// <param name="index">The zero-based index of the component to access.</param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, 3].</exception>  
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, 3].</exception> 
 		public unsafe double this[int index]
 		{
 			get
@@ -328,10 +327,10 @@ namespace Molten.DoublePrecision
         /// <summary>
         /// Gets or sets the component at the specified index.
         /// </summary>
-        /// <value>The value of a component, depending on the index.</value>
-        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 1</param>
+        /// <value>The value of the matrix component, depending on the index.</value>
+        /// <param name="index">The zero-based index of the component to access.</param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is greater than 3.</exception>  
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is greater than 3.</exception>
 		public unsafe double this[uint index]
 		{
 			get

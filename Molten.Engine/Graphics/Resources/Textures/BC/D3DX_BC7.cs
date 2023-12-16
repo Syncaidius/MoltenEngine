@@ -12,6 +12,8 @@
 // http://go.microsoft.com/fwlink/?LinkId=248926
 //-------------------------------------------------------------------------------------
 using System.Diagnostics;
+using Silk.NET.Core.Native;
+using System.Runtime.CompilerServices;
 
 namespace Molten.Graphics.Textures
 {
@@ -415,13 +417,17 @@ namespace Molten.Graphics.Textures
         private static Color Quantize(Color c, Color RGBAPrec)
         {
             Color q;
+            Unsafe.SkipInit(out q);
+
             q.R = Quantize(c.R, RGBAPrec.R);
             q.G = Quantize(c.G, RGBAPrec.G);
             q.B = Quantize(c.B, RGBAPrec.B);
+
             if (RGBAPrec.A > 0)
                 q.A = Quantize(c.A, RGBAPrec.A);
             else
                 q.A = 255;
+
             return q;
         }
 

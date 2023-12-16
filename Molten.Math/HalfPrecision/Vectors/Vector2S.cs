@@ -47,7 +47,6 @@ namespace Molten.HalfPrecision
 		[FieldOffset(0)]
 		public unsafe fixed short Values[2];
 
-
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>

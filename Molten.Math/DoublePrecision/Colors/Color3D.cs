@@ -9,7 +9,7 @@ namespace Molten.DoublePrecision
 	/// <summary>
     /// Represents a color in the form of red, green, blue.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
+    [StructLayout(LayoutKind.Explicit)]
     [Serializable]
     public struct Color3D : IEquatable<Color3D>, IFormattable
     {
@@ -32,16 +32,22 @@ namespace Molten.DoublePrecision
 
 		/// <summary>The red component.</summary>
 		[DataMember]
+		[FieldOffset(0)]
 		public double R;
 
 		/// <summary>The green component.</summary>
 		[DataMember]
+		[FieldOffset(8)]
 		public double G;
 
 		/// <summary>The blue component.</summary>
 		[DataMember]
+		[FieldOffset(16)]
 		public double B;
 
+		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[FieldOffset(0)]
+		public unsafe fixed double Values[3];
 
 		/// <summary>Initializes a new instance of <see cref="Color3D"/>.</summary>
 		/// <param name="value">The value that will be assigned to all components.</param>
@@ -134,35 +140,52 @@ namespace Molten.DoublePrecision
         /// <summary>
         /// Gets or sets the component at the specified index.
         /// </summary>
+        /// <value>The value of a component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 2</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, 2].</exception>  
+		public unsafe double this[int index]
+		{
+			get
+            {
+                if(index > 2 || index < 0)
+                    throw new IndexOutOfRangeException("Index for Color3D must be between from 0 to 2, inclusive.");
+
+                return Values[index];
+            }
+            set
+            {
+                if (index > 2 || index < 0)
+                    throw new IndexOutOfRangeException("Index for Color3D must be between from 0 to 2, inclusive.");
+
+                Values[index] = value;
+            }
+		}
+
+        /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
         /// <value>The value of the red, green, or blue component, depending on the index.</value>
         /// <param name="index">The index of the component to access. Use 0 for the red component, 1 for the green component, and 2 for the blue component.</param>
         /// <returns>The value of the component at the specified index.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 2].</exception>
-        public double this[int index]
-        {
-            get
+        public unsafe double this[uint index]
+		{
+			get
             {
-                switch (index)
-                {
-                    case 0: return R;
-                    case 1: return G;
-                    case 2: return B;
-                }
+                if(index > 2)
+                    throw new IndexOutOfRangeException("Index for Color3D must be between from 0 to 2, inclusive.");
 
-                throw new ArgumentOutOfRangeException("index", "Indices for Color3D run from 0 to 2, inclusive.");
+                return Values[index];
             }
-
             set
             {
-                switch (index)
-                {
-                    case 0: R = value; break;
-                    case 1: G = value; break;
-                    case 2: B = value; break;
-                    default: throw new ArgumentOutOfRangeException("index", "Indices for Color3D run from 0 to 2, inclusive.");
-                }
+                if (index > 2)
+                    throw new IndexOutOfRangeException("Index for Color3D must be between from 0 to 2, inclusive.");
+
+                Values[index] = value;
             }
-        }
+		}
 
         /// <summary>
         /// Converts the color into a packed integer.

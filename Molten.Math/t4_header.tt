@@ -318,7 +318,7 @@ public class TypeGenerator
         {
             r += $"{indent}/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>{n}";
             r += $"{indent}[FieldOffset(0)]{n}";
-            r += $"{indent}public unsafe fixed {_curDef.DT} Values[{_curDef.FieldNames.Length}];{n}{n}";
+            r += $"{indent}public unsafe fixed {_curDef.DT} Values[{_curDef.FieldNames.Length}];{n}";
         }
 
         return r;

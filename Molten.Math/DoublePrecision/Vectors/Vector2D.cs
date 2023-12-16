@@ -47,7 +47,6 @@ namespace Molten.DoublePrecision
 		[FieldOffset(0)]
 		public unsafe fixed double Values[2];
 
-
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>

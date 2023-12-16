@@ -397,8 +397,8 @@ namespace Molten<#=d.SubNamespace#>
         /// <summary>
         /// Gets or sets the component at the specified index.
         /// </summary>
-        /// <value>The value of a component, depending on the index.</value>
-        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and <#=(d.Size - 1)#></param>
+        /// <value>The value of the matrix component, depending on the index.</value>
+        /// <param name="index">The zero-based index of the component to access.</param>
         /// <returns>The value of the component at the specified index.</returns>
         /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, <#=(d.FieldNames.Length-1)#>].</exception>  
 		public unsafe <#=d.DT#> this[int index]
@@ -422,10 +422,10 @@ namespace Molten<#=d.SubNamespace#>
         /// <summary>
         /// Gets or sets the component at the specified index.
         /// </summary>
-        /// <value>The value of a component, depending on the index.</value>
-        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and <#=(d.Size - 1)#></param>
+        /// <value>The value of the matrix component, depending on the index.</value>
+        /// <param name="index">The zero-based index of the component to access.</param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is greater than <#=(d.FieldNames.Length-1)#>.</exception>  
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is greater than <#=(d.FieldNames.Length-1)#>.</exception>
 		public unsafe <#=d.DT#> this[uint index]
 		{
 			get

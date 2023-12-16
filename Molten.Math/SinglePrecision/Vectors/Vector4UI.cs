@@ -63,7 +63,6 @@ namespace Molten
 		[FieldOffset(0)]
 		public unsafe fixed uint Values[4];
 
-
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>

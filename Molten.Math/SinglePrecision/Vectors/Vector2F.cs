@@ -47,7 +47,6 @@ namespace Molten
 		[FieldOffset(0)]
 		public unsafe fixed float Values[2];
 
-
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>

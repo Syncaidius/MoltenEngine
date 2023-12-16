@@ -121,7 +121,6 @@ namespace Molten
 		[FieldOffset(0)]
 		public unsafe fixed float Values[9];
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Matrix3F"/> struct.
         /// </summary>
@@ -257,10 +256,10 @@ namespace Molten
         /// <summary>
         /// Gets or sets the component at the specified index.
         /// </summary>
-        /// <value>The value of a component, depending on the index.</value>
-        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 2</param>
+        /// <value>The value of the matrix component, depending on the index.</value>
+        /// <param name="index">The zero-based index of the component to access.</param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, 8].</exception>  
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, 8].</exception> 
 		public unsafe float this[int index]
 		{
 			get
@@ -282,10 +281,10 @@ namespace Molten
         /// <summary>
         /// Gets or sets the component at the specified index.
         /// </summary>
-        /// <value>The value of a component, depending on the index.</value>
-        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 2</param>
+        /// <value>The value of the matrix component, depending on the index.</value>
+        /// <param name="index">The zero-based index of the component to access.</param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is greater than 8.</exception>  
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is greater than 8.</exception>
 		public unsafe float this[uint index]
 		{
 			get

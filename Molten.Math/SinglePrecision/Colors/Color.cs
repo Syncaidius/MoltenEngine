@@ -28,7 +28,7 @@ namespace Molten
     /// <summary>
     /// Represents a 32-bit color (4 bytes) in the form of RGBA (in byte order: R, G, B, A).
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, Size = 4)]
+    [StructLayout(LayoutKind.Explicit)]
     [Serializable]
     public partial struct Color : IEquatable<Color>, IFormattable
     {
@@ -38,25 +38,41 @@ namespace Molten
         /// The red component of the color.
         /// </summary>
         [DataMember]
+        [FieldOffset(0)]
         public byte R;
 
         /// <summary>
         /// The green component of the color.
         /// </summary>
         [DataMember]
+        [FieldOffset(1)]
         public byte G;
 
         /// <summary>
         /// The blue component of the color.
         /// </summary>
         [DataMember]
+        [FieldOffset(2)]
         public byte B;
 
         /// <summary>
         /// The alpha component of the color.
         /// </summary>
         [DataMember]
+        [FieldOffset(3)]
         public byte A;
+
+        /// <summary>
+        /// Represents the four components, RGBA, in an array. Overlaps the individual component fields in memory.
+        /// </summary>
+        [FieldOffset(0)]
+        public unsafe fixed byte Values[4];
+
+        /// <summary>
+        /// Represents the four components, RGBA in an integer. Overlaps the individual component fields in memory.
+        /// </summary>
+        [FieldOffset(0)]
+        public int Packed; 
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Color"/> struct.
@@ -290,31 +306,21 @@ namespace Molten
         /// <param name="index">The index of the component to access. Use 0 for the alpha component, 1 for the red component, 2 for the green component, and 3 for the blue component.</param>
         /// <returns>The value of the component at the specified index.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 3].</exception>
-        public byte this[int index]
+        public unsafe byte this[int index]
         {
             get
             {
-                switch (index)
-                {
-                    case 0: return R;
-                    case 1: return G;
-                    case 2: return B;
-                    case 3: return A;
-                }
+                if (index > 3 || index < 0)
+                    throw new IndexOutOfRangeException("Index for Color must be between from 0 to 3, inclusive.");
 
-                throw new ArgumentOutOfRangeException("index", "Indices for Color run from 0 to 3, inclusive.");
+                return Values[index];
             }
-
             set
             {
-                switch (index)
-                {
-                    case 0: R = value; break;
-                    case 1: G = value; break;
-                    case 2: B = value; break;
-                    case 3: A = value; break;
-                    default: throw new ArgumentOutOfRangeException("index", "Indices for Color run from 0 to 3, inclusive.");
-                }
+                if (index > 3 || index < 0)
+                    throw new IndexOutOfRangeException("Index for Color must be between from 0 to 3, inclusive.");
+
+                Values[index] = value;
             }
         }
 
@@ -547,6 +553,8 @@ namespace Molten
         /// <param name="result">When the method completes, completes the sum of the two colors.</param>
         public static void Add(ref Color left, ref Color right, out Color result)
         {
+            Unsafe.SkipInit(out result);
+
             result.A = (byte)(left.A + right.A);
             result.R = (byte)(left.R + right.R);
             result.G = (byte)(left.G + right.G);
@@ -572,6 +580,8 @@ namespace Molten
         /// <param name="result">WHen the method completes, contains the difference of the two colors.</param>
         public static void Subtract(ref Color left, ref Color right, out Color result)
         {
+            Unsafe.SkipInit(out result);
+
             result.A = (byte)(left.A - right.A);
             result.R = (byte)(left.R - right.R);
             result.G = (byte)(left.G - right.G);
@@ -597,6 +607,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the modulated color.</param>
         public static void Modulate(ref Color left, ref Color right, out Color result)
         {
+            Unsafe.SkipInit(out result);
+
             result.A = (byte)(left.A * right.A / 255.0f);
             result.R = (byte)(left.R * right.R / 255.0f);
             result.G = (byte)(left.G * right.G / 255.0f);
@@ -622,6 +634,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the scaled color.</param>
         public static void Scale(ref Color value, float scale, out Color result)
         {
+            Unsafe.SkipInit(out result);
+
             result.A = (byte)(value.A * scale);
             result.R = (byte)(value.R * scale);
             result.G = (byte)(value.G * scale);
@@ -646,6 +660,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the negated color.</param>
         public static void Negate(ref Color value, out Color result)
         {
+            Unsafe.SkipInit(out result);
+
             result.A = (byte)(255 - value.A);
             result.R = (byte)(255 - value.R);
             result.G = (byte)(255 - value.G);
@@ -697,6 +713,8 @@ namespace Molten
         /// <param name="result">The premultiplied result.</param>
         public static void Premultiply(ref Color value, out Color result)
         {
+            Unsafe.SkipInit(out result);
+
             var a = value.A / (255f * 255f);
             result.A = value.A;
             result.R = ToByte(value.R * a);
@@ -802,6 +820,8 @@ namespace Molten
         /// </remarks>
         public static void Lerp(ref Color start, ref Color end, float amount, out Color result)
         {
+            Unsafe.SkipInit(out result);
+
             result.R = MathHelper.Lerp(start.R, end.R, amount);
             result.G = MathHelper.Lerp(start.G, end.G, amount);
             result.B = MathHelper.Lerp(start.B, end.B, amount);
@@ -860,6 +880,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains an new color composed of the largest components of the source colors.</param>
         public static void Max(ref Color left, ref Color right, out Color result)
         {
+            Unsafe.SkipInit(out result);
+
             result.A = (left.A > right.A) ? left.A : right.A;
             result.R = (left.R > right.R) ? left.R : right.R;
             result.G = (left.G > right.G) ? left.G : right.G;
@@ -887,6 +909,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains an new color composed of the smallest components of the source colors.</param>
         public static void Min(ref Color left, ref Color right, out Color result)
         {
+            Unsafe.SkipInit(out result);
+
             result.A = (left.A < right.A) ? left.A : right.A;
             result.R = (left.R < right.R) ? left.R : right.R;
             result.G = (left.G < right.G) ? left.G : right.G;
@@ -914,6 +938,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the adjusted color.</param>
         public static void AdjustContrast(ref Color value, float contrast, out Color result)
         {
+            Unsafe.SkipInit(out result);
+
             result.A = value.A;
             result.R = ToByte(0.5f + contrast * (value.R / 255.0f - 0.5f));
             result.G = ToByte(0.5f + contrast * (value.G / 255.0f - 0.5f));
@@ -943,6 +969,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the adjusted color.</param>
         public static void AdjustSaturation(ref Color value, float saturation, out Color result)
         {
+            Unsafe.SkipInit(out result);
+
             float grey = value.R  / 255.0f * 0.2125f + value.G / 255.0f * 0.7154f + value.B / 255.0f * 0.0721f;
 
             result.A = value.A;
@@ -1052,7 +1080,7 @@ namespace Molten
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(Color left, Color right)
         {
-            return left.Equals(ref right);
+            return left.Packed == right.Packed;
         }
 
         /// <summary>
@@ -1064,7 +1092,7 @@ namespace Molten
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator !=(Color left, Color right)
         {
-            return !left.Equals(ref right);
+            return left.Packed != right.Packed;
         }
 
         /// <summary>
@@ -1244,14 +1272,7 @@ namespace Molten
         /// </returns>
         public override int GetHashCode()
         {
-            unchecked
-            {
-                var hashCode = R.GetHashCode();
-                hashCode = (hashCode * 397) ^ G.GetHashCode();
-                hashCode = (hashCode * 397) ^ B.GetHashCode();
-                hashCode = (hashCode * 397) ^ A.GetHashCode();
-                return hashCode;
-            }
+            return Packed;
         }
 
         /// <summary>
@@ -1264,7 +1285,7 @@ namespace Molten
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref Color other)
         {
-            return R == other.R && G == other.G && B == other.B && A == other.A;
+            return Packed == other.Packed;
         }
 
         /// <summary>
@@ -1289,11 +1310,10 @@ namespace Molten
         /// </returns>
         public override bool Equals(object value)
         {
-            if (!(value is Color))
-                return false;
+            if (value is Color other)
+                return Packed == other.Packed;
 
-            var strongValue = (Color)value;
-            return Equals(ref strongValue);
+            return false;
         }
 
         /// <summary>
