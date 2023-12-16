@@ -1,10 +1,8 @@
-name: Windows [Debug]
+name: Windowws-Dev-Daily
 
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+  schedule:
+   - cron: '0 23 * * *'
   workflow_dispatch:
 
 jobs:
@@ -16,7 +14,7 @@ jobs:
      RUN_TESTS: false
 
      RELEASE_TAG_NAME: windows_dev_debug
-     RELEASE_NAME: Latest - Windows Dev
+     RELEASE_NAME: Windows-dev
   
      DOTNET_INSTALL_DIR: ./dotnet
      DOTNET_VERSION: 7.0.x
@@ -29,6 +27,10 @@ jobs:
     steps:
     - name: Checkout Git Repo
       uses: actions/checkout@v3
+
+    - name: Get Current Date
+      id: date
+      run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
 
     - name: Cache dotnet
       id: cache-dotnet
@@ -61,35 +63,14 @@ jobs:
     - name: Zip build output
       run: zip -r $RELEASE_TAG_NAME.zip ./publish_$CONFIG_NAME
 
-    - name: Delete old dev release
-      uses: actions/github-script@v6
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          const { data: releases } = await github.repos.listReleases({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            });
-            const releaseToDelete = releases.find(release => release.tag_name === '${{ env.RELEASE_TAG_NAME }}');
-            if (releaseToDelete) {
-              await github.repos.deleteRelease({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                release_id: releaseToDelete.id,
-              });
-              console.log(`Deleted release ${releaseToDelete.tag_name}`);
-            } else {
-              console.log('Release not found');
-            }
-
     - name: Create Release [${{ env.RELEASE_NAME }}]
       id: build_create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{env.RELEASE_TAG_NAME}}
-        release_name: ${{ env.RELEASE_NAME }}
+        tag_name: ${{env.RELEASE_TAG_NAME}}-${{ steps.date.outputs.date }}
+        release_name: ${{ env.RELEASE_NAME }}-${{ steps.date.outputs.date }}
         body: |
           This is the ${{ env. CONFIG_NAME }} build.
         draft: false
