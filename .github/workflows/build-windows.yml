@@ -1,4 +1,4 @@
-name: Windowws-Dev-Daily
+name: Build-Dev-Windows-Daily
 
 on:
   schedule:

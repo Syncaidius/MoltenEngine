@@ -1,4 +1,4 @@
-name: Android-Dev-Daily
+name: Build-Dev-Android-Daily
 
 on:
   schedule:
