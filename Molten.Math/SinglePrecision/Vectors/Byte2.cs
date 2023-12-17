@@ -43,7 +43,7 @@ namespace Molten
 		[FieldOffset(1)]
 		public byte Y;
 
-		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		/// <summary>A fixed array mapped to the same memory space as the individual <see cref="Byte2"/> components.</summary>
 		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed byte Values[2];
@@ -57,6 +57,16 @@ namespace Molten
         }
 
 #region Constructors
+		/// <summary>
+		/// Initializes a new instance of <see cref="Byte2"/>.
+		/// </summary>
+		/// <param name="x">The X component.</param>
+		/// <param name="y">The Y component.</param>
+		public Byte2(byte x, byte y)
+		{
+			X = x;
+			Y = y;
+		}
 		/// <summary>Initializes a new instance of <see cref="Byte2"/>.</summary>
 		/// <param name="value">The value that will be assigned to all components.</param>
 		public Byte2(byte value)
@@ -67,21 +77,24 @@ namespace Molten
 		/// <summary>Initializes a new instance of <see cref="Byte2"/> from an array.</summary>
 		/// <param name="values">The values to assign to the X, Y components of the color. This must be an array with at least two elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
-		public Byte2(byte[] values)
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 2 elements.</exception>
+		public unsafe Byte2(byte[] values)
 		{
 			if (values == null)
 				throw new ArgumentNullException("values");
 			if (values.Length < 2)
-				throw new ArgumentOutOfRangeException("values", "There must be at least two input values for Byte2.");
+				throw new ArgumentOutOfRangeException("values", "There must be at least 2 input values for Byte2.");
 
-			X = values[0];
-			Y = values[1];
+			fixed (byte* src = values)
+			{
+				fixed (byte* dst = Values)
+					Unsafe.CopyBlock(src, dst, (sizeof(byte) * 2));
+			}
 		}
 		/// <summary>Initializes a new instance of <see cref="Byte2"/> from a span.</summary>
 		/// <param name="values">The values to assign to the X, Y components of the color. This must be an array with at least two elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 2 elements.</exception>
 		public Byte2(Span<byte> values)
 		{
 			if (values == null)
@@ -96,7 +109,7 @@ namespace Molten
 		/// <param name="ptrValues">The values to assign to the X, Y components of the color.
 		/// <para>There must be at least two elements available or undefined behaviour will occur.</para></param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than four elements.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 2 elements.</exception>
 		public unsafe Byte2(byte* ptrValues)
 		{
 			if (ptrValues == null)
@@ -104,16 +117,6 @@ namespace Molten
 
 			X = ptrValues[0];
 			Y = ptrValues[1];
-		}
-		/// <summary>
-		/// Initializes a new instance of <see cref="Byte2"/>.
-		/// </summary>
-		/// <param name="x">The X component.</param>
-		/// <param name="y">The Y component.</param>
-		public Byte2(byte x, byte y)
-		{
-			X = x;
-			Y = y;
 		}
 
 #endregion
@@ -195,7 +198,7 @@ namespace Molten
         /// <returns>A two-element array containing the components of the vector.</returns>
         public byte[] ToArray()
         {
-            return new byte[] { X, Y };
+            return [X, Y];
         }
 		
 

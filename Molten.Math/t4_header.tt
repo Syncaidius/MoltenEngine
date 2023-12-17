@@ -284,7 +284,7 @@ public class TypeGenerator
             throw new Exception("Length of provided argument names list (ArgNames) is shorter than the size of the current type.");
         
         string r = "";
-        for(int i = 0; i < _curDef.Size; i++)
+        for(int i = 0; i < _curDef.FieldNames.Length; i++)
         {
             if(i > 0) r += ", ";
                 r += $"{_curDef.DT.Name} {_curDef.ArgNames[i]}";
@@ -316,7 +316,7 @@ public class TypeGenerator
 
         if(_curDef.DT.Pack > 0)
         {
-            r += $"{indent}/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>{n}";
+            r += $"{indent}/// <summary>A fixed array mapped to the same memory space as the individual {See()} components.</summary>{n}";
             r += $"{indent}[IgnoreDataMember]{n}";
             r += $"{indent}[FieldOffset(0)]{n}";
             r += $"{indent}public unsafe fixed {_curDef.DT} Values[{_curDef.FieldNames.Length}];{n}";
@@ -373,14 +373,36 @@ public class TypeGenerator
         _sb.Append(text);
     }
 
-    public void GenerateStandardConstructors(int indent = 2)
+    public void GenerateStandardConstructors(int indent = 2, Func<string, string> summaryCallback = null)
     {
+        // Per-component initialization parameters
+        Out(indent, $"/// <summary>");
+        Out(indent, $"/// Initializes a new instance of {See()}.");
+        Out(indent, $"/// </summary>");
+
+        if(summaryCallback != null)
+        {
+            for(int i = 0; i < _curDef.FieldNames.Length; i++)
+                Out(indent, $"/// <param name=\"{_curDef.ArgNames[i]}\">{summaryCallback(_curDef.FieldLabels[i])}</param>");
+        }
+        else
+        {
+            for(int i = 0; i < _curDef.FieldNames.Length; i++)
+                Out(indent, $"/// <param name=\"{_curDef.ArgNames[i]}\">The {_curDef.FieldNames[i]} component.</param>");
+        }
+
+        Out(indent, $"public {_curDef.Name}({GetConstructorArgs()})");
+        Out(indent, $"{{");
+        for(int i = 0; i < _curDef.FieldNames.Length; i++)
+            Out(indent + 1, $"{_curDef.FieldNames[i]} = {_curDef.ArgNames[i]};");
+        Out(indent, $"}}");
+
         // Single-value initialization parameter
         Out(indent, $"/// <summary>Initializes a new instance of {See()}.</summary>");
         Out(indent, $"/// <param name=\"value\">The value that will be assigned to all components.</param>");
         Out(indent, $"public {_curDef.Name}({_curDef.DT} value)");
         Out(indent, $"{{");
-        for(int i = 0; i < _curDef.Size; i++)
+        for(int i = 0; i < _curDef.FieldNames.Length; i++)
             Out(indent + 1, $"{_curDef.FieldNames[i]} = value;");
         Out(indent, $"}}");
 
@@ -388,24 +410,26 @@ public class TypeGenerator
         Out(indent, $"/// <summary>Initializes a new instance of {See()} from an array.</summary>");
         Out(indent, $"/// <param name=\"values\">The values to assign to the {FieldsToArgs(_curDef.FieldNames)} components of the color. This must be an array with at least {_def.SizeNames[_curDef.Size]} elements.</param>");
         Out(indent, $"/// <exception cref=\"ArgumentNullException\">Thrown when <paramref name=\"values\"/> is <c>null</c>.</exception>");
-        Out(indent, $"/// <exception cref=\"ArgumentOutOfRangeException\">Thrown when <paramref name=\"values\"/> contains more or less than four elements.</exception>");
-        Out(indent, $"public {_curDef.Name}({_curDef.DT}[] values)");
+        Out(indent, $"/// <exception cref=\"ArgumentOutOfRangeException\">Thrown when <paramref name=\"values\"/> contains more or less than {_curDef.FieldNames.Length} elements.</exception>");
+        Out(indent, $"public unsafe {_curDef.Name}({_curDef.DT}[] values)");
         Out(indent, $"{{");
         Out(indent + 1, $"if (values == null)");
         Out(indent + 2, $"throw new ArgumentNullException(\"values\");");
-        Out(indent + 1, $"if (values.Length < {_curDef.Size})");
-        Out(indent + 2, $"throw new ArgumentOutOfRangeException(\"values\", \"There must be at least {_def.SizeNames[_curDef.Size]} input values for {_curDef.Name}.\");");
+        Out(indent + 1, $"if (values.Length < {_curDef.FieldNames.Length})");
+        Out(indent + 2, $"throw new ArgumentOutOfRangeException(\"values\", \"There must be at least {_curDef.FieldNames.Length} input values for {_curDef.Name}.\");");
         Out("");
-
-        for(int i = 0; i < _curDef.Size; i++)
-            Out(indent + 1, $"{_curDef.FieldNames[i]} = values[{i}];");
+        Out(indent + 1, $"fixed ({_curDef.DT}* src = values)");
+        Out(indent + 1, $"{{");
+        Out(indent + 2, $"fixed ({_curDef.DT}* dst = Values)");
+        Out(indent + 3, $"Unsafe.CopyBlock(src, dst, (sizeof({_curDef.DT}) * {_curDef.FieldNames.Length}));");
+        Out(indent + 1, $"}}");
         Out(indent, $"}}");
 
         // Span-based initialization parameter
         Out(indent, $"/// <summary>Initializes a new instance of {See()} from a span.</summary>");
         Out(indent, $"/// <param name=\"values\">The values to assign to the {FieldsToArgs(_curDef.FieldNames)} components of the color. This must be an array with at least {_def.SizeNames[_curDef.Size]} elements.</param>");
         Out(indent, $"/// <exception cref=\"ArgumentNullException\">Thrown when <paramref name=\"values\"/> is <c>null</c>.</exception>");
-        Out(indent, $"/// <exception cref=\"ArgumentOutOfRangeException\">Thrown when <paramref name=\"values\"/> contains more or less than four elements.</exception>");
+        Out(indent, $"/// <exception cref=\"ArgumentOutOfRangeException\">Thrown when <paramref name=\"values\"/> contains more or less than {_curDef.FieldNames.Length} elements.</exception>");
         Out(indent, $"public {_curDef.Name}(Span<{_curDef.DT}> values)");
         Out(indent, $"{{");
         Out(indent + 1, $"if (values == null)");
@@ -423,29 +447,15 @@ public class TypeGenerator
         Out(indent, $"/// <param name=\"ptrValues\">The values to assign to the {FieldsToArgs(_curDef.FieldNames)} components of the color.");
         Out(indent, $"/// <para>There must be at least {_def.SizeNames[_curDef.Size]} elements available or undefined behaviour will occur.</para></param>");
         Out(indent, $"/// <exception cref=\"ArgumentNullException\">Thrown when <paramref name=\"ptrValues\"/> is <c>null</c>.</exception>");
-        Out(indent, $"/// <exception cref=\"ArgumentOutOfRangeException\">Thrown when <paramref name=\"ptrValues\"/> contains more or less than four elements.</exception>");
+        Out(indent, $"/// <exception cref=\"ArgumentOutOfRangeException\">Thrown when <paramref name=\"ptrValues\"/> contains more or less than {_curDef.FieldNames.Length} elements.</exception>");
         Out(indent, $"public unsafe {_curDef.Name}({_curDef.DT}* ptrValues)");
         Out(indent, $"{{");
         Out(indent + 1, $"if (ptrValues == null)");
         Out(indent + 2, $"throw new ArgumentNullException(\"ptrValues\");");
         _sb.AppendLine("");
 
-        for(int i = 0; i < _curDef.Size; i++)
+        for(int i = 0; i < _curDef.FieldNames.Length; i++)
             Out(indent + 1, $"{_curDef.FieldNames[i]} = ptrValues[{i}];");
-        Out(indent, $"}}");
-
-        // Per-component initialization parameters
-        Out(indent, $"/// <summary>");
-        Out(indent, $"/// Initializes a new instance of {See()}.");
-        Out(indent, $"/// </summary>");
-
-        for(int i = 0; i < _curDef.Size; i++)
-            Out(indent, $"/// <param name=\"{_curDef.ArgNames[i]}\">The {_curDef.FieldNames[i]} component.</param>");
-
-        Out(indent, $"public {_curDef.Name}({GetConstructorArgs()})");
-        Out(indent, $"{{");
-        for(int i = 0; i < _curDef.Size; i++)
-            Out(indent + 1, $"{_curDef.FieldNames[i]} = {_curDef.ArgNames[i]};");
         Out(indent, $"}}");
     } 
 

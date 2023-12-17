@@ -51,11 +51,25 @@ namespace Molten
 		[FieldOffset(12)]
 		public float A;
 
-		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		/// <summary>A fixed array mapped to the same memory space as the individual <see cref="Color4"/> components.</summary>
 		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed float Values[4];
 
+		/// <summary>
+		/// Initializes a new instance of <see cref="Color4"/>.
+		/// </summary>
+		/// <param name="r">The R component.</param>
+		/// <param name="g">The G component.</param>
+		/// <param name="b">The B component.</param>
+		/// <param name="a">The A component.</param>
+		public Color4(float r, float g, float b, float a)
+		{
+			R = r;
+			G = g;
+			B = b;
+			A = a;
+		}
 		/// <summary>Initializes a new instance of <see cref="Color4"/>.</summary>
 		/// <param name="value">The value that will be assigned to all components.</param>
 		public Color4(float value)
@@ -68,23 +82,24 @@ namespace Molten
 		/// <summary>Initializes a new instance of <see cref="Color4"/> from an array.</summary>
 		/// <param name="values">The values to assign to the R, G, B, A components of the color. This must be an array with at least four elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
-		public Color4(float[] values)
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
+		public unsafe Color4(float[] values)
 		{
 			if (values == null)
 				throw new ArgumentNullException("values");
 			if (values.Length < 4)
-				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for Color4.");
+				throw new ArgumentOutOfRangeException("values", "There must be at least 4 input values for Color4.");
 
-			R = values[0];
-			G = values[1];
-			B = values[2];
-			A = values[3];
+			fixed (float* src = values)
+			{
+				fixed (float* dst = Values)
+					Unsafe.CopyBlock(src, dst, (sizeof(float) * 4));
+			}
 		}
 		/// <summary>Initializes a new instance of <see cref="Color4"/> from a span.</summary>
 		/// <param name="values">The values to assign to the R, G, B, A components of the color. This must be an array with at least four elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
 		public Color4(Span<float> values)
 		{
 			if (values == null)
@@ -101,7 +116,7 @@ namespace Molten
 		/// <param name="ptrValues">The values to assign to the R, G, B, A components of the color.
 		/// <para>There must be at least four elements available or undefined behaviour will occur.</para></param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than four elements.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 4 elements.</exception>
 		public unsafe Color4(float* ptrValues)
 		{
 			if (ptrValues == null)
@@ -112,20 +127,6 @@ namespace Molten
 			B = ptrValues[2];
 			A = ptrValues[3];
 		}
-		/// <summary>
-		/// Initializes a new instance of <see cref="Color4"/>.
-		/// </summary>
-		/// <param name="r">The R component.</param>
-		/// <param name="g">The G component.</param>
-		/// <param name="b">The B component.</param>
-		/// <param name="a">The A component.</param>
-		public Color4(float r, float g, float b, float a)
-		{
-			R = r;
-			G = g;
-			B = b;
-			A = a;
-		}
 		///<summary>Creates a new instance of <see cref="Color4"/>, using a <see cref="Color3"/> to populate the first three components.</summary>
 		public Color4(Color3 vector, float a)
 		{
@@ -134,6 +135,7 @@ namespace Molten
 			B = vector.B;
 			A = a;
 		}
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Color4"/> struct.

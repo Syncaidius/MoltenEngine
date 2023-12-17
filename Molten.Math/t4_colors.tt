@@ -62,6 +62,7 @@ namespace Molten<#=d.SubNamespace#>
 <#=gen.GenerateFields()#>
 <#gen.GenerateStandardConstructors();#>
 <#gen.GenerateUpgradeConstructors();#>
+
         /// <summary>
         /// Initializes a new instance of the <#=gen.See()#> struct.
         /// </summary>

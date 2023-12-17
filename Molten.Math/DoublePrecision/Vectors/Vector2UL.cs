@@ -43,7 +43,7 @@ namespace Molten.DoublePrecision
 		[FieldOffset(8)]
 		public ulong Y;
 
-		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		/// <summary>A fixed array mapped to the same memory space as the individual <see cref="Vector2UL"/> components.</summary>
 		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed ulong Values[2];
@@ -57,6 +57,16 @@ namespace Molten.DoublePrecision
         }
 
 #region Constructors
+		/// <summary>
+		/// Initializes a new instance of <see cref="Vector2UL"/>.
+		/// </summary>
+		/// <param name="x">The X component.</param>
+		/// <param name="y">The Y component.</param>
+		public Vector2UL(ulong x, ulong y)
+		{
+			X = x;
+			Y = y;
+		}
 		/// <summary>Initializes a new instance of <see cref="Vector2UL"/>.</summary>
 		/// <param name="value">The value that will be assigned to all components.</param>
 		public Vector2UL(ulong value)
@@ -67,21 +77,24 @@ namespace Molten.DoublePrecision
 		/// <summary>Initializes a new instance of <see cref="Vector2UL"/> from an array.</summary>
 		/// <param name="values">The values to assign to the X, Y components of the color. This must be an array with at least two elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
-		public Vector2UL(ulong[] values)
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 2 elements.</exception>
+		public unsafe Vector2UL(ulong[] values)
 		{
 			if (values == null)
 				throw new ArgumentNullException("values");
 			if (values.Length < 2)
-				throw new ArgumentOutOfRangeException("values", "There must be at least two input values for Vector2UL.");
+				throw new ArgumentOutOfRangeException("values", "There must be at least 2 input values for Vector2UL.");
 
-			X = values[0];
-			Y = values[1];
+			fixed (ulong* src = values)
+			{
+				fixed (ulong* dst = Values)
+					Unsafe.CopyBlock(src, dst, (sizeof(ulong) * 2));
+			}
 		}
 		/// <summary>Initializes a new instance of <see cref="Vector2UL"/> from a span.</summary>
 		/// <param name="values">The values to assign to the X, Y components of the color. This must be an array with at least two elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 2 elements.</exception>
 		public Vector2UL(Span<ulong> values)
 		{
 			if (values == null)
@@ -96,7 +109,7 @@ namespace Molten.DoublePrecision
 		/// <param name="ptrValues">The values to assign to the X, Y components of the color.
 		/// <para>There must be at least two elements available or undefined behaviour will occur.</para></param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than four elements.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 2 elements.</exception>
 		public unsafe Vector2UL(ulong* ptrValues)
 		{
 			if (ptrValues == null)
@@ -104,16 +117,6 @@ namespace Molten.DoublePrecision
 
 			X = ptrValues[0];
 			Y = ptrValues[1];
-		}
-		/// <summary>
-		/// Initializes a new instance of <see cref="Vector2UL"/>.
-		/// </summary>
-		/// <param name="x">The X component.</param>
-		/// <param name="y">The Y component.</param>
-		public Vector2UL(ulong x, ulong y)
-		{
-			X = x;
-			Y = y;
 		}
 
 #endregion
@@ -195,7 +198,7 @@ namespace Molten.DoublePrecision
         /// <returns>A two-element array containing the components of the vector.</returns>
         public ulong[] ToArray()
         {
-            return new ulong[] { X, Y };
+            return [X, Y];
         }
 		
 

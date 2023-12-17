@@ -46,11 +46,23 @@ namespace Molten
 		[FieldOffset(8)]
 		public float B;
 
-		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		/// <summary>A fixed array mapped to the same memory space as the individual <see cref="Color3"/> components.</summary>
 		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed float Values[3];
 
+		/// <summary>
+		/// Initializes a new instance of <see cref="Color3"/>.
+		/// </summary>
+		/// <param name="r">The R component.</param>
+		/// <param name="g">The G component.</param>
+		/// <param name="b">The B component.</param>
+		public Color3(float r, float g, float b)
+		{
+			R = r;
+			G = g;
+			B = b;
+		}
 		/// <summary>Initializes a new instance of <see cref="Color3"/>.</summary>
 		/// <param name="value">The value that will be assigned to all components.</param>
 		public Color3(float value)
@@ -62,22 +74,24 @@ namespace Molten
 		/// <summary>Initializes a new instance of <see cref="Color3"/> from an array.</summary>
 		/// <param name="values">The values to assign to the R, G, B components of the color. This must be an array with at least three elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
-		public Color3(float[] values)
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 3 elements.</exception>
+		public unsafe Color3(float[] values)
 		{
 			if (values == null)
 				throw new ArgumentNullException("values");
 			if (values.Length < 3)
-				throw new ArgumentOutOfRangeException("values", "There must be at least three input values for Color3.");
+				throw new ArgumentOutOfRangeException("values", "There must be at least 3 input values for Color3.");
 
-			R = values[0];
-			G = values[1];
-			B = values[2];
+			fixed (float* src = values)
+			{
+				fixed (float* dst = Values)
+					Unsafe.CopyBlock(src, dst, (sizeof(float) * 3));
+			}
 		}
 		/// <summary>Initializes a new instance of <see cref="Color3"/> from a span.</summary>
 		/// <param name="values">The values to assign to the R, G, B components of the color. This must be an array with at least three elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 3 elements.</exception>
 		public Color3(Span<float> values)
 		{
 			if (values == null)
@@ -93,7 +107,7 @@ namespace Molten
 		/// <param name="ptrValues">The values to assign to the R, G, B components of the color.
 		/// <para>There must be at least three elements available or undefined behaviour will occur.</para></param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than four elements.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 3 elements.</exception>
 		public unsafe Color3(float* ptrValues)
 		{
 			if (ptrValues == null)
@@ -103,18 +117,7 @@ namespace Molten
 			G = ptrValues[1];
 			B = ptrValues[2];
 		}
-		/// <summary>
-		/// Initializes a new instance of <see cref="Color3"/>.
-		/// </summary>
-		/// <param name="r">The R component.</param>
-		/// <param name="g">The G component.</param>
-		/// <param name="b">The B component.</param>
-		public Color3(float r, float g, float b)
-		{
-			R = r;
-			G = g;
-			B = b;
-		}
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Color3"/> struct.
         /// </summary>

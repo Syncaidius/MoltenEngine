@@ -36,7 +36,7 @@ namespace Molten
 		[FieldOffset(12)]
 		public int Bottom;
 
-		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		/// <summary>A fixed array mapped to the same memory space as the individual <see cref="Rectangle"/> components.</summary>
 		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed int Values[4];
@@ -54,69 +54,77 @@ namespace Molten
             Bottom = position.Y + size.Y;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Rectangle"/> struct.
-        /// </summary>
-        /// <param name="x">The left.</param>
-        /// <param name="y">The top.</param>
-        /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
-        public Rectangle(int x, int y, int width, int height)
-        {
-            Left = x;
-            Top = y;
-            Right = x + width;
-            Bottom = y + height;
-        }
+		/// <summary>
+		/// Initializes a new instance of <see cref="Rectangle"/>.
+		/// </summary>
+		/// <param name="left">The Left component.</param>
+		/// <param name="top">The Top component.</param>
+		/// <param name="right">The Right component.</param>
+		/// <param name="bottom">The Bottom component.</param>
+		public Rectangle(int left, int top, int right, int bottom)
+		{
+			Left = left;
+			Top = top;
+			Right = right;
+			Bottom = bottom;
+		}
+		/// <summary>Initializes a new instance of <see cref="Rectangle"/>.</summary>
+		/// <param name="value">The value that will be assigned to all components.</param>
+		public Rectangle(int value)
+		{
+			Left = value;
+			Top = value;
+			Right = value;
+			Bottom = value;
+		}
+		/// <summary>Initializes a new instance of <see cref="Rectangle"/> from an array.</summary>
+		/// <param name="values">The values to assign to the Left, Top, Right, Bottom components of the color. This must be an array with at least four elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
+		public unsafe Rectangle(int[] values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 4)
+				throw new ArgumentOutOfRangeException("values", "There must be at least 4 input values for Rectangle.");
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Rectangle"/> struct.
-        /// </summary>
-        /// <param name="values">The values to populate the rectangle with. These should be ordered as X, Y, Width and Height.</param>
-        public Rectangle(int[] values)
-        {
-            if(values == null)
-                throw new ArgumentNullException("values");
+			fixed (int* src = values)
+			{
+				fixed (int* dst = Values)
+					Unsafe.CopyBlock(src, dst, (sizeof(int) * 4));
+			}
+		}
+		/// <summary>Initializes a new instance of <see cref="Rectangle"/> from a span.</summary>
+		/// <param name="values">The values to assign to the Left, Top, Right, Bottom components of the color. This must be an array with at least four elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
+		public Rectangle(Span<int> values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 4)
+				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for Rectangle.");
 
-            if(values.Length < 4)
-                throw new Exception("Rectangle expects at least 4 values to populate X, Y, Width and Height.");
+			Left = values[0];
+			Top = values[1];
+			Right = values[2];
+			Bottom = values[3];
+		}
+		/// <summary>Initializes a new instance of <see cref="Rectangle"/> from a an unsafe pointer.</summary>
+		/// <param name="ptrValues">The values to assign to the Left, Top, Right, Bottom components of the color.
+		/// <para>There must be at least four elements available or undefined behaviour will occur.</para></param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 4 elements.</exception>
+		public unsafe Rectangle(int* ptrValues)
+		{
+			if (ptrValues == null)
+				throw new ArgumentNullException("ptrValues");
 
-            Left = values[0];
-            Top = values[1];
-            Right = Left + values[2];
-            Bottom = Top + values[3];
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Rectangle"/> struct.
-        /// </summary>
-        /// <param name="values">The values to populate the rectangle with. These should be ordered as X, Y, Width and Height.</param>
-        public Rectangle(Span<int> values)
-        {
-            if(values == null)
-                throw new ArgumentNullException("values");
-
-            if(values.Length < 4)
-                throw new Exception("Rectangle expects at least 4 values to populate X, Y, Width and Height.");
-
-            Left = values[0];
-            Top = values[1];
-            Right = Left + values[2];
-            Bottom = Top + values[3];
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Rectangle"/> struct.
-        /// </summary>
-        /// <param name="values">The <see cref="int"/> values to populate the rectangle with. These should be ordered as X, Y, Width and Height.
-        /// <para>If the pointer does not contain at least 4 values of the expected type, undefined behaviour will occur.</para></param>
-        public unsafe Rectangle(int* values)
-        {
-            Left = values[0];
-            Top = values[1];
-            Right = Left + values[2];
-            Bottom = Top + values[3];
-        }
+			Left = ptrValues[0];
+			Top = ptrValues[1];
+			Right = ptrValues[2];
+			Bottom = ptrValues[3];
+		}
 
         /// <summary>
         /// Gets or sets the X position.

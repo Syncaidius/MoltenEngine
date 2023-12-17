@@ -51,7 +51,7 @@ namespace Molten.HalfPrecision
 		[FieldOffset(4)]
 		public ushort Z;
 
-		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		/// <summary>A fixed array mapped to the same memory space as the individual <see cref="Vector3US"/> components.</summary>
 		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed ushort Values[3];
@@ -65,6 +65,18 @@ namespace Molten.HalfPrecision
         }
 
 #region Constructors
+		/// <summary>
+		/// Initializes a new instance of <see cref="Vector3US"/>.
+		/// </summary>
+		/// <param name="x">The X component.</param>
+		/// <param name="y">The Y component.</param>
+		/// <param name="z">The Z component.</param>
+		public Vector3US(ushort x, ushort y, ushort z)
+		{
+			X = x;
+			Y = y;
+			Z = z;
+		}
 		/// <summary>Initializes a new instance of <see cref="Vector3US"/>.</summary>
 		/// <param name="value">The value that will be assigned to all components.</param>
 		public Vector3US(ushort value)
@@ -76,22 +88,24 @@ namespace Molten.HalfPrecision
 		/// <summary>Initializes a new instance of <see cref="Vector3US"/> from an array.</summary>
 		/// <param name="values">The values to assign to the X, Y, Z components of the color. This must be an array with at least three elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
-		public Vector3US(ushort[] values)
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 3 elements.</exception>
+		public unsafe Vector3US(ushort[] values)
 		{
 			if (values == null)
 				throw new ArgumentNullException("values");
 			if (values.Length < 3)
-				throw new ArgumentOutOfRangeException("values", "There must be at least three input values for Vector3US.");
+				throw new ArgumentOutOfRangeException("values", "There must be at least 3 input values for Vector3US.");
 
-			X = values[0];
-			Y = values[1];
-			Z = values[2];
+			fixed (ushort* src = values)
+			{
+				fixed (ushort* dst = Values)
+					Unsafe.CopyBlock(src, dst, (sizeof(ushort) * 3));
+			}
 		}
 		/// <summary>Initializes a new instance of <see cref="Vector3US"/> from a span.</summary>
 		/// <param name="values">The values to assign to the X, Y, Z components of the color. This must be an array with at least three elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 3 elements.</exception>
 		public Vector3US(Span<ushort> values)
 		{
 			if (values == null)
@@ -107,7 +121,7 @@ namespace Molten.HalfPrecision
 		/// <param name="ptrValues">The values to assign to the X, Y, Z components of the color.
 		/// <para>There must be at least three elements available or undefined behaviour will occur.</para></param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than four elements.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 3 elements.</exception>
 		public unsafe Vector3US(ushort* ptrValues)
 		{
 			if (ptrValues == null)
@@ -116,18 +130,6 @@ namespace Molten.HalfPrecision
 			X = ptrValues[0];
 			Y = ptrValues[1];
 			Z = ptrValues[2];
-		}
-		/// <summary>
-		/// Initializes a new instance of <see cref="Vector3US"/>.
-		/// </summary>
-		/// <param name="x">The X component.</param>
-		/// <param name="y">The Y component.</param>
-		/// <param name="z">The Z component.</param>
-		public Vector3US(ushort x, ushort y, ushort z)
-		{
-			X = x;
-			Y = y;
-			Z = z;
 		}
 
 		///<summary>Creates a new instance of <see cref="Vector3US"/>, using a <see cref="Vector2US"/> to populate the first two components.</summary>
@@ -218,7 +220,7 @@ namespace Molten.HalfPrecision
         /// <returns>A three-element array containing the components of the vector.</returns>
         public ushort[] ToArray()
         {
-            return new ushort[] { X, Y, Z };
+            return [X, Y, Z];
         }
 		
 

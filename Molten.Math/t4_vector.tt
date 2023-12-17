@@ -165,7 +165,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <returns>A <#=def.SizeNames[d.Size]#>-element array containing the components of the vector.</returns>
         public <#=d.DT#>[] ToArray()
         {
-            return new <#=d.DT#>[] { <#=gen.FieldsToArgs(d.FieldNames)#> };
+            return [<#=gen.FieldsToArgs(d.FieldNames)#>];
         }
 <#
     if(!d.DT.IsUnsigned)

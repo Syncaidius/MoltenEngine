@@ -152,7 +152,7 @@ namespace Molten
 		[FieldOffset(60)]
 		public float M44;
 
-		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		/// <summary>A fixed array mapped to the same memory space as the individual <see cref="Matrix4F"/> components.</summary>
 		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed float Values[16];
@@ -283,83 +283,125 @@ namespace Molten
             M33 = value.Z;
           }
         }
-        
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Matrix4F"/> struct.
-        /// </summary>
-        /// <param name="value">The value that will be assigned to all components.</param>
-        public Matrix4F(float value)
-        {
-            M11 = M12 = M13 = M14 =
-            M21 = M22 = M23 = M24 =
-            M31 = M32 = M33 = M34 =
-            M41 = M42 = M43 = M44 = value;
-        }
+		/// <summary>
+		/// Initializes a new instance of <see cref="Matrix4F"/>.
+		/// </summary>
+		/// <param name="m11">The value to assign to row 1, column 1 of the matrix.</param>
+		/// <param name="m12">The value to assign to row 1, column 2 of the matrix.</param>
+		/// <param name="m13">The value to assign to row 1, column 3 of the matrix.</param>
+		/// <param name="m14">The value to assign to row 1, column 4 of the matrix.</param>
+		/// <param name="m21">The value to assign to row 2, column 1 of the matrix.</param>
+		/// <param name="m22">The value to assign to row 2, column 2 of the matrix.</param>
+		/// <param name="m23">The value to assign to row 2, column 3 of the matrix.</param>
+		/// <param name="m24">The value to assign to row 2, column 4 of the matrix.</param>
+		/// <param name="m31">The value to assign to row 3, column 1 of the matrix.</param>
+		/// <param name="m32">The value to assign to row 3, column 2 of the matrix.</param>
+		/// <param name="m33">The value to assign to row 3, column 3 of the matrix.</param>
+		/// <param name="m34">The value to assign to row 3, column 4 of the matrix.</param>
+		/// <param name="m41">The value to assign to row 4, column 1 of the matrix.</param>
+		/// <param name="m42">The value to assign to row 4, column 2 of the matrix.</param>
+		/// <param name="m43">The value to assign to row 4, column 3 of the matrix.</param>
+		/// <param name="m44">The value to assign to row 4, column 4 of the matrix.</param>
+		public Matrix4F(float m11, float m12, float m13, float m14, float m21, float m22, float m23, float m24, float m31, float m32, float m33, float m34, float m41, float m42, float m43, float m44)
+		{
+			M11 = m11;
+			M12 = m12;
+			M13 = m13;
+			M14 = m14;
+			M21 = m21;
+			M22 = m22;
+			M23 = m23;
+			M24 = m24;
+			M31 = m31;
+			M32 = m32;
+			M33 = m33;
+			M34 = m34;
+			M41 = m41;
+			M42 = m42;
+			M43 = m43;
+			M44 = m44;
+		}
+		/// <summary>Initializes a new instance of <see cref="Matrix4F"/>.</summary>
+		/// <param name="value">The value that will be assigned to all components.</param>
+		public Matrix4F(float value)
+		{
+			M11 = value;
+			M12 = value;
+			M13 = value;
+			M14 = value;
+			M21 = value;
+			M22 = value;
+			M23 = value;
+			M24 = value;
+			M31 = value;
+			M32 = value;
+			M33 = value;
+			M34 = value;
+			M41 = value;
+			M42 = value;
+			M43 = value;
+			M44 = value;
+		}
+		/// <summary>Initializes a new instance of <see cref="Matrix4F"/> from an array.</summary>
+		/// <param name="values">The values to assign to the M11, M12, M13, M14 components of the color. This must be an array with at least four elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 16 elements.</exception>
+		public unsafe Matrix4F(float[] values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 16)
+				throw new ArgumentOutOfRangeException("values", "There must be at least 16 input values for Matrix4F.");
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Matrix4F"/> struct.
-        /// </summary>
-        /// <param name="m11">The value to assign at row 1 column 1 of the matrix.</param>
-        /// <param name="m12">The value to assign at row 1 column 2 of the matrix.</param>
-        /// <param name="m13">The value to assign at row 1 column 3 of the matrix.</param>
-        /// <param name="m14">The value to assign at row 1 column 4 of the matrix.</param>
-        /// <param name="m21">The value to assign at row 2 column 1 of the matrix.</param>
-        /// <param name="m22">The value to assign at row 2 column 2 of the matrix.</param>
-        /// <param name="m23">The value to assign at row 2 column 3 of the matrix.</param>
-        /// <param name="m24">The value to assign at row 2 column 4 of the matrix.</param>
-        /// <param name="m31">The value to assign at row 3 column 1 of the matrix.</param>
-        /// <param name="m32">The value to assign at row 3 column 2 of the matrix.</param>
-        /// <param name="m33">The value to assign at row 3 column 3 of the matrix.</param>
-        /// <param name="m34">The value to assign at row 3 column 4 of the matrix.</param>
-        /// <param name="m41">The value to assign at row 4 column 1 of the matrix.</param>
-        /// <param name="m42">The value to assign at row 4 column 2 of the matrix.</param>
-        /// <param name="m43">The value to assign at row 4 column 3 of the matrix.</param>
-        /// <param name="m44">The value to assign at row 4 column 4 of the matrix.</param>
-        public Matrix4F(float m11, float m12, float m13, float m14,
-            float m21, float m22, float m23, float m24,
-            float m31, float m32, float m33, float m34,
-            float m41, float m42, float m43, float m44)
-        {
-            M11 = m11; M12 = m12; M13 = m13; M14 = m14;
-            M21 = m21; M22 = m22; M23 = m23; M24 = m24;
-            M31 = m31; M32 = m32; M33 = m33; M34 = m34;
-            M41 = m41; M42 = m42; M43 = m43; M44 = m44;
-        }
+			fixed (float* src = values)
+			{
+				fixed (float* dst = Values)
+					Unsafe.CopyBlock(src, dst, (sizeof(float) * 16));
+			}
+		}
+		/// <summary>Initializes a new instance of <see cref="Matrix4F"/> from a span.</summary>
+		/// <param name="values">The values to assign to the M11, M12, M13, M14 components of the color. This must be an array with at least four elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 16 elements.</exception>
+		public Matrix4F(Span<float> values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 4)
+				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for Matrix4F.");
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Matrix4F"/> struct.
-        /// </summary>
-        /// <param name="values">The values to assign to the components of the matrix. This must be an array with sixteen elements.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 16 elements.</exception>
-        public Matrix4F(float[] values)
-        {
-            if (values == null)
-                throw new ArgumentNullException("values");
+			M11 = values[0];
+			M12 = values[1];
+			M13 = values[2];
+			M14 = values[3];
+		}
+		/// <summary>Initializes a new instance of <see cref="Matrix4F"/> from a an unsafe pointer.</summary>
+		/// <param name="ptrValues">The values to assign to the M11, M12, M13, M14 components of the color.
+		/// <para>There must be at least four elements available or undefined behaviour will occur.</para></param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 16 elements.</exception>
+		public unsafe Matrix4F(float* ptrValues)
+		{
+			if (ptrValues == null)
+				throw new ArgumentNullException("ptrValues");
 
-            if (values.Length != 16)
-                throw new ArgumentOutOfRangeException("values", "There must only be 16 input values for Matrix4F.");
-
-            M11 = values[0];
-            M12 = values[1];
-            M13 = values[2];
-            M14 = values[3];
-
-            M21 = values[4];
-            M22 = values[5];
-            M23 = values[6];
-            M24 = values[7];
-
-            M31 = values[8];
-            M32 = values[9];
-            M33 = values[10];
-            M34 = values[11];
-
-            M41 = values[12];
-            M42 = values[13];
-            M43 = values[14];
-            M44 = values[15];
-        }
+			M11 = ptrValues[0];
+			M12 = ptrValues[1];
+			M13 = ptrValues[2];
+			M14 = ptrValues[3];
+			M21 = ptrValues[4];
+			M22 = ptrValues[5];
+			M23 = ptrValues[6];
+			M24 = ptrValues[7];
+			M31 = ptrValues[8];
+			M32 = ptrValues[9];
+			M33 = ptrValues[10];
+			M34 = ptrValues[11];
+			M41 = ptrValues[12];
+			M42 = ptrValues[13];
+			M43 = ptrValues[14];
+			M44 = ptrValues[15];
+		}
 
         /// <summary>
         /// Gets or sets the first row in the matrix; that is M11, M12, M13, and M14.

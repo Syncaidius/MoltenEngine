@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
@@ -34,45 +35,81 @@ namespace Molten
 		[FieldOffset(12)]
 		public float M22;
 
-		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		/// <summary>A fixed array mapped to the same memory space as the individual <see cref="Matrix2F"/> components.</summary>
 		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed float Values[4];
 
-        /// <summary>
-        /// Constructs a new 2 row, 2 column matrix.
-        /// </summary>
-        /// <param name="m11">Value at row 1, column 1 of the matrix.</param>
-        /// <param name="m12">Value at row 1, column 2 of the matrix.</param>
-        /// <param name="m21">Value at row 2, column 1 of the matrix.</param>
-        /// <param name="m22">Value at row 2, column 2 of the matrix.</param>
-        public Matrix2F(float m11, float m12, float m21, float m22)
-        {
-            M11 = m11;
-            M12 = m12;
-            M21 = m21;
-            M22 = m22;
-        }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Matrix2F"/> struct.
-        /// </summary>
-        /// <param name="values">The values to assign to the components of the Matrix3x3. This must be an array with sixteen elements.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
-        public Matrix2F(float[] values)
-        {
-            if (values == null)
-                throw new ArgumentNullException("values");
-                
-            if (values.Length != 4)
-                throw new ArgumentOutOfRangeException("values", "There must only be 4 input values for Matrix2F.");
+		/// <summary>
+		/// Initializes a new instance of <see cref="Matrix2F"/>.
+		/// </summary>
+		/// <param name="m11">The value to assign to row 1, column 1 of the matrix.</param>
+		/// <param name="m12">The value to assign to row 1, column 2 of the matrix.</param>
+		/// <param name="m21">The value to assign to row 2, column 1 of the matrix.</param>
+		/// <param name="m22">The value to assign to row 2, column 2 of the matrix.</param>
+		public Matrix2F(float m11, float m12, float m21, float m22)
+		{
+			M11 = m11;
+			M12 = m12;
+			M21 = m21;
+			M22 = m22;
+		}
+		/// <summary>Initializes a new instance of <see cref="Matrix2F"/>.</summary>
+		/// <param name="value">The value that will be assigned to all components.</param>
+		public Matrix2F(float value)
+		{
+			M11 = value;
+			M12 = value;
+			M21 = value;
+			M22 = value;
+		}
+		/// <summary>Initializes a new instance of <see cref="Matrix2F"/> from an array.</summary>
+		/// <param name="values">The values to assign to the M11, M12 components of the color. This must be an array with at least two elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
+		public unsafe Matrix2F(float[] values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 4)
+				throw new ArgumentOutOfRangeException("values", "There must be at least 4 input values for Matrix2F.");
 
-            M11 = values[0];
-            M12 = values[1];
-            M21 = values[2];
-            M22 = values[3];
-        }
+			fixed (float* src = values)
+			{
+				fixed (float* dst = Values)
+					Unsafe.CopyBlock(src, dst, (sizeof(float) * 4));
+			}
+		}
+		/// <summary>Initializes a new instance of <see cref="Matrix2F"/> from a span.</summary>
+		/// <param name="values">The values to assign to the M11, M12 components of the color. This must be an array with at least two elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
+		public Matrix2F(Span<float> values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 2)
+				throw new ArgumentOutOfRangeException("values", "There must be at least two input values for Matrix2F.");
+
+			M11 = values[0];
+			M12 = values[1];
+		}
+		/// <summary>Initializes a new instance of <see cref="Matrix2F"/> from a an unsafe pointer.</summary>
+		/// <param name="ptrValues">The values to assign to the M11, M12 components of the color.
+		/// <para>There must be at least two elements available or undefined behaviour will occur.</para></param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 4 elements.</exception>
+		public unsafe Matrix2F(float* ptrValues)
+		{
+			if (ptrValues == null)
+				throw new ArgumentNullException("ptrValues");
+
+			M11 = ptrValues[0];
+			M12 = ptrValues[1];
+			M21 = ptrValues[2];
+			M22 = ptrValues[3];
+		}
 
         /// <summary>
         /// Adds the two matrices together on a per-element basis.
@@ -260,7 +297,7 @@ namespace Molten
 
         public float[] ToArray()
         {
-            return new[] { M11, M12, M21, M22 };
+            return [M11, M12, M21, M22];
         }
 
         public void Transpose(out Matrix2F result)

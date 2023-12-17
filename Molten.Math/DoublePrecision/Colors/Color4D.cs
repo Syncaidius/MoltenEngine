@@ -50,11 +50,25 @@ namespace Molten.DoublePrecision
 		[FieldOffset(24)]
 		public double A;
 
-		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		/// <summary>A fixed array mapped to the same memory space as the individual <see cref="Color4D"/> components.</summary>
 		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed double Values[4];
 
+		/// <summary>
+		/// Initializes a new instance of <see cref="Color4D"/>.
+		/// </summary>
+		/// <param name="r">The R component.</param>
+		/// <param name="g">The G component.</param>
+		/// <param name="b">The B component.</param>
+		/// <param name="a">The A component.</param>
+		public Color4D(double r, double g, double b, double a)
+		{
+			R = r;
+			G = g;
+			B = b;
+			A = a;
+		}
 		/// <summary>Initializes a new instance of <see cref="Color4D"/>.</summary>
 		/// <param name="value">The value that will be assigned to all components.</param>
 		public Color4D(double value)
@@ -67,23 +81,24 @@ namespace Molten.DoublePrecision
 		/// <summary>Initializes a new instance of <see cref="Color4D"/> from an array.</summary>
 		/// <param name="values">The values to assign to the R, G, B, A components of the color. This must be an array with at least four elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
-		public Color4D(double[] values)
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
+		public unsafe Color4D(double[] values)
 		{
 			if (values == null)
 				throw new ArgumentNullException("values");
 			if (values.Length < 4)
-				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for Color4D.");
+				throw new ArgumentOutOfRangeException("values", "There must be at least 4 input values for Color4D.");
 
-			R = values[0];
-			G = values[1];
-			B = values[2];
-			A = values[3];
+			fixed (double* src = values)
+			{
+				fixed (double* dst = Values)
+					Unsafe.CopyBlock(src, dst, (sizeof(double) * 4));
+			}
 		}
 		/// <summary>Initializes a new instance of <see cref="Color4D"/> from a span.</summary>
 		/// <param name="values">The values to assign to the R, G, B, A components of the color. This must be an array with at least four elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
 		public Color4D(Span<double> values)
 		{
 			if (values == null)
@@ -100,7 +115,7 @@ namespace Molten.DoublePrecision
 		/// <param name="ptrValues">The values to assign to the R, G, B, A components of the color.
 		/// <para>There must be at least four elements available or undefined behaviour will occur.</para></param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than four elements.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 4 elements.</exception>
 		public unsafe Color4D(double* ptrValues)
 		{
 			if (ptrValues == null)
@@ -111,20 +126,6 @@ namespace Molten.DoublePrecision
 			B = ptrValues[2];
 			A = ptrValues[3];
 		}
-		/// <summary>
-		/// Initializes a new instance of <see cref="Color4D"/>.
-		/// </summary>
-		/// <param name="r">The R component.</param>
-		/// <param name="g">The G component.</param>
-		/// <param name="b">The B component.</param>
-		/// <param name="a">The A component.</param>
-		public Color4D(double r, double g, double b, double a)
-		{
-			R = r;
-			G = g;
-			B = b;
-			A = a;
-		}
 		///<summary>Creates a new instance of <see cref="Color4D"/>, using a <see cref="Color3D"/> to populate the first three components.</summary>
 		public Color4D(Color3D vector, double a)
 		{
@@ -133,6 +134,7 @@ namespace Molten.DoublePrecision
 			B = vector.B;
 			A = a;
 		}
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Color4D"/> struct.

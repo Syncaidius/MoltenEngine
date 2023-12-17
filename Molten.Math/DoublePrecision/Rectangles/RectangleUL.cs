@@ -35,7 +35,7 @@ namespace Molten.DoublePrecision
 		[FieldOffset(24)]
 		public ulong Bottom;
 
-		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		/// <summary>A fixed array mapped to the same memory space as the individual <see cref="RectangleUL"/> components.</summary>
 		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed ulong Values[4];
@@ -53,69 +53,77 @@ namespace Molten.DoublePrecision
             Bottom = position.Y + size.Y;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Rectangle"/> struct.
-        /// </summary>
-        /// <param name="x">The left.</param>
-        /// <param name="y">The top.</param>
-        /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
-        public RectangleUL(ulong x, ulong y, ulong width, ulong height)
-        {
-            Left = x;
-            Top = y;
-            Right = x + width;
-            Bottom = y + height;
-        }
+		/// <summary>
+		/// Initializes a new instance of <see cref="RectangleUL"/>.
+		/// </summary>
+		/// <param name="left">The Left component.</param>
+		/// <param name="top">The Top component.</param>
+		/// <param name="right">The Right component.</param>
+		/// <param name="bottom">The Bottom component.</param>
+		public RectangleUL(ulong left, ulong top, ulong right, ulong bottom)
+		{
+			Left = left;
+			Top = top;
+			Right = right;
+			Bottom = bottom;
+		}
+		/// <summary>Initializes a new instance of <see cref="RectangleUL"/>.</summary>
+		/// <param name="value">The value that will be assigned to all components.</param>
+		public RectangleUL(ulong value)
+		{
+			Left = value;
+			Top = value;
+			Right = value;
+			Bottom = value;
+		}
+		/// <summary>Initializes a new instance of <see cref="RectangleUL"/> from an array.</summary>
+		/// <param name="values">The values to assign to the Left, Top, Right, Bottom components of the color. This must be an array with at least four elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
+		public unsafe RectangleUL(ulong[] values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 4)
+				throw new ArgumentOutOfRangeException("values", "There must be at least 4 input values for RectangleUL.");
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Rectangle"/> struct.
-        /// </summary>
-        /// <param name="values">The values to populate the rectangle with. These should be ordered as X, Y, Width and Height.</param>
-        public RectangleUL(ulong[] values)
-        {
-            if(values == null)
-                throw new ArgumentNullException("values");
+			fixed (ulong* src = values)
+			{
+				fixed (ulong* dst = Values)
+					Unsafe.CopyBlock(src, dst, (sizeof(ulong) * 4));
+			}
+		}
+		/// <summary>Initializes a new instance of <see cref="RectangleUL"/> from a span.</summary>
+		/// <param name="values">The values to assign to the Left, Top, Right, Bottom components of the color. This must be an array with at least four elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
+		public RectangleUL(Span<ulong> values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 4)
+				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for RectangleUL.");
 
-            if(values.Length < 4)
-                throw new Exception("RectangleUL expects at least 4 values to populate X, Y, Width and Height.");
+			Left = values[0];
+			Top = values[1];
+			Right = values[2];
+			Bottom = values[3];
+		}
+		/// <summary>Initializes a new instance of <see cref="RectangleUL"/> from a an unsafe pointer.</summary>
+		/// <param name="ptrValues">The values to assign to the Left, Top, Right, Bottom components of the color.
+		/// <para>There must be at least four elements available or undefined behaviour will occur.</para></param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 4 elements.</exception>
+		public unsafe RectangleUL(ulong* ptrValues)
+		{
+			if (ptrValues == null)
+				throw new ArgumentNullException("ptrValues");
 
-            Left = values[0];
-            Top = values[1];
-            Right = Left + values[2];
-            Bottom = Top + values[3];
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Rectangle"/> struct.
-        /// </summary>
-        /// <param name="values">The values to populate the rectangle with. These should be ordered as X, Y, Width and Height.</param>
-        public RectangleUL(Span<ulong> values)
-        {
-            if(values == null)
-                throw new ArgumentNullException("values");
-
-            if(values.Length < 4)
-                throw new Exception("RectangleUL expects at least 4 values to populate X, Y, Width and Height.");
-
-            Left = values[0];
-            Top = values[1];
-            Right = Left + values[2];
-            Bottom = Top + values[3];
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Rectangle"/> struct.
-        /// </summary>
-        /// <param name="values">The <see cref="ulong"/> values to populate the rectangle with. These should be ordered as X, Y, Width and Height.
-        /// <para>If the pointer does not contain at least 4 values of the expected type, undefined behaviour will occur.</para></param>
-        public unsafe RectangleUL(ulong* values)
-        {
-            Left = values[0];
-            Top = values[1];
-            Right = Left + values[2];
-            Bottom = Top + values[3];
-        }
+			Left = ptrValues[0];
+			Top = ptrValues[1];
+			Right = ptrValues[2];
+			Bottom = ptrValues[3];
+		}
 
         /// <summary>
         /// Gets or sets the X position.

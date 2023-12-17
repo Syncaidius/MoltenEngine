@@ -59,7 +59,7 @@ namespace Molten
 		[FieldOffset(3)]
 		public byte W;
 
-		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		/// <summary>A fixed array mapped to the same memory space as the individual <see cref="Byte4"/> components.</summary>
 		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed byte Values[4];
@@ -73,6 +73,20 @@ namespace Molten
         }
 
 #region Constructors
+		/// <summary>
+		/// Initializes a new instance of <see cref="Byte4"/>.
+		/// </summary>
+		/// <param name="x">The X component.</param>
+		/// <param name="y">The Y component.</param>
+		/// <param name="z">The Z component.</param>
+		/// <param name="w">The W component.</param>
+		public Byte4(byte x, byte y, byte z, byte w)
+		{
+			X = x;
+			Y = y;
+			Z = z;
+			W = w;
+		}
 		/// <summary>Initializes a new instance of <see cref="Byte4"/>.</summary>
 		/// <param name="value">The value that will be assigned to all components.</param>
 		public Byte4(byte value)
@@ -85,23 +99,24 @@ namespace Molten
 		/// <summary>Initializes a new instance of <see cref="Byte4"/> from an array.</summary>
 		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least four elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
-		public Byte4(byte[] values)
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
+		public unsafe Byte4(byte[] values)
 		{
 			if (values == null)
 				throw new ArgumentNullException("values");
 			if (values.Length < 4)
-				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for Byte4.");
+				throw new ArgumentOutOfRangeException("values", "There must be at least 4 input values for Byte4.");
 
-			X = values[0];
-			Y = values[1];
-			Z = values[2];
-			W = values[3];
+			fixed (byte* src = values)
+			{
+				fixed (byte* dst = Values)
+					Unsafe.CopyBlock(src, dst, (sizeof(byte) * 4));
+			}
 		}
 		/// <summary>Initializes a new instance of <see cref="Byte4"/> from a span.</summary>
 		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least four elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
 		public Byte4(Span<byte> values)
 		{
 			if (values == null)
@@ -118,7 +133,7 @@ namespace Molten
 		/// <param name="ptrValues">The values to assign to the X, Y, Z, W components of the color.
 		/// <para>There must be at least four elements available or undefined behaviour will occur.</para></param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than four elements.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 4 elements.</exception>
 		public unsafe Byte4(byte* ptrValues)
 		{
 			if (ptrValues == null)
@@ -128,20 +143,6 @@ namespace Molten
 			Y = ptrValues[1];
 			Z = ptrValues[2];
 			W = ptrValues[3];
-		}
-		/// <summary>
-		/// Initializes a new instance of <see cref="Byte4"/>.
-		/// </summary>
-		/// <param name="x">The X component.</param>
-		/// <param name="y">The Y component.</param>
-		/// <param name="z">The Z component.</param>
-		/// <param name="w">The W component.</param>
-		public Byte4(byte x, byte y, byte z, byte w)
-		{
-			X = x;
-			Y = y;
-			Z = z;
-			W = w;
 		}
 
 		///<summary>Creates a new instance of <see cref="Byte4"/>, using a <see cref="Byte2"/> to populate the first two components.</summary>
@@ -243,7 +244,7 @@ namespace Molten
         /// <returns>A four-element array containing the components of the vector.</returns>
         public byte[] ToArray()
         {
-            return new byte[] { X, Y, Z, W };
+            return [X, Y, Z, W];
         }
 		
 

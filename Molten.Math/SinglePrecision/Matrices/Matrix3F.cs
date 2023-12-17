@@ -117,69 +117,102 @@ namespace Molten
 		[FieldOffset(32)]
 		public float M33;
 
-		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		/// <summary>A fixed array mapped to the same memory space as the individual <see cref="Matrix3F"/> components.</summary>
 		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed float Values[9];
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Matrix3F"/> struct.
-        /// </summary>
-        /// <param name="value">The value that will be assigned to all components.</param>
-        public Matrix3F(float value)
-        {
-            M11 = M12 = M13 =
-            M21 = M22 = M23 =
-            M31 = M32 = M33 = value;
-        }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Matrix3F"/> struct.
-        /// </summary>
-        /// <param name="m11">The value to assign at row 1 column 1 of the Matrix3x3.</param>
-        /// <param name="m12">The value to assign at row 1 column 2 of the Matrix3x3.</param>
-        /// <param name="m13">The value to assign at row 1 column 3 of the Matrix3x3.</param>
-        /// <param name="m21">The value to assign at row 2 column 1 of the Matrix3x3.</param>
-        /// <param name="m22">The value to assign at row 2 column 2 of the Matrix3x3.</param>
-        /// <param name="m23">The value to assign at row 2 column 3 of the Matrix3x3.</param>
-        /// <param name="m31">The value to assign at row 3 column 1 of the Matrix3x3.</param>
-        /// <param name="m32">The value to assign at row 3 column 2 of the Matrix3x3.</param>
-        /// <param name="m33">The value to assign at row 3 column 3 of the Matrix3x3.</param>
-        public Matrix3F(float m11, float m12, float m13,
-            float m21, float m22, float m23,
-            float m31, float m32, float m33)
-        {
-            M11 = m11; M12 = m12; M13 = m13;
-            M21 = m21; M22 = m22; M23 = m23;
-            M31 = m31; M32 = m32; M33 = m33;
-        }
+		/// <summary>
+		/// Initializes a new instance of <see cref="Matrix3F"/>.
+		/// </summary>
+		/// <param name="m11">The value to assign to row 1, column 1 of the matrix.</param>
+		/// <param name="m12">The value to assign to row 1, column 2 of the matrix.</param>
+		/// <param name="m13">The value to assign to row 1, column 3 of the matrix.</param>
+		/// <param name="m21">The value to assign to row 2, column 1 of the matrix.</param>
+		/// <param name="m22">The value to assign to row 2, column 2 of the matrix.</param>
+		/// <param name="m23">The value to assign to row 2, column 3 of the matrix.</param>
+		/// <param name="m31">The value to assign to row 3, column 1 of the matrix.</param>
+		/// <param name="m32">The value to assign to row 3, column 2 of the matrix.</param>
+		/// <param name="m33">The value to assign to row 3, column 3 of the matrix.</param>
+		public Matrix3F(float m11, float m12, float m13, float m21, float m22, float m23, float m31, float m32, float m33)
+		{
+			M11 = m11;
+			M12 = m12;
+			M13 = m13;
+			M21 = m21;
+			M22 = m22;
+			M23 = m23;
+			M31 = m31;
+			M32 = m32;
+			M33 = m33;
+		}
+		/// <summary>Initializes a new instance of <see cref="Matrix3F"/>.</summary>
+		/// <param name="value">The value that will be assigned to all components.</param>
+		public Matrix3F(float value)
+		{
+			M11 = value;
+			M12 = value;
+			M13 = value;
+			M21 = value;
+			M22 = value;
+			M23 = value;
+			M31 = value;
+			M32 = value;
+			M33 = value;
+		}
+		/// <summary>Initializes a new instance of <see cref="Matrix3F"/> from an array.</summary>
+		/// <param name="values">The values to assign to the M11, M12, M13 components of the color. This must be an array with at least three elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 9 elements.</exception>
+		public unsafe Matrix3F(float[] values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 9)
+				throw new ArgumentOutOfRangeException("values", "There must be at least 9 input values for Matrix3F.");
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Matrix3F"/> struct.
-        /// </summary>
-        /// <param name="values">The values to assign to the components of the Matrix3x3. This must be an array with sixteen elements.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 9 elements.</exception>
-        public Matrix3F(float[] values)
-        {
-            if (values == null)
-                throw new ArgumentNullException("values");
-                
-            if (values.Length != 9)
-                throw new ArgumentOutOfRangeException("values", "There must only be 9 input values for Matrix3F.");
+			fixed (float* src = values)
+			{
+				fixed (float* dst = Values)
+					Unsafe.CopyBlock(src, dst, (sizeof(float) * 9));
+			}
+		}
+		/// <summary>Initializes a new instance of <see cref="Matrix3F"/> from a span.</summary>
+		/// <param name="values">The values to assign to the M11, M12, M13 components of the color. This must be an array with at least three elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 9 elements.</exception>
+		public Matrix3F(Span<float> values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 3)
+				throw new ArgumentOutOfRangeException("values", "There must be at least three input values for Matrix3F.");
 
-            M11 = values[0];
-            M12 = values[1];
-            M13 = values[2];
+			M11 = values[0];
+			M12 = values[1];
+			M13 = values[2];
+		}
+		/// <summary>Initializes a new instance of <see cref="Matrix3F"/> from a an unsafe pointer.</summary>
+		/// <param name="ptrValues">The values to assign to the M11, M12, M13 components of the color.
+		/// <para>There must be at least three elements available or undefined behaviour will occur.</para></param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 9 elements.</exception>
+		public unsafe Matrix3F(float* ptrValues)
+		{
+			if (ptrValues == null)
+				throw new ArgumentNullException("ptrValues");
 
-            M21 = values[3];
-            M22 = values[4];
-            M23 = values[5];
-
-            M31 = values[6];
-            M32 = values[7];
-            M33 = values[8];
-        }
+			M11 = ptrValues[0];
+			M12 = ptrValues[1];
+			M13 = ptrValues[2];
+			M21 = ptrValues[3];
+			M22 = ptrValues[4];
+			M23 = ptrValues[5];
+			M31 = ptrValues[6];
+			M32 = ptrValues[7];
+			M33 = ptrValues[8];
+		}
 
         /// <summary>
         /// Gets or sets the first row in the Matrix3x3; that is M11, M12, M13

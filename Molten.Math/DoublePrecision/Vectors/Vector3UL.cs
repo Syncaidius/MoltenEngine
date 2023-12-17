@@ -51,7 +51,7 @@ namespace Molten.DoublePrecision
 		[FieldOffset(16)]
 		public ulong Z;
 
-		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		/// <summary>A fixed array mapped to the same memory space as the individual <see cref="Vector3UL"/> components.</summary>
 		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed ulong Values[3];
@@ -65,6 +65,18 @@ namespace Molten.DoublePrecision
         }
 
 #region Constructors
+		/// <summary>
+		/// Initializes a new instance of <see cref="Vector3UL"/>.
+		/// </summary>
+		/// <param name="x">The X component.</param>
+		/// <param name="y">The Y component.</param>
+		/// <param name="z">The Z component.</param>
+		public Vector3UL(ulong x, ulong y, ulong z)
+		{
+			X = x;
+			Y = y;
+			Z = z;
+		}
 		/// <summary>Initializes a new instance of <see cref="Vector3UL"/>.</summary>
 		/// <param name="value">The value that will be assigned to all components.</param>
 		public Vector3UL(ulong value)
@@ -76,22 +88,24 @@ namespace Molten.DoublePrecision
 		/// <summary>Initializes a new instance of <see cref="Vector3UL"/> from an array.</summary>
 		/// <param name="values">The values to assign to the X, Y, Z components of the color. This must be an array with at least three elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
-		public Vector3UL(ulong[] values)
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 3 elements.</exception>
+		public unsafe Vector3UL(ulong[] values)
 		{
 			if (values == null)
 				throw new ArgumentNullException("values");
 			if (values.Length < 3)
-				throw new ArgumentOutOfRangeException("values", "There must be at least three input values for Vector3UL.");
+				throw new ArgumentOutOfRangeException("values", "There must be at least 3 input values for Vector3UL.");
 
-			X = values[0];
-			Y = values[1];
-			Z = values[2];
+			fixed (ulong* src = values)
+			{
+				fixed (ulong* dst = Values)
+					Unsafe.CopyBlock(src, dst, (sizeof(ulong) * 3));
+			}
 		}
 		/// <summary>Initializes a new instance of <see cref="Vector3UL"/> from a span.</summary>
 		/// <param name="values">The values to assign to the X, Y, Z components of the color. This must be an array with at least three elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 3 elements.</exception>
 		public Vector3UL(Span<ulong> values)
 		{
 			if (values == null)
@@ -107,7 +121,7 @@ namespace Molten.DoublePrecision
 		/// <param name="ptrValues">The values to assign to the X, Y, Z components of the color.
 		/// <para>There must be at least three elements available or undefined behaviour will occur.</para></param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than four elements.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 3 elements.</exception>
 		public unsafe Vector3UL(ulong* ptrValues)
 		{
 			if (ptrValues == null)
@@ -116,18 +130,6 @@ namespace Molten.DoublePrecision
 			X = ptrValues[0];
 			Y = ptrValues[1];
 			Z = ptrValues[2];
-		}
-		/// <summary>
-		/// Initializes a new instance of <see cref="Vector3UL"/>.
-		/// </summary>
-		/// <param name="x">The X component.</param>
-		/// <param name="y">The Y component.</param>
-		/// <param name="z">The Z component.</param>
-		public Vector3UL(ulong x, ulong y, ulong z)
-		{
-			X = x;
-			Y = y;
-			Z = z;
 		}
 
 		///<summary>Creates a new instance of <see cref="Vector3UL"/>, using a <see cref="Vector2UL"/> to populate the first two components.</summary>
@@ -218,7 +220,7 @@ namespace Molten.DoublePrecision
         /// <returns>A three-element array containing the components of the vector.</returns>
         public ulong[] ToArray()
         {
-            return new ulong[] { X, Y, Z };
+            return [X, Y, Z];
         }
 		
 

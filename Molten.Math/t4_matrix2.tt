@@ -18,6 +18,7 @@ gen.Generate((d) => d.Size == 2, (d, def) =>
     string mat3x2Name = $"Matrix3x2{d.DT.Literal}";
 #>
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
@@ -34,40 +35,8 @@ namespace Molten<#=d.SubNamespace#>
         public static readonly <#=d.Name#> Identity = new <#=d.Name#>(1, 0, 0, 1);
 
 <#=gen.GenerateFields((field) => $"The value at row {field[1]}, column {field[2]} of the matrix.")#>
-        /// <summary>
-        /// Constructs a new 2 row, 2 column matrix.
-        /// </summary>
-        /// <param name="m11">Value at row 1, column 1 of the matrix.</param>
-        /// <param name="m12">Value at row 1, column 2 of the matrix.</param>
-        /// <param name="m21">Value at row 2, column 1 of the matrix.</param>
-        /// <param name="m22">Value at row 2, column 2 of the matrix.</param>
-        public <#=d.Name#>(<#=d.DT#> m11, <#=d.DT#> m12, <#=d.DT#> m21, <#=d.DT#> m22)
-        {
-            M11 = m11;
-            M12 = m12;
-            M21 = m21;
-            M22 = m22;
-        }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="<#=d.Name#>"/> struct.
-        /// </summary>
-        /// <param name="values">The values to assign to the components of the Matrix3x3. This must be an array with sixteen elements.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than <#=d.FieldNames.Length#> elements.</exception>
-        public <#=d.Name#>(<#=d.DT#>[] values)
-        {
-            if (values == null)
-                throw new ArgumentNullException("values");
-                
-            if (values.Length != <#=d.FieldNames.Length#>)
-                throw new ArgumentOutOfRangeException("values", "There must only be <#=d.FieldNames.Length#> input values for <#=d.Name#>.");
-
-            M11 = values[0];
-            M12 = values[1];
-            M21 = values[2];
-            M22 = values[3];
-        }
+<#gen.GenerateStandardConstructors(2, (field) => $"The value to assign to row {field[1]}, column {field[2]} of the matrix.");#>
 
         /// <summary>
         /// Adds the two matrices together on a per-element basis.
@@ -255,7 +224,7 @@ namespace Molten<#=d.SubNamespace#>
 
         public <#=d.DT#>[] ToArray()
         {
-            return new[] { M11, M12, M21, M22 };
+            return [M11, M12, M21, M22];
         }
 
         public void Transpose(out <#=d.Name#> result)
