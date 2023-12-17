@@ -54,7 +54,7 @@ namespace Molten.DoublePrecision
 {
     /// <summary>Represents a double-precision 3x3 Matrix. Contains position, scale and rotation.</summary>
     [StructLayout(LayoutKind.Explicit)]
-    [Serializable]
+    [DataContract]
     public struct Matrix3D : IEquatable<Matrix3D>, IFormattable, ITransposedMatrix<Matrix3D>
     {
         /// <summary>
@@ -118,6 +118,7 @@ namespace Molten.DoublePrecision
 		public double M33;
 
 		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed double Values[9];
 

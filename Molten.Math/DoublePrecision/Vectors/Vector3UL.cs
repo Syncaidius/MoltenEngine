@@ -10,7 +10,7 @@ namespace Molten.DoublePrecision
 {
 	///<summary>A <see cref="ulong"/> vector comprised of three components.</summary>
 	[StructLayout(LayoutKind.Explicit)]
-    [Serializable]
+    [DataContract]
 	public partial struct Vector3UL : IFormattable, IUnsignedVector<Vector3UL, ulong>, IEquatable<Vector3UL>
 	{
 		///<summary>The size of <see cref="Vector3UL"/>, in bytes.</summary>
@@ -52,6 +52,7 @@ namespace Molten.DoublePrecision
 		public ulong Z;
 
 		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed ulong Values[3];
 

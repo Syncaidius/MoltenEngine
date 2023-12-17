@@ -10,7 +10,7 @@ namespace Molten.DoublePrecision
     /// Represents a color in the form of red, green, blue, alpha.
     /// </summary>
     [StructLayout(LayoutKind.Explicit)]
-    [Serializable]
+    [DataContract]
     public struct Color4D : IEquatable<Color4D>, IFormattable
     {
         private const string toStringFormat = "R:{0} G:{1} B:{2} A:{3}";
@@ -51,6 +51,7 @@ namespace Molten.DoublePrecision
 		public double A;
 
 		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed double Values[4];
 

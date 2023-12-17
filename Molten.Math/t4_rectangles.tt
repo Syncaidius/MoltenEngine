@@ -31,8 +31,8 @@ using Molten.DoublePrecision;
 namespace Molten<#=d.SubNamespace#>
 {
     ///<summary>Represents a four dimensional mathematical <#=d.Name#>.</summary>
-    [StructLayout(LayoutKind.Sequential, Pack = <#=d.DT.Pack#>)]
-    [Serializable]
+    [StructLayout(LayoutKind.Explicit)]
+    [DataContract]
 	public partial struct <#=d.Name#> : IFormattable, IEquatable<<#=d.Name#>>
 	{
         /// <summary>

@@ -54,7 +54,7 @@ namespace Molten
 {
     /// <summary>Represents a single-precision 4x4 Matrix. Contains position, scale, rotation and transform.</summary>
     [StructLayout(LayoutKind.Explicit)]
-    [Serializable]
+    [DataContract]
     public struct Matrix4F : IEquatable<Matrix4F>, IFormattable, ITransposedMatrix<Matrix4F>
     {
         /// <summary>
@@ -153,6 +153,7 @@ namespace Molten
 		public float M44;
 
 		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed float Values[16];
 

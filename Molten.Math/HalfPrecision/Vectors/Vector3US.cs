@@ -10,7 +10,7 @@ namespace Molten.HalfPrecision
 {
 	///<summary>A <see cref="ushort"/> vector comprised of three components.</summary>
 	[StructLayout(LayoutKind.Explicit)]
-    [Serializable]
+    [DataContract]
 	public partial struct Vector3US : IFormattable, IUnsignedVector<Vector3US, ushort>, IEquatable<Vector3US>
 	{
 		///<summary>The size of <see cref="Vector3US"/>, in bytes.</summary>
@@ -52,6 +52,7 @@ namespace Molten.HalfPrecision
 		public ushort Z;
 
 		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed ushort Values[3];
 

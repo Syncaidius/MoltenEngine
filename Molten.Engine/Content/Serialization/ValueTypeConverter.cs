@@ -2,6 +2,8 @@
 using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Linq;
+using System.Runtime.Serialization;
 
 namespace Molten
 {
@@ -38,7 +40,12 @@ namespace Molten
             string strValue = obj.ToObject<string>();
             string[] parts = strValue.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
-            FieldInfo[] fields = GetCachedFields(objectType);
+            // Don't include any fields that are decorated with the IgnoreDataMember attribute.
+            FieldInfo[] fields = GetCachedFields(objectType).Where((f) =>
+            {
+                IgnoreDataMemberAttribute attIgnore = f.GetCustomAttribute<IgnoreDataMemberAttribute>();
+                return attIgnore == null;
+            }).ToArray();
 
             if (parts.Length < fields.Length)
                 throw new Exception($"Expected {fields.Length} values for type '{objectType.FullName}' but got {parts.Length} values.");

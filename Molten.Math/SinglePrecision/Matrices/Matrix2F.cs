@@ -1,6 +1,4 @@
 using System;
-using System.Globalization;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
@@ -8,7 +6,7 @@ namespace Molten
 {
     /// <summary>Represents a single-precision 2x2 Matrix. Contains only scale and rotation.</summary>
     [StructLayout(LayoutKind.Explicit)]
-    [Serializable]
+    [DataContract]
 	public struct Matrix2F : ITransposedMatrix<Matrix2F>
     {
         /// <summary>
@@ -37,6 +35,7 @@ namespace Molten
 		public float M22;
 
 		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed float Values[4];
 

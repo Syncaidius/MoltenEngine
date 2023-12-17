@@ -10,7 +10,7 @@ namespace Molten
 {
 	///<summary>A <see cref="sbyte"/> vector comprised of four components.</summary>
 	[StructLayout(LayoutKind.Explicit)]
-    [Serializable]
+    [DataContract]
 	public partial struct SByte4 : IFormattable, ISignedVector<SByte4, sbyte>, IEquatable<SByte4>
 	{
 		///<summary>The size of <see cref="SByte4"/>, in bytes.</summary>
@@ -60,6 +60,7 @@ namespace Molten
 		public sbyte W;
 
 		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed sbyte Values[4];
 

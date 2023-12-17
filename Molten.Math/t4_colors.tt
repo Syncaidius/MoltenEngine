@@ -39,7 +39,7 @@ namespace Molten<#=d.SubNamespace#>
     /// Represents a color in the form of <#=gen.FieldsToArgs(d.FieldLabels)#>.
     /// </summary>
     [StructLayout(LayoutKind.Explicit)]
-    [Serializable]
+    [DataContract]
     public struct <#=d.Name#> : IEquatable<<#=d.Name#>>, IFormattable
     {
         private const string toStringFormat = "R:{0} G:{1} B:{2}<#=(d.Size > 3 ? " A:{3}" : "")#>";

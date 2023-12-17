@@ -10,7 +10,7 @@ namespace Molten
 {
 	///<summary>A <see cref="byte"/> vector comprised of two components.</summary>
 	[StructLayout(LayoutKind.Explicit)]
-    [Serializable]
+    [DataContract]
 	public partial struct Byte2 : IFormattable, IUnsignedVector<Byte2, byte>, IEquatable<Byte2>
 	{
 		///<summary>The size of <see cref="Byte2"/>, in bytes.</summary>
@@ -44,6 +44,7 @@ namespace Molten
 		public byte Y;
 
 		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed byte Values[2];
 

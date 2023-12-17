@@ -1,6 +1,4 @@
 using System;
-using System.Globalization;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
@@ -8,7 +6,7 @@ namespace Molten.DoublePrecision
 {
     /// <summary>Represents a double-precision 2x2 Matrix. Contains only scale and rotation.</summary>
     [StructLayout(LayoutKind.Explicit)]
-    [Serializable]
+    [DataContract]
 	public struct Matrix2D : ITransposedMatrix<Matrix2D>
     {
         /// <summary>
@@ -37,6 +35,7 @@ namespace Molten.DoublePrecision
 		public double M22;
 
 		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed double Values[4];
 

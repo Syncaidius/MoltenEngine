@@ -11,7 +11,7 @@ namespace Molten
     /// Represents a color in the form of red, green, blue.
     /// </summary>
     [StructLayout(LayoutKind.Explicit)]
-    [Serializable]
+    [DataContract]
     public struct Color3 : IEquatable<Color3>, IFormattable
     {
         private const string toStringFormat = "R:{0} G:{1} B:{2}";
@@ -47,6 +47,7 @@ namespace Molten
 		public float B;
 
 		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed float Values[3];
 

@@ -7,8 +7,8 @@ using Molten.DoublePrecision;
 namespace Molten
 {
     ///<summary>Represents a four dimensional mathematical RectangleF.</summary>
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    [Serializable]
+    [StructLayout(LayoutKind.Explicit)]
+    [DataContract]
 	public partial struct RectangleF : IFormattable, IEquatable<RectangleF>
 	{
         /// <summary>
@@ -18,20 +18,28 @@ namespace Molten
 
 		/// <summary>The Left component.</summary>
 		[DataMember]
+		[FieldOffset(0)]
 		public float Left;
 
 		/// <summary>The Top component.</summary>
 		[DataMember]
+		[FieldOffset(4)]
 		public float Top;
 
 		/// <summary>The Right component.</summary>
 		[DataMember]
+		[FieldOffset(8)]
 		public float Right;
 
 		/// <summary>The Bottom component.</summary>
 		[DataMember]
+		[FieldOffset(12)]
 		public float Bottom;
 
+		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[IgnoreDataMember]
+		[FieldOffset(0)]
+		public unsafe fixed float Values[4];
         
         /// <summary>
         /// Initializes a new instance of the <see cref="Rectangle"/> struct.

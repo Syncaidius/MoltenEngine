@@ -6,8 +6,8 @@ using System.Runtime.Serialization;
 namespace Molten.DoublePrecision
 {
     ///<summary>Represents a four dimensional mathematical RectangleD.</summary>
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    [Serializable]
+    [StructLayout(LayoutKind.Explicit)]
+    [DataContract]
 	public partial struct RectangleD : IFormattable, IEquatable<RectangleD>
 	{
         /// <summary>
@@ -17,20 +17,28 @@ namespace Molten.DoublePrecision
 
 		/// <summary>The Left component.</summary>
 		[DataMember]
+		[FieldOffset(0)]
 		public double Left;
 
 		/// <summary>The Top component.</summary>
 		[DataMember]
+		[FieldOffset(8)]
 		public double Top;
 
 		/// <summary>The Right component.</summary>
 		[DataMember]
+		[FieldOffset(16)]
 		public double Right;
 
 		/// <summary>The Bottom component.</summary>
 		[DataMember]
+		[FieldOffset(24)]
 		public double Bottom;
 
+		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[IgnoreDataMember]
+		[FieldOffset(0)]
+		public unsafe fixed double Values[4];
         
         /// <summary>
         /// Initializes a new instance of the <see cref="Rectangle"/> struct.

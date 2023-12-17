@@ -74,7 +74,7 @@ namespace Molten<#=d.SubNamespace#>
 {
     /// <summary>Represents a <#=(d.DT.Bits > 32 ? "double" : "single")#>-precision 4x4 Matrix. Contains position, scale, rotation and transform.</summary>
     [StructLayout(LayoutKind.Explicit)]
-    [Serializable]
+    [DataContract]
     public struct <#=d.Name#> : IEquatable<<#=d.Name#>>, IFormattable, ITransposedMatrix<<#=d.Name#>>
     {
         /// <summary>

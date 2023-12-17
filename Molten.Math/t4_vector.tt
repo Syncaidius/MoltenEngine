@@ -26,7 +26,7 @@ namespace Molten<#=d.SubNamespace#>
 {
 	///<summary>A <#=gen.See(d.DT.Name)#> vector comprised of <#=def.SizeNames[d.Size]#> components.</summary>
 	[StructLayout(LayoutKind.Explicit)]
-    [Serializable]
+    [DataContract]
 	public partial struct <#=d.Name#> : IFormattable, <#=vectorInterface#><<#=d.Name#>, <#=d.DT#>>, IEquatable<<#=d.Name#>>
 	{
 		///<summary>The size of <#=gen.See()#>, in bytes.</summary>

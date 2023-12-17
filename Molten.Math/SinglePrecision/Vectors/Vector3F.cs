@@ -10,7 +10,7 @@ namespace Molten
 {
 	///<summary>A <see cref="float"/> vector comprised of three components.</summary>
 	[StructLayout(LayoutKind.Explicit)]
-    [Serializable]
+    [DataContract]
 	public partial struct Vector3F : IFormattable, ISignedVector<Vector3F, float>, IEquatable<Vector3F>
 	{
 		///<summary>The size of <see cref="Vector3F"/>, in bytes.</summary>
@@ -52,6 +52,7 @@ namespace Molten
 		public float Z;
 
 		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed float Values[3];
 

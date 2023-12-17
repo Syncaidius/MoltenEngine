@@ -10,7 +10,7 @@ namespace Molten.DoublePrecision
 {
 	///<summary>A <see cref="double"/> vector comprised of two components.</summary>
 	[StructLayout(LayoutKind.Explicit)]
-    [Serializable]
+    [DataContract]
 	public partial struct Vector2D : IFormattable, ISignedVector<Vector2D, double>, IEquatable<Vector2D>
 	{
 		///<summary>The size of <see cref="Vector2D"/>, in bytes.</summary>
@@ -44,6 +44,7 @@ namespace Molten.DoublePrecision
 		public double Y;
 
 		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed double Values[2];
 

@@ -54,7 +54,7 @@ namespace Molten.DoublePrecision
 {
     /// <summary>Represents a double-precision 4x4 Matrix. Contains position, scale, rotation and transform.</summary>
     [StructLayout(LayoutKind.Explicit)]
-    [Serializable]
+    [DataContract]
     public struct Matrix4D : IEquatable<Matrix4D>, IFormattable, ITransposedMatrix<Matrix4D>
     {
         /// <summary>
@@ -153,6 +153,7 @@ namespace Molten.DoublePrecision
 		public double M44;
 
 		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed double Values[16];
 

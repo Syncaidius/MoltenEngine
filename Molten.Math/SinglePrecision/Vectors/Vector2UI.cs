@@ -10,7 +10,7 @@ namespace Molten
 {
 	///<summary>A <see cref="uint"/> vector comprised of two components.</summary>
 	[StructLayout(LayoutKind.Explicit)]
-    [Serializable]
+    [DataContract]
 	public partial struct Vector2UI : IFormattable, IUnsignedVector<Vector2UI, uint>, IEquatable<Vector2UI>
 	{
 		///<summary>The size of <see cref="Vector2UI"/>, in bytes.</summary>
@@ -44,6 +44,7 @@ namespace Molten
 		public uint Y;
 
 		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed uint Values[2];
 

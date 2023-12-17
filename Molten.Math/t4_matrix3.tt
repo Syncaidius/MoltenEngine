@@ -73,7 +73,7 @@ namespace Molten<#=d.SubNamespace#>
 {
     /// <summary>Represents a <#=(d.DT.Bits > 32 ? "double" : "single")#>-precision 3x3 Matrix. Contains position, scale and rotation.</summary>
     [StructLayout(LayoutKind.Explicit)]
-    [Serializable]
+    [DataContract]
     public struct <#=d.Name#> : IEquatable<<#=d.Name#>>, IFormattable, ITransposedMatrix<<#=d.Name#>>
     {
         /// <summary>

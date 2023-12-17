@@ -54,7 +54,7 @@ namespace Molten
 {
     /// <summary>Represents a single-precision 3x3 Matrix. Contains position, scale and rotation.</summary>
     [StructLayout(LayoutKind.Explicit)]
-    [Serializable]
+    [DataContract]
     public struct Matrix3F : IEquatable<Matrix3F>, IFormattable, ITransposedMatrix<Matrix3F>
     {
         /// <summary>
@@ -118,6 +118,7 @@ namespace Molten
 		public float M33;
 
 		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed float Values[9];
 

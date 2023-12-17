@@ -65,12 +65,14 @@ namespace Molten
         /// <summary>
         /// Represents the four components, RGBA, in an array. Overlaps the individual component fields in memory.
         /// </summary>
+        [IgnoreDataMember]
         [FieldOffset(0)]
         public unsafe fixed byte Values[4];
 
         /// <summary>
         /// Represents the four components, RGBA in an integer. Overlaps the individual component fields in memory.
         /// </summary>
+        [IgnoreDataMember]
         [FieldOffset(0)]
         public int Packed; 
 

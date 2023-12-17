@@ -10,7 +10,7 @@ namespace Molten
 {
 	///<summary>A <see cref="uint"/> vector comprised of four components.</summary>
 	[StructLayout(LayoutKind.Explicit)]
-    [Serializable]
+    [DataContract]
 	public partial struct Vector4UI : IFormattable, IUnsignedVector<Vector4UI, uint>, IEquatable<Vector4UI>
 	{
 		///<summary>The size of <see cref="Vector4UI"/>, in bytes.</summary>
@@ -60,6 +60,7 @@ namespace Molten
 		public uint W;
 
 		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed uint Values[4];
 
