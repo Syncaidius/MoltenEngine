@@ -138,19 +138,19 @@
         "type": "Project",
         "dependencies": {
           "Magick.NET-Q8-AnyCPU": "[13.5.0, )",
-          "Molten.Font": "[0.7.2, )",
-          "Molten.IO": "[0.7.2, )",
-          "Molten.Math": "[0.7.2, )",
-          "Molten.Utility": "[0.7.2, )",
+          "Molten.Font": "[0.7.3, )",
+          "Molten.IO": "[0.7.3, )",
+          "Molten.Math": "[0.7.3, )",
+          "Molten.Utility": "[0.7.3, )",
           "Newtonsoft.Json": "[13.0.3, )"
         }
       },
       "molten.engine.windows": {
         "type": "Project",
         "dependencies": {
-          "Molten.Engine": "[0.7.2, )",
-          "Molten.Math": "[0.7.2, )",
-          "Molten.Utility": "[0.7.2, )",
+          "Molten.Engine": "[0.7.3, )",
+          "Molten.Math": "[0.7.3, )",
+          "Molten.Utility": "[0.7.3, )",
           "Silk.NET.XInput": "[2.20.0, )",
           "System.Management": "[8.0.0, )"
         }
@@ -158,36 +158,36 @@
       "molten.font": {
         "type": "Project",
         "dependencies": {
-          "Molten.IO": "[0.7.2, )",
-          "Molten.Math": "[0.7.2, )",
-          "Molten.Utility": "[0.7.2, )"
+          "Molten.IO": "[0.7.3, )",
+          "Molten.Math": "[0.7.3, )",
+          "Molten.Utility": "[0.7.3, )"
         }
       },
       "molten.graphics.dxc": {
         "type": "Project",
         "dependencies": {
-          "Molten.Engine": "[0.7.2, )",
-          "Molten.Math": "[0.7.2, )",
-          "Molten.Utility": "[0.7.2, )",
+          "Molten.Engine": "[0.7.3, )",
+          "Molten.Math": "[0.7.3, )",
+          "Molten.Utility": "[0.7.3, )",
           "Silk.NET.Direct3D.Compilers": "[2.20.0, )"
         }
       },
       "molten.graphics.dxgi": {
         "type": "Project",
         "dependencies": {
-          "Molten.Engine": "[0.7.2, )",
-          "Molten.Engine.Windows": "[0.7.2, )",
-          "Molten.IO": "[0.7.2, )",
-          "Molten.Math": "[0.7.2, )",
-          "Molten.Utility": "[0.7.2, )",
+          "Molten.Engine": "[0.7.3, )",
+          "Molten.Engine.Windows": "[0.7.3, )",
+          "Molten.IO": "[0.7.3, )",
+          "Molten.Math": "[0.7.3, )",
+          "Molten.Utility": "[0.7.3, )",
           "Silk.NET.DXGI": "[2.20.0, )"
         }
       },
       "molten.io": {
         "type": "Project",
         "dependencies": {
-          "Molten.Math": "[0.7.2, )",
-          "Molten.Utility": "[0.7.2, )"
+          "Molten.Math": "[0.7.3, )",
+          "Molten.Utility": "[0.7.3, )"
         }
       },
       "molten.math": {
