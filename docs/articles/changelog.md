@@ -1,6 +1,7 @@
 # Changelogs
 
 Here is a list of all available changelogs, sorted from latest to oldest version.
+ - [Version 0.7.3](changelogs/CHANGELOG_0_7_3.html)
  - [Version 0.7.2](changelogs/CHANGELOG_0_7_2.html)
  - [Version 0.7.1](changelogs/CHANGELOG_0_7_1.html)
  - [Version 0.7](changelogs/CHANGELOG_0_7.html)
