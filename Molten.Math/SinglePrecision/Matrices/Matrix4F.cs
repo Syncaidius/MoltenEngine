@@ -331,13 +331,14 @@ namespace Molten
         /// </summary>
         /// <param name="values">The values to assign to the components of the matrix. This must be an array with sixteen elements.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than sixteen elements.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 16 elements.</exception>
         public Matrix4F(float[] values)
         {
             if (values == null)
                 throw new ArgumentNullException("values");
+
             if (values.Length != 16)
-                throw new ArgumentOutOfRangeException("values", "There must be sixteen and only sixteen input values for Matrix.");
+                throw new ArgumentOutOfRangeException("values", "There must only be 16 input values for Matrix4F.");
 
             M11 = values[0];
             M12 = values[1];
@@ -835,7 +836,7 @@ namespace Molten
         /// <returns>A sixteen-element array containing the components of the matrix.</returns>
         public float[] ToArray()
         {
-            return new[] { M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44 };
+            return [M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44];
         }
 
         /// <summary>

@@ -55,6 +55,26 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Matrix2D"/> struct.
+        /// </summary>
+        /// <param name="values">The values to assign to the components of the Matrix3x3. This must be an array with sixteen elements.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
+        public Matrix2D(double[] values)
+        {
+            if (values == null)
+                throw new ArgumentNullException("values");
+                
+            if (values.Length != 4)
+                throw new ArgumentOutOfRangeException("values", "There must only be 4 input values for Matrix2D.");
+
+            M11 = values[0];
+            M12 = values[1];
+            M21 = values[2];
+            M22 = values[3];
+        }
+
+        /// <summary>
         /// Adds the two matrices together on a per-element basis.
         /// </summary>
         /// <param name="a">First matrix to add.</param>

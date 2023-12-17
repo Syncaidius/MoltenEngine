@@ -10,7 +10,7 @@ namespace Molten.DoublePrecision
 {
 	///<summary>A <see cref="long"/> vector comprised of four components.</summary>
 	[StructLayout(LayoutKind.Explicit)]
-    [Serializable]
+    [DataContract]
 	public partial struct Vector4L : IFormattable, ISignedVector<Vector4L, long>, IEquatable<Vector4L>
 	{
 		///<summary>The size of <see cref="Vector4L"/>, in bytes.</summary>
@@ -60,6 +60,7 @@ namespace Molten.DoublePrecision
 		public long W;
 
 		/// <summary>A fixed array mapped to the same memory space as the individual vector components.</summary>
+		[IgnoreDataMember]
 		[FieldOffset(0)]
 		public unsafe fixed long Values[4];
 

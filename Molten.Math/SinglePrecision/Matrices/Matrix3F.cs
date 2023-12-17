@@ -159,13 +159,14 @@ namespace Molten
         /// </summary>
         /// <param name="values">The values to assign to the components of the Matrix3x3. This must be an array with sixteen elements.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than sixteen elements.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 9 elements.</exception>
         public Matrix3F(float[] values)
         {
             if (values == null)
                 throw new ArgumentNullException("values");
+                
             if (values.Length != 9)
-                throw new ArgumentOutOfRangeException("values", "There must be sixteen and only sixteen input values for Matrix3x3.");
+                throw new ArgumentOutOfRangeException("values", "There must only be 9 input values for Matrix3F.");
 
             M11 = values[0];
             M12 = values[1];
@@ -645,7 +646,7 @@ namespace Molten
         /// <returns>A 9-element array containing the components of the Matrix3x3.</returns>
         public float[] ToArray()
         {
-            return new[] { M11, M12, M13, M21, M22, M23, M31, M32, M33 };
+            return [M11, M12, M13, M21, M22, M23, M31, M32, M33];
         }
 
         /// <summary>
