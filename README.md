@@ -7,7 +7,7 @@ While parts of this project will inevitably be a classic case of re-inventing th
 # Build Status
 | Pathway  |  Status |
 | :--------- | :----  |
-| Dev (Nightly) |  [![Dev Build](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build-android.yml/badge.svg)](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build-android.yml)  | 
+| Dev (_nightly_) |  [![Build Dev](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build.yml/badge.svg)](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build.yml)  | 
 | Release    | [![Release Build](https://dev.azure.com/jyarwood/MoltenEngine/_apis/build/status/MoltenEngine-.NET%20Desktop-CI)](https://dev.azure.com/jyarwood/MoltenEngine/_build/latest?definitionId=2) |  
 
 [ ![GitHub](https://img.shields.io/github/license/Syncaidius/MoltenEngine)](LICENSE)  [![GitHub last commit](https://img.shields.io/github/last-commit/Syncaidius/MoltenEngine)](https://github.com/Syncaidius/MoltenEngine/commits/) [![Nuget](https://img.shields.io/nuget/v/Molten.Engine?color=%2322AAFF&label=NuGet)](https://www.nuget.org/packages?q=molten+Syncaidius) ![GitHub Sponsors](https://img.shields.io/github/sponsors/Syncaidius?logo=github&label=sponsors&color=red) 
