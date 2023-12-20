@@ -13,11 +13,8 @@ namespace Molten
     [DataContract]
 	public partial struct Vector3UI : IFormattable, IUnsignedVector<Vector3UI, uint>, IEquatable<Vector3UI>
 	{
-		///<summary>The size of <see cref="Vector3UI"/>, in bytes.</summary>
-		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector3UI));
-
-        ///<summary>The number of elements in the current vector type.</summary>
-        public static readonly int NumElements = 3;
+        ///<summary>The number of components in the current vector type.</summary>
+        public static readonly int ComponentCount = 3;
 
 		///<summary>A Vector3UI with every component set to 1U.</summary>
 		public static readonly Vector3UI One = new Vector3UI(1U, 1U, 1U);

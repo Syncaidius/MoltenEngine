@@ -55,17 +55,18 @@ namespace Molten
     /// <summary>Represents a single-precision 3x3 Matrix. Contains position, scale and rotation.</summary>
     [StructLayout(LayoutKind.Explicit)]
     [DataContract]
-    public struct Matrix3F : IEquatable<Matrix3F>, IFormattable, ITransposedMatrix<Matrix3F>
+    public struct Matrix3F : IEquatable<Matrix3F>, IFormattable, ITransposedMatrix<Matrix3F>, IMatrix<float>
     {
-        /// <summary>
-        /// The size of the <see cref="Matrix3F"/> type, in bytes.
-        /// </summary>
-        public static readonly int SizeInBytes = sizeof(float) * 9;
-
         /// <summary>
         /// A <see cref="Matrix3F"/> with all of its components set to zero.
         /// </summary>
         public static readonly Matrix3F Zero = new Matrix3F();
+
+        public static readonly int ComponentCount = 9;
+
+        public static readonly int RowCount = 3;
+
+        public static readonly int ColumnCount = 3;
 
         /// <summary>
         /// The identity <see cref="Matrix3F"/>.
@@ -2225,6 +2226,7 @@ namespace Molten
                 subMatrixCode = 0;
                 return determinant;
             }
+
             //Try m11, m12, m21, m22.
             determinant = M11 * M22 - M12 * M21;
             if (determinant != 0)
@@ -2232,6 +2234,7 @@ namespace Molten
                 subMatrixCode = 1;
                 return determinant;
             }
+
             //Try m22, m23, m32, m33.
             determinant = M22 * M33 - M23 * M32;
             if (determinant != 0)
@@ -2239,6 +2242,7 @@ namespace Molten
                 subMatrixCode = 2;
                 return determinant;
             }
+
             //Try m11, m13, m31, m33.
             determinant = M11 * M33 - M13 * M12;
             if (determinant != 0)
@@ -2246,24 +2250,28 @@ namespace Molten
                 subMatrixCode = 3;
                 return determinant;
             }
+
             //Try m11.
             if (M11 != 0)
             {
                 subMatrixCode = 4;
                 return M11;
             }
+
             //Try m22.
             if (M22 != 0)
             {
                 subMatrixCode = 5;
                 return M22;
             }
+
             //Try m33.
             if (M33 != 0)
             {
                 subMatrixCode = 6;
                 return M33;
             }
+
             //It's completely singular!
             subMatrixCode = -1;
             return 0;
@@ -2527,10 +2535,10 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="string"/> that represents this instance.
         /// </returns>
         public override string ToString()
         {
@@ -2539,29 +2547,30 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="String"/> that represents this instance.
         /// </summary>
         /// <param name="format">The format.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="String"/> that represents this instance.
         /// </returns>
         public string ToString(string format)
         {
             if (format == null)
                 return ToString();
 
-            return string.Format(format, CultureInfo.CurrentCulture, "[M11:{0} M12:{1} M13:{2}] [M21:{3} M22:{4} M23:{5}] [M31:{6} M32:{7} M33:{8}]",
-                M11.ToString(format, CultureInfo.CurrentCulture), M12.ToString(format, CultureInfo.CurrentCulture), M13.ToString(format, CultureInfo.CurrentCulture),
-                M21.ToString(format, CultureInfo.CurrentCulture), M22.ToString(format, CultureInfo.CurrentCulture), M23.ToString(format, CultureInfo.CurrentCulture),
-                M31.ToString(format, CultureInfo.CurrentCulture), M32.ToString(format, CultureInfo.CurrentCulture), M33.ToString(format, CultureInfo.CurrentCulture));
+            CultureInfo cc = CultureInfo.CurrentCulture;
+            return string.Format(format, cc, "[M11:{0} M12:{1} M13:{2}] [M21:{3} M22:{4} M23:{5}] [M31:{6} M32:{7} M33:{8}]",
+                M11.ToString(format, cc), M12.ToString(format, cc), M13.ToString(format, cc),
+                M21.ToString(format, cc), M22.ToString(format, cc), M23.ToString(format, cc),
+                M31.ToString(format, cc), M32.ToString(format, cc), M33.ToString(format, cc));
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="String"/> that represents this instance.
         /// </summary>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="String"/> that represents this instance.
         /// </returns>
         public string ToString(IFormatProvider formatProvider)
         {
@@ -2572,12 +2581,12 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="String"/> that represents this instance.
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="String"/> that represents this instance.
         /// </returns>
         public string ToString(string format, IFormatProvider formatProvider)
         {

@@ -13,11 +13,8 @@ namespace Molten.HalfPrecision
     [DataContract]
 	public partial struct Vector3US : IFormattable, IUnsignedVector<Vector3US, ushort>, IEquatable<Vector3US>
 	{
-		///<summary>The size of <see cref="Vector3US"/>, in bytes.</summary>
-		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector3US));
-
-        ///<summary>The number of elements in the current vector type.</summary>
-        public static readonly int NumElements = 3;
+        ///<summary>The number of components in the current vector type.</summary>
+        public static readonly int ComponentCount = 3;
 
 		///<summary>A Vector3US with every component set to (ushort)1.</summary>
 		public static readonly Vector3US One = new Vector3US((ushort)1, (ushort)1, (ushort)1);

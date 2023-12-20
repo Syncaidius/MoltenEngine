@@ -55,17 +55,18 @@ namespace Molten
     /// <summary>Represents a single-precision 4x4 Matrix. Contains position, scale, rotation and transform.</summary>
     [StructLayout(LayoutKind.Explicit)]
     [DataContract]
-    public struct Matrix4F : IEquatable<Matrix4F>, IFormattable, ITransposedMatrix<Matrix4F>
+    public struct Matrix4F : IEquatable<Matrix4F>, IFormattable, ITransposedMatrix<Matrix4F>, IMatrix<float>
     {
-        /// <summary>
-        /// The size of the <see cref="Matrix4F"/> type, in bytes.
-        /// </summary>
-        public static readonly int SizeInBytes = 4 * 4 * sizeof(float);
-
         /// <summary>
         /// A <see cref="Matrix4F"/> with all of its components set to zero.
         /// </summary>
         public static readonly Matrix4F Zero = new Matrix4F();
+
+        public static readonly int ComponentCount = 16;
+
+        public static readonly int RowCount = 4;
+
+        public static readonly int ColumnCount = 4;
 
         /// <summary>
         /// The identity <see cref="Matrix4F"/>.
@@ -559,7 +560,7 @@ namespace Molten
         /// <param name="column">The column of the matrix to access.</param>
         /// <returns>The value of the component at the specified index.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> or <paramref name="column"/>is out of the range [0, 3].</exception>
-        public float this[int row, int column]
+        public unsafe float this[int row, int column]
         {
             get
             {
@@ -568,7 +569,7 @@ namespace Molten
                 if (column < 0 || column > 3)
                     throw new ArgumentOutOfRangeException("column", "Rows and columns for matrices run from 0 to 3, inclusive.");
 
-                return this[(row * 4) + column];
+                return Values[(row * 4) + column];
             }
 
             set
@@ -578,7 +579,41 @@ namespace Molten
                 if (column < 0 || column > 3)
                     throw new ArgumentOutOfRangeException("column", "Rows and columns for matrices run from 0 to 3, inclusive.");
 
-                this[(row * 4) + column] = value;
+                Values[(row * 4) + column] = value;
+            }
+        }
+
+        
+
+        /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of the matrix component, depending on the index.</value>
+        /// <param name="row">The row of the matrix to access.</param>
+        /// <param name="column">The column of the matrix to access.</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> or <paramref name="column"/>is out of the range [0, 3].</exception>
+        public unsafe float this[uint row, uint column]
+        {
+            get
+            {
+                if (row > 3)
+                    throw new ArgumentOutOfRangeException("row", "Rows and columns for matrices run from 0 to 3, inclusive.");
+                if (column > 3)
+                    throw new ArgumentOutOfRangeException("column", "Rows and columns for matrices run from 0 to 3, inclusive.");
+
+                return Values[(row * 4) + column];
+            }
+
+            set
+            {
+                if (row > 3)
+                    throw new ArgumentOutOfRangeException("row", "Row and column index must be less than 4");
+
+                if (column > 3)
+                    throw new ArgumentOutOfRangeException("column", "Row and column index must be less than 4");
+
+                Values[(row * 4) + column] = value;
             }
         }
 
@@ -3157,10 +3192,10 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="String"/> that represents this instance.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="String"/> that represents this instance.
         /// </returns>
         public override string ToString()
         {
@@ -3169,30 +3204,31 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="String"/> that represents this instance.
         /// </summary>
         /// <param name="format">The format.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="String"/> that represents this instance.
         /// </returns>
         public string ToString(string format)
         {
             if (format == null)
                 return ToString();
 
-            return string.Format(format, CultureInfo.CurrentCulture, "[M11:{0} M12:{1} M13:{2} M14:{3}] [M21:{4} M22:{5} M23:{6} M24:{7}] [M31:{8} M32:{9} M33:{10} M34:{11}] [M41:{12} M42:{13} M43:{14} M44:{15}]",
-                M11.ToString(format, CultureInfo.CurrentCulture), M12.ToString(format, CultureInfo.CurrentCulture), M13.ToString(format, CultureInfo.CurrentCulture), M14.ToString(format, CultureInfo.CurrentCulture),
-                M21.ToString(format, CultureInfo.CurrentCulture), M22.ToString(format, CultureInfo.CurrentCulture), M23.ToString(format, CultureInfo.CurrentCulture), M24.ToString(format, CultureInfo.CurrentCulture),
-                M31.ToString(format, CultureInfo.CurrentCulture), M32.ToString(format, CultureInfo.CurrentCulture), M33.ToString(format, CultureInfo.CurrentCulture), M34.ToString(format, CultureInfo.CurrentCulture),
-                M41.ToString(format, CultureInfo.CurrentCulture), M42.ToString(format, CultureInfo.CurrentCulture), M43.ToString(format, CultureInfo.CurrentCulture), M44.ToString(format, CultureInfo.CurrentCulture));
+            CultureInfo cc = CultureInfo.CurrentCulture;
+            return string.Format(format, cc, "[M11:{0} M12:{1} M13:{2} M14:{3}] [M21:{4} M22:{5} M23:{6} M24:{7}] [M31:{8} M32:{9} M33:{10} M34:{11}] [M41:{12} M42:{13} M43:{14} M44:{15}]",
+                M11.ToString(format, cc), M12.ToString(format, cc), M13.ToString(format, cc), M14.ToString(format, cc),
+                M21.ToString(format, cc), M22.ToString(format, cc), M23.ToString(format, cc), M24.ToString(format, cc),
+                M31.ToString(format, cc), M32.ToString(format, cc), M33.ToString(format, cc), M34.ToString(format, cc),
+                M41.ToString(format, cc), M42.ToString(format, cc), M43.ToString(format, cc), M44.ToString(format, cc));
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="String"/> that represents this instance.
         /// </summary>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="String"/> that represents this instance.
         /// </returns>
         public string ToString(IFormatProvider formatProvider)
         {
@@ -3204,12 +3240,12 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="String"/> that represents this instance.
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="String"/> that represents this instance.
         /// </returns>
         public string ToString(string format, IFormatProvider formatProvider)
         {

@@ -13,11 +13,8 @@ namespace Molten
     [DataContract]
 	public partial struct Vector4F : IFormattable, ISignedVector<Vector4F, float>, IEquatable<Vector4F>
 	{
-		///<summary>The size of <see cref="Vector4F"/>, in bytes.</summary>
-		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector4F));
-
-        ///<summary>The number of elements in the current vector type.</summary>
-        public static readonly int NumElements = 4;
+        ///<summary>The number of components in the current vector type.</summary>
+        public static readonly int ComponentCount = 4;
 
 		///<summary>A Vector4F with every component set to 1F.</summary>
 		public static readonly Vector4F One = new Vector4F(1F, 1F, 1F, 1F);

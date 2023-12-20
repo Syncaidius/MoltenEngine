@@ -40,9 +40,17 @@ namespace Molten
         N this[int index] { get; set; }
 
         /// <summary>
-        /// Gets the number of elements in the vector.
+        /// Gets or sets the component at the specified index.
         /// </summary>
-        static readonly int NumElements;
+        /// <value>The value of a component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and <see cref="ComponentCount"/></param>
+        /// <returns>The value of the component at the specified index.</returns>
+        N this[uint index] { get; set; }
+
+        /// <summary>
+        /// Gets the number of components in the vector.
+        /// </summary>
+        static readonly int ComponentCount;
     }
 
     /// <summary>

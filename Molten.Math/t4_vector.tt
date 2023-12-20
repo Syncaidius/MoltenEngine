@@ -29,11 +29,8 @@ namespace Molten<#=d.SubNamespace#>
     [DataContract]
 	public partial struct <#=d.Name#> : IFormattable, <#=vectorInterface#><<#=d.Name#>, <#=d.DT#>>, IEquatable<<#=d.Name#>>
 	{
-		///<summary>The size of <#=gen.See()#>, in bytes.</summary>
-		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(<#=d.Name#>));
-
-        ///<summary>The number of elements in the current vector type.</summary>
-        public static readonly int NumElements = <#=d.Size#>;
+        ///<summary>The number of components in the current vector type.</summary>
+        public static readonly int ComponentCount = <#=d.Size#>;
 
 		///<summary>A <#=d.Name#> with every component set to <#=d.DT.One#>.</summary>
 		public static readonly <#=d.Name#> One = new <#=d.Name#>(<#for(int p = 0; p < d.Size; p++){#><#=d.DT.One#><#=(p < (d.Size-1) ? ", " : "")#><#}#>);

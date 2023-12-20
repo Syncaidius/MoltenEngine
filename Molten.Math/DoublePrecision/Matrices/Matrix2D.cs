@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
@@ -8,12 +9,18 @@ namespace Molten.DoublePrecision
     /// <summary>Represents a double-precision 2x2 Matrix. Contains only scale and rotation.</summary>
     [StructLayout(LayoutKind.Explicit)]
     [DataContract]
-	public struct Matrix2D : ITransposedMatrix<Matrix2D>
+	public struct Matrix2D : IEquatable<Matrix2D>, IFormattable, ITransposedMatrix<Matrix2D>, IMatrix<double>
     {
         /// <summary>
         /// A single-precision Matrix2x2 with values intialized to the identity of a 2 x 2 matrix
         /// </summary>
         public static readonly Matrix2D Identity = new Matrix2D(1, 0, 0, 1);
+
+        public static readonly int ComponentCount = 4;
+
+        public static readonly int RowCount = 2;
+
+        public static readonly int ColumnCount = 2;
 
 		/// <summary>The value at row 1, column 1 of the matrix.</summary>
 		[DataMember]
@@ -334,8 +341,57 @@ namespace Molten.DoublePrecision
         /// <returns>A string representation of the matrix.</returns>
         public override string ToString()
         {
-            return "{" + M11 + ", " + M12 + "} " +
-                   "{" + M21 + ", " + M22 + "}";
+            return string.Format($"[{M11}, {M12}] [{M21}, {M22}]");
+        }
+
+        /// <summary>
+        /// Returns a <see cref="String"/> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <returns>
+        /// A <see cref="string"/> that represents this instance.
+        /// </returns>
+        public string ToString(string format)
+        {
+            if (format == null)
+                return ToString();
+
+            CultureInfo cc = CultureInfo.CurrentCulture;
+            return string.Format(format, cc, "[M11:{0} M12:{1}] [M21:{2} M22:{3}]",
+                M11.ToString(format, cc), M12.ToString(format, cc),
+                M21.ToString(format, cc), M22.ToString(format, cc));
+        }
+
+        /// <summary>
+        /// Returns a <see cref="string"/> that represents this instance.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>
+        /// A <see cref="string"/> that represents this instance.
+        /// </returns>
+        public string ToString(IFormatProvider formatProvider)
+        {
+            return string.Format(formatProvider, "[M11:{0} M12:{1}] [M21:{2} M22:{3}]",
+                M11.ToString(formatProvider), M12.ToString(formatProvider),
+                M21.ToString(formatProvider), M22.ToString(formatProvider));
+        }
+
+        /// <summary>
+        /// Returns a <see cref="string"/> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>
+        /// A <see cref="string"/> that represents this instance.
+        /// </returns>
+        public string ToString(string format, IFormatProvider formatProvider)
+        {
+            if (format == null)
+                return ToString(formatProvider);
+
+            return string.Format(format, formatProvider, "[M11:{0} M12:{1}] [M21:{2} M22:{3}]",
+                M11.ToString(format, formatProvider), M12.ToString(format, formatProvider),
+                M21.ToString(format, formatProvider), M22.ToString(format, formatProvider));
         }
 
         /// <summary>

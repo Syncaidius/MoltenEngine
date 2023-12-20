@@ -13,11 +13,8 @@ namespace Molten.DoublePrecision
     [DataContract]
 	public partial struct Vector4UL : IFormattable, IUnsignedVector<Vector4UL, ulong>, IEquatable<Vector4UL>
 	{
-		///<summary>The size of <see cref="Vector4UL"/>, in bytes.</summary>
-		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector4UL));
-
-        ///<summary>The number of elements in the current vector type.</summary>
-        public static readonly int NumElements = 4;
+        ///<summary>The number of components in the current vector type.</summary>
+        public static readonly int ComponentCount = 4;
 
 		///<summary>A Vector4UL with every component set to 1UL.</summary>
 		public static readonly Vector4UL One = new Vector4UL(1UL, 1UL, 1UL, 1UL);

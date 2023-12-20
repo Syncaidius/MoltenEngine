@@ -13,11 +13,8 @@ namespace Molten
     [DataContract]
 	public partial struct Byte2 : IFormattable, IUnsignedVector<Byte2, byte>, IEquatable<Byte2>
 	{
-		///<summary>The size of <see cref="Byte2"/>, in bytes.</summary>
-		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Byte2));
-
-        ///<summary>The number of elements in the current vector type.</summary>
-        public static readonly int NumElements = 2;
+        ///<summary>The number of components in the current vector type.</summary>
+        public static readonly int ComponentCount = 2;
 
 		///<summary>A Byte2 with every component set to (byte)1.</summary>
 		public static readonly Byte2 One = new Byte2((byte)1, (byte)1);
