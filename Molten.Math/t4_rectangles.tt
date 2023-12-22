@@ -54,7 +54,69 @@ namespace Molten<#=d.SubNamespace#>
             Bottom = position.Y + size.Y;
         }
 
-<#gen.GenerateStandardConstructors();#>
+/// <summary>
+        /// Initializes a new instance of the <see cref="Rectangle"/> struct.
+        /// </summary>
+        /// <param name="x">The left.</param>
+        /// <param name="y">The top.</param>
+        /// <param name="width">The width.</param>
+        /// <param name="height">The height.</param>
+        public <#=d.Name#>(<#=d.DT#> x, <#=d.DT#> y, <#=d.DT#> width, <#=d.DT#> height)
+        {
+            Left = x;
+            Top = y;
+            Right = x + width;
+            Bottom = y + height;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Rectangle"/> struct.
+        /// </summary>
+        /// <param name="values">The values to populate the rectangle with. These should be ordered as X, Y, Width and Height.</param>
+        public <#=d.Name#>(<#=d.DT#>[] values)
+        {
+            if(values == null)
+                throw new ArgumentNullException("values");
+
+            if(values.Length < 4)
+                throw new Exception("<#=d.Name#> expects at least 4 values to populate X, Y, Width and Height.");
+
+            Left = values[0];
+            Top = values[1];
+            Right = Left + values[2];
+            Bottom = Top + values[3];
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Rectangle"/> struct.
+        /// </summary>
+        /// <param name="values">The values to populate the rectangle with. These should be ordered as X, Y, Width and Height.</param>
+        public <#=d.Name#>(Span<<#=d.DT#>> values)
+        {
+            if(values == null)
+                throw new ArgumentNullException("values");
+
+            if(values.Length < 4)
+                throw new Exception("<#=d.Name#> expects at least 4 values to populate X, Y, Width and Height.");
+
+            Left = values[0];
+            Top = values[1];
+            Right = Left + values[2];
+            Bottom = Top + values[3];
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Rectangle"/> struct.
+        /// </summary>
+        /// <param name="values">The <#=gen.See(d.DT.ToString())#> values to populate the rectangle with. These should be ordered as X, Y, Width and Height.
+        /// <para>If the pointer does not contain at least 4 values of the expected type, undefined behaviour will occur.</para></param>
+        public unsafe <#=d.Name#>(<#=d.DT#>* values)
+        {
+            Left = values[0];
+            Top = values[1];
+            Right = Left + values[2];
+            Bottom = Top + values[3];
+        }
 
         /// <summary>
         /// Gets or sets the X position.
