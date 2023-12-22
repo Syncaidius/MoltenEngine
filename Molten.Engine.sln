@@ -67,6 +67,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Molten.Graphics.Vulkan", "M
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Molten.Graphics.DX12", "Molten.Graphics.DX12\Molten.Graphics.DX12.csproj", "{037B4625-B4FF-40E3-8EF2-DA240FB3953F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SourceGeneration", "SourceGeneration", "{A90C25E9-46FA-41FB-9FAC-DFC9F146F784}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Android_Debug|Any CPU = Android_Debug|Any CPU

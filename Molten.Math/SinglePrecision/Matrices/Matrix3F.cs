@@ -371,6 +371,38 @@ namespace Molten
         }
 
         /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of the matrix component, depending on the index.</value>
+        /// <param name="row">The row of the matrix to access.</param>
+        /// <param name="column">The column of the matrix to access.</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> or <paramref name="column"/>is out of the range [0, 2].</exception>
+        public unsafe float this[uint row, uint column]
+        {
+            get
+            {
+                if (row > 2)
+                    throw new ArgumentOutOfRangeException("row", "Rows and columns for matrices run from 0 to 2, inclusive.");
+                if (column > 2)
+                    throw new ArgumentOutOfRangeException("column", "Rows and columns for matrices run from 0 to 2, inclusive.");
+
+                return Values[(row * 3) + column];
+            }
+
+            set
+            {
+                if (row > 2)
+                    throw new ArgumentOutOfRangeException("row", "Row and column index must be less than 3");
+
+                if (column > 2)
+                    throw new ArgumentOutOfRangeException("column", "Row and column index must be less than 3");
+
+                Values[(row * 3) + column] = value;
+            }
+        }
+
+        /// <summary>
         /// Calculates the determinant of the Matrix3x3.
         /// </summary>
         /// <returns>The determinant of the Matrix3x3.</returns>

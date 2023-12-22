@@ -583,8 +583,6 @@ namespace Molten
             }
         }
 
-        
-
         /// <summary>
         /// Gets or sets the component at the specified index.
         /// </summary>

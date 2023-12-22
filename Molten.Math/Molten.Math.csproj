@@ -22,6 +22,8 @@
     <Version>0.7.3</Version>
     <Company>James Yarwood</Company>
     <RootNamespace>Molten</RootNamespace>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -228,6 +230,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Generated\" />
     <Folder Include="SinglePrecision\Vectors\" />
   </ItemGroup>
 

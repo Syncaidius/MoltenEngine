@@ -1,4 +1,4 @@
-// James Yarwood - Updated for Molten Engine - MIT license
+﻿// James Yarwood - Updated for Molten Engine - MIT license
 
 // Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
 // 
@@ -185,7 +185,9 @@ namespace Molten.DoublePrecision
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 9 elements.</exception>
 		public Matrix3D(Span<double> values)
 		{
-			if (values == null)
+            //GeneratedClass.HelloWorld();
+
+            if (values == null)
 				throw new ArgumentNullException("values");
 			if (values.Length < 3)
 				throw new ArgumentOutOfRangeException("values", "There must be at least three input values for Matrix3D.");
@@ -367,6 +369,38 @@ namespace Molten.DoublePrecision
                     throw new ArgumentOutOfRangeException("column", "Rows and columns for matrices run from 0 to 2, inclusive.");
 
                 this[(row * 3) + column] = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of the matrix component, depending on the index.</value>
+        /// <param name="row">The row of the matrix to access.</param>
+        /// <param name="column">The column of the matrix to access.</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> or <paramref name="column"/>is out of the range [0, 2].</exception>
+        public unsafe double this[uint row, uint column]
+        {
+            get
+            {
+                if (row > 2)
+                    throw new ArgumentOutOfRangeException("row", "Rows and columns for matrices run from 0 to 2, inclusive.");
+                if (column > 2)
+                    throw new ArgumentOutOfRangeException("column", "Rows and columns for matrices run from 0 to 2, inclusive.");
+
+                return Values[(row * 3) + column];
+            }
+
+            set
+            {
+                if (row > 2)
+                    throw new ArgumentOutOfRangeException("row", "Row and column index must be less than 3");
+
+                if (column > 2)
+                    throw new ArgumentOutOfRangeException("column", "Row and column index must be less than 3");
+
+                Values[(row * 3) + column] = value;
             }
         }
 

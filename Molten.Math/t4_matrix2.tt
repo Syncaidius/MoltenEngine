@@ -330,12 +330,48 @@ namespace Molten<#=d.SubNamespace#>
             return M11 * M22 - M12 * M21;
         }
 
-        public override bool Equals(object obj)
+        /// <summary>
+        /// Determines whether the specified <see cref="<#=d.Name#>"/> is equal to this instance.
+        /// </summary>
+        /// <param name="other">The <see cref="<#=d.Name#>"/> to compare with this instance.</param>
+        /// <returns>
+        /// <c>true</c> if the specified <see cref="<#=d.Name#>"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        public bool Equals(ref <#=d.Name#> other)
         {
-            if (obj is <#=d.Name#> m)
-                return this == m;
-            else
+            return MathHelper.NearEqual(other.M11, M11) &&
+                MathHelper.NearEqual(other.M12, M12) &&
+                MathHelper.NearEqual(other.M21, M21) &&
+                MathHelper.NearEqual(other.M22, M22);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="<#=d.Name#>"/> is equal to this instance.
+        /// </summary>
+        /// <param name="other">The <see cref="<#=d.Name#>"/> to compare with this instance.</param>
+        /// <returns>
+        /// <c>true</c> if the specified <see cref="<#=d.Name#>"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Equals(<#=d.Name#> other)
+        {
+            return Equals(ref other);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
+        /// </summary>
+        /// <param name="value">The <see cref="System.Object"/> to compare with this instance.</param>
+        /// <returns>
+        /// <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        public override bool Equals(object value)
+        {
+            if (!(value is <#=d.Name#>))
                 return false;
+
+            var strongValue = (<#=d.Name#>)value;
+            return Equals(ref strongValue);
         }
 
         /// <summary>
@@ -344,7 +380,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <value>The value of the matrix component, depending on the index.</value>
         /// <param name="index">The zero-based index of the component to access.</param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, <#=(d.FieldNames.Length-1)#>].</exception> 
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, <#=(d.FieldNames.Length-1)#>].</exception>  
 		public unsafe <#=d.DT#> this[int index]
 		{
 			get
@@ -387,6 +423,69 @@ namespace Molten<#=d.SubNamespace#>
                 Values[index] = value;
             }
 		}
+
+        /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of the matrix component, depending on the index.</value>
+        /// <param name="row">The row of the matrix to access.</param>
+        /// <param name="column">The column of the matrix to access.</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> or <paramref name="column"/>is out of the range [0, <#=(d.Size-1)#>].</exception>
+        public unsafe <#=d.DT#> this[int row, int column]
+        {
+            get
+            {
+                if (row < 0 || row > <#=(d.Size-1)#>)
+                    throw new ArgumentOutOfRangeException("row", "Rows and columns for matrices run from 0 to <#=(d.Size-1)#>, inclusive.");
+                if (column < 0 || column > <#=(d.Size-1)#>)
+                    throw new ArgumentOutOfRangeException("column", "Rows and columns for matrices run from 0 to <#=(d.Size-1)#>, inclusive.");
+
+                return Values[(row * <#=d.Size#>) + column];
+            }
+
+            set
+            {
+                if (row < 0 || row > <#=(d.Size-1)#>)
+                    throw new ArgumentOutOfRangeException("row", "Rows and columns for matrices run from 0 to <#=(d.Size-1)#>, inclusive.");
+                if (column < 0 || column > <#=(d.Size-1)#>)
+                    throw new ArgumentOutOfRangeException("column", "Rows and columns for matrices run from 0 to <#=(d.Size-1)#>, inclusive.");
+
+                Values[(row * <#=d.Size#>) + column] = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of the matrix component, depending on the index.</value>
+        /// <param name="row">The row of the matrix to access.</param>
+        /// <param name="column">The column of the matrix to access.</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> or <paramref name="column"/>is out of the range [0, <#=(d.Size-1)#>].</exception>
+        public unsafe <#=d.DT#> this[uint row, uint column]
+        {
+            get
+            {
+                if (row > <#=(d.Size-1)#>)
+                    throw new ArgumentOutOfRangeException("row", "Rows and columns for matrices run from 0 to <#=(d.Size-1)#>, inclusive.");
+                if (column > <#=(d.Size-1)#>)
+                    throw new ArgumentOutOfRangeException("column", "Rows and columns for matrices run from 0 to <#=(d.Size-1)#>, inclusive.");
+
+                return Values[(row * <#=d.Size#>) + column];
+            }
+
+            set
+            {
+                if (row > <#=(d.Size-1)#>)
+                    throw new ArgumentOutOfRangeException("row", "Row and column index must be less than <#=d.Size#>");
+
+                if (column > <#=(d.Size-1)#>)
+                    throw new ArgumentOutOfRangeException("column", "Row and column index must be less than <#=d.Size#>");
+
+                Values[(row * <#=d.Size#>) + column] = value;
+            }
+        }
 
         public static bool operator ==(<#=d.Name#> matrix1, <#=d.Name#> matrix2)
         {

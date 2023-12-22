@@ -403,12 +403,48 @@ namespace Molten.DoublePrecision
             return M11 * M22 - M12 * M21;
         }
 
-        public override bool Equals(object obj)
+        /// <summary>
+        /// Determines whether the specified <see cref="Matrix2D"/> is equal to this instance.
+        /// </summary>
+        /// <param name="other">The <see cref="Matrix2D"/> to compare with this instance.</param>
+        /// <returns>
+        /// <c>true</c> if the specified <see cref="Matrix2D"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        public bool Equals(ref Matrix2D other)
         {
-            if (obj is Matrix2D m)
-                return this == m;
-            else
+            return MathHelper.NearEqual(other.M11, M11) &&
+                MathHelper.NearEqual(other.M12, M12) &&
+                MathHelper.NearEqual(other.M21, M21) &&
+                MathHelper.NearEqual(other.M22, M22);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="Matrix2D"/> is equal to this instance.
+        /// </summary>
+        /// <param name="other">The <see cref="Matrix2D"/> to compare with this instance.</param>
+        /// <returns>
+        /// <c>true</c> if the specified <see cref="Matrix2D"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Equals(Matrix2D other)
+        {
+            return Equals(ref other);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
+        /// </summary>
+        /// <param name="value">The <see cref="System.Object"/> to compare with this instance.</param>
+        /// <returns>
+        /// <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        public override bool Equals(object value)
+        {
+            if (!(value is Matrix2D))
                 return false;
+
+            var strongValue = (Matrix2D)value;
+            return Equals(ref strongValue);
         }
 
         /// <summary>
@@ -417,7 +453,7 @@ namespace Molten.DoublePrecision
         /// <value>The value of the matrix component, depending on the index.</value>
         /// <param name="index">The zero-based index of the component to access.</param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, 3].</exception> 
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, 3].</exception>  
 		public unsafe double this[int index]
 		{
 			get
@@ -460,6 +496,69 @@ namespace Molten.DoublePrecision
                 Values[index] = value;
             }
 		}
+
+        /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of the matrix component, depending on the index.</value>
+        /// <param name="row">The row of the matrix to access.</param>
+        /// <param name="column">The column of the matrix to access.</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> or <paramref name="column"/>is out of the range [0, 1].</exception>
+        public unsafe double this[int row, int column]
+        {
+            get
+            {
+                if (row < 0 || row > 1)
+                    throw new ArgumentOutOfRangeException("row", "Rows and columns for matrices run from 0 to 1, inclusive.");
+                if (column < 0 || column > 1)
+                    throw new ArgumentOutOfRangeException("column", "Rows and columns for matrices run from 0 to 1, inclusive.");
+
+                return Values[(row * 2) + column];
+            }
+
+            set
+            {
+                if (row < 0 || row > 1)
+                    throw new ArgumentOutOfRangeException("row", "Rows and columns for matrices run from 0 to 1, inclusive.");
+                if (column < 0 || column > 1)
+                    throw new ArgumentOutOfRangeException("column", "Rows and columns for matrices run from 0 to 1, inclusive.");
+
+                Values[(row * 2) + column] = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of the matrix component, depending on the index.</value>
+        /// <param name="row">The row of the matrix to access.</param>
+        /// <param name="column">The column of the matrix to access.</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> or <paramref name="column"/>is out of the range [0, 1].</exception>
+        public unsafe double this[uint row, uint column]
+        {
+            get
+            {
+                if (row > 1)
+                    throw new ArgumentOutOfRangeException("row", "Rows and columns for matrices run from 0 to 1, inclusive.");
+                if (column > 1)
+                    throw new ArgumentOutOfRangeException("column", "Rows and columns for matrices run from 0 to 1, inclusive.");
+
+                return Values[(row * 2) + column];
+            }
+
+            set
+            {
+                if (row > 1)
+                    throw new ArgumentOutOfRangeException("row", "Row and column index must be less than 2");
+
+                if (column > 1)
+                    throw new ArgumentOutOfRangeException("column", "Row and column index must be less than 2");
+
+                Values[(row * 2) + column] = value;
+            }
+        }
 
         public static bool operator ==(Matrix2D matrix1, Matrix2D matrix2)
         {

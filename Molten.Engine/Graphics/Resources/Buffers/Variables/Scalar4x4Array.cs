@@ -3,7 +3,7 @@
     /// <summary>A shader matrix variable.</summary>
     public unsafe class ScalarFloat4x4ArrayVariable : GraphicsConstantVariable
     {
-        static uint _stride = (uint)Matrix4F.SizeInBytes;
+        static uint _stride = (uint)sizeof(Matrix4F);
         static Type _elementType = typeof(Matrix4F);
 
         Matrix4F[] _value;
