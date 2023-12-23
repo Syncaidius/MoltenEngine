@@ -1,92 +1,73 @@
-﻿<#@ template debug="false" hostspecific="true" language="C#" #>
-
-<#@ include file="t4_header.tt" #>
-<#@ assembly name="System.Core" #>
-<#@ import namespace="System.Linq" #>
-<#@ import namespace="System.Text" #>
-<#@ import namespace="System.Text.RegularExpressions" #>
-<#@ import namespace="System.Collections.Generic" #>
-<#@ output extension=".txt" #>
-
-<#
-TypeGenerator gen = new TypeGenerator(this.GenerationEnvironment, this.Host, "def_matrices.json", "m3");
-
-gen.Generate((d) => d.Size == 3, (d, def) =>
-{
-    string vectorName = $"Vector3{d.DT.Literal}";
-    string quartName = $"Quaternion{d.DT.Literal}";
-    string mat4Name = $"Matrix4{d.DT.Literal}";
-#>
 
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
-namespace Molten<#=d.SubNamespace#>
+namespace Molten
 {
-    public partial struct <#=d.Name#>
+    public partial struct Matrix3F
     {
         /// <summary>
         /// Gets or sets the first row in the Matrix3x3; that is M11, M12, M13
         /// </summary>
-        public <#=vectorName#> Row1
+        public Vector3F Row1
         {
-            get => new <#=vectorName#>(M11, M12, M13);
+            get => new Vector3F(M11, M12, M13);
             set { M11 = value.X; M12 = value.Y; M13 = value.Z; }
         }
 
         /// <summary>
         /// Gets or sets the second row in the Matrix3x3; that is M21, M22, M23
         /// </summary>
-        public <#=vectorName#> Row2
+        public Vector3F Row2
         {
-            get => new <#=vectorName#>(M21, M22, M23);
+            get => new Vector3F(M21, M22, M23);
             set { M21 = value.X; M22 = value.Y; M23 = value.Z; }
         }
 
         /// <summary>
         /// Gets or sets the third row in the Matrix3x3; that is M31, M32, M33
         /// </summary>
-        public <#=vectorName#> Row3
+        public Vector3F Row3
         {
-            get => new <#=vectorName#>(M31, M32, M33);
+            get => new Vector3F(M31, M32, M33);
             set { M31 = value.X; M32 = value.Y; M33 = value.Z; }
         }
 
         /// <summary>
         /// Gets or sets the first column in the Matrix3x3; that is M11, M21, M31
         /// </summary>
-        public <#=vectorName#> Column1
+        public Vector3F Column1
         {
-            get => new <#=vectorName#>(M11, M21, M31);
+            get => new Vector3F(M11, M21, M31);
             set { M11 = value.X; M21 = value.Y; M31 = value.Z; }
         }
 
         /// <summary>
         /// Gets or sets the second column in the Matrix3x3; that is M12, M22, M32
         /// </summary>
-        public <#=vectorName#> Column2
+        public Vector3F Column2
         {
-            get => new <#=vectorName#>(M12, M22, M32);
+            get => new Vector3F(M12, M22, M32);
             set { M12 = value.X; M22 = value.Y; M32 = value.Z; }
         }
 
         /// <summary>
         /// Gets or sets the third column in the Matrix3x3; that is M13, M23, M33
         /// </summary>
-        public <#=vectorName#> Column3
+        public Vector3F Column3
         {
-            get => new <#=vectorName#>(M13, M23, M33);
+            get => new Vector3F(M13, M23, M33);
             set { M13 = value.X; M23 = value.Y; M33 = value.Z; }
         }
 
         /// <summary>
         /// Gets or sets the scale of the Matrix3x3; that is M11, M22, and M33.
         /// </summary>
-        public <#=vectorName#> ScaleVector
+        public Vector3F ScaleVector
         {
-            get => new <#=vectorName#>(M11, M22, M33);
+            get => new Vector3F(M11, M22, M33);
             set { M11 = value.X; M22 = value.Y; M33 = value.Z; }
         }
 
@@ -94,7 +75,7 @@ namespace Molten<#=d.SubNamespace#>
         /// Calculates the determinant of the Matrix3x3.
         /// </summary>
         /// <returns>The determinant of the Matrix3x3.</returns>
-        public <#=d.DT#> Determinant()
+        public float Determinant()
         {
             return M11 * M22 * M33 + M12 * M23 * M31 + M13 * M21 * M32 - M13 * M22 * M31 - M12 * M21 * M33 - M11 * M23 * M32;
         }
@@ -106,7 +87,7 @@ namespace Molten<#=d.SubNamespace#>
         /// </summary>
         /// <param name="matrix">Matrix to compute the adjugate transpose of.</param>
         /// <param name="result">Adjugate transpose of the input matrix.</param>
-        public static void AdjugateTranspose(ref <#=d.Name#> matrix, out <#=d.Name#> result)
+        public static void AdjugateTranspose(ref Matrix3F matrix, out Matrix3F result)
         {
             // Despite the relative obscurity of the operation, this is a fairly straightforward operation which is actually faster than a true invert (by virtue of cancellation).
             // Conceptually, this is implemented as transpose(det(M) * invert(M)), but that's perfectly acceptable:
@@ -114,17 +95,17 @@ namespace Molten<#=d.SubNamespace#>
             // 2) det(M) == det(transpose(M))
             // This organization makes it clearer that the invert's usual division by determinant drops out.
 
-            <#=d.DT#> m11 = (matrix.M22 * matrix.M33 - matrix.M23 * matrix.M32);
-            <#=d.DT#> m12 = (matrix.M13 * matrix.M32 - matrix.M33 * matrix.M12);
-            <#=d.DT#> m13 = (matrix.M12 * matrix.M23 - matrix.M22 * matrix.M13);
+            float m11 = (matrix.M22 * matrix.M33 - matrix.M23 * matrix.M32);
+            float m12 = (matrix.M13 * matrix.M32 - matrix.M33 * matrix.M12);
+            float m13 = (matrix.M12 * matrix.M23 - matrix.M22 * matrix.M13);
 
-            <#=d.DT#> m21 = (matrix.M23 * matrix.M31 - matrix.M21 * matrix.M33);
-            <#=d.DT#> m22 = (matrix.M11 * matrix.M33 - matrix.M13 * matrix.M31);
-            <#=d.DT#> m23 = (matrix.M13 * matrix.M21 - matrix.M11 * matrix.M23);
+            float m21 = (matrix.M23 * matrix.M31 - matrix.M21 * matrix.M33);
+            float m22 = (matrix.M11 * matrix.M33 - matrix.M13 * matrix.M31);
+            float m23 = (matrix.M13 * matrix.M21 - matrix.M11 * matrix.M23);
 
-            <#=d.DT#> m31 = (matrix.M21 * matrix.M32 - matrix.M22 * matrix.M31);
-            <#=d.DT#> m32 = (matrix.M12 * matrix.M31 - matrix.M11 * matrix.M32);
-            <#=d.DT#> m33 = (matrix.M11 * matrix.M22 - matrix.M12 * matrix.M21);
+            float m31 = (matrix.M21 * matrix.M32 - matrix.M22 * matrix.M31);
+            float m32 = (matrix.M12 * matrix.M31 - matrix.M11 * matrix.M32);
+            float m33 = (matrix.M11 * matrix.M22 - matrix.M12 * matrix.M21);
 
             // Note transposition.
             result.M11 = m11;
@@ -147,9 +128,9 @@ namespace Molten<#=d.SubNamespace#>
         /// </summary>
         /// <param name="matrix">Matrix to compute the adjugate transpose of.</param>
         /// <returns>Adjugate transpose of the input matrix.</returns>
-        public static <#=d.Name#> AdjugateTranspose(<#=d.Name#> matrix)
+        public static Matrix3F AdjugateTranspose(Matrix3F matrix)
         {
-            <#=d.Name#> toReturn;
+            Matrix3F toReturn;
             AdjugateTranspose(ref matrix, out toReturn);
             return toReturn;
         }
@@ -167,12 +148,12 @@ namespace Molten<#=d.SubNamespace#>
         /// </summary>
         /// <remarks>
         /// <para>Orthogonalization is the process of making all rows orthogonal to each other. This
-        /// means that any given row in the <#=gen.See()#> will be orthogonal to any other given row in the
+        /// means that any given row in the <see cref="Matrix3F"/> will be orthogonal to any other given row in the
         /// Matrix3x3.</para>
         /// <para>Because this method uses the modified Gram-Schmidt process, the resulting Matrix3x3
         /// tends to be numerically unstable. The numeric stability decreases according to the rows
         /// so that the first row is the most stable and the last row is the least stable.</para>
-        /// <para>This operation is performed on the rows of the <#=gen.See()#> rather than the columns.
+        /// <para>This operation is performed on the rows of the <see cref="Matrix3F"/> rather than the columns.
         /// If you wish for this operation to be performed on the columns, first transpose the
         /// input and than transpose the output.</para>
         /// </remarks>
@@ -193,7 +174,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <para>Because this method uses the modified Gram-Schmidt process, the resulting Matrix3x3
         /// tends to be numerically unstable. The numeric stability decreases according to the rows
         /// so that the first row is the most stable and the last row is the least stable.</para>
-        /// <para>This operation is performed on the rows of the <#=gen.See()#> rather than the columns.
+        /// <para>This operation is performed on the rows of the <see cref="Matrix3F"/> rather than the columns.
         /// If you wish for this operation to be performed on the columns, first transpose the
         /// input and than transpose the output.</para>
         /// </remarks>
@@ -203,77 +184,77 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Decomposes a <#=gen.See()#> into an orthonormalized <#=gen.See()#> Q and a right triangular <#=gen.See()#> R.
+        /// Decomposes a <see cref="Matrix3F"/> into an orthonormalized <see cref="Matrix3F"/> Q and a right triangular <see cref="Matrix3F"/> R.
         /// </summary>
-        /// <param name="Q">When the method completes, contains the orthonormalized <#=gen.See()#> of the decomposition.</param>
-        /// <param name="R">When the method completes, contains the right triangular <#=gen.See()#> of the decomposition.</param>
-        public void DecomposeQR(out <#=d.Name#> Q, out <#=d.Name#> R)
+        /// <param name="Q">When the method completes, contains the orthonormalized <see cref="Matrix3F"/> of the decomposition.</param>
+        /// <param name="R">When the method completes, contains the right triangular <see cref="Matrix3F"/> of the decomposition.</param>
+        public void DecomposeQR(out Matrix3F Q, out Matrix3F R)
         {
-            <#=d.Name#> temp = this;
+            Matrix3F temp = this;
             temp.Transpose();
             Orthonormalize(ref temp, out Q);
             Q.Transpose();
 
-            R = new <#=d.Name#>();
-            R.M11 = <#=vectorName#>.Dot(Q.Column1, Column1);
-            R.M12 = <#=vectorName#>.Dot(Q.Column1, Column2);
-            R.M13 = <#=vectorName#>.Dot(Q.Column1, Column3);
+            R = new Matrix3F();
+            R.M11 = Vector3F.Dot(Q.Column1, Column1);
+            R.M12 = Vector3F.Dot(Q.Column1, Column2);
+            R.M13 = Vector3F.Dot(Q.Column1, Column3);
 
-            R.M22 = <#=vectorName#>.Dot(Q.Column2, Column2);
-            R.M23 = <#=vectorName#>.Dot(Q.Column2, Column3);
+            R.M22 = Vector3F.Dot(Q.Column2, Column2);
+            R.M23 = Vector3F.Dot(Q.Column2, Column3);
 
-            R.M33 = <#=vectorName#>.Dot(Q.Column3, Column3);
+            R.M33 = Vector3F.Dot(Q.Column3, Column3);
         }
 
         /// <summary>
-        /// Decomposes a <#=gen.See()#> into a lower triangular <#=gen.See()#> L and an orthonormalized <#=gen.See()#> Q.
+        /// Decomposes a <see cref="Matrix3F"/> into a lower triangular <see cref="Matrix3F"/> L and an orthonormalized <see cref="Matrix3F"/> Q.
         /// </summary>
-        /// <param name="L">When the method completes, contains the lower triangular <#=gen.See()#> of the decomposition.</param>
-        /// <param name="Q">When the method completes, contains the orthonormalized <#=gen.See()#> of the decomposition.</param>
-        public void DecomposeLQ(out <#=d.Name#> L, out <#=d.Name#> Q)
+        /// <param name="L">When the method completes, contains the lower triangular <see cref="Matrix3F"/> of the decomposition.</param>
+        /// <param name="Q">When the method completes, contains the orthonormalized <see cref="Matrix3F"/> of the decomposition.</param>
+        public void DecomposeLQ(out Matrix3F L, out Matrix3F Q)
         {
             Orthonormalize(ref this, out Q);
 
-            L = new <#=d.Name#>();
-            L.M11 = <#=vectorName#>.Dot(Q.Row1, Row1);
+            L = new Matrix3F();
+            L.M11 = Vector3F.Dot(Q.Row1, Row1);
 
-            L.M21 = <#=vectorName#>.Dot(Q.Row1, Row2);
-            L.M22 = <#=vectorName#>.Dot(Q.Row2, Row2);
+            L.M21 = Vector3F.Dot(Q.Row1, Row2);
+            L.M22 = Vector3F.Dot(Q.Row2, Row2);
 
-            L.M31 = <#=vectorName#>.Dot(Q.Row1, Row3);
-            L.M32 = <#=vectorName#>.Dot(Q.Row2, Row3);
-            L.M33 = <#=vectorName#>.Dot(Q.Row3, Row3);
+            L.M31 = Vector3F.Dot(Q.Row1, Row3);
+            L.M32 = Vector3F.Dot(Q.Row2, Row3);
+            L.M33 = Vector3F.Dot(Q.Row3, Row3);
         }
 
         /// <summary>
-        /// Decomposes a <#=gen.See()#> into a scale, rotation, and translation.
+        /// Decomposes a <see cref="Matrix3F"/> into a scale, rotation, and translation.
         /// </summary>
         /// <param name="scale">When the method completes, contains the scaling component of the decomposed Matrix3x3.</param>
         /// <param name="rotation">When the method completes, contains the rotation component of the decomposed Matrix3x3.</param>
         /// <remarks>
-        /// This method is designed to decompose an SRT transformation <#=gen.See()#> only.
+        /// This method is designed to decompose an SRT transformation <see cref="Matrix3F"/> only.
         /// </remarks>
-        public bool Decompose(out <#=vectorName#> scale, out <#=quartName#> rotation)
+        public bool Decompose(out Vector3F scale, out QuaternionF rotation)
         {
             //Source: Unknown
             //References: http://www.gamedev.net/community/forums/topic.asp?topic_id=441695
 
             //Scaling is the length of the rows.
-            scale.X =  <#=d.DT#>.Sqrt((M11 * M11) + (M12 * M12) + (M13 * M13));
-            scale.Y =  <#=d.DT#>.Sqrt((M21 * M21) + (M22 * M22) + (M23 * M23));
-            scale.Z =  <#=d.DT#>.Sqrt((M31 * M31) + (M32 * M32) + (M33 * M33));
+            scale.X =  float.Sqrt((M11 * M11) + (M12 * M12) + (M13 * M13));
+            scale.Y =  float.Sqrt((M21 * M21) + (M22 * M22) + (M23 * M23));
+            scale.Z =  float.Sqrt((M31 * M31) + (M32 * M32) + (M33 * M33));
 
-            //If any of the scaling factors are zero, than the rotation <#=gen.See()#> can not exist.
+            //If any of the scaling factors are zero, than the rotation <see cref="Matrix3F"/> can not exist.
             if (MathHelper.IsZero(scale.X) ||
                 MathHelper.IsZero(scale.Y) ||
                 MathHelper.IsZero(scale.Z))
             {
-                rotation = <#=quartName#>.Identity;
+                rotation = QuaternionF.Identity;
                 return false;
             }
 
-            //The rotation is the left over <#=gen.See()#> after dividing out the scaling.
-            <#=d.Name#> rotationMatrix3x3 = new <#=d.Name#>();
+            //The rotation is the left over <see cref="Matrix3F"/> after dividing out the scaling.
+            Matrix3F rotationMatrix3x3 = new Matrix3F();
             rotationMatrix3x3.M11 = M11 / scale.X;
             rotationMatrix3x3.M12 = M12 / scale.X;
             rotationMatrix3x3.M13 = M13 / scale.X;
@@ -286,7 +267,7 @@ namespace Molten<#=d.SubNamespace#>
             rotationMatrix3x3.M32 = M32 / scale.Z;
             rotationMatrix3x3.M33 = M33 / scale.Z;
 
-            rotation = <#=quartName#>.FromRotationMatrix(ref rotationMatrix3x3);
+            rotation = QuaternionF.FromRotationMatrix(ref rotationMatrix3x3);
             return true;
         }
 
@@ -299,21 +280,21 @@ namespace Molten<#=d.SubNamespace#>
         /// <remarks>
         /// This method is designed to decompose only an SRT transformation matrix that has the same scale in every axis.
         /// </remarks>
-        public bool DecomposeUniformScale(out <#=d.DT#> scale, out <#=quartName#> rotation)
+        public bool DecomposeUniformScale(out float scale, out QuaternionF rotation)
         {
             //Scaling is the length of the rows. ( just take one row since this is a uniform matrix)
-            scale =  <#=d.DT#>.Sqrt((M11 * M11) + (M12 * M12) + (M13 * M13));
+            scale =  float.Sqrt((M11 * M11) + (M12 * M12) + (M13 * M13));
             var inv_scale = 1f / scale;
 
             //If any of the scaling factors are zero, then the rotation matrix can not exist.
-            if (Math.Abs(scale) < MathHelper.Constants<<#=d.DT#>>.ZeroTolerance)
+            if (Math.Abs(scale) < MathHelper.Constants<float>.ZeroTolerance)
             {
-                rotation = <#=quartName#>.Identity;
+                rotation = QuaternionF.Identity;
                 return false;
             }
 
             //The rotation is the left over matrix after dividing out the scaling.
-            <#=d.Name#> rotationmatrix = new <#=d.Name#>();
+            Matrix3F rotationmatrix = new Matrix3F();
             rotationmatrix.M11 = M11 * inv_scale;
             rotationmatrix.M12 = M12 * inv_scale;
             rotationmatrix.M13 = M13 * inv_scale;
@@ -326,7 +307,7 @@ namespace Molten<#=d.SubNamespace#>
             rotationmatrix.M32 = M32 * inv_scale;
             rotationmatrix.M33 = M33 * inv_scale;
 
-            rotation = <#=quartName#>.FromRotationMatrix(ref rotationmatrix);
+            rotation = QuaternionF.FromRotationMatrix(ref rotationmatrix);
             return true;
         }
 
@@ -349,9 +330,9 @@ namespace Molten<#=d.SubNamespace#>
             if (firstRow == secondRow)
                 return;
 
-            <#=d.DT#> temp0 = this[secondRow, 0];
-            <#=d.DT#> temp1 = this[secondRow, 1];
-            <#=d.DT#> temp2 = this[secondRow, 2];
+            float temp0 = this[secondRow, 0];
+            float temp1 = this[secondRow, 1];
+            float temp2 = this[secondRow, 2];
 
             this[secondRow, 0] = this[firstRow, 0];
             this[secondRow, 1] = this[firstRow, 1];
@@ -381,9 +362,9 @@ namespace Molten<#=d.SubNamespace#>
             if (firstColumn == secondColumn)
                 return;
 
-            <#=d.DT#> temp0 = this[0, secondColumn];
-            <#=d.DT#> temp1 = this[1, secondColumn];
-            <#=d.DT#> temp2 = this[2, secondColumn];
+            float temp0 = this[0, secondColumn];
+            float temp1 = this[1, secondColumn];
+            float temp2 = this[2, secondColumn];
 
             this[0, secondColumn] = this[0, firstColumn];
             this[1, secondColumn] = this[1, firstColumn];
@@ -395,14 +376,14 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Scales a <#=gen.See()#> by the given value.
+        /// Scales a <see cref="Matrix3F"/> by the given value.
         /// </summary>
-        /// <param name="left">The <#=gen.See()#> to scale.</param>
+        /// <param name="left">The <see cref="Matrix3F"/> to scale.</param>
         /// <param name="right">The amount by which to scale.</param>
-        /// <returns>The scaled <#=gen.See()#>.</returns>
-        public static <#=d.Name#> Multiply(<#=d.Name#> left, <#=d.DT#> right)
+        /// <returns>The scaled <see cref="Matrix3F"/>.</returns>
+        public static Matrix3F Multiply(Matrix3F left, float right)
         {
-            <#=d.Name#> result;
+            Matrix3F result;
             Multiply(ref left, right, out result);
             return result;
         }
@@ -410,12 +391,12 @@ namespace Molten<#=d.SubNamespace#>
         /// <summary>
         /// Determines the product of two matrices.
         /// </summary>
-        /// <param name="left">The first <#=gen.See()#> to multiply.</param>
-        /// <param name="right">The second <#=gen.See()#> to multiply.</param>
+        /// <param name="left">The first <see cref="Matrix3F"/> to multiply.</param>
+        /// <param name="right">The second <see cref="Matrix3F"/> to multiply.</param>
         /// <param name="result">The product of the two matrices.</param>
-        public static void Multiply(ref <#=d.Name#> left, ref <#=d.Name#> right, out <#=d.Name#> result)
+        public static void Multiply(ref Matrix3F left, ref Matrix3F right, out Matrix3F result)
         {
-            <#=d.Name#> temp = new <#=d.Name#>();
+            Matrix3F temp = new Matrix3F();
             temp.M11 = (left.M11 * right.M11) + (left.M12 * right.M21) + (left.M13 * right.M31);
             temp.M12 = (left.M11 * right.M12) + (left.M12 * right.M22) + (left.M13 * right.M32);
             temp.M13 = (left.M11 * right.M13) + (left.M12 * right.M23) + (left.M13 * right.M33);
@@ -431,12 +412,12 @@ namespace Molten<#=d.SubNamespace#>
         /// <summary>
         /// Determines the product of two matrices.
         /// </summary>
-        /// <param name="left">The first <#=gen.See()#> to multiply.</param>
-        /// <param name="right">The second <#=gen.See()#> to multiply.</param>
+        /// <param name="left">The first <see cref="Matrix3F"/> to multiply.</param>
+        /// <param name="right">The second <see cref="Matrix3F"/> to multiply.</param>
         /// <returns>The product of the two matrices.</returns>
-        public static <#=d.Name#> Multiply(<#=d.Name#> left, <#=d.Name#> right)
+        public static Matrix3F Multiply(Matrix3F left, Matrix3F right)
         {
-            <#=d.Name#> result;
+            Matrix3F result;
             Multiply(ref left, ref right, out result);
             return result;
         }
@@ -446,7 +427,7 @@ namespace Molten<#=d.SubNamespace#>
         /// </summary>
         /// <param name="v">Vector to base the matrix on.</param>
         /// <param name="result">Skew-symmetric matrix result.</param>
-        public static void CrossProduct(ref <#=vectorName#> v, out <#=d.Name#> result)
+        public static void CrossProduct(ref Vector3F v, out Matrix3F result)
         {
             result.M11 = 0;
             result.M12 = -v.Z;
@@ -465,7 +446,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <param name="a">First vector.</param>
         /// <param name="b">Second vector.</param>
         /// <param name="result">Outer product result.</param>
-        public static void CreateOuterProduct(ref <#=vectorName#> a, ref <#=vectorName#> b, out <#=d.Name#> result)
+        public static void CreateOuterProduct(ref Vector3F a, ref Vector3F b, out Matrix3F result)
         {
             result.M11 = a.X * b.X;
             result.M12 = a.X * b.Y;
@@ -481,13 +462,13 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Performs the exponential operation on a <#=gen.See()#>.
+        /// Performs the exponential operation on a <see cref="Matrix3F"/>.
         /// </summary>
-        /// <param name="value">The <#=gen.See()#> to perform the operation on.</param>
-        /// <param name="exponent">The exponent to raise the <#=gen.See()#> to.</param>
-        /// <param name="result">When the method completes, contains the exponential <#=gen.See()#>.</param>
+        /// <param name="value">The <see cref="Matrix3F"/> to perform the operation on.</param>
+        /// <param name="exponent">The exponent to raise the <see cref="Matrix3F"/> to.</param>
+        /// <param name="result">When the method completes, contains the exponential <see cref="Matrix3F"/>.</param>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="exponent"/> is negative.</exception>
-        public static void Exponent(ref <#=d.Name#> value, int exponent, out <#=d.Name#> result)
+        public static void Exponent(ref Matrix3F value, int exponent, out Matrix3F result)
         {
             //Source: http://rosettacode.org
             //Reference: http://rosettacode.org/wiki/Matrix3x3-exponentiation_operator
@@ -497,7 +478,7 @@ namespace Molten<#=d.SubNamespace#>
 
             if (exponent == 0)
             {
-                result = <#=d.Name#>.Identity;
+                result = Matrix3F.Identity;
                 return;
             }
 
@@ -507,8 +488,8 @@ namespace Molten<#=d.SubNamespace#>
                 return;
             }
 
-            <#=d.Name#> identity = <#=d.Name#>.Identity;
-            <#=d.Name#> temp = value;
+            Matrix3F identity = Matrix3F.Identity;
+            Matrix3F temp = value;
 
             while (true)
             {
@@ -527,15 +508,15 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Performs the exponential operation on a <#=gen.See()#>.
+        /// Performs the exponential operation on a <see cref="Matrix3F"/>.
         /// </summary>
-        /// <param name="value">The <#=gen.See()#> to perform the operation on.</param>
-        /// <param name="exponent">The exponent to raise the <#=gen.See()#> to.</param>
-        /// <returns>The exponential <#=gen.See()#>.</returns>
+        /// <param name="value">The <see cref="Matrix3F"/> to perform the operation on.</param>
+        /// <param name="exponent">The exponent to raise the <see cref="Matrix3F"/> to.</param>
+        /// <returns>The exponential <see cref="Matrix3F"/>.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="exponent"/> is negative.</exception>
-        public static <#=d.Name#> Exponent(<#=d.Name#> value, int exponent)
+        public static Matrix3F Exponent(Matrix3F value, int exponent)
         {
-            <#=d.Name#> result;
+            Matrix3F result;
             Exponent(ref value, exponent, out result);
             return result;
         }
@@ -543,12 +524,12 @@ namespace Molten<#=d.SubNamespace#>
         /// <summary>
         /// Transforms the vector by the matrix's transpose.
         /// </summary>
-        /// <param name="v"><#=vectorName#> to transform.</param>
+        /// <param name="v">Vector3F to transform.</param>
         /// <param name="matrix">Matrix to use as the transformation transpose.</param>
         /// <param name="result">Product of the transformation.</param>
-        public static void TransformTranspose(ref <#=vectorName#> v, ref <#=d.Name#> matrix, out <#=vectorName#> result)
+        public static void TransformTranspose(ref Vector3F v, ref Matrix3F matrix, out Vector3F result)
         {
-            result = new <#=vectorName#>()
+            result = new Vector3F()
             {
                 X = v.X * matrix.M11 + v.Y  * matrix.M12 + v.Z * matrix.M13,
                 Y = v.X * matrix.M21 + v.Y  * matrix.M22 + v.Z * matrix.M23,
@@ -559,12 +540,12 @@ namespace Molten<#=d.SubNamespace#>
         /// <summary>
         /// Transforms the vector by the matrix's transpose.
         /// </summary>
-        /// <param name="v"><#=vectorName#> to transform.</param>
+        /// <param name="v">Vector3F to transform.</param>
         /// <param name="matrix">Matrix to use as the transformation transpose.</param>
         /// <returns>Product of the transformation.</returns>
-        public static <#=vectorName#> TransformTranspose(<#=vectorName#> v, <#=d.Name#> matrix)
+        public static Vector3F TransformTranspose(Vector3F v, Matrix3F matrix)
         {
-            return new <#=vectorName#>()
+            return new Vector3F()
             {
                 X = v.X * matrix.M11 + v.Y  * matrix.M12 + v.Z * matrix.M13,
                 Y = v.X * matrix.M21 + v.Y  * matrix.M22 + v.Z * matrix.M23,
@@ -573,32 +554,32 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Calculates the inverse of the specified <#=gen.See()#>.
+        /// Calculates the inverse of the specified <see cref="Matrix3F"/>.
         /// </summary>
-        /// <param name="value">The <#=gen.See()#> whose inverse is to be calculated.</param>
-        /// <param name="result">When the method completes, contains the inverse of the specified <#=gen.See()#>.</param>
-        public static void Invert(ref <#=d.Name#> value, out <#=d.Name#> result)
+        /// <param name="value">The <see cref="Matrix3F"/> whose inverse is to be calculated.</param>
+        /// <param name="result">When the method completes, contains the inverse of the specified <see cref="Matrix3F"/>.</param>
+        public static void Invert(ref Matrix3F value, out Matrix3F result)
         {
-            <#=d.DT#> d11 = value.M22 * value.M33 + value.M23 * -value.M32;
-            <#=d.DT#> d12 = value.M21 * value.M33 + value.M23 * -value.M31;
-            <#=d.DT#> d13 = value.M21 * value.M32 + value.M22 * -value.M31;
+            float d11 = value.M22 * value.M33 + value.M23 * -value.M32;
+            float d12 = value.M21 * value.M33 + value.M23 * -value.M31;
+            float d13 = value.M21 * value.M32 + value.M22 * -value.M31;
 
-            <#=d.DT#> det = value.M11 * d11 - value.M12 * d12 + value.M13 * d13;
-            if (Math.Abs(det) == <#=d.DT.Zero#>)
+            float det = value.M11 * d11 - value.M12 * d12 + value.M13 * d13;
+            if (Math.Abs(det) == 0F)
             {
                 result = Zero;
                 return;
             }
 
-            det = <#=d.DT.One#> / det;
+            det = 1F / det;
 
-            <#=d.DT#> d21 = value.M12 * value.M33 + value.M13 * -value.M32;
-            <#=d.DT#> d22 = value.M11 * value.M33 + value.M13 * -value.M31;
-            <#=d.DT#> d23 = value.M11 * value.M32 + value.M12 * -value.M31;
+            float d21 = value.M12 * value.M33 + value.M13 * -value.M32;
+            float d22 = value.M11 * value.M33 + value.M13 * -value.M31;
+            float d23 = value.M11 * value.M32 + value.M12 * -value.M31;
 
-            <#=d.DT#> d31 = (value.M12 * value.M23) - (value.M13 * value.M22);
-            <#=d.DT#> d32 = (value.M11 * value.M23) - (value.M13 * value.M21);
-            <#=d.DT#> d33 = (value.M11 * value.M22) - (value.M12 * value.M21);
+            float d31 = (value.M12 * value.M23) - (value.M13 * value.M22);
+            float d32 = (value.M11 * value.M23) - (value.M13 * value.M21);
+            float d33 = (value.M11 * value.M22) - (value.M12 * value.M21);
 
             result.M11 = +d11 * det; result.M12 = -d21 * det; result.M13 = +d31 * det;
             result.M21 = -d12 * det; result.M22 = +d22 * det; result.M23 = -d32 * det;
@@ -606,33 +587,33 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Calculates the inverse of the specified <#=gen.See()#>.
+        /// Calculates the inverse of the specified <see cref="Matrix3F"/>.
         /// </summary>
-        /// <param name="value">The <#=gen.See()#> whose inverse is to be calculated.</param>
-        /// <returns>The inverse of the specified <#=gen.See()#>.</returns>
-        public static <#=d.Name#> Invert(<#=d.Name#> value)
+        /// <param name="value">The <see cref="Matrix3F"/> whose inverse is to be calculated.</param>
+        /// <returns>The inverse of the specified <see cref="Matrix3F"/>.</returns>
+        public static Matrix3F Invert(Matrix3F value)
         {
             value.Invert();
             return value;
         }
 
         /// <summary>
-        /// Orthogonalizes the specified <#=gen.See()#>.
+        /// Orthogonalizes the specified <see cref="Matrix3F"/>.
         /// </summary>
-        /// <param name="value">The <#=gen.See()#> to orthogonalize.</param>
-        /// <param name="result">When the method completes, contains the orthogonalized <#=gen.See()#>.</param>
+        /// <param name="value">The <see cref="Matrix3F"/> to orthogonalize.</param>
+        /// <param name="result">When the method completes, contains the orthogonalized <see cref="Matrix3F"/>.</param>
         /// <remarks>
         /// <para>Orthogonalization is the process of making all rows orthogonal to each other. This
-        /// means that any given row in the <#=gen.See()#> will be orthogonal to any other given row in the
-        /// <#=gen.See()#>.</para>
-        /// <para>Because this method uses the modified Gram-Schmidt process, the resulting <#=gen.See()#>
+        /// means that any given row in the <see cref="Matrix3F"/> will be orthogonal to any other given row in the
+        /// <see cref="Matrix3F"/>.</para>
+        /// <para>Because this method uses the modified Gram-Schmidt process, the resulting <see cref="Matrix3F"/>
         /// tends to be numerically unstable. The numeric stability decreases according to the rows
         /// so that the first row is the most stable and the last row is the least stable.</para>
-        /// <para>This operation is performed on the rows of the <#=gen.See()#> rather than the columns.
+        /// <para>This operation is performed on the rows of the <see cref="Matrix3F"/> rather than the columns.
         /// If you wish for this operation to be performed on the columns, first transpose the
         /// input and than transpose the output.</para>
         /// </remarks>
-        public static void Orthogonalize(ref <#=d.Name#> value, out <#=d.Name#> result)
+        public static void Orthogonalize(ref Matrix3F value, out Matrix3F result)
         {
             // Uses the modified Gram-Schmidt process.
             // q1 = m1
@@ -642,31 +623,31 @@ namespace Molten<#=d.SubNamespace#>
             //By separating the above algorithm into multiple lines, we actually increase accuracy.
             result = value;
 
-            result.Row2 = result.Row2 - (<#=vectorName#>.Dot(result.Row1, result.Row2) / <#=vectorName#>.Dot(result.Row1, result.Row1)) * result.Row1;
+            result.Row2 = result.Row2 - (Vector3F.Dot(result.Row1, result.Row2) / Vector3F.Dot(result.Row1, result.Row1)) * result.Row1;
 
-            result.Row3 = result.Row3 - (<#=vectorName#>.Dot(result.Row1, result.Row3) / <#=vectorName#>.Dot(result.Row1, result.Row1)) * result.Row1;
-            result.Row3 = result.Row3 - (<#=vectorName#>.Dot(result.Row2, result.Row3) / <#=vectorName#>.Dot(result.Row2, result.Row2)) * result.Row2;
+            result.Row3 = result.Row3 - (Vector3F.Dot(result.Row1, result.Row3) / Vector3F.Dot(result.Row1, result.Row1)) * result.Row1;
+            result.Row3 = result.Row3 - (Vector3F.Dot(result.Row2, result.Row3) / Vector3F.Dot(result.Row2, result.Row2)) * result.Row2;
         }
 
         /// <summary>
         /// Orthogonalizes the specified Matrix3x3.
         /// </summary>
-        /// <param name="value">The <#=gen.See()#> to orthogonalize.</param>
+        /// <param name="value">The <see cref="Matrix3F"/> to orthogonalize.</param>
         /// <returns>The orthogonalized Matrix3x3.</returns>
         /// <remarks>
         /// <para>Orthogonalization is the process of making all rows orthogonal to each other. This
-        /// means that any given row in the <#=gen.See()#> will be orthogonal to any other given row in the
+        /// means that any given row in the <see cref="Matrix3F"/> will be orthogonal to any other given row in the
         /// Matrix3x3.</para>
         /// <para>Because this method uses the modified Gram-Schmidt process, the resulting Matrix3x3
         /// tends to be numerically unstable. The numeric stability decreases according to the rows
         /// so that the first row is the most stable and the last row is the least stable.</para>
-        /// <para>This operation is performed on the rows of the <#=gen.See()#> rather than the columns.
+        /// <para>This operation is performed on the rows of the <see cref="Matrix3F"/> rather than the columns.
         /// If you wish for this operation to be performed on the columns, first transpose the
         /// input and than transpose the output.</para>
         /// </remarks>
-        public static <#=d.Name#> Orthogonalize(<#=d.Name#> value)
+        public static Matrix3F Orthogonalize(Matrix3F value)
         {
-            <#=d.Name#> result;
+            Matrix3F result;
             Orthogonalize(ref value, out result);
             return result;
         }
@@ -674,7 +655,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <summary>
         /// Orthonormalizes the specified Matrix3x3.
         /// </summary>
-        /// <param name="value">The <#=gen.See()#> to orthonormalize.</param>
+        /// <param name="value">The <see cref="Matrix3F"/> to orthonormalize.</param>
         /// <param name="result">When the method completes, contains the orthonormalized Matrix3x3.</param>
         /// <remarks>
         /// <para>Orthonormalization is the process of making all rows and columns orthogonal to each
@@ -685,11 +666,11 @@ namespace Molten<#=d.SubNamespace#>
         /// <para>Because this method uses the modified Gram-Schmidt process, the resulting Matrix3x3
         /// tends to be numerically unstable. The numeric stability decreases according to the rows
         /// so that the first row is the most stable and the last row is the least stable.</para>
-        /// <para>This operation is performed on the rows of the <#=gen.See()#> rather than the columns.
+        /// <para>This operation is performed on the rows of the <see cref="Matrix3F"/> rather than the columns.
         /// If you wish for this operation to be performed on the columns, first transpose the
         /// input and than transpose the output.</para>
         /// </remarks>
-        public static void Orthonormalize(ref <#=d.Name#> value, out <#=d.Name#> result)
+        public static void Orthonormalize(ref Matrix3F value, out Matrix3F result)
         {
             //Uses the modified Gram-Schmidt process.
             //Because we are making unit vectors, we can optimize the math for orthonormalization
@@ -701,20 +682,20 @@ namespace Molten<#=d.SubNamespace#>
             //By separating the above algorithm into multiple lines, we actually increase accuracy.
             result = value;
 
-            result.Row1 = <#=vectorName#>.Normalize(result.Row1);
+            result.Row1 = Vector3F.Normalize(result.Row1);
 
-            result.Row2 = result.Row2 - <#=vectorName#>.Dot(result.Row1, result.Row2) * result.Row1;
-            result.Row2 = <#=vectorName#>.Normalize(result.Row2);
+            result.Row2 = result.Row2 - Vector3F.Dot(result.Row1, result.Row2) * result.Row1;
+            result.Row2 = Vector3F.Normalize(result.Row2);
 
-            result.Row3 = result.Row3 - <#=vectorName#>.Dot(result.Row1, result.Row3) * result.Row1;
-            result.Row3 = result.Row3 - <#=vectorName#>.Dot(result.Row2, result.Row3) * result.Row2;
-            result.Row3 = <#=vectorName#>.Normalize(result.Row3);
+            result.Row3 = result.Row3 - Vector3F.Dot(result.Row1, result.Row3) * result.Row1;
+            result.Row3 = result.Row3 - Vector3F.Dot(result.Row2, result.Row3) * result.Row2;
+            result.Row3 = Vector3F.Normalize(result.Row3);
         }
 
         /// <summary>
         /// Orthonormalizes the specified Matrix3x3.
         /// </summary>
-        /// <param name="value">The <#=gen.See()#> to orthonormalize.</param>
+        /// <param name="value">The <see cref="Matrix3F"/> to orthonormalize.</param>
         /// <returns>The orthonormalized Matrix3x3.</returns>
         /// <remarks>
         /// <para>Orthonormalization is the process of making all rows and columns orthogonal to each
@@ -725,29 +706,29 @@ namespace Molten<#=d.SubNamespace#>
         /// <para>Because this method uses the modified Gram-Schmidt process, the resulting Matrix3x3
         /// tends to be numerically unstable. The numeric stability decreases according to the rows
         /// so that the first row is the most stable and the last row is the least stable.</para>
-        /// <para>This operation is performed on the rows of the <#=gen.See()#> rather than the columns.
+        /// <para>This operation is performed on the rows of the <see cref="Matrix3F"/> rather than the columns.
         /// If you wish for this operation to be performed on the columns, first transpose the
         /// input and than transpose the output.</para>
         /// </remarks>
-        public static <#=d.Name#> Orthonormalize(<#=d.Name#> value)
+        public static Matrix3F Orthonormalize(Matrix3F value)
         {
-            <#=d.Name#> result;
+            Matrix3F result;
             Orthonormalize(ref value, out result);
             return result;
         }
 
         /// <summary>
-        /// Brings the <#=gen.See()#> into upper triangular form using elementary row operations.
+        /// Brings the <see cref="Matrix3F"/> into upper triangular form using elementary row operations.
         /// </summary>
-        /// <param name="value">The <#=gen.See()#> to put into upper triangular form.</param>
+        /// <param name="value">The <see cref="Matrix3F"/> to put into upper triangular form.</param>
         /// <param name="result">When the method completes, contains the upper triangular Matrix3x3.</param>
         /// <remarks>
-        /// If the <#=gen.See()#> is not invertible (i.e. its determinant is zero) than the result of this
-        /// method may produce Single.Nan and Single.Inf values. When the <#=gen.See()#> represents a system
+        /// If the <see cref="Matrix3F"/> is not invertible (i.e. its determinant is zero) than the result of this
+        /// method may produce Single.Nan and Single.Inf values. When the <see cref="Matrix3F"/> represents a system
         /// of linear equations, than this often means that either no solution exists or an infinite
         /// number of solutions exist.
         /// </remarks>
-        public static void UpperTriangularForm(ref <#=d.Name#> value, out <#=d.Name#> result)
+        public static void UpperTriangularForm(ref Matrix3F value, out Matrix3F result)
         {
             //Adapted from the row echelon code.
             result = value;
@@ -781,7 +762,7 @@ namespace Molten<#=d.SubNamespace#>
                     result.ExchangeRows(i, r);
                 }
 
-                <#=d.DT#> multiplier = 1f / result[r, lead];
+                float multiplier = 1f / result[r, lead];
 
                 for (; i < rowcount; ++i)
                 {
@@ -798,39 +779,39 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Brings the <#=gen.See()#> into upper triangular form using elementary row operations.
+        /// Brings the <see cref="Matrix3F"/> into upper triangular form using elementary row operations.
         /// </summary>
-        /// <param name="value">The <#=gen.See()#> to put into upper triangular form.</param>
+        /// <param name="value">The <see cref="Matrix3F"/> to put into upper triangular form.</param>
         /// <returns>The upper triangular Matrix3x3.</returns>
         /// <remarks>
-        /// If the <#=gen.See()#> is not invertible (i.e. its determinant is zero) than the result of this
-        /// method may produce Single.Nan and Single.Inf values. When the <#=gen.See()#> represents a system
+        /// If the <see cref="Matrix3F"/> is not invertible (i.e. its determinant is zero) than the result of this
+        /// method may produce Single.Nan and Single.Inf values. When the <see cref="Matrix3F"/> represents a system
         /// of linear equations, than this often means that either no solution exists or an infinite
         /// number of solutions exist.
         /// </remarks>
-        public static <#=d.Name#> UpperTriangularForm(<#=d.Name#> value)
+        public static Matrix3F UpperTriangularForm(Matrix3F value)
         {
-            <#=d.Name#> result;
+            Matrix3F result;
             UpperTriangularForm(ref value, out result);
             return result;
         }
 
         /// <summary>
-        /// Brings the <#=gen.See()#> into lower triangular form using elementary row operations.
+        /// Brings the <see cref="Matrix3F"/> into lower triangular form using elementary row operations.
         /// </summary>
-        /// <param name="value">The <#=gen.See()#> to put into lower triangular form.</param>
+        /// <param name="value">The <see cref="Matrix3F"/> to put into lower triangular form.</param>
         /// <param name="result">When the method completes, contains the lower triangular Matrix3x3.</param>
         /// <remarks>
-        /// If the <#=gen.See()#> is not invertible (i.e. its determinant is zero) than the result of this
-        /// method may produce Single.Nan and Single.Inf values. When the <#=gen.See()#> represents a system
+        /// If the <see cref="Matrix3F"/> is not invertible (i.e. its determinant is zero) than the result of this
+        /// method may produce Single.Nan and Single.Inf values. When the <see cref="Matrix3F"/> represents a system
         /// of linear equations, than this often means that either no solution exists or an infinite
         /// number of solutions exist.
         /// </remarks>
-        public static void LowerTriangularForm(ref <#=d.Name#> value, out <#=d.Name#> result)
+        public static void LowerTriangularForm(ref Matrix3F value, out Matrix3F result)
         {
             //Adapted from the row echelon code.
-            <#=d.Name#> temp = value;
-            <#=d.Name#>.Transpose(ref temp, out result);
+            Matrix3F temp = value;
+            Matrix3F.Transpose(ref temp, out result);
 
             int lead = 0;
             int rowcount = 3;
@@ -862,7 +843,7 @@ namespace Molten<#=d.SubNamespace#>
                     result.ExchangeRows(i, r);
                 }
 
-                <#=d.DT#> multiplier = 1f / result[r, lead];
+                float multiplier = 1f / result[r, lead];
 
                 for (; i < rowcount; ++i)
                 {
@@ -877,33 +858,33 @@ namespace Molten<#=d.SubNamespace#>
                 lead++;
             }
 
-            <#=d.Name#>.Transpose(ref result, out result);
+            Matrix3F.Transpose(ref result, out result);
         }
 
         /// <summary>
-        /// Brings the <#=gen.See()#> into lower triangular form using elementary row operations.
+        /// Brings the <see cref="Matrix3F"/> into lower triangular form using elementary row operations.
         /// </summary>
-        /// <param name="value">The <#=gen.See()#> to put into lower triangular form.</param>
+        /// <param name="value">The <see cref="Matrix3F"/> to put into lower triangular form.</param>
         /// <returns>The lower triangular Matrix3x3.</returns>
         /// <remarks>
-        /// If the <#=gen.See()#> is not invertible (i.e. its determinant is zero) than the result of this
-        /// method may produce Single.Nan and Single.Inf values. When the <#=gen.See()#> represents a system
+        /// If the <see cref="Matrix3F"/> is not invertible (i.e. its determinant is zero) than the result of this
+        /// method may produce Single.Nan and Single.Inf values. When the <see cref="Matrix3F"/> represents a system
         /// of linear equations, than this often means that either no solution exists or an infinite
         /// number of solutions exist.
         /// </remarks>
-        public static <#=d.Name#> LowerTriangularForm(<#=d.Name#> value)
+        public static Matrix3F LowerTriangularForm(Matrix3F value)
         {
-            <#=d.Name#> result;
+            Matrix3F result;
             LowerTriangularForm(ref value, out result);
             return result;
         }
 
         /// <summary>
-        /// Brings the <#=gen.See()#> into row echelon form using elementary row operations;
+        /// Brings the <see cref="Matrix3F"/> into row echelon form using elementary row operations;
         /// </summary>
-        /// <param name="value">The <#=gen.See()#> to put into row echelon form.</param>
+        /// <param name="value">The <see cref="Matrix3F"/> to put into row echelon form.</param>
         /// <param name="result">When the method completes, contains the row echelon form of the Matrix3x3.</param>
-        public static void RowEchelonForm(ref <#=d.Name#> value, out <#=d.Name#> result)
+        public static void RowEchelonForm(ref Matrix3F value, out Matrix3F result)
         {
             //Source: Wikipedia pseudo code
             //Reference: http://en.wikipedia.org/wiki/Row_echelon_form#Pseudocode
@@ -939,7 +920,7 @@ namespace Molten<#=d.SubNamespace#>
                     result.ExchangeRows(i, r);
                 }
 
-                <#=d.DT#> multiplier = 1f / result[r, lead];
+                float multiplier = 1f / result[r, lead];
                 result[r, 0] *= multiplier;
                 result[r, 1] *= multiplier;
                 result[r, 2] *= multiplier;
@@ -959,13 +940,13 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Brings the <#=gen.See()#> into row echelon form using elementary row operations;
+        /// Brings the <see cref="Matrix3F"/> into row echelon form using elementary row operations;
         /// </summary>
-        /// <param name="value">The <#=gen.See()#> to put into row echelon form.</param>
+        /// <param name="value">The <see cref="Matrix3F"/> to put into row echelon form.</param>
         /// <returns>When the method completes, contains the row echelon form of the Matrix3x3.</returns>
-        public static <#=d.Name#> RowEchelonForm(<#=d.Name#> value)
+        public static Matrix3F RowEchelonForm(Matrix3F value)
         {
-            <#=d.Name#> result;
+            Matrix3F result;
             RowEchelonForm(ref value, out result);
             return result;
         }
@@ -977,21 +958,21 @@ namespace Molten<#=d.SubNamespace#>
         /// <param name="cameraPosition">The position of the camera.</param>
         /// <param name="cameraUpVector">The up vector of the camera.</param>
         /// <param name="cameraForwardVector">The forward vector of the camera.</param>
-        public static <#=d.Name#> BillboardLH(ref <#=vectorName#> objectPosition, ref <#=vectorName#> cameraPosition, ref <#=vectorName#> cameraUpVector, ref <#=vectorName#> cameraForwardVector)
+        public static Matrix3F BillboardLH(ref Vector3F objectPosition, ref Vector3F cameraPosition, ref Vector3F cameraUpVector, ref Vector3F cameraForwardVector)
         {
-            <#=vectorName#> difference = cameraPosition - objectPosition;
+            Vector3F difference = cameraPosition - objectPosition;
 
-            <#=d.DT#> lengthSq = difference.LengthSquared();
+            float lengthSq = difference.LengthSquared();
             if (MathHelper.IsZero(lengthSq))
                 difference = -cameraForwardVector;
             else
-                difference *= (1.0<#=d.FP.Literal#> / <#=d.DT#>.Sqrt(lengthSq));
+                difference *= (1.0F / float.Sqrt(lengthSq));
 
-            <#=vectorName#> crossed = <#=vectorName#>.Cross(ref cameraUpVector, ref difference);
+            Vector3F crossed = Vector3F.Cross(ref cameraUpVector, ref difference);
             crossed.Normalize();
-            <#=vectorName#> final = <#=vectorName#>.Cross(ref difference, ref crossed);
+            Vector3F final = Vector3F.Cross(ref difference, ref crossed);
 
-            return new <#=d.Name#>()
+            return new Matrix3F()
             {
                 M11 = crossed.X,
                 M12 = crossed.Y,
@@ -1013,11 +994,11 @@ namespace Molten<#=d.SubNamespace#>
         /// <param name="cameraUpVector">The up vector of the camera.</param>
         /// <param name="cameraForwardVector">The forward vector of the camera.</param>
         /// <returns>The created billboard Matrix3x3.</returns>
-        public static <#=d.Name#> BillboardLH(
-            <#=vectorName#> objectPosition, 
-            <#=vectorName#> cameraPosition, 
-            <#=vectorName#> cameraUpVector, 
-            <#=vectorName#> cameraForwardVector)
+        public static Matrix3F BillboardLH(
+            Vector3F objectPosition, 
+            Vector3F cameraPosition, 
+            Vector3F cameraUpVector, 
+            Vector3F cameraForwardVector)
         {
             return BillboardLH(ref objectPosition, ref cameraPosition, ref cameraUpVector, ref cameraForwardVector);
         }
@@ -1030,21 +1011,21 @@ namespace Molten<#=d.SubNamespace#>
         /// <param name="cameraUpVector">The up vector of the camera.</param>
         /// <param name="cameraForwardVector">The forward vector of the camera.</param>
         /// <param name="result">When the method completes, contains the created billboard Matrix3x3.</param>
-        public static <#=d.Name#> BillboardRH(ref <#=vectorName#> objectPosition, ref <#=vectorName#> cameraPosition, ref <#=vectorName#> cameraUpVector, ref <#=vectorName#> cameraForwardVector)
+        public static Matrix3F BillboardRH(ref Vector3F objectPosition, ref Vector3F cameraPosition, ref Vector3F cameraUpVector, ref Vector3F cameraForwardVector)
         {
-            <#=vectorName#> difference = objectPosition - cameraPosition;
+            Vector3F difference = objectPosition - cameraPosition;
 
-            <#=d.DT#> lengthSq = difference.LengthSquared();
+            float lengthSq = difference.LengthSquared();
             if (MathHelper.IsZero(lengthSq))
                 difference = -cameraForwardVector;
             else
-                difference *= (1.0<#=d.FP.Literal#> / <#=d.DT#>.Sqrt(lengthSq));
+                difference *= (1.0F / float.Sqrt(lengthSq));
 
-            <#=vectorName#> crossed = <#=vectorName#>.Cross(ref cameraUpVector, ref difference);
+            Vector3F crossed = Vector3F.Cross(ref cameraUpVector, ref difference);
             crossed.Normalize();
-            <#=vectorName#> final = <#=vectorName#>.Cross(ref difference, ref crossed);
+            Vector3F final = Vector3F.Cross(ref difference, ref crossed);
 
-            return new <#=d.Name#>()
+            return new Matrix3F()
             {
                 M11 = crossed.X,
                 M12 = crossed.Y,
@@ -1066,7 +1047,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <param name="cameraUpVector">The up vector of the camera.</param>
         /// <param name="cameraForwardVector">The forward vector of the camera.</param>
         /// <returns>The created billboard Matrix3x3.</returns>
-        public static <#=d.Name#> BillboardRH(<#=vectorName#> objectPosition, <#=vectorName#> cameraPosition, <#=vectorName#> cameraUpVector, <#=vectorName#> cameraForwardVector)
+        public static Matrix3F BillboardRH(Vector3F objectPosition, Vector3F cameraPosition, Vector3F cameraUpVector, Vector3F cameraForwardVector)
         {
             return BillboardRH(ref objectPosition, ref cameraPosition, ref cameraUpVector, ref cameraForwardVector);
         }
@@ -1077,17 +1058,17 @@ namespace Molten<#=d.SubNamespace#>
         /// <param name="eye">The position of the viewer's eye.</param>
         /// <param name="target">The camera look-at target.</param>
         /// <param name="up">The camera's up vector.</param>
-        public static <#=d.Name#> LookAtLH(ref <#=vectorName#> eye, ref <#=vectorName#> target, ref <#=vectorName#> up)
+        public static Matrix3F LookAtLH(ref Vector3F eye, ref Vector3F target, ref Vector3F up)
         {
-            <#=vectorName#> zaxis = target - eye;
+            Vector3F zaxis = target - eye;
             zaxis.Normalize();
 
-            <#=vectorName#> xaxis = <#=vectorName#>.Cross(ref up, ref zaxis); 
+            Vector3F xaxis = Vector3F.Cross(ref up, ref zaxis); 
             xaxis.Normalize();
 
-            <#=vectorName#> yaxis = <#=vectorName#>.Cross(ref zaxis, ref xaxis);
+            Vector3F yaxis = Vector3F.Cross(ref zaxis, ref xaxis);
 
-            <#=d.Name#> result = Identity;
+            Matrix3F result = Identity;
             result.M11 = xaxis.X; result.M21 = xaxis.Y; result.M31 = xaxis.Z;
             result.M12 = yaxis.X; result.M22 = yaxis.Y; result.M32 = yaxis.Z;
             result.M13 = zaxis.X; result.M23 = zaxis.Y; result.M33 = zaxis.Z;
@@ -1101,7 +1082,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <param name="target">The camera look-at target.</param>
         /// <param name="up">The camera's up vector.</param>
         /// <returns>The created look-at Matrix3x3.</returns>
-        public static <#=d.Name#> LookAtLH(<#=vectorName#> eye, <#=vectorName#> target, <#=vectorName#> up)
+        public static Matrix3F LookAtLH(Vector3F eye, Vector3F target, Vector3F up)
         {
             return LookAtLH(ref eye, ref target, ref up);
         }
@@ -1112,17 +1093,17 @@ namespace Molten<#=d.SubNamespace#>
         /// <param name="eye">The position of the viewer's eye.</param>
         /// <param name="target">The camera look-at target.</param>
         /// <param name="up">The camera's up vector.</param>
-        public static <#=d.Name#> LookAtRH(ref <#=vectorName#> eye, ref <#=vectorName#> target, ref <#=vectorName#> up)
+        public static Matrix3F LookAtRH(ref Vector3F eye, ref Vector3F target, ref Vector3F up)
         {
-            <#=vectorName#> zAxis = eye - target; 
+            Vector3F zAxis = eye - target; 
             zAxis.Normalize();
 
-            <#=vectorName#> xAxis = <#=vectorName#>.Cross(ref up, ref zAxis); 
+            Vector3F xAxis = Vector3F.Cross(ref up, ref zAxis); 
             xAxis.Normalize();
 
-            <#=vectorName#> yAxis = <#=vectorName#>.Cross(ref zAxis, ref xAxis);
+            Vector3F yAxis = Vector3F.Cross(ref zAxis, ref xAxis);
 
-            return new <#=d.Name#>()
+            return new Matrix3F()
             {
                 M11 = xAxis.X,
                 M21 = xAxis.Y,
@@ -1143,40 +1124,40 @@ namespace Molten<#=d.SubNamespace#>
         /// <param name="target">The camera look-at target.</param>
         /// <param name="up">The camera's up vector.</param>
         /// <returns>The created look-at Matrix3x3.</returns>
-        public static <#=d.Name#> LookAtRH(<#=vectorName#> eye, <#=vectorName#> target, <#=vectorName#> up)
+        public static Matrix3F LookAtRH(Vector3F eye, Vector3F target, Vector3F up)
         {
             return LookAtRH(ref eye, ref target, ref up);
         }
 
         /// <summary>
-        /// Creates a <#=gen.See()#> that scales along the x-axis, y-axis, and y-axis.
+        /// Creates a <see cref="Matrix3F"/> that scales along the x-axis, y-axis, and y-axis.
         /// </summary>
         /// <param name="scale">Scaling factor for all three axes.</param>
         /// <param name="result">When the method completes, contains the created scaling Matrix3x3.</param>
-        public static void CreateScale(ref <#=vectorName#> scale, out <#=d.Name#> result)
+        public static void CreateScale(ref Vector3F scale, out Matrix3F result)
         {
             CreateScale(scale.X, scale.Y, scale.Z, out result);
         }
 
         /// <summary>
-        /// Creates a <#=gen.See()#> that scales along the x-axis, y-axis, and y-axis.
+        /// Creates a <see cref="Matrix3F"/> that scales along the x-axis, y-axis, and y-axis.
         /// </summary>
         /// <param name="scale">Scaling factor for all three axes.</param>
         /// <returns>The created scaling Matrix3x3.</returns>
-        public static <#=d.Name#> CreateScale(<#=vectorName#> scale)
+        public static Matrix3F CreateScale(Vector3F scale)
         {
-            CreateScale(ref scale, out <#=d.Name#> result);
+            CreateScale(ref scale, out Matrix3F result);
             return result;
         }
 
         /// <summary>
-        /// Creates a <#=gen.See()#> that scales along the x-axis, y-axis, and y-axis.
+        /// Creates a <see cref="Matrix3F"/> that scales along the x-axis, y-axis, and y-axis.
         /// </summary>
         /// <param name="x">Scaling factor that is applied along the x-axis.</param>
         /// <param name="y">Scaling factor that is applied along the y-axis.</param>
         /// <param name="z">Scaling factor that is applied along the z-axis.</param>
         /// <param name="result">When the method completes, contains the created scaling Matrix3x3.</param>
-        public static void CreateScale(<#=d.DT#> x, <#=d.DT#> y, <#=d.DT#> z, out <#=d.Name#> result)
+        public static void CreateScale(float x, float y, float z, out Matrix3F result)
         {
             result = Identity;
             result.M11 = x;
@@ -1185,49 +1166,49 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Creates a <#=gen.See()#> that scales along the x-axis, y-axis, and y-axis.
+        /// Creates a <see cref="Matrix3F"/> that scales along the x-axis, y-axis, and y-axis.
         /// </summary>
         /// <param name="x">Scaling factor that is applied along the x-axis.</param>
         /// <param name="y">Scaling factor that is applied along the y-axis.</param>
         /// <param name="z">Scaling factor that is applied along the z-axis.</param>
         /// <returns>The created scaling Matrix3x3.</returns>
-        public static <#=d.Name#> CreateScale(<#=d.DT#> x, <#=d.DT#> y, <#=d.DT#> z)
+        public static Matrix3F CreateScale(float x, float y, float z)
         {
-            CreateScale(x, y, z, out <#=d.Name#> result);
+            CreateScale(x, y, z, out Matrix3F result);
             return result;
         }
 
         /// <summary>
-        /// Creates a <#=gen.See()#> that uniformly scales along all three axis.
+        /// Creates a <see cref="Matrix3F"/> that uniformly scales along all three axis.
         /// </summary>
         /// <param name="scale">The uniform scale that is applied along all axis.</param>
         /// <param name="result">When the method completes, contains the created scaling Matrix3x3.</param>
-        public static void CreateScale(<#=d.DT#> scale, out <#=d.Name#> result)
+        public static void CreateScale(float scale, out Matrix3F result)
         {
             result = Identity;
             result.M11 = result.M22 = result.M33 = scale;
         }
 
         /// <summary>
-        /// Creates a <#=gen.See()#> that uniformly scales along all three axis.
+        /// Creates a <see cref="Matrix3F"/> that uniformly scales along all three axis.
         /// </summary>
         /// <param name="scale">The uniform scale that is applied along all axis.</param>
         /// <returns>The created scaling Matrix3x3.</returns>
-        public static <#=d.Name#> CreateScale(<#=d.DT#> scale)
+        public static Matrix3F CreateScale(float scale)
         {
-            CreateScale(scale, out <#=d.Name#> result);
+            CreateScale(scale, out Matrix3F result);
             return result;
         }
 
         /// <summary>
-        /// Creates a <#=gen.See()#> that rotates around the x-axis.
+        /// Creates a <see cref="Matrix3F"/> that rotates around the x-axis.
         /// </summary>
         /// <param name="angle">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis toward the origin.</param>
         /// <param name="result">When the method completes, contains the created rotation Matrix3x3.</param>
-        public static void RotationX(<#=d.DT#> angle, out <#=d.Name#> result)
+        public static void RotationX(float angle, out Matrix3F result)
         {
-            <#=d.DT#> cos =  <#=d.DT#>.Cos(angle);
-            <#=d.DT#> sin =  <#=d.DT#>.Sin(angle);
+            float cos =  float.Cos(angle);
+            float sin =  float.Sin(angle);
 
             result = Identity;
             result.M22 = cos;
@@ -1237,25 +1218,25 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Creates a <#=gen.See()#> that rotates around the x-axis.
+        /// Creates a <see cref="Matrix3F"/> that rotates around the x-axis.
         /// </summary>
         /// <param name="angle">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis toward the origin.</param>
         /// <returns>The created rotation Matrix3x3.</returns>
-        public static <#=d.Name#> RotationX(<#=d.DT#> angle)
+        public static Matrix3F RotationX(float angle)
         {
-            RotationX(angle, out <#=d.Name#> result);
+            RotationX(angle, out Matrix3F result);
             return result;
         }
 
         /// <summary>
-        /// Creates a <#=gen.See()#> that rotates around the y-axis.
+        /// Creates a <see cref="Matrix3F"/> that rotates around the y-axis.
         /// </summary>
         /// <param name="angle">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis toward the origin.</param>
         /// <param name="result">When the method completes, contains the created rotation Matrix3x3.</param>
-        public static void RotationY(<#=d.DT#> angle, out <#=d.Name#> result)
+        public static void RotationY(float angle, out Matrix3F result)
         {
-            <#=d.DT#> cos =  <#=d.DT#>.Cos(angle);
-            <#=d.DT#> sin =  <#=d.DT#>.Sin(angle);
+            float cos =  float.Cos(angle);
+            float sin =  float.Sin(angle);
 
             result = Identity;
             result.M11 = cos;
@@ -1265,25 +1246,25 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Creates a <#=gen.See()#> that rotates around the y-axis.
+        /// Creates a <see cref="Matrix3F"/> that rotates around the y-axis.
         /// </summary>
         /// <param name="angle">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis toward the origin.</param>
         /// <returns>The created rotation Matrix3x3.</returns>
-        public static <#=d.Name#> RotationY(<#=d.DT#> angle)
+        public static Matrix3F RotationY(float angle)
         {
-            RotationY(angle, out <#=d.Name#> result);
+            RotationY(angle, out Matrix3F result);
             return result;
         }
 
         /// <summary>
-        /// Creates a <#=gen.See()#> that rotates around the z-axis.
+        /// Creates a <see cref="Matrix3F"/> that rotates around the z-axis.
         /// </summary>
         /// <param name="angle">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis toward the origin.</param>
         /// <param name="result">When the method completes, contains the created rotation Matrix3x3.</param>
-        public static void RotationZ(<#=d.DT#> angle, out <#=d.Name#> result)
+        public static void RotationZ(float angle, out Matrix3F result)
         {
-            <#=d.DT#> cos =  <#=d.DT#>.Cos(angle);
-            <#=d.DT#> sin =  <#=d.DT#>.Sin(angle);
+            float cos =  float.Cos(angle);
+            float sin =  float.Sin(angle);
 
             result = Identity;
             result.M11 = cos;
@@ -1293,122 +1274,122 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Creates a <#=gen.See()#> that rotates around the z-axis.
+        /// Creates a <see cref="Matrix3F"/> that rotates around the z-axis.
         /// </summary>
         /// <param name="angle">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis toward the origin.</param>
         /// <returns>The created rotation Matrix3x3.</returns>
-        public static <#=d.Name#> RotationZ(<#=d.DT#> angle)
+        public static Matrix3F RotationZ(float angle)
         {
-            RotationZ(angle, out <#=d.Name#> result);
+            RotationZ(angle, out Matrix3F result);
             return result;
         }
 
         /// <summary>
-        /// Creates a <#=gen.See()#> that rotates around an arbitrary axis.
+        /// Creates a <see cref="Matrix3F"/> that rotates around an arbitrary axis.
         /// </summary>
         /// <param name="axis">The axis around which to rotate. This parameter is assumed to be normalized.</param>
         /// <param name="angle">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis toward the origin.</param>
         /// <param name="result">When the method completes, contains the created rotation Matrix3x3.</param>
-        public static void RotationAxis(ref <#=vectorName#> axis, <#=d.DT#> angle, out <#=d.Name#> result)
+        public static void RotationAxis(ref Vector3F axis, float angle, out Matrix3F result)
         {
-            <#=d.DT#> x = axis.X;
-            <#=d.DT#> y = axis.Y;
-            <#=d.DT#> z = axis.Z;
-            <#=d.DT#> cos =  <#=d.DT#>.Cos(angle);
-            <#=d.DT#> sin =  <#=d.DT#>.Sin(angle);
-            <#=d.DT#> xx = x * x;
-            <#=d.DT#> yy = y * y;
-            <#=d.DT#> zz = z * z;
-            <#=d.DT#> xy = x * y;
-            <#=d.DT#> xz = x * z;
-            <#=d.DT#> yz = y * z;
+            float x = axis.X;
+            float y = axis.Y;
+            float z = axis.Z;
+            float cos =  float.Cos(angle);
+            float sin =  float.Sin(angle);
+            float xx = x * x;
+            float yy = y * y;
+            float zz = z * z;
+            float xy = x * y;
+            float xz = x * z;
+            float yz = y * z;
 
             result = Identity;
-            result.M11 = xx + (cos * (1.0<#=d.FP.Literal#> - xx));
+            result.M11 = xx + (cos * (1.0F - xx));
             result.M12 = (xy - (cos * xy)) + (sin * z);
             result.M13 = (xz - (cos * xz)) - (sin * y);
             result.M21 = (xy - (cos * xy)) - (sin * z);
-            result.M22 = yy + (cos * (1.0<#=d.FP.Literal#> - yy));
+            result.M22 = yy + (cos * (1.0F - yy));
             result.M23 = (yz - (cos * yz)) + (sin * x);
             result.M31 = (xz - (cos * xz)) + (sin * y);
             result.M32 = (yz - (cos * yz)) - (sin * x);
-            result.M33 = zz + (cos * (1.0<#=d.FP.Literal#> - zz));
+            result.M33 = zz + (cos * (1.0F - zz));
         }
 
         /// <summary>
-        /// Creates a <#=gen.See()#> that rotates around an arbitrary axis.
+        /// Creates a <see cref="Matrix3F"/> that rotates around an arbitrary axis.
         /// </summary>
         /// <param name="axis">The axis around which to rotate. This parameter is assumed to be normalized.</param>
         /// <param name="angle">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis toward the origin.</param>
         /// <returns>The created rotation Matrix3x3.</returns>
-        public static <#=d.Name#> RotationAxis(<#=vectorName#> axis, <#=d.DT#> angle)
+        public static Matrix3F RotationAxis(Vector3F axis, float angle)
         {
-            RotationAxis(ref axis, angle, out <#=d.Name#> result);
+            RotationAxis(ref axis, angle, out Matrix3F result);
             return result;
         }
 
         /// <summary>
-        /// Creates a rotation <#=gen.See()#> from a quaternion.
+        /// Creates a rotation <see cref="Matrix3F"/> from a quaternion.
         /// </summary>
         /// <param name="rotation">The quaternion to use to build the Matrix3x3.</param>
-        public static void FromQuaternion(ref <#=quartName#> rotation, out <#=d.Name#> result)
+        public static void FromQuaternion(ref QuaternionF rotation, out Matrix3F result)
         {
-            <#=d.DT#> xx = rotation.X * rotation.X;
-            <#=d.DT#> yy = rotation.Y * rotation.Y;
-            <#=d.DT#> zz = rotation.Z * rotation.Z;
-            <#=d.DT#> xy = rotation.X * rotation.Y;
-            <#=d.DT#> zw = rotation.Z * rotation.W;
-            <#=d.DT#> zx = rotation.Z * rotation.X;
-            <#=d.DT#> yw = rotation.Y * rotation.W;
-            <#=d.DT#> yz = rotation.Y * rotation.Z;
-            <#=d.DT#> xw = rotation.X * rotation.W;
+            float xx = rotation.X * rotation.X;
+            float yy = rotation.Y * rotation.Y;
+            float zz = rotation.Z * rotation.Z;
+            float xy = rotation.X * rotation.Y;
+            float zw = rotation.Z * rotation.W;
+            float zx = rotation.Z * rotation.X;
+            float yw = rotation.Y * rotation.W;
+            float yz = rotation.Y * rotation.Z;
+            float xw = rotation.X * rotation.W;
 
-            result.M11 = 1.0<#=d.FP.Literal#> - (2.0<#=d.FP.Literal#> * (yy + zz));
-            result.M12 = 2.0<#=d.FP.Literal#> * (xy + zw);
-            result.M13 = 2.0<#=d.FP.Literal#> * (zx - yw);
-            result.M21 = 2.0<#=d.FP.Literal#> * (xy - zw);
-            result.M22 = 1.0<#=d.FP.Literal#> - (2.0<#=d.FP.Literal#> * (zz + xx));
-            result.M23 = 2.0<#=d.FP.Literal#> * (yz + xw);
-            result.M31 = 2.0<#=d.FP.Literal#> * (zx + yw);
-            result.M32 = 2.0<#=d.FP.Literal#> * (yz - xw);
-            result.M33 = 1.0<#=d.FP.Literal#> - (2.0<#=d.FP.Literal#> * (yy + xx));
+            result.M11 = 1.0F - (2.0F * (yy + zz));
+            result.M12 = 2.0F * (xy + zw);
+            result.M13 = 2.0F * (zx - yw);
+            result.M21 = 2.0F * (xy - zw);
+            result.M22 = 1.0F - (2.0F * (zz + xx));
+            result.M23 = 2.0F * (yz + xw);
+            result.M31 = 2.0F * (zx + yw);
+            result.M32 = 2.0F * (yz - xw);
+            result.M33 = 1.0F - (2.0F * (yy + xx));
         }
 
         /// <summary>
-        /// Creates a rotation <#=gen.See()#> from a quaternion.
+        /// Creates a rotation <see cref="Matrix3F"/> from a quaternion.
         /// </summary>
         /// <param name="rotation">The quaternion to use to build the Matrix3x3.</param>
         /// <returns>The created rotation Matrix3x3.</returns>
-        public static <#=d.Name#> FromQuaternion(<#=quartName#> rotation)
+        public static Matrix3F FromQuaternion(QuaternionF rotation)
         {
-            FromQuaternion(ref rotation, out <#=d.Name#> result);
+            FromQuaternion(ref rotation, out Matrix3F result);
             return result;
         }
 
         /// <summary>
-        /// Creates a rotation <#=gen.See()#> with a specified yaw, pitch, and roll.
+        /// Creates a rotation <see cref="Matrix3F"/> with a specified yaw, pitch, and roll.
         /// </summary>
         /// <param name="yaw">Yaw around the y-axis, in radians.</param>
         /// <param name="pitch">Pitch around the x-axis, in radians.</param>
         /// <param name="roll">Roll around the z-axis, in radians.</param>
         /// <param name="result">When the method completes, contains the created rotation Matrix3x3.</param>
-        public static void RotationYawPitchRoll(<#=d.DT#> yaw, <#=d.DT#> pitch, <#=d.DT#> roll, out <#=d.Name#> result)
+        public static void RotationYawPitchRoll(float yaw, float pitch, float roll, out Matrix3F result)
         {
-            <#=quartName#> quaternion = <#=quartName#>.RotationYawPitchRoll(yaw, pitch, roll);
+            QuaternionF quaternion = QuaternionF.RotationYawPitchRoll(yaw, pitch, roll);
             FromQuaternion(ref quaternion, out result);
         }
 
         /// <summary>
-        /// Creates a rotation <#=gen.See()#> with a specified yaw, pitch, and roll.
+        /// Creates a rotation <see cref="Matrix3F"/> with a specified yaw, pitch, and roll.
         /// </summary>
         /// <param name="yaw">Yaw around the y-axis, in radians.</param>
         /// <param name="pitch">Pitch around the x-axis, in radians.</param>
         /// <param name="roll">Roll around the z-axis, in radians.</param>
         /// <param name="result">When the method completes, contains the created rotation Matrix3x3.</param>
-        public static <#=d.Name#> RotationYawPitchRoll(<#=d.DT#> yaw, <#=d.DT#> pitch, <#=d.DT#> roll)
+        public static Matrix3F RotationYawPitchRoll(float yaw, float pitch, float roll)
         {
-            <#=quartName#> quaternion = <#=quartName#>.RotationYawPitchRoll(yaw, pitch, roll);
-            FromQuaternion(ref quaternion, out <#=d.Name#> result);
+            QuaternionF quaternion = QuaternionF.RotationYawPitchRoll(yaw, pitch, roll);
+            FromQuaternion(ref quaternion, out Matrix3F result);
             return result;
         }
 
@@ -1418,19 +1399,19 @@ namespace Molten<#=d.SubNamespace#>
         /// <param name="matrix">Matrix to be multiplied.</param>
         /// <param name="transpose">Matrix to be transposed and multiplied.</param>
         /// <param name="result">Product of the multiplication.</param>
-        public static void MultiplyTransposed(ref <#=d.Name#> transpose, ref <#=d.Name#> matrix, out <#=d.Name#> result)
+        public static void MultiplyTransposed(ref Matrix3F transpose, ref Matrix3F matrix, out Matrix3F result)
         {
-            <#=d.DT#> resultM11 = transpose.M11 * matrix.M11 + transpose.M21 * matrix.M21 + transpose.M31 * matrix.M31;
-            <#=d.DT#> resultM12 = transpose.M11 * matrix.M12 + transpose.M21 * matrix.M22 + transpose.M31 * matrix.M32;
-            <#=d.DT#> resultM13 = transpose.M11 * matrix.M13 + transpose.M21 * matrix.M23 + transpose.M31 * matrix.M33;
+            float resultM11 = transpose.M11 * matrix.M11 + transpose.M21 * matrix.M21 + transpose.M31 * matrix.M31;
+            float resultM12 = transpose.M11 * matrix.M12 + transpose.M21 * matrix.M22 + transpose.M31 * matrix.M32;
+            float resultM13 = transpose.M11 * matrix.M13 + transpose.M21 * matrix.M23 + transpose.M31 * matrix.M33;
 
-            <#=d.DT#> resultM21 = transpose.M12 * matrix.M11 + transpose.M22 * matrix.M21 + transpose.M32 * matrix.M31;
-            <#=d.DT#> resultM22 = transpose.M12 * matrix.M12 + transpose.M22 * matrix.M22 + transpose.M32 * matrix.M32;
-            <#=d.DT#> resultM23 = transpose.M12 * matrix.M13 + transpose.M22 * matrix.M23 + transpose.M32 * matrix.M33;
+            float resultM21 = transpose.M12 * matrix.M11 + transpose.M22 * matrix.M21 + transpose.M32 * matrix.M31;
+            float resultM22 = transpose.M12 * matrix.M12 + transpose.M22 * matrix.M22 + transpose.M32 * matrix.M32;
+            float resultM23 = transpose.M12 * matrix.M13 + transpose.M22 * matrix.M23 + transpose.M32 * matrix.M33;
 
-            <#=d.DT#> resultM31 = transpose.M13 * matrix.M11 + transpose.M23 * matrix.M21 + transpose.M33 * matrix.M31;
-            <#=d.DT#> resultM32 = transpose.M13 * matrix.M12 + transpose.M23 * matrix.M22 + transpose.M33 * matrix.M32;
-            <#=d.DT#> resultM33 = transpose.M13 * matrix.M13 + transpose.M23 * matrix.M23 + transpose.M33 * matrix.M33;
+            float resultM31 = transpose.M13 * matrix.M11 + transpose.M23 * matrix.M21 + transpose.M33 * matrix.M31;
+            float resultM32 = transpose.M13 * matrix.M12 + transpose.M23 * matrix.M22 + transpose.M33 * matrix.M32;
+            float resultM33 = transpose.M13 * matrix.M13 + transpose.M23 * matrix.M23 + transpose.M33 * matrix.M33;
 
             result.M11 = resultM11;
             result.M12 = resultM12;
@@ -1451,19 +1432,19 @@ namespace Molten<#=d.SubNamespace#>
         /// <param name="matrix">Matrix to be multiplied.</param>
         /// <param name="transpose">Matrix to be transposed and multiplied.</param>
         /// <param name="result">Product of the multiplication.</param>
-        public static void MultiplyByTransposed(ref <#=d.Name#> matrix, ref <#=d.Name#> transpose, out <#=d.Name#> result)
+        public static void MultiplyByTransposed(ref Matrix3F matrix, ref Matrix3F transpose, out Matrix3F result)
         {
-            <#=d.DT#> resultM11 = matrix.M11 * transpose.M11 + matrix.M12 * transpose.M12 + matrix.M13 * transpose.M13;
-            <#=d.DT#> resultM12 = matrix.M11 * transpose.M21 + matrix.M12 * transpose.M22 + matrix.M13 * transpose.M23;
-            <#=d.DT#> resultM13 = matrix.M11 * transpose.M31 + matrix.M12 * transpose.M32 + matrix.M13 * transpose.M33;
+            float resultM11 = matrix.M11 * transpose.M11 + matrix.M12 * transpose.M12 + matrix.M13 * transpose.M13;
+            float resultM12 = matrix.M11 * transpose.M21 + matrix.M12 * transpose.M22 + matrix.M13 * transpose.M23;
+            float resultM13 = matrix.M11 * transpose.M31 + matrix.M12 * transpose.M32 + matrix.M13 * transpose.M33;
 
-            <#=d.DT#> resultM21 = matrix.M21 * transpose.M11 + matrix.M22 * transpose.M12 + matrix.M23 * transpose.M13;
-            <#=d.DT#> resultM22 = matrix.M21 * transpose.M21 + matrix.M22 * transpose.M22 + matrix.M23 * transpose.M23;
-            <#=d.DT#> resultM23 = matrix.M21 * transpose.M31 + matrix.M22 * transpose.M32 + matrix.M23 * transpose.M33;
+            float resultM21 = matrix.M21 * transpose.M11 + matrix.M22 * transpose.M12 + matrix.M23 * transpose.M13;
+            float resultM22 = matrix.M21 * transpose.M21 + matrix.M22 * transpose.M22 + matrix.M23 * transpose.M23;
+            float resultM23 = matrix.M21 * transpose.M31 + matrix.M22 * transpose.M32 + matrix.M23 * transpose.M33;
 
-            <#=d.DT#> resultM31 = matrix.M31 * transpose.M11 + matrix.M32 * transpose.M12 + matrix.M33 * transpose.M13;
-            <#=d.DT#> resultM32 = matrix.M31 * transpose.M21 + matrix.M32 * transpose.M22 + matrix.M33 * transpose.M23;
-            <#=d.DT#> resultM33 = matrix.M31 * transpose.M31 + matrix.M32 * transpose.M32 + matrix.M33 * transpose.M33;
+            float resultM31 = matrix.M31 * transpose.M11 + matrix.M32 * transpose.M12 + matrix.M33 * transpose.M13;
+            float resultM32 = matrix.M31 * transpose.M21 + matrix.M32 * transpose.M22 + matrix.M33 * transpose.M23;
+            float resultM33 = matrix.M31 * transpose.M31 + matrix.M32 * transpose.M32 + matrix.M33 * transpose.M33;
 
             result.M11 = resultM11;
             result.M12 = resultM12;
@@ -1483,11 +1464,11 @@ namespace Molten<#=d.SubNamespace#>
         /// </summary>
         /// <param name="matrix">Matrix to be inverted.</param>
         /// <param name="result">Inverted matrix.</param>
-        public static void AdaptiveInvert(ref <#=d.Name#> matrix, out <#=d.Name#> result)
+        public static void AdaptiveInvert(ref Matrix3F matrix, out Matrix3F result)
         {
             int submatrix;
-            <#=d.DT#> determinantInverse = 1 / matrix.AdaptiveDeterminant(out submatrix);
-            <#=d.DT#> m11, m12, m13, m21, m22, m23, m31, m32, m33;
+            float determinantInverse = 1 / matrix.AdaptiveDeterminant(out submatrix);
+            float m11, m12, m13, m21, m22, m23, m31, m32, m33;
             switch (submatrix)
             {
                 case 0: //Full matrix.
@@ -1606,10 +1587,10 @@ namespace Molten<#=d.SubNamespace#>
         /// 0 is the full 3x3.  1 is the upper left 2x2.  2 is the lower right 2x2.  3 is the four corners.
         /// 4 is M11.  5 is M22.  6 is M33.</param>
         /// <returns>The matrix's determinant.</returns>
-        public <#=d.DT#> AdaptiveDeterminant(out int subMatrixCode)
+        public float AdaptiveDeterminant(out int subMatrixCode)
         {
             //Try the full matrix first.
-            <#=d.DT#> determinant = M11 * M22 * M33 + M12 * M23 * M31 + M13 * M21 * M32 -
+            float determinant = M11 * M22 * M33 + M12 * M23 * M31 + M13 * M21 * M32 -
                                 M31 * M22 * M13 - M32 * M23 * M11 - M33 * M21 * M12;
             if (determinant != 0) //This could be a little numerically flimsy.  Fortunately, the way this method is used, that doesn't matter!
             {
@@ -1670,21 +1651,21 @@ namespace Molten<#=d.SubNamespace#>
         /// <summary>
         /// Multiplies two matrices.
         /// </summary>
-        /// <param name="left">The first <#=gen.See()#> to multiply.</param>
-        /// <param name="right">The second <#=gen.See()#> to multiply.</param>
+        /// <param name="left">The first <see cref="Matrix3F"/> to multiply.</param>
+        /// <param name="right">The second <see cref="Matrix3F"/> to multiply.</param>
         /// <returns>The product of the two matrices.</returns>
-        public static <#=d.Name#> operator *(<#=d.Name#> left, <#=d.Name#> right)
+        public static Matrix3F operator *(Matrix3F left, Matrix3F right)
         {
-            Multiply(ref left, ref right, out <#=d.Name#> result);
+            Multiply(ref left, ref right, out Matrix3F result);
             return result;
         }
 
         /// <summary>
-        /// Creates a 4x4 matrix from a <#=gen.See()#>.
+        /// Creates a 4x4 matrix from a <see cref="Matrix3F"/>.
         /// </summary>
         /// <param name="a">3x3 matrix.</param>
         /// <param name="b">Created 4x4 matrix.</param>
-        public static void To4x4(ref <#=d.Name#> a, out <#=mat4Name#> b)
+        public static void To4x4(ref Matrix3F a, out Matrix4F b)
         {
             b.M11 = a.M11;
             b.M12 = a.M12;
@@ -1708,13 +1689,13 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Creates a 4x4 matrix from a <#=gen.See()#>.
+        /// Creates a 4x4 matrix from a <see cref="Matrix3F"/>.
         /// </summary>
-        /// <param name="a"><#=gen.See()#>.</param>
+        /// <param name="a"><see cref="Matrix3F"/>.</param>
         /// <returns>Created 4x4 matrix.</returns>
-        public static <#=mat4Name#> To4x4(<#=d.Name#> a)
+        public static Matrix4F To4x4(Matrix3F a)
         {
-            <#=mat4Name#> b;
+            Matrix4F b;
 
             b.M11 = a.M11;
             b.M12 = a.M12;
@@ -1739,11 +1720,11 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Creates a <#=gen.See()#> from an 4x4 matrix.
+        /// Creates a <see cref="Matrix3F"/> from an 4x4 matrix.
         /// </summary>
         /// <param name="matrix4X4">Matrix to extract a 3x3 matrix from.</param>
         /// <param name="matrix3X3">Upper 3x3 matrix extracted from the matrix.</param>
-        public static void From4x4(ref <#=mat4Name#> matrix4X4, out <#=d.Name#> matrix3X3)
+        public static void From4x4(ref Matrix4F matrix4X4, out Matrix3F matrix3X3)
         {
             matrix3X3.M11 = matrix4X4.M11;
             matrix3X3.M12 = matrix4X4.M12;
@@ -1759,13 +1740,13 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Creates a <#=gen.See()#> from an 4x4 matrix.
+        /// Creates a <see cref="Matrix3F"/> from an 4x4 matrix.
         /// </summary>
         /// <param name="matrix4X4">Matrix to extract a 3x3 matrix from.</param>
         /// <returns>Upper 3x3 matrix extracted from the matrix.</returns>
-        public static <#=d.Name#> From4x4(<#=mat4Name#> matrix4X4)
+        public static Matrix3F From4x4(Matrix4F matrix4X4)
         {
-            <#=d.Name#> matrix3X3;
+            Matrix3F matrix3X3;
             matrix3X3.M11 = matrix4X4.M11;
             matrix3X3.M12 = matrix4X4.M12;
             matrix3X3.M13 = matrix4X4.M13;
@@ -1781,12 +1762,12 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Convert the <#=gen.See()#> to a 4x4 Matrix.
+        /// Convert the <see cref="Matrix3F"/> to a 4x4 Matrix.
         /// </summary>
         /// <returns>A 4x4 Matrix with zero translation and M44=1</returns>
-        public static explicit operator <#=mat4Name#>(<#=d.Name#> Value)
+        public static explicit operator Matrix4F(Matrix3F Value)
         {
-            return new <#=mat4Name#>(
+            return new Matrix4F(
                 Value.M11, Value.M12, Value.M13, 0,
                 Value.M21, Value.M22, Value.M23, 0,
                 Value.M31, Value.M32, Value.M33, 0,
@@ -1795,12 +1776,12 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Convert the 4x4 Matrix to a <#=gen.See()#>.
+        /// Convert the 4x4 Matrix to a <see cref="Matrix3F"/>.
         /// </summary>
         /// <returns>A 3x3 Matrix</returns>
-        public static explicit operator <#=d.Name#>(<#=mat4Name#> Value)
+        public static explicit operator Matrix3F(Matrix4F Value)
         {
-            return new <#=d.Name#>(
+            return new Matrix3F(
                 Value.M11, Value.M12, Value.M13,
                 Value.M21, Value.M22, Value.M23,
                 Value.M31, Value.M32, Value.M33
@@ -1808,11 +1789,11 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Gets or sets the backward vector of the <#=gen.See()#>.
+        /// Gets or sets the backward vector of the <see cref="Matrix3F"/>.
         /// </summary>
-        public <#=vectorName#> Backward
+        public Vector3F Backward
         {
-            get => new <#=vectorName#>(M31, M32, M33);
+            get => new Vector3F(M31, M32, M33);
             set
             {
                 M31 = value.X;
@@ -1822,11 +1803,11 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Gets or sets the down vector of the <#=gen.See()#>.
+        /// Gets or sets the down vector of the <see cref="Matrix3F"/>.
         /// </summary>
-        public <#=vectorName#> Down
+        public Vector3F Down
         {
-            get => new <#=vectorName#>(-M21, -M22, -M23);
+            get => new Vector3F(-M21, -M22, -M23);
             set
             {
                 M21 = -value.X;
@@ -1836,11 +1817,11 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Gets or sets the forward vector of the <#=gen.See()#>.
+        /// Gets or sets the forward vector of the <see cref="Matrix3F"/>.
         /// </summary>
-        public <#=vectorName#> Forward
+        public Vector3F Forward
         {
-            get => new <#=vectorName#>(-M31, -M32, -M33);
+            get => new Vector3F(-M31, -M32, -M33);
             set
             {
                 M31 = -value.X;
@@ -1850,11 +1831,11 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Gets or sets the left vector of the <#=gen.See()#>.
+        /// Gets or sets the left vector of the <see cref="Matrix3F"/>.
         /// </summary>
-        public <#=vectorName#> Left
+        public Vector3F Left
         {
-            get => new <#=vectorName#>(-M11, -M12, -M13);
+            get => new Vector3F(-M11, -M12, -M13);
             set
             {
                 M11 = -value.X;
@@ -1864,11 +1845,11 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Gets or sets the right vector of the <#=gen.See()#>.
+        /// Gets or sets the right vector of the <see cref="Matrix3F"/>.
         /// </summary>
-        public <#=vectorName#> Right
+        public Vector3F Right
         {
-            get => new <#=vectorName#>(M11, M12, M13);
+            get => new Vector3F(M11, M12, M13);
             set
             {
                 M11 = value.X;
@@ -1878,11 +1859,11 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Gets or sets the up vector of the <#=gen.See()#>.
+        /// Gets or sets the up vector of the <see cref="Matrix3F"/>.
         /// </summary>
-        public <#=vectorName#> Up
+        public Vector3F Up
         {
-            get => new <#=vectorName#>(M21, M22, M23);
+            get => new Vector3F(M21, M22, M23);
             set
             {
                 M21 = value.X;
@@ -1892,4 +1873,4 @@ namespace Molten<#=d.SubNamespace#>
         }
     }
 }
-<#});#>
+

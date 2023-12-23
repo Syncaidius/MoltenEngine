@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -9,18 +8,31 @@ namespace Molten
     /// <summary>Represents a single-precision 2x2 Matrix. Contains only scale and rotation.</summary>
     [StructLayout(LayoutKind.Explicit)]
     [DataContract]
-	public struct Matrix2F : IEquatable<Matrix2F>, IFormattable, ITransposedMatrix<Matrix2F>, IMatrix<float>
+	public partial struct Matrix2F : IEquatable<Matrix2F>, IFormattable, ITransposableMatrix<Matrix2F>, IMatrix<float>
     {
         /// <summary>
-        /// A single-precision Matrix2x2 with values intialized to the identity of a 2 x 2 matrix
+        /// A single-precision <see cref="Matrix2F"/> with values intialized to the identity of a 2 x 2 matrix
         /// </summary>
-        public static readonly Matrix2F Identity = new Matrix2F(1, 0, 0, 1);
+        public static readonly Matrix2F Identity = new Matrix2F() 
+        { 
+            M11 = 1F, 
+            M22 = 1F, 
+        };
 
         public static readonly int ComponentCount = 4;
 
         public static readonly int RowCount = 2;
 
         public static readonly int ColumnCount = 2;
+
+        /// <summary>A <see cref="Matrix2F"/> will all of its components set to 0F.</summary>
+        public static readonly Matrix2F Zero = new Matrix2F();
+
+        /// <summary> Gets a value indicating whether this instance is an identity matrix. </summary>
+        /// <value>
+        /// <c>true</c> if this instance is an identity matrix; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsIdentity => Equals(Identity);
 
 		/// <summary>The value at row 1, column 1 of the matrix.</summary>
 		[DataMember]
@@ -119,229 +131,13 @@ namespace Molten
 		}
 
         /// <summary>
-        /// Adds the two matrices together on a per-element basis.
-        /// </summary>
-        /// <param name="a">First matrix to add.</param>
-        /// <param name="b">Second matrix to add.</param>
-        /// <param name="result">Sum of the two matrices.</param>
-        public static void Add(ref Matrix2F a, ref Matrix2F b, out Matrix2F result)
-        {
-            result.M11 = a.M11 + b.M11;
-            result.M12 = a.M12 + b.M12;
-            result.M21 = a.M21 + b.M21;
-            result.M22 = a.M22 + b.M22;
-        }
-
-        /// <summary>
-        /// Adds the two matrices together on a per-element basis.
-        /// </summary>
-        /// <param name="a">First matrix to add.</param>
-        /// <param name="b">Second matrix to add.</param>
-        /// <param name="result">Sum of the two matrices.</param>
-        public static void Add(ref Matrix4F a, ref Matrix2F b, out Matrix2F result)
-        {
-            result.M11 = a.M11 + b.M11;
-            result.M12 = a.M12 + b.M12;
-            result.M21 = a.M21 + b.M21;
-            result.M22 = a.M22 + b.M22;
-        }
-
-        /// <summary>
-        /// Adds the two matrices together on a per-element basis.
-        /// </summary>
-        /// <param name="a">First matrix to add.</param>
-        /// <param name="b">Second matrix to add.</param>
-        /// <param name="result">Sum of the two matrices.</param>
-        public static void Add(ref Matrix2F a, ref Matrix4F b, out Matrix2F result)
-        {
-            result.M11 = a.M11 + b.M11;
-            result.M12 = a.M12 + b.M12;
-            result.M21 = a.M21 + b.M21;
-            result.M22 = a.M22 + b.M22;
-        }
-
-        /// <summary>
-        /// Adds the two matrices together on a per-element basis.
-        /// </summary>
-        /// <param name="a">First matrix to add.</param>
-        /// <param name="b">Second matrix to add.</param>
-        /// <param name="result">Sum of the two matrices.</param>
-        public static void Add(ref Matrix4F a, ref Matrix4F b, out Matrix2F result)
-        {
-            result.M11 = a.M11 + b.M11;
-            result.M12 = a.M12 + b.M12;
-            result.M21 = a.M21 + b.M21;
-            result.M22 = a.M22 + b.M22;
-        }
-
-        /// <summary>
-        /// Constructs a uniform scaling matrix.
-        /// </summary>
-        /// <param name="scale">Value to use in the diagonal.</param>
-        /// <param name="matrix">Scaling matrix.</param>
-        public static void CreateScale(float scale, out Matrix2F matrix)
-        {
-            matrix.M11 = scale;
-            matrix.M22 = scale;
-            matrix.M12 = 0;
-            matrix.M21 = 0;
-        }
-
-
-        /// <summary>
-        /// Inverts the given matix.
-        /// </summary>
-        /// <param name="matrix">Matrix to be inverted.</param>
-        /// <param name="result">Inverted matrix.</param>
-        public static void Invert(ref Matrix2F matrix, out Matrix2F result)
-        {
-            float determinantInverse = 1 / (matrix.M11 * matrix.M22 - matrix.M12 * matrix.M21);
-            result.M11 = matrix.M22 * determinantInverse;
-            result.M12 = -matrix.M12 * determinantInverse;
-
-            result.M21 = -matrix.M21 * determinantInverse;
-            result.M22 = matrix.M11 * determinantInverse;
-        }
-
-        /// <summary>
-        /// Multiplies the two matrices.
-        /// </summary>
-        /// <param name="a">First matrix to multiply.</param>
-        /// <param name="b">Second matrix to multiply.</param>
-        /// <param name="result">Product of the multiplication.</param>
-        public static void Multiply(ref Matrix2F a, ref Matrix2F b, out Matrix2F result)
-        {
-            result.M11 = a.M11 * b.M11 + a.M12 * b.M21;
-            result.M12 = a.M11 * b.M12 + a.M12 * b.M22;
-            result.M21 = a.M21 * b.M11 + a.M22 * b.M21;
-            result.M22 = a.M21 * b.M12 + a.M22 * b.M22;
-        }
-
-        /// <summary>
-        /// Multiplies the two matrices.
-        /// </summary>
-        /// <param name="a">First matrix to multiply.</param>
-        /// <param name="b">Second matrix to multiply.</param>
-        /// <param name="result">Product of the multiplication.</param>
-        public static void Multiply(ref Matrix2F a, ref Matrix4F b, out Matrix2F result)
-        {
-            result.M11 = a.M11 * b.M11 + a.M12 * b.M21;
-            result.M12 = a.M11 * b.M12 + a.M12 * b.M22;
-            result.M21 = a.M21 * b.M11 + a.M22 * b.M21;
-            result.M22 = a.M21 * b.M12 + a.M22 * b.M22;
-        }
-
-        /// <summary>
-        /// Multiplies the two matrices.
-        /// </summary>
-        /// <param name="a">First matrix to multiply.</param>
-        /// <param name="b">Second matrix to multiply.</param>
-        /// <param name="result">Product of the multiplication.</param>
-        public static void Multiply(ref Matrix4F a, ref Matrix2F b, out Matrix2F result)
-        {
-            result.M11 = a.M11 * b.M11 + a.M12 * b.M21;
-            result.M12 = a.M11 * b.M12 + a.M12 * b.M22;
-            result.M21 = a.M21 * b.M11 + a.M22 * b.M21;
-            result.M22 = a.M21 * b.M12 + a.M22 * b.M22;
-        }
-
-        /// <summary>
-        /// Multiplies the two matrices.
-        /// </summary>
-        /// <param name="a">First matrix to multiply.</param>
-        /// <param name="b">Second matrix to multiply.</param>
-        /// <param name="result">Product of the multiplication.</param>
-        public static void Multiply(ref Matrix2x3F a, ref Matrix3x2F b, out Matrix2F result)
-        {
-            result.M11 = a.M11 * b.M11 + a.M12 * b.M21 + a.M13 * b.M31;
-            result.M12 = a.M11 * b.M12 + a.M12 * b.M22 + a.M13 * b.M32;
-            result.M21 = a.M21 * b.M11 + a.M22 * b.M21 + a.M23 * b.M31;
-            result.M22 = a.M21 * b.M12 + a.M22 * b.M22 + a.M23 * b.M32;
-        }
-
-        /// <summary>
-        /// Negates every element in the matrix.
-        /// </summary>
-        /// <param name="matrix">Matrix to negate.</param>
-        /// <param name="result">Negated matrix.</param>
-        public static void Negate(ref Matrix2F matrix, out Matrix2F result)
-        {
-            result.M11 = -matrix.M11;
-            result.M12 = -matrix.M12;
-            result.M21 = -matrix.M21;
-            result.M22 = -matrix.M22;
-        }
-
-        /// <summary>
-        /// Subtracts the two matrices from each other on a per-element basis.
-        /// </summary>
-        /// <param name="a">First matrix to subtract.</param>
-        /// <param name="b">Second matrix to subtract.</param>
-        /// <param name="result">Difference of the two matrices.</param>
-        public static void Subtract(ref Matrix2F a, ref Matrix2F b, out Matrix2F result)
-        {
-            result.M11 = a.M11 - b.M11;
-            result.M12 = a.M12 - b.M12;
-
-            result.M21 = a.M21 - b.M21;
-            result.M22 = a.M22 - b.M22;
-        }
-
-        /// <summary>
-        /// Transforms the vector by the matrix.
-        /// </summary>
-        /// <param name="v">Vector2 to transform.</param>
-        /// <param name="matrix">Matrix to use as the transformation.</param>
-        /// <param name="result">Product of the transformation.</param>
-        public static void Transform(ref Vector2F v, ref Matrix2F matrix, out Vector2F result)
-        {
-            float vX = v.X;
-            float vY = v.Y;
-
-            result.X = vX * matrix.M11 + vY * matrix.M21;
-            result.Y = vX * matrix.M12 + vY * matrix.M22;
-        }
-
-        public float[] ToArray()
-        {
-            return [M11, M12, M21, M22];
-        }
-
-        public void Transpose(out Matrix2F result)
-        {
-            result.M21 = M12;
-            result.M12 = M21;
-            result.M11 = M11;
-            result.M22 = M22;
-        }
-
-        /// <summary>
-        /// Computes the transposed matrix of a matrix.
-        /// </summary>
-        /// <param name="matrix">Matrix to transpose.</param>
-        /// <param name="result">Transposed matrix.</param>
-        public static void Transpose(ref Matrix2F matrix, out Matrix2F result)
-        {
-            matrix.Transpose(out result);
-        }
-
-        /// <summary>
-        /// Transposes the matrix in-place.
-        /// </summary>
-        public void Transpose()
-        {
-            float m21 = M21;
-            M21 = M12;
-            M12 = m21;
-        }
-
-        /// <summary>
         /// Creates a string representation of the matrix.
         /// </summary>
         /// <returns>A string representation of the matrix.</returns>
         public override string ToString()
         {
-            return string.Format($"[{M11}, {M12}] [{M21}, {M22}]");
+            return string.Format("[{0}, {1}] [{2}, {3}]", 
+            M11, M12, M21, M22);
         }
 
         /// <summary>
@@ -357,9 +153,8 @@ namespace Molten
                 return ToString();
 
             CultureInfo cc = CultureInfo.CurrentCulture;
-            return string.Format(format, cc, "[M11:{0} M12:{1}] [M21:{2} M22:{3}]",
-                M11.ToString(format, cc), M12.ToString(format, cc),
-                M21.ToString(format, cc), M22.ToString(format, cc));
+            return string.Format("[{0}, {1}] [{2}, {3}]", cc, 
+            M11.ToString(format, cc), M12.ToString(format, cc), M21.ToString(format, cc), M22.ToString(format, cc));
         }
 
         /// <summary>
@@ -371,9 +166,8 @@ namespace Molten
         /// </returns>
         public string ToString(IFormatProvider formatProvider)
         {
-            return string.Format(formatProvider, "[M11:{0} M12:{1}] [M21:{2} M22:{3}]",
-                M11.ToString(formatProvider), M12.ToString(formatProvider),
-                M21.ToString(formatProvider), M22.ToString(formatProvider));
+            return string.Format("[{0}, {1}] [{2}, {3}]", 
+            M11.ToString(formatProvider), M12.ToString(formatProvider), M21.ToString(formatProvider), M22.ToString(formatProvider));
         }
 
         /// <summary>
@@ -389,18 +183,9 @@ namespace Molten
             if (format == null)
                 return ToString(formatProvider);
 
-            return string.Format(format, formatProvider, "[M11:{0} M12:{1}] [M21:{2} M22:{3}]",
-                M11.ToString(format, formatProvider), M12.ToString(format, formatProvider),
-                M21.ToString(format, formatProvider), M22.ToString(format, formatProvider));
-        }
-
-        /// <summary>
-        /// Calculates the determinant of the matrix.
-        /// </summary>
-        /// <returns>The matrix's determinant.</returns>
-        public float Determinant()
-        {
-            return M11 * M22 - M12 * M21;
+            CultureInfo cc = CultureInfo.CurrentCulture;
+            return string.Format("[{0}, {1}] [{2}, {3}]", cc, 
+            M11.ToString(format, formatProvider), M12.ToString(format, formatProvider), M21.ToString(format, formatProvider), M22.ToString(format, formatProvider));
         }
 
         /// <summary>
@@ -412,10 +197,10 @@ namespace Molten
         /// </returns>
         public bool Equals(ref Matrix2F other)
         {
-            return MathHelper.NearEqual(other.M11, M11) &&
-                MathHelper.NearEqual(other.M12, M12) &&
-                MathHelper.NearEqual(other.M21, M21) &&
-                MathHelper.NearEqual(other.M22, M22);
+            return MathHelper.NearEqual(other.M11, M11)
+            && MathHelper.NearEqual(other.M12, M12)
+            && MathHelper.NearEqual(other.M21, M21)
+            && MathHelper.NearEqual(other.M22, M22);
         }
 
         /// <summary>
@@ -440,11 +225,121 @@ namespace Molten
         /// </returns>
         public override bool Equals(object value)
         {
-            if (!(value is Matrix2F))
-                return false;
+            if (value is Matrix2F mat)
+                return Equals(ref mat);
 
-            var strongValue = (Matrix2F)value;
-            return Equals(ref strongValue);
+            return false;
+        }
+
+        /// <summary>
+        /// Transposes the current <see cref="Matrix2F"/> and outputs it to <paramref name="result"/>.
+        /// </summary>
+        /// <param name="result"></param>
+        public void Transpose(out Matrix2F result)
+        {
+            Transpose(ref this, out result);
+        }
+
+        /// <summary>
+        /// Creates an array containing the elements of the <see cref="Matrix2F"/>.
+        /// </summary>
+        /// <returns>A 4-element array containing the components of the matrix.</returns>
+        public unsafe float[] ToArray()
+        {
+            return [M11, M12, M21, M22];
+        }
+
+        /// <summary>
+        /// Transposes the current <see cref="Matrix2F"/> in-place.
+        /// </summary>
+        public void Transpose()
+        {
+            Transpose(ref this, out this);
+        }
+        
+        /// <summary>
+        /// Calculates the transpose of the specified <see cref="Matrix2F"/>.
+        /// </summary>
+        /// <param name="matrix">The <see cref="Matrix2F"/> whose transpose is to be calculated.</param>
+        /// <param name="result">When the method completes, contains the transpose of the specified matrix.</param>
+        public static void Transpose(ref Matrix2F matrix, out Matrix2F result)
+        {
+            Unsafe.SkipInit(out result);
+            result.M11 = matrix.M11;
+            result.M12 = matrix.M21;
+            result.M21 = matrix.M12;
+            result.M22 = matrix.M22;
+        }
+
+        /// <summary>
+        /// Calculates the transpose of the specified <see cref="Matrix2F"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="Matrix2F"/> whose transpose is to be calculated.</param>
+        /// <returns>The transpose of the specified <see cref="Matrix2F"/>.</returns>
+        public static Matrix2F Transpose(Matrix2F value)
+        {
+            Transpose(ref value, out Matrix2F result);
+            return result;
+        }
+
+        /// <summary>
+        /// Performs a linear interpolation between two <see cref="Matrix2F"/>.
+        /// </summary>
+        /// <param name="start">Start <see cref="Matrix2F"/>.</param>
+        /// <param name="end">End <see cref="Matrix2F"/>.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <param name="result">When the method completes, contains the linear interpolation of the two <see cref="Matrix2F"/> matrices.</param>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static void Lerp(ref Matrix2F start, ref Matrix2F end, float amount, out Matrix2F result)
+        {
+            result.M11 = MathHelper.Lerp(start.M11, end.M11, amount);
+            result.M12 = MathHelper.Lerp(start.M12, end.M12, amount);
+            result.M21 = MathHelper.Lerp(start.M21, end.M21, amount);
+            result.M22 = MathHelper.Lerp(start.M22, end.M22, amount);
+        }
+
+        /// <summary>
+        /// Performs a cubic interpolation between two <see cref="Matrix2F"/>.
+        /// </summary>
+        /// <param name="start">Start <see cref="Matrix2F"/>.</param>
+        /// <param name="end">End <see cref="Matrix2F"/>.</param>
+        /// <param name="amount">Value between 0F and 1F indicating the weight of <paramref name="end"/>.</param>
+        /// <param name="result">When the method completes, contains the cubic interpolation of the two <see cref="Matrix2F"/> matrices.</param>
+        public static void SmoothStep(ref Matrix2F start, ref Matrix2F end, float amount, out Matrix2F result)
+        {
+            amount = MathHelper.SmoothStep(amount);
+            Lerp(ref start, ref end, amount, out result);
+        }
+
+        /// <summary>
+        /// Performs a cubic interpolation between two matrices.
+        /// </summary>
+        /// <param name="start">Start <see cref="Matrix2F"/>.</param>
+        /// <param name="end">End <see cref="Matrix2F"/>.</param>
+        /// <param name="amount">Value between 0F and 1F indicating the weight of <paramref name="end"/>.</param>
+        /// <returns>The cubic interpolation of the two matrices.</returns>
+        public static Matrix2F SmoothStep(Matrix2F start, Matrix2F end, float amount)
+        {
+            SmoothStep(ref start, ref end, amount, out Matrix2F result);
+            return result;
+        }
+
+        /// <summary>
+        /// Performs a linear interpolation between two matrices.
+        /// </summary>
+        /// <param name="start">Start matrix.</param>
+        /// <param name="end">End matrix.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <returns>The linear interpolation of the two matrices.</returns>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static Matrix2F Lerp(Matrix2F start, Matrix2F end, float amount)
+        {
+            Lerp(ref start, ref end, amount, out Matrix2F result);
+            return result;
         }
 
         /// <summary>
@@ -560,88 +455,307 @@ namespace Molten
             }
         }
 
+        /// <summary>
+        /// Returns a hash code for the current <see cref="Matrix2F"/>.
+        /// </summary>
+        /// <returns>
+        /// A hash code for the current <see cref="Matrix2F"/>, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = M11.GetHashCode();
+                 hashCode = (hashCode * 397) ^ M12.GetHashCode();
+                 hashCode = (hashCode * 397) ^ M21.GetHashCode();
+                 hashCode = (hashCode * 397) ^ M22.GetHashCode();
+                 return hashCode;
+            }
+        }
+
         public static bool operator ==(Matrix2F matrix1, Matrix2F matrix2)
         {
-            return MathHelper.NearEqual(matrix1.M11, matrix2.M11)
-                && MathHelper.NearEqual(matrix1.M21, matrix2.M21)
-                && MathHelper.NearEqual(matrix1.M12, matrix2.M12)
-                && MathHelper.NearEqual(matrix1.M22, matrix2.M22);
+            return matrix1.Equals(ref matrix2);
         }
 
         public static bool operator !=(Matrix2F matrix1, Matrix2F matrix2)
         {
-            return !MathHelper.NearEqual(matrix1.M11, matrix2.M11)
-                || !MathHelper.NearEqual(matrix1.M21, matrix2.M21)
-                || !MathHelper.NearEqual(matrix1.M12, matrix2.M12)
-                || !MathHelper.NearEqual(matrix1.M22, matrix2.M22);
+            return !matrix1.Equals(ref matrix2);
         }
 
-        public static Matrix2F operator +(Matrix2F matrix1, Matrix2F matrix2)
+#region Add operators
+		///<summary>Performs a add operation on two <see cref="Matrix2F"/>.</summary>
+		///<param name="a">The first <see cref="Matrix2F"/> to add.</param>
+		///<param name="b">The second <see cref="Matrix2F"/> to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Add(ref Matrix2F a, ref Matrix2F b, out Matrix2F result)
+		{
+			result.M11 = a.M11 + b.M11;
+			result.M12 = a.M12 + b.M12;
+			result.M21 = a.M21 + b.M21;
+			result.M22 = a.M22 + b.M22;
+		}
+
+		///<summary>Performs a add operation on two <see cref="Matrix2F"/>.</summary>
+		///<param name="a">The first <see cref="Matrix2F"/> to add.</param>
+		///<param name="b">The second <see cref="Matrix2F"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Matrix2F operator +(Matrix2F a, Matrix2F b)
+		{
+			Add(ref a, ref b, out Matrix2F result);
+			return result;
+		}
+
+		///<summary>Performs a add operation on a <see cref="Matrix2F"/> and a <see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Matrix2F"/> to add.</param>
+		///<param name="b">The <see cref="float"/> to add.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Add(ref Matrix2F a, float b, out Matrix2F result)
+		{
+			result.M11 = a.M11 + b;
+			result.M12 = a.M12 + b;
+			result.M21 = a.M21 + b;
+			result.M22 = a.M22 + b;
+		}
+
+		///<summary>Performs a add operation on a <see cref="Matrix2F"/> and a <see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Matrix2F"/> to add.</param>
+		///<param name="b">The <see cref="float"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Matrix2F operator +(Matrix2F a, float b)
+		{
+			Add(ref a, b, out Matrix2F result);
+			return result;
+		}
+
+		///<summary>Performs a add operation on a <see cref="float"/> and a <see cref="Matrix2F"/>.</summary>
+		///<param name="a">The <see cref="float"/> to add.</param>
+		///<param name="b">The <see cref="Matrix2F"/> to add.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Matrix2F operator +(float a, Matrix2F b)
+		{
+			Add(ref b, a, out Matrix2F result);
+			return result;
+		}
+
+
+        /// <summary>
+        /// Assert a <see cref="Matrix2F"/> (return it unchanged).
+        /// </summary>
+        /// <param name="value">The <see cref="Matrix2F"/> to assert (unchanged).</param>
+        /// <returns>The asserted (unchanged) <see cref="Matrix2F"/>.</returns>
+        public static Matrix2F operator +(Matrix2F value)
         {
-            return new Matrix2F()
-            {
-                M11 = matrix1.M11 + matrix2.M11,
-                M12 = matrix1.M12 + matrix2.M12,
-                M21 = matrix1.M21 + matrix2.M21,
-                M22 = matrix1.M22 + matrix2.M22,
-            };
+            return value;
         }
+#endregion
 
-        public static Matrix2F operator -(Matrix2F matrix1, Matrix2F matrix2)
+#region Subtract operators
+		///<summary>Performs a subtract operation on two <see cref="Matrix2F"/>.</summary>
+		///<param name="a">The first <see cref="Matrix2F"/> to subtract.</param>
+		///<param name="b">The second <see cref="Matrix2F"/> to subtract.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Subtract(ref Matrix2F a, ref Matrix2F b, out Matrix2F result)
+		{
+			result.M11 = a.M11 - b.M11;
+			result.M12 = a.M12 - b.M12;
+			result.M21 = a.M21 - b.M21;
+			result.M22 = a.M22 - b.M22;
+		}
+
+		///<summary>Performs a subtract operation on two <see cref="Matrix2F"/>.</summary>
+		///<param name="a">The first <see cref="Matrix2F"/> to subtract.</param>
+		///<param name="b">The second <see cref="Matrix2F"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Matrix2F operator -(Matrix2F a, Matrix2F b)
+		{
+			Subtract(ref a, ref b, out Matrix2F result);
+			return result;
+		}
+
+		///<summary>Performs a subtract operation on a <see cref="Matrix2F"/> and a <see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Matrix2F"/> to subtract.</param>
+		///<param name="b">The <see cref="float"/> to subtract.</param>
+		///<param name="result">Output for the result of the operation.</param>
+		public static void Subtract(ref Matrix2F a, float b, out Matrix2F result)
+		{
+			result.M11 = a.M11 - b;
+			result.M12 = a.M12 - b;
+			result.M21 = a.M21 - b;
+			result.M22 = a.M22 - b;
+		}
+
+		///<summary>Performs a subtract operation on a <see cref="Matrix2F"/> and a <see cref="float"/>.</summary>
+		///<param name="a">The <see cref="Matrix2F"/> to subtract.</param>
+		///<param name="b">The <see cref="float"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Matrix2F operator -(Matrix2F a, float b)
+		{
+			Subtract(ref a, b, out Matrix2F result);
+			return result;
+		}
+
+		///<summary>Performs a subtract operation on a <see cref="float"/> and a <see cref="Matrix2F"/>.</summary>
+		///<param name="a">The <see cref="float"/> to subtract.</param>
+		///<param name="b">The <see cref="Matrix2F"/> to subtract.</param>
+		///<returns>The result of the operation.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Matrix2F operator -(float a, Matrix2F b)
+		{
+			Subtract(ref b, a, out Matrix2F result);
+			return result;
+		}
+
+
+        /// <summary>
+        /// Negates a <see cref="Matrix2F"/>.
+        /// </summary>
+        /// <param name="value">The matrix to be negated.</param>
+        /// <param name="result">When the method completes, contains the negated <see cref="Matrix2F"/>.</param>
+        public static void Negate(ref Matrix2F value, out Matrix2F result)
         {
-            return new Matrix2F()
-            {
-                M11 = matrix1.M11 - matrix2.M11,
-                M12 = matrix1.M12 - matrix2.M12,
-                M21 = matrix1.M21 - matrix2.M21,
-                M22 = matrix1.M22 - matrix2.M22,
-            };
+             result.M11 = -value.M11;
+             result.M12 = -value.M12;
+             result.M21 = -value.M21;
+             result.M22 = -value.M22;
+         }
+
+        /// <summary>
+        /// Negates a <see cref="Matrix2F"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="Matrix2F"/> to be negated.</param>
+        /// <returns>The negated <see cref="Matrix2F"/>.</returns>
+        public static Matrix2F Negate(Matrix2F value)
+        {
+            Matrix2F result;
+            Negate(ref value, out result);
+            return result;
         }
 
+        /// <summary>
+        /// Negates a <see cref="Matrix2F"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="Matrix2F"/> to negate.</param>
+        /// <returns>The negated <see cref="Matrix2F"/>.</returns>
+        public static Matrix2F operator -(Matrix2F value)
+        {
+            Negate(ref value, out Matrix2F result);
+            return result;
+        }
+#endregion
+
+#region Multiply operators
+        /// <summary>
+        /// Scales a <see cref="Matrix2F"/> by the given scalar value.
+        /// </summary>
+        /// <param name="matrix">The <see cref="Matrix2F"/> to scale.</param>
+        /// <param name="scalar">The scalar value by which to scale.</param>
+        /// <param name="result">When the method completes, contains the scaled <see cref="Matrix2F"/>.</param>
+        public static void Multiply(ref Matrix2F matrix, float scalar, out Matrix2F result)
+        {
+			result.M11 = matrix.M11 * scalar;
+			result.M12 = matrix.M12 * scalar;
+			result.M21 = matrix.M21 * scalar;
+			result.M22 = matrix.M22 * scalar;
+        }
+
+        /// <summary>
+        /// Scales a <see cref="Matrix2F"/> by a given value.
+        /// </summary>
+        /// <param name="matrix">The <see cref="Matrix2F"/> to scale.</param>
+        /// <param name="scalar">The scalar value by which to scale.</param>
+        /// <returns>The scaled matrix.</returns>
         public static Matrix2F operator *(Matrix2F matrix, float scalar)
         {
-            return new Matrix2F()
-            {
-                M11 = matrix.M11 * scalar,
-                M12 = matrix.M12 * scalar,
-                M21 = matrix.M21 * scalar,
-                M22 = matrix.M22 * scalar,
-            };
+            Multiply(ref matrix, scalar, out Matrix2F result);
+            return result;
         }
+                
+        /// <summary>
+        /// Scales a <see cref="Matrix2F"/> by a given value.
+        /// </summary>
+        /// <param name="scalar">The scalar value by which to scale.</param>
+        /// <param name="matrix">The <see cref="Matrix2F"/> to scale.</param>
+        /// <returns>The scaled matrix.</returns>
 
         public static Matrix2F operator *(float scalar, Matrix2F matrix)
         {
-            return new Matrix2F()
-            {
-                M11 = scalar * matrix.M11,
-                M12 = scalar * matrix.M12,
-                M21 = scalar * matrix.M21,
-                M22 = scalar * matrix.M22,
-            };
+            Multiply(ref matrix, scalar, out Matrix2F result);
+            return result;
+        }
+#endregion
+
+#region division operators
+/// <summary>
+        /// Scales a <see cref="Matrix2F"/> by the given scalar value.
+        /// </summary>
+        /// <param name="matrix">The <see cref="Matrix2F"/> to scale.</param>
+        /// <param name="scalar">The amount by which to scale.</param>
+        /// <param name="result">When the method completes, contains the scaled <see cref="Matrix2F"/>.</param>
+        public static void Divide(ref Matrix2F matrix, float scalar, out Matrix2F result)
+        {
+            float inv = 1F / scalar;
+			result.M11 = matrix.M11 * inv;
+			result.M12 = matrix.M12 * inv;
+			result.M21 = matrix.M21 * inv;
+			result.M22 = matrix.M22 * inv;
         }
 
-        public static Matrix2F operator *(Matrix2F matrix1, Matrix2F matrix2)
+        /// <summary>
+        /// Scales a <see cref="Matrix2F"/> by the given scalar value.
+        /// </summary>
+        /// <param name="matrix">The <see cref="Matrix2F"/> to scale.</param>
+        /// <param name="scalar">The amount by which to scale.</param>
+        /// <returns>The scaled matrix.</returns>
+        public static Matrix2F Divide(Matrix2F matrix, float scalar)
         {
-            return new Matrix2F()
-            {
-                M11 = matrix1.M11 * matrix2.M11 + matrix1.M21 * matrix2.M12,
-                M12 = matrix1.M12 * matrix2.M11 + matrix1.M22 * matrix2.M12,
-                M21 = matrix1.M11 * matrix2.M21 + matrix1.M21 * matrix2.M22,
-                M22 = matrix1.M12 * matrix2.M21 + matrix1.M22 * matrix2.M22,
-            };
+            Divide(ref matrix, scalar, out Matrix2F result);
+            return result;
         }
-        public static Matrix3x2F operator *(Matrix2F matrix1, Matrix3x2F matrix2)
+
+                /// <summary>
+        /// Determines the quotient of two matrices.
+        /// </summary>
+        /// <param name="left">The first <see cref="Matrix2F"/> to divide.</param>
+        /// <param name="right">The second <see cref="Matrix2F"/> to divide.</param>
+        /// <param name="result">When the method completes, contains the quotient of the two <see cref="Matrix2F"/> matrices.</param>
+        public static void Divide(ref Matrix2F left, ref Matrix2F right, out Matrix2F result)
         {
-            return new Matrix3x2F()
-            {
-                M11 = matrix1.M11 * matrix2.M11 + matrix1.M21 * matrix2.M12,
-                M21 = matrix1.M11 * matrix2.M21 + matrix1.M21 * matrix2.M22,
-                M31 = matrix1.M11 * matrix2.M31 + matrix1.M21 * matrix2.M32,
-                M12 = matrix1.M12 * matrix2.M11 + matrix1.M22 * matrix2.M12,
-                M22 = matrix1.M12 * matrix2.M21 + matrix1.M22 * matrix2.M22,
-                M32 = matrix1.M12 * matrix2.M31 + matrix1.M22 * matrix2.M32,
-            };
+			result.M11 = left.M11 / right.M11;
+			result.M12 = left.M12 / right.M12;
+			result.M21 = left.M21 / right.M21;
+			result.M22 = left.M22 / right.M22;
         }
+
+        /// <summary>
+        /// Scales a <see cref="Matrix2F"/> by a given scalar value.
+        /// </summary>
+        /// <param name="matrix">The matrix to scale.</param>
+        /// <param name="scalar">The amount by which to scale.</param>
+        /// <returns>The scaled matrix.</returns>
+        public static Matrix2F operator /(Matrix2F matrix, float scalar)
+        {
+            Divide(ref matrix, scalar, out Matrix2F result);
+            return result;
+        }
+
+        /// <summary>
+        /// Divides two <see cref="Matrix2F"/> matrices.
+        /// </summary>
+        /// <param name="left">The first <see cref="Matrix2F"/> to divide.</param>
+        /// <param name="right">The second <see cref="Matrix2F"/> to divide.</param>
+        /// <returns>The quotient of the two <see cref="Matrix2F"/> matrices.</returns>
+        public static Matrix2F operator /(Matrix2F left, Matrix2F right)
+        {
+            Divide(ref left, ref right, out Matrix2F result);
+            return result;
+        }
+#endregion
     }
 }
 

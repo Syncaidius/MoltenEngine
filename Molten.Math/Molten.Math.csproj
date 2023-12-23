@@ -79,6 +79,10 @@
       <LastGenOutput>t4_colors.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
     </None>
+    <None Update="t4_matrix.tt">
+      <LastGenOutput>t4_matrix.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
     <None Update="t4_matrix4.tt">
       <LastGenOutput>t4_matrix4.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -162,6 +166,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>t4_matrix.tt</DependentUpon>
     </Compile>
+    <Compile Update="t4_matrix.cs">
+      <DependentUpon>t4_matrix.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
     <Compile Update="t4_matrix2.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -230,7 +239,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Generated\" />
     <Folder Include="SinglePrecision\Vectors\" />
   </ItemGroup>
 

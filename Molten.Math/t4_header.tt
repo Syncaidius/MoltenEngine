@@ -563,7 +563,7 @@ public class TypeGenerator
         Out(indent, $"///<param name=\"result\">Output for the result of the operation.</param>");
         Out(indent, $"public static void {capName}(ref {_curDef.Name} a, {otherByRef}{otherName} b, out {_curDef.Name} result)");
         Out(indent, "{");
-        for(int i = 0; i < _curDef.Size; i++){
+        for(int i = 0; i < _curDef.FieldNames.Length; i++){
             string fieldName = _curDef.FieldNames[i];
             string otherField = otherFields != null && otherFields.Length > 0 ? $".{otherFields[i]}" : "";
 
@@ -607,14 +607,12 @@ public class TypeGenerator
         }
     }
 
-    public string GetParamSentence(string[] pMap, int size, string delimiter = ", ", string finalDelimiter = "", string pPrefix = "", string pPostfix = "")
+    public string GetDelimitedFields(string delimiter = ", ")
     {
         string r = "";
-        for(int i = 0; i < size; i++)
-        {
-            r += $"{pPrefix}{pMap[i]}{pPostfix}";
-            r += i < (size - 1) ? (i < (size - 2) ? ", " : finalDelimiter) : ""; 
-        }
+        int count = _curDef.FieldNames.Length;
+        for(int i = 0; i < count; i++)
+            r += $"{_curDef.FieldNames[i]}{(i < (count-1) ? delimiter : "")}";
 
         return r;
     }

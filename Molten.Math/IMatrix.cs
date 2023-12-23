@@ -3,6 +3,12 @@
     public interface IMatrix<T> 
         where T : unmanaged
     {
+        /// <summary> Gets a value indicating whether the current matrix is an identity matrix. </summary>
+        /// <value>
+        /// <c>true</c> if this instance is an identity matrix; otherwise, <c>false</c>.
+        /// </value>
+        bool IsIdentity { get; }
+
         T[] ToArray();
 
         /// <summary>

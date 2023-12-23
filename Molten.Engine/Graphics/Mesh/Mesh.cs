@@ -97,7 +97,7 @@
 
             OnApply(queue);
             ApplyResources(Shader);
-            Shader.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
+            Shader.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
             Shader.Object.World.Value = data.RenderTransform;
             OnDraw(queue);
             OnPostDraw(queue);

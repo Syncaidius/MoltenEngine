@@ -3,7 +3,7 @@
     /// <summary>
     /// 2 row, 3 column matrix.
     /// </summary>
-    public struct Matrix2x3D : ITransposedMatrix<Matrix3x2D>
+    public struct Matrix2x3D
     {
         /// <summary>
         /// Value at row 1, column 1 of the matrix.

@@ -110,7 +110,7 @@
         protected void CalculateProjection()
         {
             _projFunc(_surface, _nearClip, _farClip, _fov, ref _projection);
-            _viewProjection = Matrix4F.Multiply(_view, _projection);
+             Matrix4F.Multiply(ref _view, ref _projection, out _viewProjection);
             _invViewProjection = Matrix4F.Invert(_viewProjection);
         }
 
@@ -127,7 +127,7 @@
             set
             {
                 _view = value;
-                _viewProjection = Matrix4F.Multiply(_view, _projection);
+                Matrix4F.Multiply(ref _view, ref _projection, out _viewProjection);
                 _transform = Matrix4F.Invert(_view);
                 _invViewProjection = Matrix4F.Invert(_viewProjection);
             }
@@ -140,7 +140,7 @@
             {
                 _transform = value;
                 _view = Matrix4F.Invert(_transform);
-                _viewProjection = Matrix4F.Multiply(_view, _projection);
+                Matrix4F.Multiply(ref _view, ref _projection, out _viewProjection);
                 _invViewProjection = Matrix4F.Invert(_viewProjection);
             }
         }

@@ -68,7 +68,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{env.RELEASE_TAG_NAME}}-${{ steps.date.outputs.date }}
+        tag_name: ${{ env.RELEASE_TAG_NAME }}-${{ steps.date.outputs.date }}
         release_name: ${{ env.RELEASE_NAME }}-${{ steps.date.outputs.date }}
         body: |
           This is the ${{ env. CONFIG_NAME }} build.
@@ -144,7 +144,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{env.RELEASE_TAG_NAME}}-${{ steps.date.outputs.date }}
+        tag_name: ${{ env.RELEASE_TAG_NAME }}-${{ steps.date.outputs.date }}
         release_name: ${{ env.RELEASE_NAME }}-${{ steps.date.outputs.date }}
         body: |
           This is the ${{ env. CONFIG_NAME }} build.

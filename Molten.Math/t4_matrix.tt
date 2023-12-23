@@ -1,0 +1,591 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ include file="t4_header.tt" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".txt" #>
+<#
+TypeGenerator gen = new TypeGenerator(this.GenerationEnvironment, this.Host, "def_matrices.json");
+
+gen.Generate(null, (d, def) =>
+{
+    string vectorName = $"Vector2{d.DT.Literal}";
+    string toString = "\"";
+
+    // Build the ToString() format string.
+    int fieldIndex = 0;
+    for(int x = 0; x < d.Size; x++)
+    {
+        toString += x > 0 ? " [" : "[";
+
+        for(int y = 0; y < d.Size; y++)
+        {
+            if(y > 0)
+                toString += ", ";
+
+             toString += $"{{{fieldIndex}}}"; 
+             fieldIndex++;
+        }
+
+        toString += "]";
+    }
+
+    toString += "\"";
+#>
+using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
+
+namespace Molten<#=d.SubNamespace#>
+{
+    /// <summary>Represents a <#=(d.DT.Bits > 32 ? "double" : "single")#>-precision <#=d.Size#>x<#=d.Size#> Matrix. Contains only scale and rotation.</summary>
+    [StructLayout(LayoutKind.Explicit)]
+    [DataContract]
+	public partial struct <#=d.Name#> : IEquatable<<#=d.Name#>>, IFormattable, ITransposableMatrix<<#=d.Name#>>, IMatrix<<#=d.DT#>>
+    {
+        /// <summary>
+        /// A single-precision <#=gen.See()#> with values intialized to the identity of a 2 x 2 matrix
+        /// </summary>
+        public static readonly <#=d.Name#> Identity = new <#=d.Name#>() 
+        { 
+<#for(int i = 1; i <= d.Size; i++){#>
+            M<#=i#><#=i#> = <#=d.DT.One#>, 
+<#}#>
+        };
+
+        public static readonly int ComponentCount = <#=d.FieldNames.Length#>;
+
+        public static readonly int RowCount = <#=d.Size#>;
+
+        public static readonly int ColumnCount = <#=d.Size#>;
+
+        /// <summary>A <#=gen.See()#> will all of its components set to <#=d.DT.Zero#>.</summary>
+        public static readonly <#=d.Name#> Zero = new <#=d.Name#>();
+
+        /// <summary> Gets a value indicating whether this instance is an identity matrix. </summary>
+        /// <value>
+        /// <c>true</c> if this instance is an identity matrix; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsIdentity => Equals(Identity);
+
+<#=gen.GenerateFields((field) => $"The value at row {field[1]}, column {field[2]} of the matrix.")#>
+
+<#gen.GenerateStandardConstructors(2, (field) => $"The value to assign to row {field[1]}, column {field[2]} of the matrix.");#>
+
+        /// <summary>
+        /// Creates a string representation of the matrix.
+        /// </summary>
+        /// <returns>A string representation of the matrix.</returns>
+        public override string ToString()
+        {
+            return string.Format(<#=toString#>, 
+            <#for(int i = 0; i < d.FieldNames.Length; i++){#><#=(i > 0 ? ", " : "")#><#=d.FieldNames[i]#><#}#>);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="String"/> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <returns>
+        /// A <see cref="string"/> that represents this instance.
+        /// </returns>
+        public string ToString(string format)
+        {
+            if (format == null)
+                return ToString();
+
+            CultureInfo cc = CultureInfo.CurrentCulture;
+            return string.Format(<#=toString#>, cc, 
+            <#for(int i = 0; i < d.FieldNames.Length; i++){#><#=(i > 0 ? ", " : "")#><#=d.FieldNames[i]#>.ToString(format, cc)<#}#>);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="string"/> that represents this instance.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>
+        /// A <see cref="string"/> that represents this instance.
+        /// </returns>
+        public string ToString(IFormatProvider formatProvider)
+        {
+            return string.Format(<#=toString#>, 
+            <#for(int i = 0; i < d.FieldNames.Length; i++){#><#=(i > 0 ? ", " : "")#><#=d.FieldNames[i]#>.ToString(formatProvider)<#}#>);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="string"/> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>
+        /// A <see cref="string"/> that represents this instance.
+        /// </returns>
+        public string ToString(string format, IFormatProvider formatProvider)
+        {
+            if (format == null)
+                return ToString(formatProvider);
+
+            CultureInfo cc = CultureInfo.CurrentCulture;
+            return string.Format(<#=toString#>, cc, 
+            <#for(int i = 0; i < d.FieldNames.Length; i++){#><#=(i > 0 ? ", " : "")#><#=d.FieldNames[i]#>.ToString(format, formatProvider)<#}#>);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="<#=d.Name#>"/> is equal to this instance.
+        /// </summary>
+        /// <param name="other">The <see cref="<#=d.Name#>"/> to compare with this instance.</param>
+        /// <returns>
+        /// <c>true</c> if the specified <see cref="<#=d.Name#>"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        public bool Equals(ref <#=d.Name#> other)
+        {
+            return MathHelper.NearEqual(other.M11, M11)
+<#for(int i = 1; i < d.FieldNames.Length; i++){#>
+            && MathHelper.NearEqual(other.<#=d.FieldNames[i]#>, <#=d.FieldNames[i]#>)<#=(i < d.FieldNames.Length -1 ? Environment.NewLine : "")#><#}#>;
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="<#=d.Name#>"/> is equal to this instance.
+        /// </summary>
+        /// <param name="other">The <see cref="<#=d.Name#>"/> to compare with this instance.</param>
+        /// <returns>
+        /// <c>true</c> if the specified <see cref="<#=d.Name#>"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Equals(<#=d.Name#> other)
+        {
+            return Equals(ref other);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
+        /// </summary>
+        /// <param name="value">The <see cref="System.Object"/> to compare with this instance.</param>
+        /// <returns>
+        /// <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        public override bool Equals(object value)
+        {
+            if (value is <#=d.Name#> mat)
+                return Equals(ref mat);
+
+            return false;
+        }
+
+        /// <summary>
+        /// Transposes the current <#=gen.See()#> and outputs it to <paramref name="result"/>.
+        /// </summary>
+        /// <param name="result"></param>
+        public void Transpose(out <#=d.Name#> result)
+        {
+            Transpose(ref this, out result);
+        }
+
+        /// <summary>
+        /// Creates an array containing the elements of the <#=gen.See()#>.
+        /// </summary>
+        /// <returns>A <#=d.FieldNames.Length#>-element array containing the components of the matrix.</returns>
+        public unsafe <#=d.DT#>[] ToArray()
+        {
+            return [<#=gen.GetDelimitedFields()#>];
+        }
+
+        /// <summary>
+        /// Transposes the current <#=gen.See()#> in-place.
+        /// </summary>
+        public void Transpose()
+        {
+            Transpose(ref this, out this);
+        }
+        
+        /// <summary>
+        /// Calculates the transpose of the specified <#=gen.See()#>.
+        /// </summary>
+        /// <param name="matrix">The <#=gen.See()#> whose transpose is to be calculated.</param>
+        /// <param name="result">When the method completes, contains the transpose of the specified matrix.</param>
+        public static void Transpose(ref <#=d.Name#> matrix, out <#=d.Name#> result)
+        {
+            Unsafe.SkipInit(out result);
+<#for(int i = 0; i < d.FieldNames.Length; i++){#>
+            result.<#=d.FieldNames[i]#> = matrix.<#char[] c = d.FieldNames[i].ToCharArray(); Array.Reverse(c);#><#=d.FieldNames[i][0]#><#=(new string(c, 0, 2))#>;
+<#}#>
+        }
+
+        /// <summary>
+        /// Calculates the transpose of the specified <#=gen.See()#>.
+        /// </summary>
+        /// <param name="value">The <#=gen.See()#> whose transpose is to be calculated.</param>
+        /// <returns>The transpose of the specified <#=gen.See()#>.</returns>
+        public static <#=d.Name#> Transpose(<#=d.Name#> value)
+        {
+            Transpose(ref value, out <#=d.Name#> result);
+            return result;
+        }
+
+        /// <summary>
+        /// Performs a linear interpolation between two <#=gen.See()#>.
+        /// </summary>
+        /// <param name="start">Start <#=gen.See()#>.</param>
+        /// <param name="end">End <#=gen.See()#>.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <param name="result">When the method completes, contains the linear interpolation of the two <#=gen.See()#> matrices.</param>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static void Lerp(ref <#=d.Name#> start, ref <#=d.Name#> end, <#=d.DT#> amount, out <#=d.Name#> result)
+        {
+<#for(int p = 0; p < d.FieldNames.Length; p++){#>
+            result.<#=d.FieldNames[p]#> = MathHelper.Lerp(start.<#=d.FieldNames[p]#>, end.<#=d.FieldNames[p]#>, amount);
+<#}#>
+        }
+
+        /// <summary>
+        /// Performs a cubic interpolation between two <#=gen.See()#>.
+        /// </summary>
+        /// <param name="start">Start <#=gen.See()#>.</param>
+        /// <param name="end">End <#=gen.See()#>.</param>
+        /// <param name="amount">Value between <#=d.DT.Zero#> and <#=d.DT.One#> indicating the weight of <paramref name="end"/>.</param>
+        /// <param name="result">When the method completes, contains the cubic interpolation of the two <#=gen.See()#> matrices.</param>
+        public static void SmoothStep(ref <#=d.Name#> start, ref <#=d.Name#> end, <#=d.DT#> amount, out <#=d.Name#> result)
+        {
+            amount = MathHelper.SmoothStep(amount);
+            Lerp(ref start, ref end, amount, out result);
+        }
+
+        /// <summary>
+        /// Performs a cubic interpolation between two matrices.
+        /// </summary>
+        /// <param name="start">Start <#=gen.See()#>.</param>
+        /// <param name="end">End <#=gen.See()#>.</param>
+        /// <param name="amount">Value between <#=d.DT.Zero#> and <#=d.DT.One#> indicating the weight of <paramref name="end"/>.</param>
+        /// <returns>The cubic interpolation of the two matrices.</returns>
+        public static <#=d.Name#> SmoothStep(<#=d.Name#> start, <#=d.Name#> end, <#=d.DT#> amount)
+        {
+            SmoothStep(ref start, ref end, amount, out <#=d.Name#> result);
+            return result;
+        }
+
+        /// <summary>
+        /// Performs a linear interpolation between two matrices.
+        /// </summary>
+        /// <param name="start">Start matrix.</param>
+        /// <param name="end">End matrix.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <returns>The linear interpolation of the two matrices.</returns>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static <#=d.Name#> Lerp(<#=d.Name#> start, <#=d.Name#> end, <#=d.DT#> amount)
+        {
+            Lerp(ref start, ref end, amount, out <#=d.Name#> result);
+            return result;
+        }
+
+        /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of the matrix component, depending on the index.</value>
+        /// <param name="index">The zero-based index of the component to access.</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, <#=(d.FieldNames.Length-1)#>].</exception>  
+		public unsafe <#=d.DT#> this[int index]
+		{
+			get
+            {
+                if(index > <#=(d.FieldNames.Length-1)#> || index < 0)
+                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(d.FieldNames.Length-1)#>, inclusive.");
+
+                return Values[index];
+            }
+            set
+            {
+                if (index > <#=(d.FieldNames.Length-1)#> || index < 0)
+                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(d.FieldNames.Length-1)#>, inclusive.");
+
+                Values[index] = value;
+            }
+		}
+
+        /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of the matrix component, depending on the index.</value>
+        /// <param name="index">The zero-based index of the component to access.</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is greater than <#=(d.FieldNames.Length-1)#>.</exception>
+		public unsafe <#=d.DT#> this[uint index]
+		{
+			get
+            {
+                if(index > <#=(d.FieldNames.Length-1)#>)
+                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must less than <#=d.FieldNames.Length#>.");
+
+                return Values[index];
+            }
+            set
+            {
+                if (index > <#=(d.FieldNames.Length-1)#>)
+                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must less than <#=d.FieldNames.Length#>.");
+
+                Values[index] = value;
+            }
+		}
+
+        /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of the matrix component, depending on the index.</value>
+        /// <param name="row">The row of the matrix to access.</param>
+        /// <param name="column">The column of the matrix to access.</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> or <paramref name="column"/>is out of the range [0, <#=(d.Size-1)#>].</exception>
+        public unsafe <#=d.DT#> this[int row, int column]
+        {
+            get
+            {
+                if (row < 0 || row > <#=(d.Size-1)#>)
+                    throw new ArgumentOutOfRangeException("row", "Rows and columns for matrices run from 0 to <#=(d.Size-1)#>, inclusive.");
+                if (column < 0 || column > <#=(d.Size-1)#>)
+                    throw new ArgumentOutOfRangeException("column", "Rows and columns for matrices run from 0 to <#=(d.Size-1)#>, inclusive.");
+
+                return Values[(row * <#=d.Size#>) + column];
+            }
+
+            set
+            {
+                if (row < 0 || row > <#=(d.Size-1)#>)
+                    throw new ArgumentOutOfRangeException("row", "Rows and columns for matrices run from 0 to <#=(d.Size-1)#>, inclusive.");
+                if (column < 0 || column > <#=(d.Size-1)#>)
+                    throw new ArgumentOutOfRangeException("column", "Rows and columns for matrices run from 0 to <#=(d.Size-1)#>, inclusive.");
+
+                Values[(row * <#=d.Size#>) + column] = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of the matrix component, depending on the index.</value>
+        /// <param name="row">The row of the matrix to access.</param>
+        /// <param name="column">The column of the matrix to access.</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> or <paramref name="column"/>is out of the range [0, <#=(d.Size-1)#>].</exception>
+        public unsafe <#=d.DT#> this[uint row, uint column]
+        {
+            get
+            {
+                if (row > <#=(d.Size-1)#>)
+                    throw new ArgumentOutOfRangeException("row", "Rows and columns for matrices run from 0 to <#=(d.Size-1)#>, inclusive.");
+                if (column > <#=(d.Size-1)#>)
+                    throw new ArgumentOutOfRangeException("column", "Rows and columns for matrices run from 0 to <#=(d.Size-1)#>, inclusive.");
+
+                return Values[(row * <#=d.Size#>) + column];
+            }
+
+            set
+            {
+                if (row > <#=(d.Size-1)#>)
+                    throw new ArgumentOutOfRangeException("row", "Row and column index must be less than <#=d.Size#>");
+
+                if (column > <#=(d.Size-1)#>)
+                    throw new ArgumentOutOfRangeException("column", "Row and column index must be less than <#=d.Size#>");
+
+                Values[(row * <#=d.Size#>) + column] = value;
+            }
+        }
+
+        /// <summary>
+        /// Returns a hash code for the current <#=gen.See()#>.
+        /// </summary>
+        /// <returns>
+        /// A hash code for the current <#=gen.See()#>, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = <#=d.FieldNames[0]#>.GetHashCode();
+ <#for(int p = 1; p < d.FieldNames.Length; p++){#>
+                hashCode = (hashCode * 397) ^ <#=d.FieldNames[p]#>.GetHashCode();
+ <#}#>
+                return hashCode;
+            }
+        }
+
+        public static bool operator ==(<#=d.Name#> matrix1, <#=d.Name#> matrix2)
+        {
+            return matrix1.Equals(ref matrix2);
+        }
+
+        public static bool operator !=(<#=d.Name#> matrix1, <#=d.Name#> matrix2)
+        {
+            return !matrix1.Equals(ref matrix2);
+        }
+
+#region Add operators
+<#gen.GenerateOperator("+", "add");#>
+<#gen.GenerateOperator("+", "add", d.DT.Name);#>
+
+        /// <summary>
+        /// Assert a <#=gen.See()#> (return it unchanged).
+        /// </summary>
+        /// <param name="value">The <#=gen.See()#> to assert (unchanged).</param>
+        /// <returns>The asserted (unchanged) <#=gen.See()#>.</returns>
+        public static <#=d.Name#> operator +(<#=d.Name#> value)
+        {
+            return value;
+        }
+#endregion
+
+#region Subtract operators
+<#gen.GenerateOperator("-", "subtract");#>
+<#gen.GenerateOperator("-", "subtract", d.DT.Name);#>
+
+        /// <summary>
+        /// Negates a <#=gen.See()#>.
+        /// </summary>
+        /// <param name="value">The matrix to be negated.</param>
+        /// <param name="result">When the method completes, contains the negated <#=gen.See()#>.</param>
+        public static void Negate(ref <#=d.Name#> value, out <#=d.Name#> result)
+        {
+ <#for(int p = 0; p < d.FieldNames.Length; p++){#>
+            result.<#=d.FieldNames[p]#> = -value.<#=d.FieldNames[p]#>;
+ <#}#>
+        }
+
+        /// <summary>
+        /// Negates a <#=gen.See()#>.
+        /// </summary>
+        /// <param name="value">The <#=gen.See()#> to be negated.</param>
+        /// <returns>The negated <#=gen.See()#>.</returns>
+        public static <#=d.Name#> Negate(<#=d.Name#> value)
+        {
+            <#=d.Name#> result;
+            Negate(ref value, out result);
+            return result;
+        }
+
+        /// <summary>
+        /// Negates a <#=gen.See()#>.
+        /// </summary>
+        /// <param name="value">The <#=gen.See()#> to negate.</param>
+        /// <returns>The negated <#=gen.See()#>.</returns>
+        public static <#=d.Name#> operator -(<#=d.Name#> value)
+        {
+            Negate(ref value, out <#=d.Name#> result);
+            return result;
+        }
+#endregion
+
+#region Multiply operators
+        /// <summary>
+        /// Scales a <#=gen.See()#> by the given scalar value.
+        /// </summary>
+        /// <param name="matrix">The <#=gen.See()#> to scale.</param>
+        /// <param name="scalar">The scalar value by which to scale.</param>
+        /// <param name="result">When the method completes, contains the scaled <#=gen.See()#>.</param>
+        public static void Multiply(ref <#=d.Name#> matrix, <#=d.DT#> scalar, out <#=d.Name#> result)
+        {
+<#for(int p = 0; p < d.FieldNames.Length; p++){#>
+			result.<#=d.FieldNames[p]#> = matrix.<#=d.FieldNames[p]#> * scalar;
+<#}#>
+        }
+
+        /// <summary>
+        /// Scales a <#=gen.See()#> by a given value.
+        /// </summary>
+        /// <param name="matrix">The <#=gen.See()#> to scale.</param>
+        /// <param name="scalar">The scalar value by which to scale.</param>
+        /// <returns>The scaled matrix.</returns>
+        public static <#=d.Name#> operator *(<#=d.Name#> matrix, <#=d.DT#> scalar)
+        {
+            Multiply(ref matrix, scalar, out <#=d.Name#> result);
+            return result;
+        }
+                
+        /// <summary>
+        /// Scales a <#=gen.See()#> by a given value.
+        /// </summary>
+        /// <param name="scalar">The scalar value by which to scale.</param>
+        /// <param name="matrix">The <#=gen.See()#> to scale.</param>
+        /// <returns>The scaled matrix.</returns>
+
+        public static <#=d.Name#> operator *(<#=d.DT#> scalar, <#=d.Name#> matrix)
+        {
+            Multiply(ref matrix, scalar, out <#=d.Name#> result);
+            return result;
+        }
+#endregion
+
+#region division operators
+/// <summary>
+        /// Scales a <#=gen.See()#> by the given scalar value.
+        /// </summary>
+        /// <param name="matrix">The <#=gen.See()#> to scale.</param>
+        /// <param name="scalar">The amount by which to scale.</param>
+        /// <param name="result">When the method completes, contains the scaled <#=gen.See()#>.</param>
+        public static void Divide(ref <#=d.Name#> matrix, <#=d.DT#> scalar, out <#=d.Name#> result)
+        {
+            <#=d.DT#> inv = <#=d.DT.One#> / scalar;
+<#for(int p = 0; p < d.FieldNames.Length; p++){#>
+			result.<#=d.FieldNames[p]#> = matrix.<#=d.FieldNames[p]#> * inv;
+<#}#>
+        }
+
+        /// <summary>
+        /// Scales a <#=gen.See()#> by the given scalar value.
+        /// </summary>
+        /// <param name="matrix">The <#=gen.See()#> to scale.</param>
+        /// <param name="scalar">The amount by which to scale.</param>
+        /// <returns>The scaled matrix.</returns>
+        public static <#=d.Name#> Divide(<#=d.Name#> matrix, <#=d.DT#> scalar)
+        {
+            Divide(ref matrix, scalar, out <#=d.Name#> result);
+            return result;
+        }
+
+                /// <summary>
+        /// Determines the quotient of two matrices.
+        /// </summary>
+        /// <param name="left">The first <#=gen.See()#> to divide.</param>
+        /// <param name="right">The second <#=gen.See()#> to divide.</param>
+        /// <param name="result">When the method completes, contains the quotient of the two <#=gen.See()#> matrices.</param>
+        public static void Divide(ref <#=d.Name#> left, ref <#=d.Name#> right, out <#=d.Name#> result)
+        {
+<#for(int p = 0; p < d.FieldNames.Length; p++){#>
+			result.<#=d.FieldNames[p]#> = left.<#=d.FieldNames[p]#> / right.<#=d.FieldNames[p]#>;
+<#}#>
+        }
+
+        /// <summary>
+        /// Scales a <#=gen.See()#> by a given scalar value.
+        /// </summary>
+        /// <param name="matrix">The matrix to scale.</param>
+        /// <param name="scalar">The amount by which to scale.</param>
+        /// <returns>The scaled matrix.</returns>
+        public static <#=d.Name#> operator /(<#=d.Name#> matrix, <#=d.DT#> scalar)
+        {
+            Divide(ref matrix, scalar, out <#=d.Name#> result);
+            return result;
+        }
+
+        /// <summary>
+        /// Divides two <#=gen.See()#> matrices.
+        /// </summary>
+        /// <param name="left">The first <#=gen.See()#> to divide.</param>
+        /// <param name="right">The second <#=gen.See()#> to divide.</param>
+        /// <returns>The quotient of the two <#=gen.See()#> matrices.</returns>
+        public static <#=d.Name#> operator /(<#=d.Name#> left, <#=d.Name#> right)
+        {
+            Divide(ref left, ref right, out <#=d.Name#> result);
+            return result;
+        }
+#endregion
+    }
+}
+<#
+});
+#>

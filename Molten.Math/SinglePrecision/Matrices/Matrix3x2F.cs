@@ -28,7 +28,7 @@ namespace Molten
     /// Direct2D Matrix3x2. Supports implicit cast from <see cref="Matrix4F"/>.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct Matrix3x2F : ITransposedMatrix<Matrix2x3F>
+    public struct Matrix3x2F
     {
         /// <summary>
         /// Gets the identity matrix.
