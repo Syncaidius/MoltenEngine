@@ -21,19 +21,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Determines the difference between two matrices.
-        /// </summary>
-        /// <param name="left">The first matrix to subtract.</param>
-        /// <param name="right">The second matrix to subtract.</param>
-        /// <returns>The difference between the two matrices.</returns>
-        public static Matrix3x2F Subtract(Matrix3x2F left, Matrix3x2F right)
-        {
-            Matrix3x2F result;
-            Subtract(ref left, ref right, out result);
-            return result;
-        }
-
-        /// <summary>
         /// Scales a matrix by the given value.
         /// </summary>
         /// <param name="left">The matrix to scale.</param>
@@ -78,8 +65,7 @@ namespace Molten
         /// <returns>The created scaling matrix.</returns>
         public static Matrix3x2F Scaling(Vector2F scale)
         {
-            Matrix3x2F result;
-            Scaling(ref scale, out result);
+            Scaling(ref scale, out Matrix3x2F result);
             return result;
         }
 
@@ -104,8 +90,7 @@ namespace Molten
         /// <returns>The created scaling matrix.</returns>
         public static Matrix3x2F Scaling(float x, float y)
         {
-            Matrix3x2F result;
-            Scaling(x, y, out result);
+            Scaling(x, y, out Matrix3x2F result);
             return result;
         }
 
@@ -206,8 +191,7 @@ namespace Molten
         /// <returns>The created rotation matrix.</returns>
         public static Matrix3x2F Rotation(float angle)
         {
-            Matrix3x2F result;
-            Rotation(angle, out result);
+            Rotation(angle, out Matrix3x2F result);
             return result;
         }
 
@@ -219,8 +203,7 @@ namespace Molten
         /// <returns>The created rotation matrix.</returns>
         public static Matrix3x2F Rotation(float angle, Vector2F center)
         {
-            Matrix3x2F result;
-            Rotation(angle, center, out result);
+            Rotation(angle, center, out Matrix3x2F result);
             return result;
         }
 

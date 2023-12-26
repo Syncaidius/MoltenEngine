@@ -21,19 +21,6 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Determines the difference between two matrices.
-        /// </summary>
-        /// <param name="left">The first matrix to subtract.</param>
-        /// <param name="right">The second matrix to subtract.</param>
-        /// <returns>The difference between the two matrices.</returns>
-        public static Matrix3x2D Subtract(Matrix3x2D left, Matrix3x2D right)
-        {
-            Matrix3x2D result;
-            Subtract(ref left, ref right, out result);
-            return result;
-        }
-
-        /// <summary>
         /// Scales a matrix by the given value.
         /// </summary>
         /// <param name="left">The matrix to scale.</param>
@@ -78,8 +65,7 @@ namespace Molten.DoublePrecision
         /// <returns>The created scaling matrix.</returns>
         public static Matrix3x2D Scaling(Vector2D scale)
         {
-            Matrix3x2D result;
-            Scaling(ref scale, out result);
+            Scaling(ref scale, out Matrix3x2D result);
             return result;
         }
 
@@ -104,8 +90,7 @@ namespace Molten.DoublePrecision
         /// <returns>The created scaling matrix.</returns>
         public static Matrix3x2D Scaling(double x, double y)
         {
-            Matrix3x2D result;
-            Scaling(x, y, out result);
+            Scaling(x, y, out Matrix3x2D result);
             return result;
         }
 
@@ -206,8 +191,7 @@ namespace Molten.DoublePrecision
         /// <returns>The created rotation matrix.</returns>
         public static Matrix3x2D Rotation(double angle)
         {
-            Matrix3x2D result;
-            Rotation(angle, out result);
+            Rotation(angle, out Matrix3x2D result);
             return result;
         }
 
@@ -219,8 +203,7 @@ namespace Molten.DoublePrecision
         /// <returns>The created rotation matrix.</returns>
         public static Matrix3x2D Rotation(double angle, Vector2D center)
         {
-            Matrix3x2D result;
-            Rotation(angle, center, out result);
+            Rotation(angle, center, out Matrix3x2D result);
             return result;
         }
 

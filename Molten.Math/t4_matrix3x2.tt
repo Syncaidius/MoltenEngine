@@ -44,19 +44,6 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Determines the difference between two matrices.
-        /// </summary>
-        /// <param name="left">The first matrix to subtract.</param>
-        /// <param name="right">The second matrix to subtract.</param>
-        /// <returns>The difference between the two matrices.</returns>
-        public static <#=d.Name#> Subtract(<#=d.Name#> left, <#=d.Name#> right)
-        {
-            <#=d.Name#> result;
-            Subtract(ref left, ref right, out result);
-            return result;
-        }
-
-        /// <summary>
         /// Scales a matrix by the given value.
         /// </summary>
         /// <param name="left">The matrix to scale.</param>
@@ -101,8 +88,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <returns>The created scaling matrix.</returns>
         public static <#=d.Name#> Scaling(<#=baseVectorName#> scale)
         {
-            <#=d.Name#> result;
-            Scaling(ref scale, out result);
+            Scaling(ref scale, out <#=d.Name#> result);
             return result;
         }
 
@@ -127,8 +113,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <returns>The created scaling matrix.</returns>
         public static <#=d.Name#> Scaling(<#=d.DT#> x, <#=d.DT#> y)
         {
-            <#=d.Name#> result;
-            Scaling(x, y, out result);
+            Scaling(x, y, out <#=d.Name#> result);
             return result;
         }
 
@@ -229,8 +214,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <returns>The created rotation matrix.</returns>
         public static <#=d.Name#> Rotation(<#=d.DT#> angle)
         {
-            <#=d.Name#> result;
-            Rotation(angle, out result);
+            Rotation(angle, out <#=d.Name#> result);
             return result;
         }
 
@@ -242,8 +226,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <returns>The created rotation matrix.</returns>
         public static <#=d.Name#> Rotation(<#=d.DT#> angle, <#=baseVectorName#> center)
         {
-            <#=d.Name#> result;
-            Rotation(angle, center, out result);
+            Rotation(angle, center, out <#=d.Name#> result);
             return result;
         }
 
