@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 namespace Molten.DoublePrecision
 {
 	///<summary>Represents a four dimensional mathematical QuaternionD.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack = 8)]
+	[StructLayout(LayoutKind.Explicit)]
     [Serializable]
 	public partial struct QuaternionD : IFormattable, IEquatable<QuaternionD>
 	{
@@ -33,20 +33,28 @@ namespace Molten.DoublePrecision
 
 		/// <summary>The X component.</summary>
 		[DataMember]
+		[FieldOffset(0)]
 		public double X;
 
 		/// <summary>The Y component.</summary>
 		[DataMember]
+		[FieldOffset(8)]
 		public double Y;
 
 		/// <summary>The Z component.</summary>
 		[DataMember]
+		[FieldOffset(16)]
 		public double Z;
 
 		/// <summary>The W component.</summary>
 		[DataMember]
+		[FieldOffset(24)]
 		public double W;
 
+		/// <summary>A fixed array mapped to the same memory space as the individual <see cref="QuaternionD"/> components.</summary>
+		[IgnoreDataMember]
+		[FieldOffset(0)]
+		public unsafe fixed double Values[4];
 
 
         /// <summary>
@@ -88,62 +96,6 @@ namespace Molten.DoublePrecision
         }
 
 #region Constructors
-		/// <summary>Initializes a new instance of <see cref="QuaternionD"/>.</summary>
-		/// <param name="value">The value that will be assigned to all components.</param>
-		public QuaternionD(double value)
-		{
-			X = value;
-			Y = value;
-			Z = value;
-			W = value;
-		}
-		/// <summary>Initializes a new instance of <see cref="QuaternionD"/> from an array.</summary>
-		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least four elements.</param>
-		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
-		public QuaternionD(double[] values)
-		{
-			if (values == null)
-				throw new ArgumentNullException("values");
-			if (values.Length < 4)
-				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for QuaternionD.");
-
-			X = values[0];
-			Y = values[1];
-			Z = values[2];
-			W = values[3];
-		}
-		/// <summary>Initializes a new instance of <see cref="QuaternionD"/> from a span.</summary>
-		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least four elements.</param>
-		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
-		public QuaternionD(Span<double> values)
-		{
-			if (values == null)
-				throw new ArgumentNullException("values");
-			if (values.Length < 4)
-				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for QuaternionD.");
-
-			X = values[0];
-			Y = values[1];
-			Z = values[2];
-			W = values[3];
-		}
-		/// <summary>Initializes a new instance of <see cref="QuaternionD"/> from a an unsafe pointer.</summary>
-		/// <param name="ptrValues">The values to assign to the X, Y, Z, W components of the color.
-		/// <para>There must be at least four elements available or undefined behaviour will occur.</para></param>
-		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than four elements.</exception>
-		public unsafe QuaternionD(double* ptrValues)
-		{
-			if (ptrValues == null)
-				throw new ArgumentNullException("ptrValues");
-
-			X = ptrValues[0];
-			Y = ptrValues[1];
-			Z = ptrValues[2];
-			W = ptrValues[3];
-		}
 		/// <summary>
 		/// Initializes a new instance of <see cref="QuaternionD"/>.
 		/// </summary>
@@ -157,6 +109,61 @@ namespace Molten.DoublePrecision
 			Y = y;
 			Z = z;
 			W = w;
+		}
+		/// <summary>Initializes a new instance of <see cref="QuaternionD"/>.</summary>
+		/// <param name="value">The value that will be assigned to all components.</param>
+		public QuaternionD(double value)
+		{
+			X = value;
+			Y = value;
+			Z = value;
+			W = value;
+		}
+		/// <summary>Initializes a new instance of <see cref="QuaternionD"/> from an array.</summary>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least 4 elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
+		public unsafe QuaternionD(double[] values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 4)
+				throw new ArgumentOutOfRangeException("values", "There must be at least 4 input values for QuaternionD.");
+
+			fixed (double* src = values)
+			{
+				fixed (double* dst = Values)
+					Unsafe.CopyBlock(src, dst, (sizeof(double) * 4));
+			}
+		}
+		/// <summary>Initializes a new instance of <see cref="QuaternionD"/> from a span.</summary>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least 4 elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
+		public QuaternionD(Span<double> values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 4)
+				throw new ArgumentOutOfRangeException("values", "There must be at least 4 input values for QuaternionD.");
+
+			X = values[0];
+			Y = values[1];
+			Z = values[2];
+			W = values[3];
+		}
+		/// <summary>Initializes a new instance of <see cref="QuaternionD"/> from a an unsafe pointer.</summary>
+		/// <param name="ptrValues">The values to assign to the X, Y, Z, W components of the color.
+		/// <para>There must be at least 4 elements available or undefined behaviour will occur.</para></param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 4 elements.</exception>
+		public unsafe QuaternionD(double* ptrValues)
+		{
+			if (ptrValues == null)
+				throw new ArgumentNullException("ptrValues");
+
+			fixed (double* dst = Values)
+				Unsafe.CopyBlock(ptrValues, dst, (sizeof(double) * 4));
 		}
         /// <summary>
         /// Initializes a new instance of the <see cref="QuaternionD"/> struct.
@@ -1402,40 +1409,52 @@ namespace Molten.DoublePrecision
 #endregion
 
 #region Indexers
-/// <summary>
-        /// Gets or sets the component at the specified index.
-        /// </summary>
-        /// <value>The value of the X, Y, Z, or W component, depending on the index.</value>
-        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component, 2 for the Z component, and 3 for the W component.</param>
-        /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 3].</exception>
-        public double this[int index]
-        {
-            get
-            {
-                switch (index)
-                {
-                    case 0: return X;
-                    case 1: return Y;
-                    case 2: return Z;
-                    case 3: return W;
-                }
+		/// <summary> Gets or sets the component at the specified index. </summary>
+		/// <value>The value of the <see cref="QuaternionD"/> component, depending on the index.</value>
+		/// <param name="index">The index of the index component to access, ranging from 0 to 3, inclusive.</param>
+		/// <returns>The value of the component at the specified index value provided.</returns>
+		/// <exception cref="IndexOutOfRangeException">Thrown if the index is out of range.</exception>
+		public unsafe double this[int index]
+		{
+			get
+			{
+				if(index < 0 || index > 3)
+					throw new IndexOutOfRangeException("index for QuaternionD must be between 0 and 3, inclusive.");
 
-                throw new ArgumentOutOfRangeException("index", "Indices for QuaternionD run from 0 to 3, inclusive.");
-            }
+				return Values[index];
+			}
+			set
+			{
+				if(index < 0 || index > 3)
+					throw new IndexOutOfRangeException("index for QuaternionD must be between 0 and 3, inclusive.");
 
-            set
-            {
-                switch (index)
-                {
-                    case 0: X = value; break;
-                    case 1: Y = value; break;
-                    case 2: Z = value; break;
-                    case 3: W = value; break;
-                    default: throw new ArgumentOutOfRangeException("index", "Indices for QuaternionD run from 0 to 3, inclusive.");
-                }
-            }
-        }
+				Values[index] = value;
+			}
+		}
+
+		/// <summary> Gets or sets the component at the specified index. </summary>
+		/// <value>The value of the <see cref="QuaternionD"/> component, depending on the index.</value>
+		/// <param name="index">The index of the index component to access, ranging from 0 to 3, inclusive.</param>
+		/// <returns>The value of the component at the specified index value provided.</returns>
+		/// <exception cref="IndexOutOfRangeException">Thrown if the index is out of range.</exception>
+		public unsafe double this[uint index]
+		{
+			get
+			{
+				if(index > 3)
+					throw new IndexOutOfRangeException("index for QuaternionD must be between 0 and 3, inclusive.");
+
+				return Values[index];
+			}
+			set
+			{
+				if(index > 3)
+					throw new IndexOutOfRangeException("index for QuaternionD must be between 0 and 3, inclusive.");
+
+				Values[index] = value;
+			}
+		}
+
 #endregion
 	}
 }

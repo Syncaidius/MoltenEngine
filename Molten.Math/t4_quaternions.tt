@@ -13,6 +13,7 @@ TypeGenerator gen = new TypeGenerator(this.GenerationEnvironment, this.Host, "de
 
 gen.Generate(null, (d, def) =>
 {
+    int size = d.GetDimension(0);
     string vec2Name = d.Name.Replace("Quaternion", "Vector2");
     string vec3Name = d.Name.Replace("Quaternion", "Vector3");
     string vec4Name = d.Name.Replace("Quaternion", "Vector4");
@@ -29,7 +30,7 @@ using System.Runtime.Serialization;
 namespace Molten<#=d.SubNamespace#>
 {
 	///<summary>Represents a four dimensional mathematical <#=d.Name#>.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack = <#=d.DT.Pack#>)]
+	[StructLayout(LayoutKind.Explicit)]
     [Serializable]
 	public partial struct <#=d.Name#> : IFormattable, IEquatable<<#=d.Name#>>
 	{
@@ -1174,40 +1175,7 @@ namespace Molten<#=d.SubNamespace#>
 #endregion
 
 #region Indexers
-/// <summary>
-        /// Gets or sets the component at the specified index.
-        /// </summary>
-        /// <value>The value of the X, Y, Z, or W component, depending on the index.</value>
-        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component, 2 for the Z component, and 3 for the W component.</param>
-        /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 3].</exception>
-        public <#=d.DT#> this[int index]
-        {
-            get
-            {
-                switch (index)
-                {
-                    case 0: return X;
-                    case 1: return Y;
-                    case 2: return Z;
-                    case 3: return W;
-                }
-
-                throw new ArgumentOutOfRangeException("index", "Indices for <#=d.Name#> run from 0 to 3, inclusive.");
-            }
-
-            set
-            {
-                switch (index)
-                {
-                    case 0: X = value; break;
-                    case 1: Y = value; break;
-                    case 2: Z = value; break;
-                    case 3: W = value; break;
-                    default: throw new ArgumentOutOfRangeException("index", "Indices for <#=d.Name#> run from 0 to 3, inclusive.");
-                }
-            }
-        }
+<#gen.GenerateIndexers(["index"], "index");#>
 #endregion
 	}
 }

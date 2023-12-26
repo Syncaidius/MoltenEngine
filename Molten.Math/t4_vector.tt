@@ -38,16 +38,11 @@ namespace Molten<#=d.SubNamespace#>
 
         static readonly string toStringFormat = "<#for(int i = 0; i < size; i++){#><#=$"{d.FieldNames[i]}:{{{i}}}"#><#=(i < size-1 ? " " : "")#><#}#>";
 
-<#
-		for(int p = 0; p < size; p++)
-		{
-#>
+<#for(int p = 0; p < size; p++){#>
 		/// <summary>The <#=d.FieldNames[p]#> unit <#=gen.See()#>.</summary>
 		public static readonly <#=d.Name#> Unit<#=d.FieldNames[p]#> = new <#=d.Name#>(<#for(int u = 0; u < size; u++){#><#=(u == p ? d.DT.One : d.DT.Zero)#><#=(u < (size-1) ? ", " : "")#><#}#>);
 
-<#
-		}
-#>
+<#}#>
 		/// <summary>Represents a zero'd <#=d.Name#>.</summary>
 		public static readonly <#=d.Name#> Zero = new <#=d.Name#>(<#for(int p = 0; p < size; p++){#><#=d.DT.Zero#><#=(p < (size-1) ? ", " : "")#><#}#>);
 
@@ -129,14 +124,9 @@ namespace Molten<#=d.SubNamespace#>
             unchecked
             {
                 int hashCode = X.GetHashCode();
-<#
-		for(int p = 1; p < size; p++)
-		{
-#>
+<#for(int p = 1; p < size; p++){#>
                 hashCode = (hashCode * 397) ^ <#=d.FieldNames[p]#>.GetHashCode();
-<#
-		}
-#>
+<#}#>
                 return hashCode;
             }
         }
@@ -331,14 +321,9 @@ namespace Molten<#=d.SubNamespace#>
         /// <param name="result">The output for the reversed <#=gen.See()#>.</param>
         public static void Negate(ref <#=d.Name#> value, out <#=d.Name#> result)
         {
-<#
-		for(int p = 0; p < size; p++)
-		{
-#>
+<#for(int p = 0; p < size; p++){#>
 			result.<#=d.FieldNames[p]#> = <#=d.DT.TypeCast#>-value.<#=d.FieldNames[p]#>;
-<#
-		}
-#>            
+<#}#>            
         }
 
 		/// <summary>
@@ -469,28 +454,18 @@ namespace Molten<#=d.SubNamespace#>
         /// For example, a swizzle input of (1,1) on a <#=gen.See()#> with the values, 20 and 10, will return a vector with values 10,10, because it took the value of component index 1, for both axis."
         /// </summary>
         /// <param name="val">The current vector.</param>
-<#
-		for(int p = 0; p < size; p++)
-		{
-#>
+<#for(int p = 0; p < size; p++){#>
 		/// <param name="<#=d.ArgNames[p]#>Index">The axis index to use for the new <#=d.FieldNames[p]#> value.</param>
-<#
-		}
-#>
+<#}#>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe <#=d.Name#> Swizzle(<#=d.Name#> val, <#for(int p = 0; p < size; p++){#>int <#=d.ArgNames[p]#>Index<#=(p < (size-1) ? ", " : "")#><#}#>)
         {
             return new <#=d.Name#>()
             {
-<#
-		for(int p = 0; p < size; p++)
-		{
-#>
+<#for(int p = 0; p < size; p++){#>
 			   <#=d.FieldNames[p]#> = (&val.X)[<#=d.ArgNames[p]#>Index],
-<#
-		}
-#>
+<#}#>
             };
         }
 
@@ -500,14 +475,9 @@ namespace Molten<#=d.SubNamespace#>
         {
             return new <#=d.Name#>()
             {
-<#
-		for(int p = 0; p < size; p++)
-		{
-#>
+<#for(int p = 0; p < size; p++){#>
 			    <#=d.FieldNames[p]#> = (&val.X)[<#=d.ArgNames[p]#>Index],
-<#
-		}
-#>
+<#}#>
             };
         }
 
@@ -544,14 +514,9 @@ namespace Molten<#=d.SubNamespace#>
         public static <#=d.Name#> Barycentric(ref <#=d.Name#> value1, ref <#=d.Name#> value2, ref <#=d.Name#> value3, <#=d.DT#> amount1, <#=d.DT#> amount2)
         {
 			return new <#=d.Name#>(
-<#
-		for(int p = 0; p < size; p++)
-		{
-#>
+<#for(int p = 0; p < size; p++){#>
 				<#=d.DT.TypeCast#>((value1.<#=d.FieldNames[p]#> + (amount1 * (value2.<#=d.FieldNames[p]#> - value1.<#=d.FieldNames[p]#>))) + (amount2 * (value3.<#=d.FieldNames[p]#> - value1.<#=d.FieldNames[p]#>)))<#=(p < (size-1) ? ", " : "")#>
-<#
-		}
-#>
+<#}#>
 			);
         }
 
@@ -568,14 +533,9 @@ namespace Molten<#=d.SubNamespace#>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Lerp(ref <#=d.Name#> start, ref <#=d.Name#> end, <#=d.FP#> amount, out <#=d.Name#> result)
         {
-<#
-		for(int p = 0; p < size; p++)
-		{
-#>
+<#for(int p = 0; p < size; p++){#>
 			result.<#=d.FieldNames[p]#> = <#=d.DT.FPCast#>((1<#=d.FP.Literal#> - amount) * start.<#=d.FieldNames[p]#> + amount * end.<#=d.FieldNames[p]#>);
-<#
-		}
-#>
+<#}#>
         }
 
         /// <summary>
@@ -592,14 +552,9 @@ namespace Molten<#=d.SubNamespace#>
         {
 			return new <#=d.Name#>()
 			{
-<#
-		for(int p = 0; p < size; p++)
-		{
-#>
+<#for(int p = 0; p < size; p++){#>
 				<#=d.FieldNames[p]#> = <#=d.DT.FPCast#>((1<#=d.FP.Literal#> - amount) * start.<#=d.FieldNames[p]#> + amount * end.<#=d.FieldNames[p]#>),
-<#
-		}
-#>
+<#}#>
 			};
         }
 
@@ -617,14 +572,9 @@ namespace Molten<#=d.SubNamespace#>
         {
 			return new <#=d.Name#>()
 			{
-<#
-		for(int p = 0; p < size; p++)
-		{
-#>
+<#for(int p = 0; p < size; p++){#>
 				<#=d.FieldNames[p]#> = <#=d.DT.FPCast#>((1<#=d.FP.Literal#> - amount) * start.<#=d.FieldNames[p]#> + amount * end.<#=d.FieldNames[p]#>),
-<#
-		}
-#>
+<#}#>
 			};
         }
 
@@ -638,14 +588,9 @@ namespace Molten<#=d.SubNamespace#>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Min(ref <#=d.Name#> left, ref <#=d.Name#> right, out <#=d.Name#> result)
 		{
-<#
-		for(int p = 0; p < size; p++)
-		{
-#>
+<#for(int p = 0; p < size; p++){#>
 				result.<#=d.FieldNames[p]#> = (left.<#=d.FieldNames[p]#> < right.<#=d.FieldNames[p]#>) ? left.<#=d.FieldNames[p]#> : right.<#=d.FieldNames[p]#>;
-<#
-		}
-#>
+<#}#>
 		}
 
         /// <summary>
@@ -672,14 +617,10 @@ namespace Molten<#=d.SubNamespace#>
 		{
 			return new <#=d.Name#>()
 			{
-<#
-		for(int p = 0; p < size; p++)
-		{
+<#for(int p = 0; p < size; p++){
 #>
 				<#=d.FieldNames[p]#> = (left.<#=d.FieldNames[p]#> < right.<#=d.FieldNames[p]#>) ? left.<#=d.FieldNames[p]#> : right.<#=d.FieldNames[p]#>,
-<#
-		}
-#>
+<#}#>
 			};
 		}
 
@@ -693,14 +634,9 @@ namespace Molten<#=d.SubNamespace#>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Max(ref <#=d.Name#> left, ref <#=d.Name#> right, out <#=d.Name#> result)
 		{
-<#
-		for(int p = 0; p < size; p++)
-		{
-#>
+<#for(int p = 0; p < size; p++){#>
 				result.<#=d.FieldNames[p]#> = (left.<#=d.FieldNames[p]#> > right.<#=d.FieldNames[p]#>) ? left.<#=d.FieldNames[p]#> : right.<#=d.FieldNames[p]#>;
-<#
-		}
-#>
+<#}#>
 		}
 
         /// <summary>
@@ -727,14 +663,9 @@ namespace Molten<#=d.SubNamespace#>
 		{
 			return new <#=d.Name#>()
 			{
-<#
-		for(int p = 0; p < size; p++)
-		{
-#>
+<#for(int p = 0; p < size; p++){#>
 				<#=d.FieldNames[p]#> = (left.<#=d.FieldNames[p]#> > right.<#=d.FieldNames[p]#>) ? left.<#=d.FieldNames[p]#> : right.<#=d.FieldNames[p]#>,
-<#
-		}
-#>
+<#}#>
 			};
 		}
 
@@ -805,14 +736,9 @@ namespace Molten<#=d.SubNamespace#>
         {
 			return new <#=d.Name#>()
 			{
-<#
-		for(int p = 0; p < size; p++)
-		{
-#>
+<#for(int p = 0; p < size; p++){#>
 				<#=d.FieldNames[p]#> = value.<#=d.FieldNames[p]#> < min ? min : value.<#=d.FieldNames[p]#> > max ? max : value.<#=d.FieldNames[p]#>,
-<#
-		}
-#>
+<#}#>
 			};
         }
 
@@ -824,14 +750,9 @@ namespace Molten<#=d.SubNamespace#>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Clamp(ref <#=d.Name#> value, ref <#=d.Name#> min, ref <#=d.Name#> max, out <#=d.Name#> result)
         {
-<#
-		for(int p = 0; p < size; p++)
-		{
-#>
+<#for(int p = 0; p < size; p++){#>
 				result.<#=d.FieldNames[p]#> = value.<#=d.FieldNames[p]#> < min.<#=d.FieldNames[p]#> ? min.<#=d.FieldNames[p]#> : value.<#=d.FieldNames[p]#> > max.<#=d.FieldNames[p]#> ? max.<#=d.FieldNames[p]#> : value.<#=d.FieldNames[p]#>;
-<#
-		}
-#>
+<#}#>
         }
 
 		/// <summary>Clamps the component values to within the given range.</summary>
@@ -843,14 +764,9 @@ namespace Molten<#=d.SubNamespace#>
         {
 			return new <#=d.Name#>()
 			{
-<#
-		for(int p = 0; p < size; p++)
-		{
-#>
+<#for(int p = 0; p < size; p++){#>
 				<#=d.FieldNames[p]#> = value.<#=d.FieldNames[p]#> < min.<#=d.FieldNames[p]#> ? min.<#=d.FieldNames[p]#> : value.<#=d.FieldNames[p]#> > max.<#=d.FieldNames[p]#> ? max.<#=d.FieldNames[p]#> : value.<#=d.FieldNames[p]#>,
-<#
-		}
-#>
+<#}#>
 			};
         }
 
@@ -879,14 +795,9 @@ namespace Molten<#=d.SubNamespace#>
 
             return new <#=d.Name#>()
             {
-<#
-				for(int p = 0; p < size; p++)
-				{
-#>
+<#for(int p = 0; p < size; p++){#>
 				<#=d.FieldNames[p]#> = <#=d.DT.FPToTypeCast#>(vector.<#=d.FieldNames[p]#> - ((2 * dot) * normal.<#=d.FieldNames[p]#>)),
-<#
-			    }
-#>
+<#}#>
             };
         }
 #endregion

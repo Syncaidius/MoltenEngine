@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 namespace Molten
 {
 	///<summary>Represents a four dimensional mathematical QuaternionF.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack = 4)]
+	[StructLayout(LayoutKind.Explicit)]
     [Serializable]
 	public partial struct QuaternionF : IFormattable, IEquatable<QuaternionF>
 	{
@@ -33,20 +33,28 @@ namespace Molten
 
 		/// <summary>The X component.</summary>
 		[DataMember]
+		[FieldOffset(0)]
 		public float X;
 
 		/// <summary>The Y component.</summary>
 		[DataMember]
+		[FieldOffset(4)]
 		public float Y;
 
 		/// <summary>The Z component.</summary>
 		[DataMember]
+		[FieldOffset(8)]
 		public float Z;
 
 		/// <summary>The W component.</summary>
 		[DataMember]
+		[FieldOffset(12)]
 		public float W;
 
+		/// <summary>A fixed array mapped to the same memory space as the individual <see cref="QuaternionF"/> components.</summary>
+		[IgnoreDataMember]
+		[FieldOffset(0)]
+		public unsafe fixed float Values[4];
 
 
         /// <summary>
@@ -88,62 +96,6 @@ namespace Molten
         }
 
 #region Constructors
-		/// <summary>Initializes a new instance of <see cref="QuaternionF"/>.</summary>
-		/// <param name="value">The value that will be assigned to all components.</param>
-		public QuaternionF(float value)
-		{
-			X = value;
-			Y = value;
-			Z = value;
-			W = value;
-		}
-		/// <summary>Initializes a new instance of <see cref="QuaternionF"/> from an array.</summary>
-		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least four elements.</param>
-		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
-		public QuaternionF(float[] values)
-		{
-			if (values == null)
-				throw new ArgumentNullException("values");
-			if (values.Length < 4)
-				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for QuaternionF.");
-
-			X = values[0];
-			Y = values[1];
-			Z = values[2];
-			W = values[3];
-		}
-		/// <summary>Initializes a new instance of <see cref="QuaternionF"/> from a span.</summary>
-		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least four elements.</param>
-		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
-		public QuaternionF(Span<float> values)
-		{
-			if (values == null)
-				throw new ArgumentNullException("values");
-			if (values.Length < 4)
-				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for QuaternionF.");
-
-			X = values[0];
-			Y = values[1];
-			Z = values[2];
-			W = values[3];
-		}
-		/// <summary>Initializes a new instance of <see cref="QuaternionF"/> from a an unsafe pointer.</summary>
-		/// <param name="ptrValues">The values to assign to the X, Y, Z, W components of the color.
-		/// <para>There must be at least four elements available or undefined behaviour will occur.</para></param>
-		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than four elements.</exception>
-		public unsafe QuaternionF(float* ptrValues)
-		{
-			if (ptrValues == null)
-				throw new ArgumentNullException("ptrValues");
-
-			X = ptrValues[0];
-			Y = ptrValues[1];
-			Z = ptrValues[2];
-			W = ptrValues[3];
-		}
 		/// <summary>
 		/// Initializes a new instance of <see cref="QuaternionF"/>.
 		/// </summary>
@@ -157,6 +109,61 @@ namespace Molten
 			Y = y;
 			Z = z;
 			W = w;
+		}
+		/// <summary>Initializes a new instance of <see cref="QuaternionF"/>.</summary>
+		/// <param name="value">The value that will be assigned to all components.</param>
+		public QuaternionF(float value)
+		{
+			X = value;
+			Y = value;
+			Z = value;
+			W = value;
+		}
+		/// <summary>Initializes a new instance of <see cref="QuaternionF"/> from an array.</summary>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least 4 elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
+		public unsafe QuaternionF(float[] values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 4)
+				throw new ArgumentOutOfRangeException("values", "There must be at least 4 input values for QuaternionF.");
+
+			fixed (float* src = values)
+			{
+				fixed (float* dst = Values)
+					Unsafe.CopyBlock(src, dst, (sizeof(float) * 4));
+			}
+		}
+		/// <summary>Initializes a new instance of <see cref="QuaternionF"/> from a span.</summary>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least 4 elements.</param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
+		public QuaternionF(Span<float> values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+			if (values.Length < 4)
+				throw new ArgumentOutOfRangeException("values", "There must be at least 4 input values for QuaternionF.");
+
+			X = values[0];
+			Y = values[1];
+			Z = values[2];
+			W = values[3];
+		}
+		/// <summary>Initializes a new instance of <see cref="QuaternionF"/> from a an unsafe pointer.</summary>
+		/// <param name="ptrValues">The values to assign to the X, Y, Z, W components of the color.
+		/// <para>There must be at least 4 elements available or undefined behaviour will occur.</para></param>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 4 elements.</exception>
+		public unsafe QuaternionF(float* ptrValues)
+		{
+			if (ptrValues == null)
+				throw new ArgumentNullException("ptrValues");
+
+			fixed (float* dst = Values)
+				Unsafe.CopyBlock(ptrValues, dst, (sizeof(float) * 4));
 		}
         /// <summary>
         /// Initializes a new instance of the <see cref="QuaternionF"/> struct.
@@ -1402,40 +1409,52 @@ namespace Molten
 #endregion
 
 #region Indexers
-/// <summary>
-        /// Gets or sets the component at the specified index.
-        /// </summary>
-        /// <value>The value of the X, Y, Z, or W component, depending on the index.</value>
-        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component, 2 for the Z component, and 3 for the W component.</param>
-        /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 3].</exception>
-        public float this[int index]
-        {
-            get
-            {
-                switch (index)
-                {
-                    case 0: return X;
-                    case 1: return Y;
-                    case 2: return Z;
-                    case 3: return W;
-                }
+		/// <summary> Gets or sets the component at the specified index. </summary>
+		/// <value>The value of the <see cref="QuaternionF"/> component, depending on the index.</value>
+		/// <param name="index">The index of the index component to access, ranging from 0 to 3, inclusive.</param>
+		/// <returns>The value of the component at the specified index value provided.</returns>
+		/// <exception cref="IndexOutOfRangeException">Thrown if the index is out of range.</exception>
+		public unsafe float this[int index]
+		{
+			get
+			{
+				if(index < 0 || index > 3)
+					throw new IndexOutOfRangeException("index for QuaternionF must be between 0 and 3, inclusive.");
 
-                throw new ArgumentOutOfRangeException("index", "Indices for QuaternionF run from 0 to 3, inclusive.");
-            }
+				return Values[index];
+			}
+			set
+			{
+				if(index < 0 || index > 3)
+					throw new IndexOutOfRangeException("index for QuaternionF must be between 0 and 3, inclusive.");
 
-            set
-            {
-                switch (index)
-                {
-                    case 0: X = value; break;
-                    case 1: Y = value; break;
-                    case 2: Z = value; break;
-                    case 3: W = value; break;
-                    default: throw new ArgumentOutOfRangeException("index", "Indices for QuaternionF run from 0 to 3, inclusive.");
-                }
-            }
-        }
+				Values[index] = value;
+			}
+		}
+
+		/// <summary> Gets or sets the component at the specified index. </summary>
+		/// <value>The value of the <see cref="QuaternionF"/> component, depending on the index.</value>
+		/// <param name="index">The index of the index component to access, ranging from 0 to 3, inclusive.</param>
+		/// <returns>The value of the component at the specified index value provided.</returns>
+		/// <exception cref="IndexOutOfRangeException">Thrown if the index is out of range.</exception>
+		public unsafe float this[uint index]
+		{
+			get
+			{
+				if(index > 3)
+					throw new IndexOutOfRangeException("index for QuaternionF must be between 0 and 3, inclusive.");
+
+				return Values[index];
+			}
+			set
+			{
+				if(index > 3)
+					throw new IndexOutOfRangeException("index for QuaternionF must be between 0 and 3, inclusive.");
+
+				Values[index] = value;
+			}
+		}
+
 #endregion
 	}
 }
