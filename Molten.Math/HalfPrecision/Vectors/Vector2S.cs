@@ -8,7 +8,7 @@ using Molten.DoublePrecision;
 
 namespace Molten.HalfPrecision
 {
-	///<summary>A <see cref="short"/> vector comprised of two components.</summary>
+	///<summary>A <see cref="short"/> vector comprised of 2 components.</summary>
 	[StructLayout(LayoutKind.Explicit)]
     [DataContract]
 	public partial struct Vector2S : IFormattable, ISignedVector<Vector2S, short>, IEquatable<Vector2S>
@@ -48,10 +48,7 @@ namespace Molten.HalfPrecision
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
-        public bool IsZero
-        {
-            get => X == (short)0 && Y == (short)0;
-        }
+        public bool IsZero => X == (short)0 && Y == (short)0;
 
 #region Constructors
 		/// <summary>
@@ -72,7 +69,7 @@ namespace Molten.HalfPrecision
 			Y = value;
 		}
 		/// <summary>Initializes a new instance of <see cref="Vector2S"/> from an array.</summary>
-		/// <param name="values">The values to assign to the X, Y components of the color. This must be an array with at least two elements.</param>
+		/// <param name="values">The values to assign to the X, Y components of the color. This must be an array with at least 2 elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 2 elements.</exception>
 		public unsafe Vector2S(short[] values)
@@ -89,7 +86,7 @@ namespace Molten.HalfPrecision
 			}
 		}
 		/// <summary>Initializes a new instance of <see cref="Vector2S"/> from a span.</summary>
-		/// <param name="values">The values to assign to the X, Y components of the color. This must be an array with at least two elements.</param>
+		/// <param name="values">The values to assign to the X, Y components of the color. This must be an array with at least 2 elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 2 elements.</exception>
 		public Vector2S(Span<short> values)
@@ -97,14 +94,14 @@ namespace Molten.HalfPrecision
 			if (values == null)
 				throw new ArgumentNullException("values");
 			if (values.Length < 2)
-				throw new ArgumentOutOfRangeException("values", "There must be at least two input values for Vector2S.");
+				throw new ArgumentOutOfRangeException("values", "There must be at least 2 input values for Vector2S.");
 
 			X = values[0];
 			Y = values[1];
 		}
 		/// <summary>Initializes a new instance of <see cref="Vector2S"/> from a an unsafe pointer.</summary>
 		/// <param name="ptrValues">The values to assign to the X, Y components of the color.
-		/// <para>There must be at least two elements available or undefined behaviour will occur.</para></param>
+		/// <para>There must be at least 2 elements available or undefined behaviour will occur.</para></param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 2 elements.</exception>
 		public unsafe Vector2S(short* ptrValues)
@@ -176,6 +173,28 @@ namespace Molten.HalfPrecision
             }
         }
 
+#region Tuples
+        /// <summary>
+        /// Deconstructs the current vector into 4 separate component variables. This method is also used for tuple deconstruction.
+        /// </summary>
+        /// <param name="x">The output for the X component.</param>
+        /// <param name="y">The output for the Y component.</param>
+        public void Deconstruct(out short x, out short y)
+        {
+            x = X;
+            y = Y;
+        }
+
+        /// <summary>
+        /// Constructs a <see cref="Vector2S"/> from 2 component values.
+        /// </summary>
+        /// <param name="tuple">The 2-component tuple containing the values.</param>
+        public static implicit operator Vector2S((short x, short y) tuple)
+        {
+            return new Vector2S(tuple.x, tuple.y);
+        }
+#endregion
+
         /// <summary>
         /// Calculates the squared length of the vector.
         /// </summary>
@@ -192,7 +211,7 @@ namespace Molten.HalfPrecision
 		/// <summary>
         /// Creates an array containing the elements of the current <see cref="Vector2S"/>.
         /// </summary>
-        /// <returns>A two-element array containing the components of the vector.</returns>
+        /// <returns>A 2-element array containing the components of the vector.</returns>
         public short[] ToArray()
         {
             return [X, Y];
@@ -968,18 +987,6 @@ namespace Molten.HalfPrecision
 				X = (short)(vector.X - ((2 * dot) * normal.X)),
 				Y = (short)(vector.Y - ((2 * dot) * normal.Y)),
             };
-        }
-#endregion
-
-#region Tuples
-        public static implicit operator (short x, short y)(Vector2S val)
-        {
-            return (val.X, val.Y);
-        }
-
-        public static implicit operator Vector2S((short x, short y) val)
-        {
-            return new Vector2S(val.x, val.y);
         }
 #endregion
 

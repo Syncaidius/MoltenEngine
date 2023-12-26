@@ -1,7 +1,7 @@
 {
   "SubFolder": "Matrices",
   "Fields": {
-    "2": {
+    "2x2": {
       "Names": [
         "M11",
         "M12",
@@ -9,7 +9,7 @@
         "M22"
       ]
     },
-    "3": {
+    "3x3": {
       "Names": [
         "M11",
         "M12",
@@ -22,7 +22,27 @@
         "M33"
       ]
     },
-    "4":{
+    "3x2": {
+      "Names": [
+        "M11",
+        "M12",
+        "M21",
+        "M22",
+        "M31",
+        "M32"
+      ]
+    },
+    "2x3": {
+      "Names": [
+        "M11",
+        "M12",
+        "M13",
+        "M21",
+        "M22",
+        "M23"
+      ]
+    },
+    "4x4": {
       "Names": [
         "M11",
         "M12",
@@ -41,19 +61,19 @@
         "M43",
         "M44"
       ]
-    } 
+    }
   },
 
   "Types": [
     {
       "DefName": "Matrix{size}F",
       "DataTypeName": "float",
-      "Sizes": [ 2, 3, 4 ]
+      "Sizes": [ "2x2", "3x3", "3x2", "2x3", "4x4" ]
     },
     {
       "DefName": "Matrix{size}D",
       "DataTypeName": "double",
-      "Sizes": [ 2, 3, 4 ]
+      "Sizes": [ "2x2", "3x4", "3x2", "2x3", "4x4" ]
     }
   ]
 }

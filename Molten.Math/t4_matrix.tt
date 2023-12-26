@@ -11,16 +11,27 @@ TypeGenerator gen = new TypeGenerator(this.GenerationEnvironment, this.Host, "de
 
 gen.Generate(null, (d, def) =>
 {
-    string vectorName = $"Vector2{d.DT.Literal}";
     string toString = "\"";
+
+    int rowCount = d.GetDimension(0);
+    int colCount = d.GetDimension(1);
+    int maxRowIndex = rowCount - 1;
+    int maxColIndex = colCount - 1;
+
+    string rowVectorName = $"Vector{colCount}{d.DT.Literal}";
+    string colVectorName = $"Vector{rowCount}{d.DT.Literal}";
+
+    string transposedSize = $"{colCount}x{rowCount}";
+    string transposedName = colCount == rowCount ? d.Name : $"Matrix{colCount}x{rowCount}{d.DT.Literal}";
+    string[] transposedFieldNames = gen.GetFieldNames(transposedSize);
 
     // Build the ToString() format string.
     int fieldIndex = 0;
-    for(int x = 0; x < d.Size; x++)
+    for(int x = 0; x < rowCount; x++)
     {
         toString += x > 0 ? " [" : "[";
 
-        for(int y = 0; y < d.Size; y++)
+        for(int y = 0; y < colCount; y++)
         {
             if(y > 0)
                 toString += ", ";
@@ -41,26 +52,28 @@ using System.Runtime.Serialization;
 
 namespace Molten<#=d.SubNamespace#>
 {
-    /// <summary>Represents a <#=(d.DT.Bits > 32 ? "double" : "single")#>-precision <#=d.Size#>x<#=d.Size#> Matrix. Contains only scale and rotation.</summary>
+    /// <summary>Represents a <#=(d.DT.Bits > 32 ? "double" : "single")#>-precision <#=rowCount#>x<#=colCount#> Matrix. Contains only scale and rotation.</summary>
     [StructLayout(LayoutKind.Explicit)]
     [DataContract]
-	public partial struct <#=d.Name#> : IEquatable<<#=d.Name#>>, IFormattable, ITransposableMatrix<<#=d.Name#>>, IMatrix<<#=d.DT#>>
+	public partial struct <#=d.Name#> : IEquatable<<#=d.Name#>>, IFormattable, ITransposableMatrix<<#=d.Name#>, <#=transposedName#>>, IMatrix<<#=d.DT#>>
     {
         /// <summary>
         /// A single-precision <#=gen.See()#> with values intialized to the identity of a 2 x 2 matrix
         /// </summary>
         public static readonly <#=d.Name#> Identity = new <#=d.Name#>() 
         { 
-<#for(int i = 1; i <= d.Size; i++){#>
-            M<#=i#><#=i#> = <#=d.DT.One#>, 
-<#}#>
+<#for(int x = 1; x <= rowCount; x++){
+    for(int y = 1; y <= colCount; y++){
+        if(x == y){#>
+            M<#=x#><#=y#> = <#=d.DT.One#>, 
+<#}}}#>
         };
 
         public static readonly int ComponentCount = <#=d.FieldNames.Length#>;
 
-        public static readonly int RowCount = <#=d.Size#>;
+        public static readonly int RowCount = <#=rowCount#>;
 
-        public static readonly int ColumnCount = <#=d.Size#>;
+        public static readonly int ColumnCount = <#=colCount#>;
 
         /// <summary>A <#=gen.See()#> will all of its components set to <#=d.DT.Zero#>.</summary>
         public static readonly <#=d.Name#> Zero = new <#=d.Name#>();
@@ -73,11 +86,39 @@ namespace Molten<#=d.SubNamespace#>
 
 <#=gen.GenerateFields((field) => $"The value at row {field[1]}, column {field[2]} of the matrix.")#>
 
+<#for(int i = 0; i < rowCount; i++){
+    string rowParams = "";
+    for(int x = 0; x < colCount; x++)
+        rowParams += $"{(x > 0 ? ", ": "")}M{i+1}{x+1}";
+#>
+        /// <summary> Row <#=(i+1)#> of the current <#=gen.See()#>.</summary>
+        /// <returns>A <see cref="<#=colVectorName#>"/> containing the row values.</returns>
+        public <#=rowVectorName#> Row<#=(i+1)#>
+        {
+            get => new <#=rowVectorName#>(<#=rowParams#>);
+            set => (<#=rowParams#>) = value;
+        }
+
+<#}#>
+
+<#for(int i = 0; i < colCount; i++){
+    string colParams = "";
+    for(int y = 0; y < rowCount; y++)
+        colParams += $"{(y > 0 ? ", ": "")}M{y+1}{i+1}";
+#>
+        /// <summary> Column <#=(i+1)#> of the current <#=gen.See()#>.</summary>
+        /// <returns>A <see cref="<#=colVectorName#>"/> containing the column values.</returns>
+        public <#=colVectorName#> Column<#=(i+1)#>
+        {
+            get => new <#=colVectorName#>(<#=colParams#>);
+            set => (<#=colParams#>) = value;
+        }
+
+<#}#>
+
 <#gen.GenerateStandardConstructors(2, (field) => $"The value to assign to row {field[1]}, column {field[2]} of the matrix.");#>
 
-        /// <summary>
-        /// Creates a string representation of the matrix.
-        /// </summary>
+        /// <summary> Creates a string representation of the matrix.</summary>
         /// <returns>A string representation of the matrix.</returns>
         public override string ToString()
         {
@@ -85,9 +126,7 @@ namespace Molten<#=d.SubNamespace#>
             <#for(int i = 0; i < d.FieldNames.Length; i++){#><#=(i > 0 ? ", " : "")#><#=d.FieldNames[i]#><#}#>);
         }
 
-        /// <summary>
-        /// Returns a <see cref="String"/> that represents this instance.
-        /// </summary>
+        /// <summary> Returns a <see cref="String"/> that represents this instance.</summary>
         /// <param name="format">The format.</param>
         /// <returns>
         /// A <see cref="string"/> that represents this instance.
@@ -176,15 +215,6 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
-        /// Transposes the current <#=gen.See()#> and outputs it to <paramref name="result"/>.
-        /// </summary>
-        /// <param name="result"></param>
-        public void Transpose(out <#=d.Name#> result)
-        {
-            Transpose(ref this, out result);
-        }
-
-        /// <summary>
         /// Creates an array containing the elements of the <#=gen.See()#>.
         /// </summary>
         /// <returns>A <#=d.FieldNames.Length#>-element array containing the components of the matrix.</returns>
@@ -194,13 +224,25 @@ namespace Molten<#=d.SubNamespace#>
         }
 
         /// <summary>
+        /// Transposes the current <#=gen.See()#> and outputs it to <paramref name="result"/>.
+        /// </summary>
+        /// <param name="result"></param>
+        public void Transpose(out <#=transposedName#> result)
+        {
+            Transpose(ref this, out result);
+        }
+      
+        /// <summary>
         /// Transposes the current <#=gen.See()#> in-place.
         /// </summary>
-        public void Transpose()
+        public <#=transposedName#> Transpose()
         {
-            Transpose(ref this, out this);
+            Transpose(ref this, out <#=transposedName#> result);
+            return result;
         }
         
+<# if(rowCount == colCount){#>
+
         /// <summary>
         /// Calculates the transpose of the specified <#=gen.See()#>.
         /// </summary>
@@ -213,15 +255,29 @@ namespace Molten<#=d.SubNamespace#>
             result.<#=d.FieldNames[i]#> = matrix.<#char[] c = d.FieldNames[i].ToCharArray(); Array.Reverse(c);#><#=d.FieldNames[i][0]#><#=(new string(c, 0, 2))#>;
 <#}#>
         }
+<#}else{#>
+        /// <summary>
+        /// Calculates the transposed <see cref="<#=transposedName#>"/> of the specified <#=gen.See()#>.
+        /// </summary>
+        /// <param name="matrix">The <#=gen.See()#> whose transpose is to be calculated.</param>
+        /// <param name="result">A <see cref="<#=transposedName#>"/> containing the transposed <#=gen.See()#></param>
+        public static void Transpose(ref <#=d.Name#> matrix, out <#=transposedName#> result)
+        {
+            Unsafe.SkipInit(out result);
+<#for(int i = 0; i < d.FieldNames.Length; i++){#>
+            result.<#=transposedFieldNames[i]#> = matrix.<#=d.FieldNames[i]#>;
+<#}#>
+        }
+<#}#>
 
         /// <summary>
         /// Calculates the transpose of the specified <#=gen.See()#>.
         /// </summary>
         /// <param name="value">The <#=gen.See()#> whose transpose is to be calculated.</param>
         /// <returns>The transpose of the specified <#=gen.See()#>.</returns>
-        public static <#=d.Name#> Transpose(<#=d.Name#> value)
+        public static <#=transposedName#> Transpose(<#=d.Name#> value)
         {
-            Transpose(ref value, out <#=d.Name#> result);
+            Transpose(ref value, out <#=transposedName#> result);
             return result;
         }
 
@@ -341,27 +397,29 @@ namespace Molten<#=d.SubNamespace#>
         /// <param name="row">The row of the matrix to access.</param>
         /// <param name="column">The column of the matrix to access.</param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> or <paramref name="column"/>is out of the range [0, <#=(d.Size-1)#>].</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> [0 to <#=(maxRowIndex)#>] or <paramref name="column"/> [0 to <#=(maxColIndex)#>] is out of the range .</exception>
         public unsafe <#=d.DT#> this[int row, int column]
         {
             get
             {
-                if (row < 0 || row > <#=(d.Size-1)#>)
-                    throw new ArgumentOutOfRangeException("row", "Rows and columns for matrices run from 0 to <#=(d.Size-1)#>, inclusive.");
-                if (column < 0 || column > <#=(d.Size-1)#>)
-                    throw new ArgumentOutOfRangeException("column", "Rows and columns for matrices run from 0 to <#=(d.Size-1)#>, inclusive.");
+                if (row < 0 || row > <#=maxRowIndex#>)
+                    throw new ArgumentOutOfRangeException("row", "Rolumns for <#=d.Name#> run from 0 to <#=maxRowIndex#>, inclusive.");
 
-                return Values[(row * <#=d.Size#>) + column];
+                if (column < 0 || column > <#=maxColIndex#>)
+                    throw new ArgumentOutOfRangeException("column", "Columns for <#=d.Name#> run from 0 to <#=maxColIndex#>, inclusive.");
+
+                return Values[(row * <#=colCount#>) + column];
             }
 
             set
             {
-                if (row < 0 || row > <#=(d.Size-1)#>)
-                    throw new ArgumentOutOfRangeException("row", "Rows and columns for matrices run from 0 to <#=(d.Size-1)#>, inclusive.");
-                if (column < 0 || column > <#=(d.Size-1)#>)
-                    throw new ArgumentOutOfRangeException("column", "Rows and columns for matrices run from 0 to <#=(d.Size-1)#>, inclusive.");
+                if (row < 0 || row > <#=maxRowIndex#>)
+                    throw new ArgumentOutOfRangeException("row", "Rows for <#=d.Name#> run from 0 to <#=maxRowIndex#>, inclusive.");
 
-                Values[(row * <#=d.Size#>) + column] = value;
+                if (column < 0 || column > <#=maxColIndex#>)
+                    throw new ArgumentOutOfRangeException("column", "Columns for <#=d.Name#> run from 0 to <#=maxColIndex#>, inclusive.");
+
+                Values[(row * <#=colCount#>) + column] = value;
             }
         }
 
@@ -372,28 +430,29 @@ namespace Molten<#=d.SubNamespace#>
         /// <param name="row">The row of the matrix to access.</param>
         /// <param name="column">The column of the matrix to access.</param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> or <paramref name="column"/>is out of the range [0, <#=(d.Size-1)#>].</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> [0 to <#=(maxRowIndex)#>] or <paramref name="column"/> [0 to <#=(maxColIndex)#>] is out of the range .</exception>
         public unsafe <#=d.DT#> this[uint row, uint column]
         {
             get
             {
-                if (row > <#=(d.Size-1)#>)
-                    throw new ArgumentOutOfRangeException("row", "Rows and columns for matrices run from 0 to <#=(d.Size-1)#>, inclusive.");
-                if (column > <#=(d.Size-1)#>)
-                    throw new ArgumentOutOfRangeException("column", "Rows and columns for matrices run from 0 to <#=(d.Size-1)#>, inclusive.");
+                if (row > <#=maxRowIndex#>)
+                    throw new ArgumentOutOfRangeException("row", "Row index must be less than <#=maxRowIndex#>");
 
-                return Values[(row * <#=d.Size#>) + column];
+                if (column > <#=maxColIndex#>)
+                    throw new ArgumentOutOfRangeException("row", "Column index must be less than <#=maxColIndex#>");
+
+                return Values[(row * <#=colCount#>) + column];
             }
 
             set
             {
-                if (row > <#=(d.Size-1)#>)
-                    throw new ArgumentOutOfRangeException("row", "Row and column index must be less than <#=d.Size#>");
+                if (row > <#=maxRowIndex#>)
+                    throw new ArgumentOutOfRangeException("row", "Row and column index must be less than <#=maxRowIndex#>");
 
-                if (column > <#=(d.Size-1)#>)
-                    throw new ArgumentOutOfRangeException("column", "Row and column index must be less than <#=d.Size#>");
+                if (column > <#=maxColIndex#>)
+                    throw new ArgumentOutOfRangeException("column", "Row and column index must be less than <#=maxColIndex#>");
 
-                Values[(row * <#=d.Size#>) + column] = value;
+                Values[(row * <#=colCount#>) + column] = value;
             }
         }
 

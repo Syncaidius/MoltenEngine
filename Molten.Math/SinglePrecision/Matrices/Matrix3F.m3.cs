@@ -9,60 +9,6 @@ namespace Molten
     public partial struct Matrix3F
     {
         /// <summary>
-        /// Gets or sets the first row in the Matrix3x3; that is M11, M12, M13
-        /// </summary>
-        public Vector3F Row1
-        {
-            get => new Vector3F(M11, M12, M13);
-            set { M11 = value.X; M12 = value.Y; M13 = value.Z; }
-        }
-
-        /// <summary>
-        /// Gets or sets the second row in the Matrix3x3; that is M21, M22, M23
-        /// </summary>
-        public Vector3F Row2
-        {
-            get => new Vector3F(M21, M22, M23);
-            set { M21 = value.X; M22 = value.Y; M23 = value.Z; }
-        }
-
-        /// <summary>
-        /// Gets or sets the third row in the Matrix3x3; that is M31, M32, M33
-        /// </summary>
-        public Vector3F Row3
-        {
-            get => new Vector3F(M31, M32, M33);
-            set { M31 = value.X; M32 = value.Y; M33 = value.Z; }
-        }
-
-        /// <summary>
-        /// Gets or sets the first column in the Matrix3x3; that is M11, M21, M31
-        /// </summary>
-        public Vector3F Column1
-        {
-            get => new Vector3F(M11, M21, M31);
-            set { M11 = value.X; M21 = value.Y; M31 = value.Z; }
-        }
-
-        /// <summary>
-        /// Gets or sets the second column in the Matrix3x3; that is M12, M22, M32
-        /// </summary>
-        public Vector3F Column2
-        {
-            get => new Vector3F(M12, M22, M32);
-            set { M12 = value.X; M22 = value.Y; M32 = value.Z; }
-        }
-
-        /// <summary>
-        /// Gets or sets the third column in the Matrix3x3; that is M13, M23, M33
-        /// </summary>
-        public Vector3F Column3
-        {
-            get => new Vector3F(M13, M23, M33);
-            set { M13 = value.X; M23 = value.Y; M33 = value.Z; }
-        }
-
-        /// <summary>
         /// Gets or sets the scale of the Matrix3x3; that is M11, M22, and M33.
         /// </summary>
         public Vector3F ScaleVector
@@ -130,9 +76,8 @@ namespace Molten
         /// <returns>Adjugate transpose of the input matrix.</returns>
         public static Matrix3F AdjugateTranspose(Matrix3F matrix)
         {
-            Matrix3F toReturn;
-            AdjugateTranspose(ref matrix, out toReturn);
-            return toReturn;
+            AdjugateTranspose(ref matrix, out Matrix3F result);
+            return result;
         }
 
         /// <summary>
@@ -383,8 +328,7 @@ namespace Molten
         /// <returns>The scaled <see cref="Matrix3F"/>.</returns>
         public static Matrix3F Multiply(Matrix3F left, float right)
         {
-            Matrix3F result;
-            Multiply(ref left, right, out result);
+            Multiply(ref left, right, out Matrix3F result);
             return result;
         }
 
@@ -417,8 +361,7 @@ namespace Molten
         /// <returns>The product of the two matrices.</returns>
         public static Matrix3F Multiply(Matrix3F left, Matrix3F right)
         {
-            Matrix3F result;
-            Multiply(ref left, ref right, out result);
+            Multiply(ref left, ref right, out Matrix3F result);
             return result;
         }
 
@@ -516,8 +459,7 @@ namespace Molten
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="exponent"/> is negative.</exception>
         public static Matrix3F Exponent(Matrix3F value, int exponent)
         {
-            Matrix3F result;
-            Exponent(ref value, exponent, out result);
+            Exponent(ref value, exponent, out Matrix3F result);
             return result;
         }
 
@@ -647,8 +589,7 @@ namespace Molten
         /// </remarks>
         public static Matrix3F Orthogonalize(Matrix3F value)
         {
-            Matrix3F result;
-            Orthogonalize(ref value, out result);
+            Orthogonalize(ref value, out Matrix3F result);
             return result;
         }
 
@@ -712,8 +653,7 @@ namespace Molten
         /// </remarks>
         public static Matrix3F Orthonormalize(Matrix3F value)
         {
-            Matrix3F result;
-            Orthonormalize(ref value, out result);
+            Orthonormalize(ref value, out Matrix3F result);
             return result;
         }
 
@@ -791,8 +731,7 @@ namespace Molten
         /// </remarks>
         public static Matrix3F UpperTriangularForm(Matrix3F value)
         {
-            Matrix3F result;
-            UpperTriangularForm(ref value, out result);
+            UpperTriangularForm(ref value, out Matrix3F result);
             return result;
         }
 
@@ -874,8 +813,7 @@ namespace Molten
         /// </remarks>
         public static Matrix3F LowerTriangularForm(Matrix3F value)
         {
-            Matrix3F result;
-            LowerTriangularForm(ref value, out result);
+            LowerTriangularForm(ref value, out Matrix3F result);
             return result;
         }
 

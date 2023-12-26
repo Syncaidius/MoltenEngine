@@ -11,6 +11,7 @@ TypeGenerator gen = new TypeGenerator(this.GenerationEnvironment, this.Host, "de
 
 gen.Generate(null, (d, def) =>
 {
+    int size = d.GetDimension(0);
     string vectorInterface = d.DT.IsUnsigned ? "IUnsignedVector" : "ISignedVector";
     int packPos = 0;
 #>
@@ -24,40 +25,37 @@ using Molten.DoublePrecision;
 
 namespace Molten<#=d.SubNamespace#>
 {
-	///<summary>A <#=gen.See(d.DT.Name)#> vector comprised of <#=def.SizeNames[d.Size]#> components.</summary>
+	///<summary>A <#=gen.See(d.DT.Name)#> vector comprised of <#=d.FieldNames.Length#> components.</summary>
 	[StructLayout(LayoutKind.Explicit)]
     [DataContract]
 	public partial struct <#=d.Name#> : IFormattable, <#=vectorInterface#><<#=d.Name#>, <#=d.DT#>>, IEquatable<<#=d.Name#>>
 	{
         ///<summary>The number of components in the current vector type.</summary>
-        public static readonly int ComponentCount = <#=d.Size#>;
+        public static readonly int ComponentCount = <#=size#>;
 
 		///<summary>A <#=d.Name#> with every component set to <#=d.DT.One#>.</summary>
-		public static readonly <#=d.Name#> One = new <#=d.Name#>(<#for(int p = 0; p < d.Size; p++){#><#=d.DT.One#><#=(p < (d.Size-1) ? ", " : "")#><#}#>);
+		public static readonly <#=d.Name#> One = new <#=d.Name#>(<#for(int p = 0; p < size; p++){#><#=d.DT.One#><#=(p < (size-1) ? ", " : "")#><#}#>);
 
-        static readonly string toStringFormat = "<#for(int i = 0; i < d.Size; i++){#><#=$"{d.FieldNames[i]}:{{{i}}}"#><#=(i < d.Size-1 ? " " : "")#><#}#>";
+        static readonly string toStringFormat = "<#for(int i = 0; i < size; i++){#><#=$"{d.FieldNames[i]}:{{{i}}}"#><#=(i < size-1 ? " " : "")#><#}#>";
 
 <#
-		for(int p = 0; p < d.Size; p++)
+		for(int p = 0; p < size; p++)
 		{
 #>
 		/// <summary>The <#=d.FieldNames[p]#> unit <#=gen.See()#>.</summary>
-		public static readonly <#=d.Name#> Unit<#=d.FieldNames[p]#> = new <#=d.Name#>(<#for(int u = 0; u < d.Size; u++){#><#=(u == p ? d.DT.One : d.DT.Zero)#><#=(u < (d.Size-1) ? ", " : "")#><#}#>);
+		public static readonly <#=d.Name#> Unit<#=d.FieldNames[p]#> = new <#=d.Name#>(<#for(int u = 0; u < size; u++){#><#=(u == p ? d.DT.One : d.DT.Zero)#><#=(u < (size-1) ? ", " : "")#><#}#>);
 
 <#
 		}
 #>
 		/// <summary>Represents a zero'd <#=d.Name#>.</summary>
-		public static readonly <#=d.Name#> Zero = new <#=d.Name#>(<#for(int p = 0; p < d.Size; p++){#><#=d.DT.Zero#><#=(p < (d.Size-1) ? ", " : "")#><#}#>);
+		public static readonly <#=d.Name#> Zero = new <#=d.Name#>(<#for(int p = 0; p < size; p++){#><#=d.DT.Zero#><#=(p < (size-1) ? ", " : "")#><#}#>);
 
 <#=gen.GenerateFields()#>
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
-        public bool IsZero
-        {
-            get => <#for(int p = 0; p < d.Size; p++){#><#=d.FieldNames[p]#> == <#=d.DT.Zero#><#=(p < (d.Size-1) ? " && " : "")#><#}#>;
-        }
+        public bool IsZero => <#for(int p = 0; p < size; p++){#><#=d.FieldNames[p]#> == <#=d.DT.Zero#><#=(p < (size-1) ? " && " : "")#><#}#>;
 
 #region Constructors
 <#gen.GenerateStandardConstructors();#>
@@ -80,13 +78,13 @@ namespace Molten<#=d.SubNamespace#>
         if(d.DT.IsFPType)
         {
 #>
-            return <#for(int p = 0; p < d.Size; p++){#>MathHelper.NearEqual(other.<#=d.FieldNames[p]#>, <#=d.FieldNames[p]#>)<#=(p < (d.Size-1) ? " && " : "")#><#}#>;
+            return <#for(int p = 0; p < size; p++){#>MathHelper.NearEqual(other.<#=d.FieldNames[p]#>, <#=d.FieldNames[p]#>)<#=(p < (size-1) ? " && " : "")#><#}#>;
 <#
         }
         else
         {
 #>
-            return <#for(int p = 0; p < d.Size; p++){#>other.<#=d.FieldNames[p]#> == <#=d.FieldNames[p]#><#=(p < (d.Size-1) ? " && " : "")#><#}#>;
+            return <#for(int p = 0; p < size; p++){#>other.<#=d.FieldNames[p]#> == <#=d.FieldNames[p]#><#=(p < (size-1) ? " && " : "")#><#}#>;
 <#
         }
 #>
@@ -132,7 +130,7 @@ namespace Molten<#=d.SubNamespace#>
             {
                 int hashCode = X.GetHashCode();
 <#
-		for(int p = 1; p < d.Size; p++)
+		for(int p = 1; p < size; p++)
 		{
 #>
                 hashCode = (hashCode * 397) ^ <#=d.FieldNames[p]#>.GetHashCode();
@@ -142,6 +140,30 @@ namespace Molten<#=d.SubNamespace#>
                 return hashCode;
             }
         }
+
+#region Tuples
+        /// <summary>
+        /// Deconstructs the current vector into 4 separate component variables. This method is also used for tuple deconstruction.
+        /// </summary>
+<#for(int p = 0; p < size; p++){#>
+        /// <param name="<#=d.ArgNames[p]#>">The output for the <#=d.FieldNames[p]#> component.</param>
+<#}#>
+        public void Deconstruct(<#=gen.FieldsToArgs(d.ArgNames, $"out {d.DT} ")#>)
+        {
+<#for(int p = 0; p < size; p++){#>
+            <#=d.ArgNames[p]#> = <#=d.FieldNames[p]#>;
+<#}#>
+        }
+
+        /// <summary>
+        /// Constructs a <#=gen.See()#> from <#=d.FieldNames.Length#> component values.
+        /// </summary>
+        /// <param name="tuple">The <#=d.FieldNames.Length#>-component tuple containing the values.</param>
+        public static implicit operator <#=d.Name#>((<#=gen.GetConstructorArgs()#>) tuple)
+        {
+            return new <#=d.Name#>(<#for(int p = 0; p < size; p++){#><#=(p > 0 ? ", " : "")#>tuple.<#=d.ArgNames[p]#><#}#>);
+        }
+#endregion
 
         /// <summary>
         /// Calculates the squared length of the vector.
@@ -153,13 +175,13 @@ namespace Molten<#=d.SubNamespace#>
         /// </remarks>
         public <#=d.DT#> LengthSquared()
         {
-            return <#=d.DT.TypeCast#>(<#for(int p = 0; p < d.Size; p++){#>(<#=d.FieldNames[p]#> * <#=d.FieldNames[p]#>)<#=(p < (d.Size-1) ? " + " : "")#><#}#>);
+            return <#=d.DT.TypeCast#>(<#for(int p = 0; p < size; p++){#>(<#=d.FieldNames[p]#> * <#=d.FieldNames[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>);
         }
 
 		/// <summary>
         /// Creates an array containing the elements of the current <#=gen.See()#>.
         /// </summary>
-        /// <returns>A <#=def.SizeNames[d.Size]#>-element array containing the components of the vector.</returns>
+        /// <returns>A <#=d.FieldNames.Length#>-element array containing the components of the vector.</returns>
         public <#=d.DT#>[] ToArray()
         {
             return [<#=gen.FieldsToArgs(d.FieldNames)#>];
@@ -187,7 +209,7 @@ namespace Molten<#=d.SubNamespace#>
         public void Clamp(<#=d.DT#> min, <#=d.DT#> max)
         {
 <#
-		for(int p = 0; p < d.Size; p++)
+		for(int p = 0; p < size; p++)
 		{
 #>
 			<#=d.FieldNames[p]#> = <#=d.FieldNames[p]#> < min ? min : <#=d.FieldNames[p]#> > max ? max : <#=d.FieldNames[p]#>;
@@ -210,7 +232,7 @@ namespace Molten<#=d.SubNamespace#>
         public void Clamp(ref <#=d.Name#> min, ref <#=d.Name#> max)
         {
 <#
-		for(int p = 0; p < d.Size; p++)
+		for(int p = 0; p < size; p++)
 		{
 #>
 			<#=d.FieldNames[p]#> = <#=d.FieldNames[p]#> < min.<#=d.FieldNames[p]#> ? min.<#=d.FieldNames[p]#> : <#=d.FieldNames[p]#> > max.<#=d.FieldNames[p]#> ? max.<#=d.FieldNames[p]#> : <#=d.FieldNames[p]#>;
@@ -274,7 +296,7 @@ namespace Molten<#=d.SubNamespace#>
 
             return string.Format(formatProvider,
                 toStringFormat,
-<#gen.IterateFields((i, field) => $"\t{field}.ToString(format, formatProvider){(i < d.Size - 1 ? "," : "" )}", 0);#>
+<#gen.IterateFields((i, field) => $"\t{field}.ToString(format, formatProvider){(i < size-1 ? "," : "" )}", 0);#>
             );
         }
 #endregion
@@ -310,7 +332,7 @@ namespace Molten<#=d.SubNamespace#>
         public static void Negate(ref <#=d.Name#> value, out <#=d.Name#> result)
         {
 <#
-		for(int p = 0; p < d.Size; p++)
+		for(int p = 0; p < size; p++)
 		{
 #>
 			result.<#=d.FieldNames[p]#> = <#=d.DT.TypeCast#>-value.<#=d.FieldNames[p]#>;
@@ -448,7 +470,7 @@ namespace Molten<#=d.SubNamespace#>
         /// </summary>
         /// <param name="val">The current vector.</param>
 <#
-		for(int p = 0; p < d.Size; p++)
+		for(int p = 0; p < size; p++)
 		{
 #>
 		/// <param name="<#=d.ArgNames[p]#>Index">The axis index to use for the new <#=d.FieldNames[p]#> value.</param>
@@ -457,12 +479,12 @@ namespace Molten<#=d.SubNamespace#>
 #>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe <#=d.Name#> Swizzle(<#=d.Name#> val, <#for(int p = 0; p < d.Size; p++){#>int <#=d.ArgNames[p]#>Index<#=(p < (d.Size-1) ? ", " : "")#><#}#>)
+        public static unsafe <#=d.Name#> Swizzle(<#=d.Name#> val, <#for(int p = 0; p < size; p++){#>int <#=d.ArgNames[p]#>Index<#=(p < (size-1) ? ", " : "")#><#}#>)
         {
             return new <#=d.Name#>()
             {
 <#
-		for(int p = 0; p < d.Size; p++)
+		for(int p = 0; p < size; p++)
 		{
 #>
 			   <#=d.FieldNames[p]#> = (&val.X)[<#=d.ArgNames[p]#>Index],
@@ -474,12 +496,12 @@ namespace Molten<#=d.SubNamespace#>
 
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe <#=d.Name#> Swizzle(<#=d.Name#> val, <#for(int p = 0; p < d.Size; p++){#>uint <#=d.ArgNames[p]#>Index<#=(p < (d.Size-1) ? ", " : "")#><#}#>)
+        public static unsafe <#=d.Name#> Swizzle(<#=d.Name#> val, <#for(int p = 0; p < size; p++){#>uint <#=d.ArgNames[p]#>Index<#=(p < (size-1) ? ", " : "")#><#}#>)
         {
             return new <#=d.Name#>()
             {
 <#
-		for(int p = 0; p < d.Size; p++)
+		for(int p = 0; p < size; p++)
 		{
 #>
 			    <#=d.FieldNames[p]#> = (&val.X)[<#=d.ArgNames[p]#>Index],
@@ -497,7 +519,7 @@ namespace Molten<#=d.SubNamespace#>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static <#=d.DT#> Dot(ref <#=d.Name#> left, ref <#=d.Name#> right)
         {
-			return <#=d.DT.TypeCast#>(<#for(int p = 0; p < d.Size; p++){#>(<#=d.DT.TypeCast#>left.<#=d.FieldNames[p]#> * right.<#=d.FieldNames[p]#>)<#=(p < (d.Size-1) ? " + " : "")#><#}#>);
+			return <#=d.DT.TypeCast#>(<#for(int p = 0; p < size; p++){#>(<#=d.DT.TypeCast#>left.<#=d.FieldNames[p]#> * right.<#=d.FieldNames[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>);
         }
 
 		/// <summary>
@@ -508,25 +530,25 @@ namespace Molten<#=d.SubNamespace#>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static <#=d.DT#> Dot(<#=d.Name#> left, <#=d.Name#> right)
         {
-			return <#=d.DT.TypeCast#>(<#for(int p = 0; p < d.Size; p++){#>(left.<#=d.FieldNames[p]#> * right.<#=d.FieldNames[p]#>)<#=(p < (d.Size-1) ? " + " : "")#><#}#>);
+			return <#=d.DT.TypeCast#>(<#for(int p = 0; p < size; p++){#>(left.<#=d.FieldNames[p]#> * right.<#=d.FieldNames[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>);
         }
 
 		/// <summary>
         /// Returns a <#=gen.See()#> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
         /// </summary>
-        /// <param name="value1">A <#=gen.See()#> containing the <#=d.Size#>D Cartesian coordinates of vertex 1 of the triangle.</param>
-        /// <param name="value2">A <#=gen.See()#> containing the <#=d.Size#>D Cartesian coordinates of vertex 2 of the triangle.</param>
-        /// <param name="value3">A <#=gen.See()#> containing the <#=d.Size#>D Cartesian coordinates of vertex 3 of the triangle.</param>
+        /// <param name="value1">A <#=gen.See()#> containing the <#=size#>D Cartesian coordinates of vertex 1 of the triangle.</param>
+        /// <param name="value2">A <#=gen.See()#> containing the <#=size#>D Cartesian coordinates of vertex 2 of the triangle.</param>
+        /// <param name="value3">A <#=gen.See()#> containing the <#=size#>D Cartesian coordinates of vertex 3 of the triangle.</param>
         /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
         /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
         public static <#=d.Name#> Barycentric(ref <#=d.Name#> value1, ref <#=d.Name#> value2, ref <#=d.Name#> value3, <#=d.DT#> amount1, <#=d.DT#> amount2)
         {
 			return new <#=d.Name#>(
 <#
-		for(int p = 0; p < d.Size; p++)
+		for(int p = 0; p < size; p++)
 		{
 #>
-				<#=d.DT.TypeCast#>((value1.<#=d.FieldNames[p]#> + (amount1 * (value2.<#=d.FieldNames[p]#> - value1.<#=d.FieldNames[p]#>))) + (amount2 * (value3.<#=d.FieldNames[p]#> - value1.<#=d.FieldNames[p]#>)))<#=(p < (d.Size -1) ? ", " : "")#>
+				<#=d.DT.TypeCast#>((value1.<#=d.FieldNames[p]#> + (amount1 * (value2.<#=d.FieldNames[p]#> - value1.<#=d.FieldNames[p]#>))) + (amount2 * (value3.<#=d.FieldNames[p]#> - value1.<#=d.FieldNames[p]#>)))<#=(p < (size-1) ? ", " : "")#>
 <#
 		}
 #>
@@ -547,7 +569,7 @@ namespace Molten<#=d.SubNamespace#>
         public static void Lerp(ref <#=d.Name#> start, ref <#=d.Name#> end, <#=d.FP#> amount, out <#=d.Name#> result)
         {
 <#
-		for(int p = 0; p < d.Size; p++)
+		for(int p = 0; p < size; p++)
 		{
 #>
 			result.<#=d.FieldNames[p]#> = <#=d.DT.FPCast#>((1<#=d.FP.Literal#> - amount) * start.<#=d.FieldNames[p]#> + amount * end.<#=d.FieldNames[p]#>);
@@ -571,7 +593,7 @@ namespace Molten<#=d.SubNamespace#>
 			return new <#=d.Name#>()
 			{
 <#
-		for(int p = 0; p < d.Size; p++)
+		for(int p = 0; p < size; p++)
 		{
 #>
 				<#=d.FieldNames[p]#> = <#=d.DT.FPCast#>((1<#=d.FP.Literal#> - amount) * start.<#=d.FieldNames[p]#> + amount * end.<#=d.FieldNames[p]#>),
@@ -596,7 +618,7 @@ namespace Molten<#=d.SubNamespace#>
 			return new <#=d.Name#>()
 			{
 <#
-		for(int p = 0; p < d.Size; p++)
+		for(int p = 0; p < size; p++)
 		{
 #>
 				<#=d.FieldNames[p]#> = <#=d.DT.FPCast#>((1<#=d.FP.Literal#> - amount) * start.<#=d.FieldNames[p]#> + amount * end.<#=d.FieldNames[p]#>),
@@ -617,7 +639,7 @@ namespace Molten<#=d.SubNamespace#>
 		public static void Min(ref <#=d.Name#> left, ref <#=d.Name#> right, out <#=d.Name#> result)
 		{
 <#
-		for(int p = 0; p < d.Size; p++)
+		for(int p = 0; p < size; p++)
 		{
 #>
 				result.<#=d.FieldNames[p]#> = (left.<#=d.FieldNames[p]#> < right.<#=d.FieldNames[p]#>) ? left.<#=d.FieldNames[p]#> : right.<#=d.FieldNames[p]#>;
@@ -651,7 +673,7 @@ namespace Molten<#=d.SubNamespace#>
 			return new <#=d.Name#>()
 			{
 <#
-		for(int p = 0; p < d.Size; p++)
+		for(int p = 0; p < size; p++)
 		{
 #>
 				<#=d.FieldNames[p]#> = (left.<#=d.FieldNames[p]#> < right.<#=d.FieldNames[p]#>) ? left.<#=d.FieldNames[p]#> : right.<#=d.FieldNames[p]#>,
@@ -672,7 +694,7 @@ namespace Molten<#=d.SubNamespace#>
 		public static void Max(ref <#=d.Name#> left, ref <#=d.Name#> right, out <#=d.Name#> result)
 		{
 <#
-		for(int p = 0; p < d.Size; p++)
+		for(int p = 0; p < size; p++)
 		{
 #>
 				result.<#=d.FieldNames[p]#> = (left.<#=d.FieldNames[p]#> > right.<#=d.FieldNames[p]#>) ? left.<#=d.FieldNames[p]#> : right.<#=d.FieldNames[p]#>;
@@ -706,7 +728,7 @@ namespace Molten<#=d.SubNamespace#>
 			return new <#=d.Name#>()
 			{
 <#
-		for(int p = 0; p < d.Size; p++)
+		for(int p = 0; p < size; p++)
 		{
 #>
 				<#=d.FieldNames[p]#> = (left.<#=d.FieldNames[p]#> > right.<#=d.FieldNames[p]#>) ? left.<#=d.FieldNames[p]#> : right.<#=d.FieldNames[p]#>,
@@ -733,9 +755,9 @@ namespace Molten<#=d.SubNamespace#>
         {
 <#
 			string r = "";
-			for(int p = 0; p < d.Size; p++)
+			for(int p = 0; p < size; p++)
 			{
-				r+= $"({d.ArgNames[p]} * {d.ArgNames[p]}){(p < (d.Size-1) ? " + " : "")}";
+				r+= $"({d.ArgNames[p]} * {d.ArgNames[p]}){(p < (size-1) ? " + " : "")}";
 #>
             <#=d.DT.IntType#> <#=d.ArgNames[p]#> = value1.<#=d.FieldNames[p]#> - value2.<#=d.FieldNames[p]#>;
 <#
@@ -762,9 +784,9 @@ namespace Molten<#=d.SubNamespace#>
         {
 <#
 			r = "";
-			for(int p = 0; p < d.Size; p++)
+			for(int p = 0; p < size; p++)
 			{
-				r+= $"({d.ArgNames[p]} * {d.ArgNames[p]}){(p < (d.Size-1) ? " + " : "")}";
+				r+= $"({d.ArgNames[p]} * {d.ArgNames[p]}){(p < (size-1) ? " + " : "")}";
 #>
             <#=d.DT.IntType#> <#=d.ArgNames[p]#> = value1.<#=d.FieldNames[p]#> - value2.<#=d.FieldNames[p]#>;
 <#
@@ -784,7 +806,7 @@ namespace Molten<#=d.SubNamespace#>
 			return new <#=d.Name#>()
 			{
 <#
-		for(int p = 0; p < d.Size; p++)
+		for(int p = 0; p < size; p++)
 		{
 #>
 				<#=d.FieldNames[p]#> = value.<#=d.FieldNames[p]#> < min ? min : value.<#=d.FieldNames[p]#> > max ? max : value.<#=d.FieldNames[p]#>,
@@ -803,7 +825,7 @@ namespace Molten<#=d.SubNamespace#>
         public static void Clamp(ref <#=d.Name#> value, ref <#=d.Name#> min, ref <#=d.Name#> max, out <#=d.Name#> result)
         {
 <#
-		for(int p = 0; p < d.Size; p++)
+		for(int p = 0; p < size; p++)
 		{
 #>
 				result.<#=d.FieldNames[p]#> = value.<#=d.FieldNames[p]#> < min.<#=d.FieldNames[p]#> ? min.<#=d.FieldNames[p]#> : value.<#=d.FieldNames[p]#> > max.<#=d.FieldNames[p]#> ? max.<#=d.FieldNames[p]#> : value.<#=d.FieldNames[p]#>;
@@ -822,7 +844,7 @@ namespace Molten<#=d.SubNamespace#>
 			return new <#=d.Name#>()
 			{
 <#
-		for(int p = 0; p < d.Size; p++)
+		for(int p = 0; p < size; p++)
 		{
 #>
 				<#=d.FieldNames[p]#> = value.<#=d.FieldNames[p]#> < min.<#=d.FieldNames[p]#> ? min.<#=d.FieldNames[p]#> : value.<#=d.FieldNames[p]#> > max.<#=d.FieldNames[p]#> ? max.<#=d.FieldNames[p]#> : value.<#=d.FieldNames[p]#>,
@@ -853,12 +875,12 @@ namespace Molten<#=d.SubNamespace#>
         /// whether the original vector was close enough to the surface to hit it.</remarks>
         public static <#=d.Name#> Reflect(ref <#=d.Name#> vector, ref <#=d.Name#> normal)
         {
-            <#=d.DT.IntType#> dot = <#for(int p = 0; p < d.Size; p++){#>(vector.<#=d.FieldNames[p]#> * normal.<#=d.FieldNames[p]#>)<#=(p < (d.Size-1) ? " + " : "")#><#}#>;
+            <#=d.DT.IntType#> dot = <#for(int p = 0; p < size; p++){#>(vector.<#=d.FieldNames[p]#> * normal.<#=d.FieldNames[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>;
 
             return new <#=d.Name#>()
             {
 <#
-				for(int p = 0; p < d.Size; p++)
+				for(int p = 0; p < size; p++)
 				{
 #>
 				<#=d.FieldNames[p]#> = <#=d.DT.FPToTypeCast#>(vector.<#=d.FieldNames[p]#> - ((2 * dot) * normal.<#=d.FieldNames[p]#>)),
@@ -869,39 +891,27 @@ namespace Molten<#=d.SubNamespace#>
         }
 #endregion
 
-#region Tuples
-        public static implicit operator (<#=gen.GetConstructorArgs()#>)(<#=d.Name#> val)
-        {
-            return (<#for(int p = 0; p < d.Size; p++){#><#=(p > 0 ? ", " : "")#>val.<#=d.FieldNames[p]#><#}#>);
-        }
-
-        public static implicit operator <#=d.Name#>((<#=gen.GetConstructorArgs()#>) val)
-        {
-            return new <#=d.Name#>(<#for(int p = 0; p < d.Size; p++){#><#=(p > 0 ? ", " : "")#>val.<#=d.ArgNames[p]#><#}#>);
-        }
-#endregion
-
 #region Indexers
 		/// <summary>
         /// Gets or sets the component at the specified index.
         /// </summary>
         /// <value>The value of a component, depending on the index.</value>
-        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and <#=(d.Size - 1)#></param>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and <#=(size-1)#></param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, <#=(d.Size-1)#>].</exception>  
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, <#=(size-1)#>].</exception>  
 		public unsafe <#=d.DT#> this[int index]
 		{
 			get
             {
-                if(index > <#=(d.Size-1)#> || index < 0)
-                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(d.Size-1)#>, inclusive.");
+                if(index > <#=(size-1)#> || index < 0)
+                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(size-1)#>, inclusive.");
 
                 return Values[index];
             }
             set
             {
-                if (index > <#=(d.Size-1)#> || index < 0)
-                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(d.Size-1)#>, inclusive.");
+                if (index > <#=(size-1)#> || index < 0)
+                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(size-1)#>, inclusive.");
 
                 Values[index] = value;
             }
@@ -911,22 +921,22 @@ namespace Molten<#=d.SubNamespace#>
         /// Gets or sets the component at the specified index.
         /// </summary>
         /// <value>The value of a component, depending on the index.</value>
-        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and <#=(d.Size - 1)#></param>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and <#=(size-1)#></param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is greater than <#=(d.Size-1)#>.</exception>  
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is greater than <#=(size-1)#>.</exception>  
 		public unsafe <#=d.DT#> this[uint index]
 		{
 			get
             {
-                if(index > <#=(d.Size-1)#>)
-                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(d.Size-1)#>, inclusive.");
+                if(index > <#=(size-1)#>)
+                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(size-1)#>, inclusive.");
 
                 return Values[index];
             }
             set
             {
-                if (index > <#=(d.Size-1)#>)
-                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(d.Size-1)#>, inclusive.");
+                if (index > <#=(size-1)#>)
+                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(size-1)#>, inclusive.");
 
                 Values[index] = value;
             }

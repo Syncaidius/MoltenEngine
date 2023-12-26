@@ -11,7 +11,7 @@
 <#
 TypeGenerator gen = new TypeGenerator(this.GenerationEnvironment, this.Host, "def_matrices.json", "m3");
 
-gen.Generate((d) => d.Size == 3, (d, def) =>
+gen.Generate((d) => d.GetDimension(0) == 3 && d.GetDimension(1) == 3, (d, def) =>
 {
     string vectorName = $"Vector3{d.DT.Literal}";
     string quartName = $"Quaternion{d.DT.Literal}";
@@ -27,60 +27,6 @@ namespace Molten<#=d.SubNamespace#>
 {
     public partial struct <#=d.Name#>
     {
-        /// <summary>
-        /// Gets or sets the first row in the Matrix3x3; that is M11, M12, M13
-        /// </summary>
-        public <#=vectorName#> Row1
-        {
-            get => new <#=vectorName#>(M11, M12, M13);
-            set { M11 = value.X; M12 = value.Y; M13 = value.Z; }
-        }
-
-        /// <summary>
-        /// Gets or sets the second row in the Matrix3x3; that is M21, M22, M23
-        /// </summary>
-        public <#=vectorName#> Row2
-        {
-            get => new <#=vectorName#>(M21, M22, M23);
-            set { M21 = value.X; M22 = value.Y; M23 = value.Z; }
-        }
-
-        /// <summary>
-        /// Gets or sets the third row in the Matrix3x3; that is M31, M32, M33
-        /// </summary>
-        public <#=vectorName#> Row3
-        {
-            get => new <#=vectorName#>(M31, M32, M33);
-            set { M31 = value.X; M32 = value.Y; M33 = value.Z; }
-        }
-
-        /// <summary>
-        /// Gets or sets the first column in the Matrix3x3; that is M11, M21, M31
-        /// </summary>
-        public <#=vectorName#> Column1
-        {
-            get => new <#=vectorName#>(M11, M21, M31);
-            set { M11 = value.X; M21 = value.Y; M31 = value.Z; }
-        }
-
-        /// <summary>
-        /// Gets or sets the second column in the Matrix3x3; that is M12, M22, M32
-        /// </summary>
-        public <#=vectorName#> Column2
-        {
-            get => new <#=vectorName#>(M12, M22, M32);
-            set { M12 = value.X; M22 = value.Y; M32 = value.Z; }
-        }
-
-        /// <summary>
-        /// Gets or sets the third column in the Matrix3x3; that is M13, M23, M33
-        /// </summary>
-        public <#=vectorName#> Column3
-        {
-            get => new <#=vectorName#>(M13, M23, M33);
-            set { M13 = value.X; M23 = value.Y; M33 = value.Z; }
-        }
-
         /// <summary>
         /// Gets or sets the scale of the Matrix3x3; that is M11, M22, and M33.
         /// </summary>
@@ -149,9 +95,8 @@ namespace Molten<#=d.SubNamespace#>
         /// <returns>Adjugate transpose of the input matrix.</returns>
         public static <#=d.Name#> AdjugateTranspose(<#=d.Name#> matrix)
         {
-            <#=d.Name#> toReturn;
-            AdjugateTranspose(ref matrix, out toReturn);
-            return toReturn;
+            AdjugateTranspose(ref matrix, out <#=d.Name#> result);
+            return result;
         }
 
         /// <summary>
@@ -402,8 +347,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <returns>The scaled <#=gen.See()#>.</returns>
         public static <#=d.Name#> Multiply(<#=d.Name#> left, <#=d.DT#> right)
         {
-            <#=d.Name#> result;
-            Multiply(ref left, right, out result);
+            Multiply(ref left, right, out <#=d.Name#> result);
             return result;
         }
 
@@ -436,8 +380,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <returns>The product of the two matrices.</returns>
         public static <#=d.Name#> Multiply(<#=d.Name#> left, <#=d.Name#> right)
         {
-            <#=d.Name#> result;
-            Multiply(ref left, ref right, out result);
+            Multiply(ref left, ref right, out <#=d.Name#> result);
             return result;
         }
 
@@ -535,8 +478,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="exponent"/> is negative.</exception>
         public static <#=d.Name#> Exponent(<#=d.Name#> value, int exponent)
         {
-            <#=d.Name#> result;
-            Exponent(ref value, exponent, out result);
+            Exponent(ref value, exponent, out <#=d.Name#> result);
             return result;
         }
 
@@ -666,8 +608,7 @@ namespace Molten<#=d.SubNamespace#>
         /// </remarks>
         public static <#=d.Name#> Orthogonalize(<#=d.Name#> value)
         {
-            <#=d.Name#> result;
-            Orthogonalize(ref value, out result);
+            Orthogonalize(ref value, out <#=d.Name#> result);
             return result;
         }
 
@@ -731,8 +672,7 @@ namespace Molten<#=d.SubNamespace#>
         /// </remarks>
         public static <#=d.Name#> Orthonormalize(<#=d.Name#> value)
         {
-            <#=d.Name#> result;
-            Orthonormalize(ref value, out result);
+            Orthonormalize(ref value, out <#=d.Name#> result);
             return result;
         }
 
@@ -810,8 +750,7 @@ namespace Molten<#=d.SubNamespace#>
         /// </remarks>
         public static <#=d.Name#> UpperTriangularForm(<#=d.Name#> value)
         {
-            <#=d.Name#> result;
-            UpperTriangularForm(ref value, out result);
+            UpperTriangularForm(ref value, out <#=d.Name#> result);
             return result;
         }
 
@@ -893,8 +832,7 @@ namespace Molten<#=d.SubNamespace#>
         /// </remarks>
         public static <#=d.Name#> LowerTriangularForm(<#=d.Name#> value)
         {
-            <#=d.Name#> result;
-            LowerTriangularForm(ref value, out result);
+            LowerTriangularForm(ref value, out <#=d.Name#> result);
             return result;
         }
 

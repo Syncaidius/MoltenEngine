@@ -8,7 +8,7 @@ using Molten.DoublePrecision;
 
 namespace Molten
 {
-	///<summary>A <see cref="uint"/> vector comprised of two components.</summary>
+	///<summary>A <see cref="uint"/> vector comprised of 2 components.</summary>
 	[StructLayout(LayoutKind.Explicit)]
     [DataContract]
 	public partial struct Vector2UI : IFormattable, IUnsignedVector<Vector2UI, uint>, IEquatable<Vector2UI>
@@ -48,10 +48,7 @@ namespace Molten
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
-        public bool IsZero
-        {
-            get => X == 0U && Y == 0U;
-        }
+        public bool IsZero => X == 0U && Y == 0U;
 
 #region Constructors
 		/// <summary>
@@ -72,7 +69,7 @@ namespace Molten
 			Y = value;
 		}
 		/// <summary>Initializes a new instance of <see cref="Vector2UI"/> from an array.</summary>
-		/// <param name="values">The values to assign to the X, Y components of the color. This must be an array with at least two elements.</param>
+		/// <param name="values">The values to assign to the X, Y components of the color. This must be an array with at least 2 elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 2 elements.</exception>
 		public unsafe Vector2UI(uint[] values)
@@ -89,7 +86,7 @@ namespace Molten
 			}
 		}
 		/// <summary>Initializes a new instance of <see cref="Vector2UI"/> from a span.</summary>
-		/// <param name="values">The values to assign to the X, Y components of the color. This must be an array with at least two elements.</param>
+		/// <param name="values">The values to assign to the X, Y components of the color. This must be an array with at least 2 elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 2 elements.</exception>
 		public Vector2UI(Span<uint> values)
@@ -97,14 +94,14 @@ namespace Molten
 			if (values == null)
 				throw new ArgumentNullException("values");
 			if (values.Length < 2)
-				throw new ArgumentOutOfRangeException("values", "There must be at least two input values for Vector2UI.");
+				throw new ArgumentOutOfRangeException("values", "There must be at least 2 input values for Vector2UI.");
 
 			X = values[0];
 			Y = values[1];
 		}
 		/// <summary>Initializes a new instance of <see cref="Vector2UI"/> from a an unsafe pointer.</summary>
 		/// <param name="ptrValues">The values to assign to the X, Y components of the color.
-		/// <para>There must be at least two elements available or undefined behaviour will occur.</para></param>
+		/// <para>There must be at least 2 elements available or undefined behaviour will occur.</para></param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 2 elements.</exception>
 		public unsafe Vector2UI(uint* ptrValues)
@@ -176,6 +173,28 @@ namespace Molten
             }
         }
 
+#region Tuples
+        /// <summary>
+        /// Deconstructs the current vector into 4 separate component variables. This method is also used for tuple deconstruction.
+        /// </summary>
+        /// <param name="x">The output for the X component.</param>
+        /// <param name="y">The output for the Y component.</param>
+        public void Deconstruct(out uint x, out uint y)
+        {
+            x = X;
+            y = Y;
+        }
+
+        /// <summary>
+        /// Constructs a <see cref="Vector2UI"/> from 2 component values.
+        /// </summary>
+        /// <param name="tuple">The 2-component tuple containing the values.</param>
+        public static implicit operator Vector2UI((uint x, uint y) tuple)
+        {
+            return new Vector2UI(tuple.x, tuple.y);
+        }
+#endregion
+
         /// <summary>
         /// Calculates the squared length of the vector.
         /// </summary>
@@ -192,7 +211,7 @@ namespace Molten
 		/// <summary>
         /// Creates an array containing the elements of the current <see cref="Vector2UI"/>.
         /// </summary>
-        /// <returns>A two-element array containing the components of the vector.</returns>
+        /// <returns>A 2-element array containing the components of the vector.</returns>
         public uint[] ToArray()
         {
             return [X, Y];
@@ -937,18 +956,6 @@ namespace Molten
 				X = (uint)(vector.X - ((2 * dot) * normal.X)),
 				Y = (uint)(vector.Y - ((2 * dot) * normal.Y)),
             };
-        }
-#endregion
-
-#region Tuples
-        public static implicit operator (uint x, uint y)(Vector2UI val)
-        {
-            return (val.X, val.Y);
-        }
-
-        public static implicit operator Vector2UI((uint x, uint y) val)
-        {
-            return new Vector2UI(val.x, val.y);
         }
 #endregion
 

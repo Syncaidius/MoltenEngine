@@ -8,7 +8,7 @@ using Molten.DoublePrecision;
 
 namespace Molten
 {
-	///<summary>A <see cref="byte"/> vector comprised of four components.</summary>
+	///<summary>A <see cref="byte"/> vector comprised of 4 components.</summary>
 	[StructLayout(LayoutKind.Explicit)]
     [DataContract]
 	public partial struct Byte4 : IFormattable, IUnsignedVector<Byte4, byte>, IEquatable<Byte4>
@@ -64,10 +64,7 @@ namespace Molten
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
-        public bool IsZero
-        {
-            get => X == (byte)0 && Y == (byte)0 && Z == (byte)0 && W == (byte)0;
-        }
+        public bool IsZero => X == (byte)0 && Y == (byte)0 && Z == (byte)0 && W == (byte)0;
 
 #region Constructors
 		/// <summary>
@@ -94,7 +91,7 @@ namespace Molten
 			W = value;
 		}
 		/// <summary>Initializes a new instance of <see cref="Byte4"/> from an array.</summary>
-		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least four elements.</param>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least 4 elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
 		public unsafe Byte4(byte[] values)
@@ -111,7 +108,7 @@ namespace Molten
 			}
 		}
 		/// <summary>Initializes a new instance of <see cref="Byte4"/> from a span.</summary>
-		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least four elements.</param>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least 4 elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
 		public Byte4(Span<byte> values)
@@ -119,7 +116,7 @@ namespace Molten
 			if (values == null)
 				throw new ArgumentNullException("values");
 			if (values.Length < 4)
-				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for Byte4.");
+				throw new ArgumentOutOfRangeException("values", "There must be at least 4 input values for Byte4.");
 
 			X = values[0];
 			Y = values[1];
@@ -128,7 +125,7 @@ namespace Molten
 		}
 		/// <summary>Initializes a new instance of <see cref="Byte4"/> from a an unsafe pointer.</summary>
 		/// <param name="ptrValues">The values to assign to the X, Y, Z, W components of the color.
-		/// <para>There must be at least four elements available or undefined behaviour will occur.</para></param>
+		/// <para>There must be at least 4 elements available or undefined behaviour will occur.</para></param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 4 elements.</exception>
 		public unsafe Byte4(byte* ptrValues)
@@ -142,7 +139,7 @@ namespace Molten
 			W = ptrValues[3];
 		}
 
-		///<summary>Creates a new instance of <see cref="Byte4"/>, using a <see cref="Byte2"/> to populate the first two components.</summary>
+		///<summary>Creates a new instance of <see cref="Byte4"/>, using a <see cref="Byte2"/> to populate the first 2 components.</summary>
 		public Byte4(Byte2 vector, byte z, byte w)
 		{
 			X = vector.X;
@@ -151,7 +148,7 @@ namespace Molten
 			W = w;
 		}
 
-		///<summary>Creates a new instance of <see cref="Byte4"/>, using a <see cref="Byte3"/> to populate the first three components.</summary>
+		///<summary>Creates a new instance of <see cref="Byte4"/>, using a <see cref="Byte3"/> to populate the first 3 components.</summary>
 		public Byte4(Byte3 vector, byte w)
 		{
 			X = vector.X;
@@ -222,6 +219,32 @@ namespace Molten
             }
         }
 
+#region Tuples
+        /// <summary>
+        /// Deconstructs the current vector into 4 separate component variables. This method is also used for tuple deconstruction.
+        /// </summary>
+        /// <param name="x">The output for the X component.</param>
+        /// <param name="y">The output for the Y component.</param>
+        /// <param name="z">The output for the Z component.</param>
+        /// <param name="w">The output for the W component.</param>
+        public void Deconstruct(out byte x, out byte y, out byte z, out byte w)
+        {
+            x = X;
+            y = Y;
+            z = Z;
+            w = W;
+        }
+
+        /// <summary>
+        /// Constructs a <see cref="Byte4"/> from 4 component values.
+        /// </summary>
+        /// <param name="tuple">The 4-component tuple containing the values.</param>
+        public static implicit operator Byte4((byte x, byte y, byte z, byte w) tuple)
+        {
+            return new Byte4(tuple.x, tuple.y, tuple.z, tuple.w);
+        }
+#endregion
+
         /// <summary>
         /// Calculates the squared length of the vector.
         /// </summary>
@@ -238,7 +261,7 @@ namespace Molten
 		/// <summary>
         /// Creates an array containing the elements of the current <see cref="Byte4"/>.
         /// </summary>
-        /// <returns>A four-element array containing the components of the vector.</returns>
+        /// <returns>A 4-element array containing the components of the vector.</returns>
         public byte[] ToArray()
         {
             return [X, Y, Z, W];
@@ -1039,18 +1062,6 @@ namespace Molten
 				Z = (byte)(vector.Z - ((2 * dot) * normal.Z)),
 				W = (byte)(vector.W - ((2 * dot) * normal.W)),
             };
-        }
-#endregion
-
-#region Tuples
-        public static implicit operator (byte x, byte y, byte z, byte w)(Byte4 val)
-        {
-            return (val.X, val.Y, val.Z, val.W);
-        }
-
-        public static implicit operator Byte4((byte x, byte y, byte z, byte w) val)
-        {
-            return new Byte4(val.x, val.y, val.z, val.w);
         }
 #endregion
 

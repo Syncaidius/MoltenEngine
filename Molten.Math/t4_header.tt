@@ -19,8 +19,6 @@ public class GeneratorDefinition
     public string SubFolder;
 
     public List<TypeDef> Types;
-
-    public string[] SizeNames = new string[]{"zero", "one", "two", "three", "four", "five", "six", "seven", "eight"};
 }
 
 public class FieldData
@@ -81,7 +79,10 @@ public class TypeDef
 {
     public string DefName;              // Name
     public string DataTypeName;         // The name of the DataType to be used.
-    public int[] Sizes = new int[]{1};  // The different sizes of this type that need to be defined, if any.
+    public string[] Sizes = new string[]{"1"};  // The different sizes of this type that need to be defined, if any.
+    public string[] SizeNames = new string[]{"1"}; // The names of the sizes, if any.
+    public int[][] Dimensions = new int[][] { [1] }; // The dimensions of each size, if any.
+    public int[] FieldCounts = new int[]{ 1 }; // The expected number of elements/fields/components, usually equal to the sum of all dimensions.
 
     public string[] FieldNames;
     public string[] FieldLabels;
@@ -91,13 +92,33 @@ public class TypeDef
     public DataType DT;                 // The underlying DataType definition.
 
     // Parameters of the current type to be generated
-    public int Size;
+    public int SizeIndex; // The index which corresponds to size and dimension data in Sizes[] and Dimensions[][].
 	public string Name;
 	public string Filename;
     public string SubNamespace;
     public string OutputPath;
 
-    public string GetName(int size) => DefName.Replace("{size}", size.ToString());
+    public int GetFieldCount() => FieldCounts[SizeIndex];
+
+    public int[] GetDimensions() => Dimensions[SizeIndex];
+
+    public int GetDimension(int dimensionIndex) => Dimensions[SizeIndex][dimensionIndex];
+
+    public string GetSizeName() => SizeNames[SizeIndex];
+
+    public int GetDimensionCount() => Dimensions[SizeIndex].Length;
+
+    public int GetFieldCount(int index) => FieldCounts[index];
+
+    public int[] GetDimensions(int index) => Dimensions[index];
+
+    public int GetDimension(int index, int dimensionIndex) => Dimensions[index][dimensionIndex];
+
+    public string GetSizeName(int index) => SizeNames[index];
+
+    public int GetDimensionCount(int index) => Dimensions[index].Length;
+
+    public string GetName(int index) => DefName.Replace("{size}", Sizes[index]);
 }
 
 public class TypeGenerator
@@ -127,6 +148,14 @@ public class TypeGenerator
         _dataTypes = new Dictionary<string, DataType>();
         PopulateDataTypes();
         ReadDefinition(typeDefFileName);        
+    }
+
+    public string[] GetFieldNames(string sizeName) 
+    {
+        if(_def.Fields.TryGetValue(sizeName, out FieldData fd))
+            return fd.Names;
+        else
+            throw new Exception($"GetFieldNames(): No field names defined for size '{sizeName}'");
     }
 
     private void PopulateDataTypes()
@@ -211,6 +240,38 @@ public class TypeGenerator
                     t.OutputPath = $"{_outputPath}/SinglePrecision/{_def.SubFolder}";
                     break;
             }
+         
+            // Parse list of sizes and calculate their dimensional values.
+            t.Dimensions = new int[t.Sizes.Length][];
+            t.FieldCounts = new int[t.Sizes.Length];
+            t.SizeNames = new string[t.Sizes.Length];
+
+            for(int s = 0; s < t.Sizes.Length; s++)
+            {
+                string[] strDimensions = t.Sizes[s].Split('x');
+
+                string sizeName = strDimensions[0];
+                t.Dimensions[s] = new int[strDimensions.Length];
+                t.FieldCounts[s] = 0;
+
+                // Calculate integer dimension size and check if it's non-uniform. If dimensions are uniform (e.g. 3x3, 2x2x2, etc), then reduce the size string to a single value.
+                for(int i = 0; i < strDimensions.Length; i++)
+                {
+                    string dim = strDimensions[i];
+
+                    // Is dim non-uniform (different from the previous ones)?
+                    if(dim != sizeName)
+                        sizeName = null;
+
+                    if(!int.TryParse(dim, out t.Dimensions[s][i]))
+                        t.Dimensions[s][i] = 1;
+
+                    t.FieldCounts[s] = t.FieldCounts[s] == 0 ? t.Dimensions[s][i] : (t.FieldCounts[s] * t.Dimensions[s][i]);
+                }
+
+                // Replace size string with uniform size name.   
+                t.SizeNames[s] = sizeName ?? t.Sizes[s];
+            }
         }
     }
 
@@ -220,18 +281,18 @@ public class TypeGenerator
     {
         foreach(TypeDef t in _def.Types)
         {
-            foreach(int size in t.Sizes)
+            for(int i = 0; i < t.Sizes.Length; i++)
             {
-                t.Size = size;
-                string strSize = size.ToString();
+                t.SizeIndex = i;
 
                 if(filter != null && !filter(t))
                     continue;
 
-                t.Name = t.DefName.Replace("{size}", size.ToString());
-                
+                t.Name = t.DefName.Replace("{size}", t.SizeNames[i]);
+                string name = t.Name;
+
                 FieldData fd;
-                if(_def.Fields.TryGetValue(strSize, out fd) || _def.Fields.TryGetValue("0", out fd))
+                if(_def.Fields.TryGetValue(t.Sizes[i], out fd) || _def.Fields.TryGetValue("0", out fd))
                 {
                     t.FieldNames = fd.Names;
                     t.FieldLabels = fd.Labels;
@@ -249,7 +310,6 @@ public class TypeGenerator
                 callback(t, _def);
 
 		        t.Filename = $"{t.Name}{_filePostfix}";
-
                 SaveFile(t.OutputPath, t.Filename, _sb.ToString());
 		        _sb.Length = 0;
             }
@@ -280,11 +340,12 @@ public class TypeGenerator
 
     public string GetConstructorArgs()
     {
-        if(_curDef.ArgNames.Length < _curDef.Size)
+        int fieldCount = _curDef.GetFieldCount();
+        if(_curDef.ArgNames.Length < fieldCount)
             throw new Exception("Length of provided argument names list (ArgNames) is shorter than the size of the current type.");
         
         string r = "";
-        for(int i = 0; i < _curDef.FieldNames.Length; i++)
+        for(int i = 0; i < fieldCount; i++)
         {
             if(i > 0) r += ", ";
                 r += $"{_curDef.DT.Name} {_curDef.ArgNames[i]}";
@@ -327,7 +388,7 @@ public class TypeGenerator
 
     public string FieldsToArgs(string[] pMap, string prefix = "", string postfix = "", int count = 0, int expectedCount = 0, string defaultValue = ""){
         string r = "";
-        int size = Math.Min(pMap.Length, _curDef.Size);
+        int size = Math.Min(pMap.Length, _curDef.GetFieldCount());
         size = count > 0 ? Math.Min(count, size) : size;
         if(expectedCount > 0)
             size = Math.Min(size, expectedCount);
@@ -375,6 +436,8 @@ public class TypeGenerator
 
     public void GenerateStandardConstructors(int indent = 2, Func<string, string> summaryCallback = null)
     {
+        int fieldCount = _curDef.GetFieldCount();
+
         // Per-component initialization parameters
         Out(indent, $"/// <summary>");
         Out(indent, $"/// Initializes a new instance of {See()}.");
@@ -382,18 +445,18 @@ public class TypeGenerator
 
         if(summaryCallback != null)
         {
-            for(int i = 0; i < _curDef.FieldNames.Length; i++)
+            for(int i = 0; i < fieldCount; i++)
                 Out(indent, $"/// <param name=\"{_curDef.ArgNames[i]}\">{summaryCallback(_curDef.FieldLabels[i])}</param>");
         }
         else
         {
-            for(int i = 0; i < _curDef.FieldNames.Length; i++)
+            for(int i = 0; i < fieldCount; i++)
                 Out(indent, $"/// <param name=\"{_curDef.ArgNames[i]}\">The {_curDef.FieldNames[i]} component.</param>");
         }
 
         Out(indent, $"public {_curDef.Name}({GetConstructorArgs()})");
         Out(indent, $"{{");
-        for(int i = 0; i < _curDef.FieldNames.Length; i++)
+        for(int i = 0; i < fieldCount; i++)
             Out(indent + 1, $"{_curDef.FieldNames[i]} = {_curDef.ArgNames[i]};");
         Out(indent, $"}}");
 
@@ -402,61 +465,63 @@ public class TypeGenerator
         Out(indent, $"/// <param name=\"value\">The value that will be assigned to all components.</param>");
         Out(indent, $"public {_curDef.Name}({_curDef.DT} value)");
         Out(indent, $"{{");
-        for(int i = 0; i < _curDef.FieldNames.Length; i++)
+        for(int i = 0; i < fieldCount; i++)
             Out(indent + 1, $"{_curDef.FieldNames[i]} = value;");
         Out(indent, $"}}");
 
         // Array-value initialization parameter
         Out(indent, $"/// <summary>Initializes a new instance of {See()} from an array.</summary>");
-        Out(indent, $"/// <param name=\"values\">The values to assign to the {FieldsToArgs(_curDef.FieldNames)} components of the color. This must be an array with at least {_def.SizeNames[_curDef.Size]} elements.</param>");
+        Out(indent, $"/// <param name=\"values\">The values to assign to the {FieldsToArgs(_curDef.FieldNames)} components of the color. This must be an array with at least {fieldCount} elements.</param>");
         Out(indent, $"/// <exception cref=\"ArgumentNullException\">Thrown when <paramref name=\"values\"/> is <c>null</c>.</exception>");
-        Out(indent, $"/// <exception cref=\"ArgumentOutOfRangeException\">Thrown when <paramref name=\"values\"/> contains more or less than {_curDef.FieldNames.Length} elements.</exception>");
+        Out(indent, $"/// <exception cref=\"ArgumentOutOfRangeException\">Thrown when <paramref name=\"values\"/> contains more or less than {fieldCount} elements.</exception>");
         Out(indent, $"public unsafe {_curDef.Name}({_curDef.DT}[] values)");
         Out(indent, $"{{");
         Out(indent + 1, $"if (values == null)");
         Out(indent + 2, $"throw new ArgumentNullException(\"values\");");
-        Out(indent + 1, $"if (values.Length < {_curDef.FieldNames.Length})");
-        Out(indent + 2, $"throw new ArgumentOutOfRangeException(\"values\", \"There must be at least {_curDef.FieldNames.Length} input values for {_curDef.Name}.\");");
+        Out(indent + 1, $"if (values.Length < {fieldCount})");
+        Out(indent + 2, $"throw new ArgumentOutOfRangeException(\"values\", \"There must be at least {fieldCount} input values for {_curDef.Name}.\");");
         Out("");
         Out(indent + 1, $"fixed ({_curDef.DT}* src = values)");
         Out(indent + 1, $"{{");
         Out(indent + 2, $"fixed ({_curDef.DT}* dst = Values)");
-        Out(indent + 3, $"Unsafe.CopyBlock(src, dst, (sizeof({_curDef.DT}) * {_curDef.FieldNames.Length}));");
+        Out(indent + 3, $"Unsafe.CopyBlock(src, dst, (sizeof({_curDef.DT}) * {fieldCount}));");
         Out(indent + 1, $"}}");
         Out(indent, $"}}");
 
         // Span-based initialization parameter
         Out(indent, $"/// <summary>Initializes a new instance of {See()} from a span.</summary>");
-        Out(indent, $"/// <param name=\"values\">The values to assign to the {FieldsToArgs(_curDef.FieldNames)} components of the color. This must be an array with at least {_def.SizeNames[_curDef.Size]} elements.</param>");
+        Out(indent, $"/// <param name=\"values\">The values to assign to the {FieldsToArgs(_curDef.FieldNames)} components of the color. This must be an array with at least {fieldCount} elements.</param>");
         Out(indent, $"/// <exception cref=\"ArgumentNullException\">Thrown when <paramref name=\"values\"/> is <c>null</c>.</exception>");
-        Out(indent, $"/// <exception cref=\"ArgumentOutOfRangeException\">Thrown when <paramref name=\"values\"/> contains more or less than {_curDef.FieldNames.Length} elements.</exception>");
+        Out(indent, $"/// <exception cref=\"ArgumentOutOfRangeException\">Thrown when <paramref name=\"values\"/> contains more or less than {fieldCount} elements.</exception>");
         Out(indent, $"public {_curDef.Name}(Span<{_curDef.DT}> values)");
         Out(indent, $"{{");
         Out(indent + 1, $"if (values == null)");
         Out(indent + 2, $"throw new ArgumentNullException(\"values\");");
-        Out(indent + 1, $"if (values.Length < {_curDef.Size})");
-        Out(indent + 2, $"throw new ArgumentOutOfRangeException(\"values\", \"There must be at least {_def.SizeNames[_curDef.Size]} input values for {_curDef.Name}.\");");
+        Out(indent + 1, $"if (values.Length < {fieldCount})");
+        Out(indent + 2, $"throw new ArgumentOutOfRangeException(\"values\", \"There must be at least {fieldCount} input values for {_curDef.Name}.\");");
         _sb.AppendLine("");
 
-        for(int i = 0; i < _curDef.Size; i++)
+        for(int i = 0; i < fieldCount; i++)
             Out(indent + 1, $"{_curDef.FieldNames[i]} = values[{i}];");
         Out(indent, $"}}");
 
         // unsafee pointer-based initialization parameter
         Out(indent, $"/// <summary>Initializes a new instance of {See()} from a an unsafe pointer.</summary>");
         Out(indent, $"/// <param name=\"ptrValues\">The values to assign to the {FieldsToArgs(_curDef.FieldNames)} components of the color.");
-        Out(indent, $"/// <para>There must be at least {_def.SizeNames[_curDef.Size]} elements available or undefined behaviour will occur.</para></param>");
+        Out(indent, $"/// <para>There must be at least {fieldCount} elements available or undefined behaviour will occur.</para></param>");
         Out(indent, $"/// <exception cref=\"ArgumentNullException\">Thrown when <paramref name=\"ptrValues\"/> is <c>null</c>.</exception>");
-        Out(indent, $"/// <exception cref=\"ArgumentOutOfRangeException\">Thrown when <paramref name=\"ptrValues\"/> contains more or less than {_curDef.FieldNames.Length} elements.</exception>");
+        Out(indent, $"/// <exception cref=\"ArgumentOutOfRangeException\">Thrown when <paramref name=\"ptrValues\"/> contains more or less than {fieldCount} elements.</exception>");
         Out(indent, $"public unsafe {_curDef.Name}({_curDef.DT}* ptrValues)");
         Out(indent, $"{{");
         Out(indent + 1, $"if (ptrValues == null)");
         Out(indent + 2, $"throw new ArgumentNullException(\"ptrValues\");");
         _sb.AppendLine("");
 
-        for(int i = 0; i < _curDef.FieldNames.Length; i++)
-            Out(indent + 1, $"{_curDef.FieldNames[i]} = ptrValues[{i}];");
-        Out(indent, $"}}");
+        //for(int i = 0; i < fieldCount; i++)
+        //    Out(indent + 1, $"{_curDef.FieldNames[i]} = ptrValues[{i}];");
+        Out(indent + 1, "fixed (float* dst = Values)");
+        Out(indent + 2, $"Unsafe.CopyBlock(ptrValues, dst, (sizeof({_curDef.DT}) * {fieldCount}));");
+        Out(indent, "}");
     } 
 
     public void GenerateUpgradeConstructors(int indent = 2)
@@ -466,23 +531,32 @@ public class TypeGenerator
             if(other.DT != _curDef.DT)
                 continue;
 
-            foreach(int otherSize in other.Sizes)
-            {
-                if(_curDef.Size > otherSize)
-                {
-                    string otherName = other.GetName(otherSize);
-                    string otherParams = "";
-                    for(int vp = otherSize; vp < _curDef.Size; vp++)
-                        otherParams += $"{_curDef.DT} {_curDef.ArgNames[vp]}{(vp < (_curDef.Size-1) ? ", " : "")}";
+            int curFieldCount = _curDef.GetFieldCount();
+            int curDimCount = _curDef.GetDimensionCount();
 
-                    Out(indent, $"///<summary>Creates a new instance of {See()}, using a <see cref=\"{otherName}\"/> to populate the first {_def.SizeNames[otherSize]} components.</summary>");
+            for(int i = 0; i < other.Sizes.Length; i++)
+            {
+                // Skip type-defs that don't have the same number of dimensions.
+                int otherDimCount = other.GetDimensionCount(i);
+                if(curDimCount != otherDimCount)
+                    continue;
+                    
+                int otherFieldCount = other.GetFieldCount(i);
+                if(curFieldCount > otherFieldCount)
+                {
+                    string otherName = other.GetName(i);
+                    string otherParams = "";
+                    for(int vp = otherFieldCount; vp < curFieldCount; vp++)
+                        otherParams += $"{_curDef.DT} {_curDef.ArgNames[vp]}{(vp < (curFieldCount-1) ? ", " : "")}";
+
+                    Out(indent, $"///<summary>Creates a new instance of {See()}, using a <see cref=\"{otherName}\"/> to populate the first {otherFieldCount} components.</summary>");
 		            Out(indent, $"public {_curDef.Name}({otherName} vector, {otherParams})");
                     Out(indent, "{");
 
-		            for(int p = 0; p < otherSize; p++)
+		            for(int p = 0; p < otherFieldCount; p++)
 			            Out(indent+1, $"{_curDef.FieldNames[p]} = vector.{_curDef.FieldNames[p]};");
 
-		            for(int p = otherSize; p < _curDef.Size; p++)
+		            for(int p = otherFieldCount; p < curFieldCount; p++)
 			            Out(indent+1, $"{_curDef.FieldNames[p]} = {_curDef.ArgNames[p]};");
                     
                     Out(indent, "}");
@@ -501,12 +575,21 @@ public class TypeGenerator
 
         foreach(TypeDef other in _def.Types)
         {
-            foreach(int otherSize in other.Sizes)
-            {
-                if(other == _curDef && _curDef.Size == otherSize)
+            int curDimCount = _curDef.GetDimensionCount();
+            int curFieldCount = _curDef.GetFieldCount();
+
+            for(int i = 0; i < other.Sizes.Length; i++)
+            {     
+                // Skip if we find the current definition during iteration. We don't want to cast it to itself.
+                if(other == _curDef && _curDef.SizeIndex == i)
                     continue;
 
-                string otherName = $"{other.GetName(otherSize)}";
+                int otherDimCount = other.GetDimensionCount(i);
+                if(curDimCount != otherDimCount)
+                    continue;
+
+                int otherFieldCount = other.GetFieldCount(i);
+                string otherName = other.GetName(i);
                 string otherTypeCast = other.DT != _curDef.DT ? $"({other.DT})" : "";
                 string defaultValue = "";
                 if(otherDefault != null)
@@ -514,7 +597,7 @@ public class TypeGenerator
                 else
                     defaultValue = $"{otherTypeCast}{_curDef.DT.Zero}";
 
-                string castArgs = FieldsToArgs(argNames, $"{otherTypeCast}value.", "", _curDef.Size, otherSize, defaultValue);
+                string castArgs = FieldsToArgs(argNames, $"{otherTypeCast}value.", "", curFieldCount, otherFieldCount, defaultValue);
 
                 Out(indent, $"///<summary>Casts a {See()} to a {See(otherName)}.</summary>");
                 Out(indent, $"public static explicit operator {otherName}({_curDef.Name} value)");
@@ -619,7 +702,8 @@ public class TypeGenerator
 
     public void IterateFields(Func<int, string, string> callback, int startIndex = 0, int indent = 3)
     {
-        for(int i = startIndex; i < _curDef.Size; i++)
+        int fieldCount = _curDef.GetFieldCount();
+        for(int i = startIndex; i < fieldCount; i++)
             Out(indent, callback?.Invoke(i, _curDef.FieldNames[i]));
     }
 

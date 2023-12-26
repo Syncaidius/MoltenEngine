@@ -8,7 +8,7 @@ using Molten.DoublePrecision;
 
 namespace Molten
 {
-	///<summary>A <see cref="byte"/> vector comprised of three components.</summary>
+	///<summary>A <see cref="byte"/> vector comprised of 3 components.</summary>
 	[StructLayout(LayoutKind.Explicit)]
     [DataContract]
 	public partial struct Byte3 : IFormattable, IUnsignedVector<Byte3, byte>, IEquatable<Byte3>
@@ -56,10 +56,7 @@ namespace Molten
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
-        public bool IsZero
-        {
-            get => X == (byte)0 && Y == (byte)0 && Z == (byte)0;
-        }
+        public bool IsZero => X == (byte)0 && Y == (byte)0 && Z == (byte)0;
 
 #region Constructors
 		/// <summary>
@@ -83,7 +80,7 @@ namespace Molten
 			Z = value;
 		}
 		/// <summary>Initializes a new instance of <see cref="Byte3"/> from an array.</summary>
-		/// <param name="values">The values to assign to the X, Y, Z components of the color. This must be an array with at least three elements.</param>
+		/// <param name="values">The values to assign to the X, Y, Z components of the color. This must be an array with at least 3 elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 3 elements.</exception>
 		public unsafe Byte3(byte[] values)
@@ -100,7 +97,7 @@ namespace Molten
 			}
 		}
 		/// <summary>Initializes a new instance of <see cref="Byte3"/> from a span.</summary>
-		/// <param name="values">The values to assign to the X, Y, Z components of the color. This must be an array with at least three elements.</param>
+		/// <param name="values">The values to assign to the X, Y, Z components of the color. This must be an array with at least 3 elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 3 elements.</exception>
 		public Byte3(Span<byte> values)
@@ -108,7 +105,7 @@ namespace Molten
 			if (values == null)
 				throw new ArgumentNullException("values");
 			if (values.Length < 3)
-				throw new ArgumentOutOfRangeException("values", "There must be at least three input values for Byte3.");
+				throw new ArgumentOutOfRangeException("values", "There must be at least 3 input values for Byte3.");
 
 			X = values[0];
 			Y = values[1];
@@ -116,7 +113,7 @@ namespace Molten
 		}
 		/// <summary>Initializes a new instance of <see cref="Byte3"/> from a an unsafe pointer.</summary>
 		/// <param name="ptrValues">The values to assign to the X, Y, Z components of the color.
-		/// <para>There must be at least three elements available or undefined behaviour will occur.</para></param>
+		/// <para>There must be at least 3 elements available or undefined behaviour will occur.</para></param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 3 elements.</exception>
 		public unsafe Byte3(byte* ptrValues)
@@ -129,7 +126,7 @@ namespace Molten
 			Z = ptrValues[2];
 		}
 
-		///<summary>Creates a new instance of <see cref="Byte3"/>, using a <see cref="Byte2"/> to populate the first two components.</summary>
+		///<summary>Creates a new instance of <see cref="Byte3"/>, using a <see cref="Byte2"/> to populate the first 2 components.</summary>
 		public Byte3(Byte2 vector, byte z)
 		{
 			X = vector.X;
@@ -198,6 +195,30 @@ namespace Molten
             }
         }
 
+#region Tuples
+        /// <summary>
+        /// Deconstructs the current vector into 4 separate component variables. This method is also used for tuple deconstruction.
+        /// </summary>
+        /// <param name="x">The output for the X component.</param>
+        /// <param name="y">The output for the Y component.</param>
+        /// <param name="z">The output for the Z component.</param>
+        public void Deconstruct(out byte x, out byte y, out byte z)
+        {
+            x = X;
+            y = Y;
+            z = Z;
+        }
+
+        /// <summary>
+        /// Constructs a <see cref="Byte3"/> from 3 component values.
+        /// </summary>
+        /// <param name="tuple">The 3-component tuple containing the values.</param>
+        public static implicit operator Byte3((byte x, byte y, byte z) tuple)
+        {
+            return new Byte3(tuple.x, tuple.y, tuple.z);
+        }
+#endregion
+
         /// <summary>
         /// Calculates the squared length of the vector.
         /// </summary>
@@ -214,7 +235,7 @@ namespace Molten
 		/// <summary>
         /// Creates an array containing the elements of the current <see cref="Byte3"/>.
         /// </summary>
-        /// <returns>A three-element array containing the components of the vector.</returns>
+        /// <returns>A 3-element array containing the components of the vector.</returns>
         public byte[] ToArray()
         {
             return [X, Y, Z];
@@ -987,18 +1008,6 @@ namespace Molten
 				Y = (byte)(vector.Y - ((2 * dot) * normal.Y)),
 				Z = (byte)(vector.Z - ((2 * dot) * normal.Z)),
             };
-        }
-#endregion
-
-#region Tuples
-        public static implicit operator (byte x, byte y, byte z)(Byte3 val)
-        {
-            return (val.X, val.Y, val.Z);
-        }
-
-        public static implicit operator Byte3((byte x, byte y, byte z) val)
-        {
-            return new Byte3(val.x, val.y, val.z);
         }
 #endregion
 

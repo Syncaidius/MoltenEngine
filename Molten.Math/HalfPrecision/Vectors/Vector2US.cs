@@ -8,7 +8,7 @@ using Molten.DoublePrecision;
 
 namespace Molten.HalfPrecision
 {
-	///<summary>A <see cref="ushort"/> vector comprised of two components.</summary>
+	///<summary>A <see cref="ushort"/> vector comprised of 2 components.</summary>
 	[StructLayout(LayoutKind.Explicit)]
     [DataContract]
 	public partial struct Vector2US : IFormattable, IUnsignedVector<Vector2US, ushort>, IEquatable<Vector2US>
@@ -48,10 +48,7 @@ namespace Molten.HalfPrecision
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
-        public bool IsZero
-        {
-            get => X == (ushort)0 && Y == (ushort)0;
-        }
+        public bool IsZero => X == (ushort)0 && Y == (ushort)0;
 
 #region Constructors
 		/// <summary>
@@ -72,7 +69,7 @@ namespace Molten.HalfPrecision
 			Y = value;
 		}
 		/// <summary>Initializes a new instance of <see cref="Vector2US"/> from an array.</summary>
-		/// <param name="values">The values to assign to the X, Y components of the color. This must be an array with at least two elements.</param>
+		/// <param name="values">The values to assign to the X, Y components of the color. This must be an array with at least 2 elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 2 elements.</exception>
 		public unsafe Vector2US(ushort[] values)
@@ -89,7 +86,7 @@ namespace Molten.HalfPrecision
 			}
 		}
 		/// <summary>Initializes a new instance of <see cref="Vector2US"/> from a span.</summary>
-		/// <param name="values">The values to assign to the X, Y components of the color. This must be an array with at least two elements.</param>
+		/// <param name="values">The values to assign to the X, Y components of the color. This must be an array with at least 2 elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 2 elements.</exception>
 		public Vector2US(Span<ushort> values)
@@ -97,14 +94,14 @@ namespace Molten.HalfPrecision
 			if (values == null)
 				throw new ArgumentNullException("values");
 			if (values.Length < 2)
-				throw new ArgumentOutOfRangeException("values", "There must be at least two input values for Vector2US.");
+				throw new ArgumentOutOfRangeException("values", "There must be at least 2 input values for Vector2US.");
 
 			X = values[0];
 			Y = values[1];
 		}
 		/// <summary>Initializes a new instance of <see cref="Vector2US"/> from a an unsafe pointer.</summary>
 		/// <param name="ptrValues">The values to assign to the X, Y components of the color.
-		/// <para>There must be at least two elements available or undefined behaviour will occur.</para></param>
+		/// <para>There must be at least 2 elements available or undefined behaviour will occur.</para></param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 2 elements.</exception>
 		public unsafe Vector2US(ushort* ptrValues)
@@ -176,6 +173,28 @@ namespace Molten.HalfPrecision
             }
         }
 
+#region Tuples
+        /// <summary>
+        /// Deconstructs the current vector into 4 separate component variables. This method is also used for tuple deconstruction.
+        /// </summary>
+        /// <param name="x">The output for the X component.</param>
+        /// <param name="y">The output for the Y component.</param>
+        public void Deconstruct(out ushort x, out ushort y)
+        {
+            x = X;
+            y = Y;
+        }
+
+        /// <summary>
+        /// Constructs a <see cref="Vector2US"/> from 2 component values.
+        /// </summary>
+        /// <param name="tuple">The 2-component tuple containing the values.</param>
+        public static implicit operator Vector2US((ushort x, ushort y) tuple)
+        {
+            return new Vector2US(tuple.x, tuple.y);
+        }
+#endregion
+
         /// <summary>
         /// Calculates the squared length of the vector.
         /// </summary>
@@ -192,7 +211,7 @@ namespace Molten.HalfPrecision
 		/// <summary>
         /// Creates an array containing the elements of the current <see cref="Vector2US"/>.
         /// </summary>
-        /// <returns>A two-element array containing the components of the vector.</returns>
+        /// <returns>A 2-element array containing the components of the vector.</returns>
         public ushort[] ToArray()
         {
             return [X, Y];
@@ -937,18 +956,6 @@ namespace Molten.HalfPrecision
 				X = (ushort)(vector.X - ((2 * dot) * normal.X)),
 				Y = (ushort)(vector.Y - ((2 * dot) * normal.Y)),
             };
-        }
-#endregion
-
-#region Tuples
-        public static implicit operator (ushort x, ushort y)(Vector2US val)
-        {
-            return (val.X, val.Y);
-        }
-
-        public static implicit operator Vector2US((ushort x, ushort y) val)
-        {
-            return new Vector2US(val.x, val.y);
         }
 #endregion
 

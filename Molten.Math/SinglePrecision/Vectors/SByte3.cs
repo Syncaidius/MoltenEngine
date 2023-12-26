@@ -8,7 +8,7 @@ using Molten.DoublePrecision;
 
 namespace Molten
 {
-	///<summary>A <see cref="sbyte"/> vector comprised of three components.</summary>
+	///<summary>A <see cref="sbyte"/> vector comprised of 3 components.</summary>
 	[StructLayout(LayoutKind.Explicit)]
     [DataContract]
 	public partial struct SByte3 : IFormattable, ISignedVector<SByte3, sbyte>, IEquatable<SByte3>
@@ -56,10 +56,7 @@ namespace Molten
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
-        public bool IsZero
-        {
-            get => X == (sbyte)0 && Y == (sbyte)0 && Z == (sbyte)0;
-        }
+        public bool IsZero => X == (sbyte)0 && Y == (sbyte)0 && Z == (sbyte)0;
 
 #region Constructors
 		/// <summary>
@@ -83,7 +80,7 @@ namespace Molten
 			Z = value;
 		}
 		/// <summary>Initializes a new instance of <see cref="SByte3"/> from an array.</summary>
-		/// <param name="values">The values to assign to the X, Y, Z components of the color. This must be an array with at least three elements.</param>
+		/// <param name="values">The values to assign to the X, Y, Z components of the color. This must be an array with at least 3 elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 3 elements.</exception>
 		public unsafe SByte3(sbyte[] values)
@@ -100,7 +97,7 @@ namespace Molten
 			}
 		}
 		/// <summary>Initializes a new instance of <see cref="SByte3"/> from a span.</summary>
-		/// <param name="values">The values to assign to the X, Y, Z components of the color. This must be an array with at least three elements.</param>
+		/// <param name="values">The values to assign to the X, Y, Z components of the color. This must be an array with at least 3 elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 3 elements.</exception>
 		public SByte3(Span<sbyte> values)
@@ -108,7 +105,7 @@ namespace Molten
 			if (values == null)
 				throw new ArgumentNullException("values");
 			if (values.Length < 3)
-				throw new ArgumentOutOfRangeException("values", "There must be at least three input values for SByte3.");
+				throw new ArgumentOutOfRangeException("values", "There must be at least 3 input values for SByte3.");
 
 			X = values[0];
 			Y = values[1];
@@ -116,7 +113,7 @@ namespace Molten
 		}
 		/// <summary>Initializes a new instance of <see cref="SByte3"/> from a an unsafe pointer.</summary>
 		/// <param name="ptrValues">The values to assign to the X, Y, Z components of the color.
-		/// <para>There must be at least three elements available or undefined behaviour will occur.</para></param>
+		/// <para>There must be at least 3 elements available or undefined behaviour will occur.</para></param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 3 elements.</exception>
 		public unsafe SByte3(sbyte* ptrValues)
@@ -129,7 +126,7 @@ namespace Molten
 			Z = ptrValues[2];
 		}
 
-		///<summary>Creates a new instance of <see cref="SByte3"/>, using a <see cref="SByte2"/> to populate the first two components.</summary>
+		///<summary>Creates a new instance of <see cref="SByte3"/>, using a <see cref="SByte2"/> to populate the first 2 components.</summary>
 		public SByte3(SByte2 vector, sbyte z)
 		{
 			X = vector.X;
@@ -198,6 +195,30 @@ namespace Molten
             }
         }
 
+#region Tuples
+        /// <summary>
+        /// Deconstructs the current vector into 4 separate component variables. This method is also used for tuple deconstruction.
+        /// </summary>
+        /// <param name="x">The output for the X component.</param>
+        /// <param name="y">The output for the Y component.</param>
+        /// <param name="z">The output for the Z component.</param>
+        public void Deconstruct(out sbyte x, out sbyte y, out sbyte z)
+        {
+            x = X;
+            y = Y;
+            z = Z;
+        }
+
+        /// <summary>
+        /// Constructs a <see cref="SByte3"/> from 3 component values.
+        /// </summary>
+        /// <param name="tuple">The 3-component tuple containing the values.</param>
+        public static implicit operator SByte3((sbyte x, sbyte y, sbyte z) tuple)
+        {
+            return new SByte3(tuple.x, tuple.y, tuple.z);
+        }
+#endregion
+
         /// <summary>
         /// Calculates the squared length of the vector.
         /// </summary>
@@ -214,7 +235,7 @@ namespace Molten
 		/// <summary>
         /// Creates an array containing the elements of the current <see cref="SByte3"/>.
         /// </summary>
-        /// <returns>A three-element array containing the components of the vector.</returns>
+        /// <returns>A 3-element array containing the components of the vector.</returns>
         public sbyte[] ToArray()
         {
             return [X, Y, Z];
@@ -1019,18 +1040,6 @@ namespace Molten
 				Y = (sbyte)(vector.Y - ((2 * dot) * normal.Y)),
 				Z = (sbyte)(vector.Z - ((2 * dot) * normal.Z)),
             };
-        }
-#endregion
-
-#region Tuples
-        public static implicit operator (sbyte x, sbyte y, sbyte z)(SByte3 val)
-        {
-            return (val.X, val.Y, val.Z);
-        }
-
-        public static implicit operator SByte3((sbyte x, sbyte y, sbyte z) val)
-        {
-            return new SByte3(val.x, val.y, val.z);
         }
 #endregion
 

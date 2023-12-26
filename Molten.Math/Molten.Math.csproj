@@ -83,6 +83,10 @@
       <LastGenOutput>t4_matrix.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
     </None>
+    <None Update="t4_matrix3x2.tt">
+      <LastGenOutput>t4_matrix3x2.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
     <None Update="t4_matrix4.tt">
       <LastGenOutput>t4_matrix4.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -168,6 +172,11 @@
     </Compile>
     <Compile Update="t4_matrix.cs">
       <DependentUpon>t4_matrix.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="t4_matrix3x2.cs">
+      <DependentUpon>t4_matrix3x2.tt</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>

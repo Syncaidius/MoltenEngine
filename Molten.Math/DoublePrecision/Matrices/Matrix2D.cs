@@ -8,7 +8,7 @@ namespace Molten.DoublePrecision
     /// <summary>Represents a double-precision 2x2 Matrix. Contains only scale and rotation.</summary>
     [StructLayout(LayoutKind.Explicit)]
     [DataContract]
-	public partial struct Matrix2D : IEquatable<Matrix2D>, IFormattable, ITransposableMatrix<Matrix2D>, IMatrix<double>
+	public partial struct Matrix2D : IEquatable<Matrix2D>, IFormattable, ITransposableMatrix<Matrix2D, Matrix2D>, IMatrix<double>
     {
         /// <summary>
         /// A single-precision <see cref="Matrix2D"/> with values intialized to the identity of a 2 x 2 matrix
@@ -60,6 +60,40 @@ namespace Molten.DoublePrecision
 		public unsafe fixed double Values[4];
 
 
+        /// <summary> Row 1 of the current <see cref="Matrix2D"/>.</summary>
+        /// <returns>A <see cref="Vector2D"/> containing the row values.</returns>
+        public Vector2D Row1
+        {
+            get => new Vector2D(M11, M12);
+            set => (M11, M12) = value;
+        }
+
+        /// <summary> Row 2 of the current <see cref="Matrix2D"/>.</summary>
+        /// <returns>A <see cref="Vector2D"/> containing the row values.</returns>
+        public Vector2D Row2
+        {
+            get => new Vector2D(M21, M22);
+            set => (M21, M22) = value;
+        }
+
+
+        /// <summary> Column 1 of the current <see cref="Matrix2D"/>.</summary>
+        /// <returns>A <see cref="Vector2D"/> containing the column values.</returns>
+        public Vector2D Column1
+        {
+            get => new Vector2D(M11, M21);
+            set => (M11, M21) = value;
+        }
+
+        /// <summary> Column 2 of the current <see cref="Matrix2D"/>.</summary>
+        /// <returns>A <see cref="Vector2D"/> containing the column values.</returns>
+        public Vector2D Column2
+        {
+            get => new Vector2D(M12, M22);
+            set => (M12, M22) = value;
+        }
+
+
 		/// <summary>
 		/// Initializes a new instance of <see cref="Matrix2D"/>.
 		/// </summary>
@@ -84,7 +118,7 @@ namespace Molten.DoublePrecision
 			M22 = value;
 		}
 		/// <summary>Initializes a new instance of <see cref="Matrix2D"/> from an array.</summary>
-		/// <param name="values">The values to assign to the M11, M12 components of the color. This must be an array with at least two elements.</param>
+		/// <param name="values">The values to assign to the M11, M12, M21, M22 components of the color. This must be an array with at least 4 elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
 		public unsafe Matrix2D(double[] values)
@@ -101,22 +135,24 @@ namespace Molten.DoublePrecision
 			}
 		}
 		/// <summary>Initializes a new instance of <see cref="Matrix2D"/> from a span.</summary>
-		/// <param name="values">The values to assign to the M11, M12 components of the color. This must be an array with at least two elements.</param>
+		/// <param name="values">The values to assign to the M11, M12, M21, M22 components of the color. This must be an array with at least 4 elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
 		public Matrix2D(Span<double> values)
 		{
 			if (values == null)
 				throw new ArgumentNullException("values");
-			if (values.Length < 2)
-				throw new ArgumentOutOfRangeException("values", "There must be at least two input values for Matrix2D.");
+			if (values.Length < 4)
+				throw new ArgumentOutOfRangeException("values", "There must be at least 4 input values for Matrix2D.");
 
 			M11 = values[0];
 			M12 = values[1];
+			M21 = values[2];
+			M22 = values[3];
 		}
 		/// <summary>Initializes a new instance of <see cref="Matrix2D"/> from a an unsafe pointer.</summary>
-		/// <param name="ptrValues">The values to assign to the M11, M12 components of the color.
-		/// <para>There must be at least two elements available or undefined behaviour will occur.</para></param>
+		/// <param name="ptrValues">The values to assign to the M11, M12, M21, M22 components of the color.
+		/// <para>There must be at least 4 elements available or undefined behaviour will occur.</para></param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 4 elements.</exception>
 		public unsafe Matrix2D(double* ptrValues)
@@ -124,15 +160,11 @@ namespace Molten.DoublePrecision
 			if (ptrValues == null)
 				throw new ArgumentNullException("ptrValues");
 
-			M11 = ptrValues[0];
-			M12 = ptrValues[1];
-			M21 = ptrValues[2];
-			M22 = ptrValues[3];
+			fixed (float* dst = Values)
+				Unsafe.CopyBlock(ptrValues, dst, (sizeof(double) * 4));
 		}
 
-        /// <summary>
-        /// Creates a string representation of the matrix.
-        /// </summary>
+        /// <summary> Creates a string representation of the matrix.</summary>
         /// <returns>A string representation of the matrix.</returns>
         public override string ToString()
         {
@@ -140,9 +172,7 @@ namespace Molten.DoublePrecision
             M11, M12, M21, M22);
         }
 
-        /// <summary>
-        /// Returns a <see cref="String"/> that represents this instance.
-        /// </summary>
+        /// <summary> Returns a <see cref="String"/> that represents this instance.</summary>
         /// <param name="format">The format.</param>
         /// <returns>
         /// A <see cref="string"/> that represents this instance.
@@ -232,15 +262,6 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Transposes the current <see cref="Matrix2D"/> and outputs it to <paramref name="result"/>.
-        /// </summary>
-        /// <param name="result"></param>
-        public void Transpose(out Matrix2D result)
-        {
-            Transpose(ref this, out result);
-        }
-
-        /// <summary>
         /// Creates an array containing the elements of the <see cref="Matrix2D"/>.
         /// </summary>
         /// <returns>A 4-element array containing the components of the matrix.</returns>
@@ -250,13 +271,24 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
+        /// Transposes the current <see cref="Matrix2D"/> and outputs it to <paramref name="result"/>.
+        /// </summary>
+        /// <param name="result"></param>
+        public void Transpose(out Matrix2D result)
+        {
+            Transpose(ref this, out result);
+        }
+      
+        /// <summary>
         /// Transposes the current <see cref="Matrix2D"/> in-place.
         /// </summary>
-        public void Transpose()
+        public Matrix2D Transpose()
         {
-            Transpose(ref this, out this);
+            Transpose(ref this, out Matrix2D result);
+            return result;
         }
         
+
         /// <summary>
         /// Calculates the transpose of the specified <see cref="Matrix2D"/>.
         /// </summary>
@@ -399,15 +431,16 @@ namespace Molten.DoublePrecision
         /// <param name="row">The row of the matrix to access.</param>
         /// <param name="column">The column of the matrix to access.</param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> or <paramref name="column"/>is out of the range [0, 1].</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> [0 to 1] or <paramref name="column"/> [0 to 1] is out of the range .</exception>
         public unsafe double this[int row, int column]
         {
             get
             {
                 if (row < 0 || row > 1)
-                    throw new ArgumentOutOfRangeException("row", "Rows and columns for matrices run from 0 to 1, inclusive.");
+                    throw new ArgumentOutOfRangeException("row", "Rolumns for Matrix2D run from 0 to 1, inclusive.");
+
                 if (column < 0 || column > 1)
-                    throw new ArgumentOutOfRangeException("column", "Rows and columns for matrices run from 0 to 1, inclusive.");
+                    throw new ArgumentOutOfRangeException("column", "Columns for Matrix2D run from 0 to 1, inclusive.");
 
                 return Values[(row * 2) + column];
             }
@@ -415,9 +448,10 @@ namespace Molten.DoublePrecision
             set
             {
                 if (row < 0 || row > 1)
-                    throw new ArgumentOutOfRangeException("row", "Rows and columns for matrices run from 0 to 1, inclusive.");
+                    throw new ArgumentOutOfRangeException("row", "Rows for Matrix2D run from 0 to 1, inclusive.");
+
                 if (column < 0 || column > 1)
-                    throw new ArgumentOutOfRangeException("column", "Rows and columns for matrices run from 0 to 1, inclusive.");
+                    throw new ArgumentOutOfRangeException("column", "Columns for Matrix2D run from 0 to 1, inclusive.");
 
                 Values[(row * 2) + column] = value;
             }
@@ -430,15 +464,16 @@ namespace Molten.DoublePrecision
         /// <param name="row">The row of the matrix to access.</param>
         /// <param name="column">The column of the matrix to access.</param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> or <paramref name="column"/>is out of the range [0, 1].</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> [0 to 1] or <paramref name="column"/> [0 to 1] is out of the range .</exception>
         public unsafe double this[uint row, uint column]
         {
             get
             {
                 if (row > 1)
-                    throw new ArgumentOutOfRangeException("row", "Rows and columns for matrices run from 0 to 1, inclusive.");
+                    throw new ArgumentOutOfRangeException("row", "Row index must be less than 1");
+
                 if (column > 1)
-                    throw new ArgumentOutOfRangeException("column", "Rows and columns for matrices run from 0 to 1, inclusive.");
+                    throw new ArgumentOutOfRangeException("row", "Column index must be less than 1");
 
                 return Values[(row * 2) + column];
             }
@@ -446,10 +481,10 @@ namespace Molten.DoublePrecision
             set
             {
                 if (row > 1)
-                    throw new ArgumentOutOfRangeException("row", "Row and column index must be less than 2");
+                    throw new ArgumentOutOfRangeException("row", "Row and column index must be less than 1");
 
                 if (column > 1)
-                    throw new ArgumentOutOfRangeException("column", "Row and column index must be less than 2");
+                    throw new ArgumentOutOfRangeException("column", "Row and column index must be less than 1");
 
                 Values[(row * 2) + column] = value;
             }

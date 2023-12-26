@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
@@ -8,7 +8,7 @@ namespace Molten
     /// <summary>Represents a single-precision 4x4 Matrix. Contains only scale and rotation.</summary>
     [StructLayout(LayoutKind.Explicit)]
     [DataContract]
-	public partial struct Matrix4F : IEquatable<Matrix4F>, IFormattable, ITransposableMatrix<Matrix4F>, IMatrix<float>
+	public partial struct Matrix4F : IEquatable<Matrix4F>, IFormattable, ITransposableMatrix<Matrix4F, Matrix4F>, IMatrix<float>
     {
         /// <summary>
         /// A single-precision <see cref="Matrix4F"/> with values intialized to the identity of a 2 x 2 matrix
@@ -122,6 +122,72 @@ namespace Molten
 		public unsafe fixed float Values[16];
 
 
+        /// <summary> Row 1 of the current <see cref="Matrix4F"/>.</summary>
+        /// <returns>A <see cref="Vector4F"/> containing the row values.</returns>
+        public Vector4F Row1
+        {
+            get => new Vector4F(M11, M12, M13, M14);
+            set => (M11, M12, M13, M14) = value;
+        }
+
+        /// <summary> Row 2 of the current <see cref="Matrix4F"/>.</summary>
+        /// <returns>A <see cref="Vector4F"/> containing the row values.</returns>
+        public Vector4F Row2
+        {
+            get => new Vector4F(M21, M22, M23, M24);
+            set => (M21, M22, M23, M24) = value;
+        }
+
+        /// <summary> Row 3 of the current <see cref="Matrix4F"/>.</summary>
+        /// <returns>A <see cref="Vector4F"/> containing the row values.</returns>
+        public Vector4F Row3
+        {
+            get => new Vector4F(M31, M32, M33, M34);
+            set => (M31, M32, M33, M34) = value;
+        }
+
+        /// <summary> Row 4 of the current <see cref="Matrix4F"/>.</summary>
+        /// <returns>A <see cref="Vector4F"/> containing the row values.</returns>
+        public Vector4F Row4
+        {
+            get => new Vector4F(M41, M42, M43, M44);
+            set => (M41, M42, M43, M44) = value;
+        }
+
+
+        /// <summary> Column 1 of the current <see cref="Matrix4F"/>.</summary>
+        /// <returns>A <see cref="Vector4F"/> containing the column values.</returns>
+        public Vector4F Column1
+        {
+            get => new Vector4F(M11, M21, M31, M41);
+            set => (M11, M21, M31, M41) = value;
+        }
+
+        /// <summary> Column 2 of the current <see cref="Matrix4F"/>.</summary>
+        /// <returns>A <see cref="Vector4F"/> containing the column values.</returns>
+        public Vector4F Column2
+        {
+            get => new Vector4F(M12, M22, M32, M42);
+            set => (M12, M22, M32, M42) = value;
+        }
+
+        /// <summary> Column 3 of the current <see cref="Matrix4F"/>.</summary>
+        /// <returns>A <see cref="Vector4F"/> containing the column values.</returns>
+        public Vector4F Column3
+        {
+            get => new Vector4F(M13, M23, M33, M43);
+            set => (M13, M23, M33, M43) = value;
+        }
+
+        /// <summary> Column 4 of the current <see cref="Matrix4F"/>.</summary>
+        /// <returns>A <see cref="Vector4F"/> containing the column values.</returns>
+        public Vector4F Column4
+        {
+            get => new Vector4F(M14, M24, M34, M44);
+            set => (M14, M24, M34, M44) = value;
+        }
+
+
 		/// <summary>
 		/// Initializes a new instance of <see cref="Matrix4F"/>.
 		/// </summary>
@@ -182,7 +248,7 @@ namespace Molten
 			M44 = value;
 		}
 		/// <summary>Initializes a new instance of <see cref="Matrix4F"/> from an array.</summary>
-		/// <param name="values">The values to assign to the M11, M12, M13, M14 components of the color. This must be an array with at least four elements.</param>
+		/// <param name="values">The values to assign to the M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44 components of the color. This must be an array with at least 16 elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 16 elements.</exception>
 		public unsafe Matrix4F(float[] values)
@@ -199,24 +265,36 @@ namespace Molten
 			}
 		}
 		/// <summary>Initializes a new instance of <see cref="Matrix4F"/> from a span.</summary>
-		/// <param name="values">The values to assign to the M11, M12, M13, M14 components of the color. This must be an array with at least four elements.</param>
+		/// <param name="values">The values to assign to the M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44 components of the color. This must be an array with at least 16 elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 16 elements.</exception>
 		public Matrix4F(Span<float> values)
 		{
 			if (values == null)
 				throw new ArgumentNullException("values");
-			if (values.Length < 4)
-				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for Matrix4F.");
+			if (values.Length < 16)
+				throw new ArgumentOutOfRangeException("values", "There must be at least 16 input values for Matrix4F.");
 
 			M11 = values[0];
 			M12 = values[1];
 			M13 = values[2];
 			M14 = values[3];
+			M21 = values[4];
+			M22 = values[5];
+			M23 = values[6];
+			M24 = values[7];
+			M31 = values[8];
+			M32 = values[9];
+			M33 = values[10];
+			M34 = values[11];
+			M41 = values[12];
+			M42 = values[13];
+			M43 = values[14];
+			M44 = values[15];
 		}
 		/// <summary>Initializes a new instance of <see cref="Matrix4F"/> from a an unsafe pointer.</summary>
-		/// <param name="ptrValues">The values to assign to the M11, M12, M13, M14 components of the color.
-		/// <para>There must be at least four elements available or undefined behaviour will occur.</para></param>
+		/// <param name="ptrValues">The values to assign to the M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44 components of the color.
+		/// <para>There must be at least 16 elements available or undefined behaviour will occur.</para></param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 16 elements.</exception>
 		public unsafe Matrix4F(float* ptrValues)
@@ -224,27 +302,11 @@ namespace Molten
 			if (ptrValues == null)
 				throw new ArgumentNullException("ptrValues");
 
-			M11 = ptrValues[0];
-			M12 = ptrValues[1];
-			M13 = ptrValues[2];
-			M14 = ptrValues[3];
-			M21 = ptrValues[4];
-			M22 = ptrValues[5];
-			M23 = ptrValues[6];
-			M24 = ptrValues[7];
-			M31 = ptrValues[8];
-			M32 = ptrValues[9];
-			M33 = ptrValues[10];
-			M34 = ptrValues[11];
-			M41 = ptrValues[12];
-			M42 = ptrValues[13];
-			M43 = ptrValues[14];
-			M44 = ptrValues[15];
+			fixed (float* dst = Values)
+				Unsafe.CopyBlock(ptrValues, dst, (sizeof(float) * 16));
 		}
 
-        /// <summary>
-        /// Creates a string representation of the matrix.
-        /// </summary>
+        /// <summary> Creates a string representation of the matrix.</summary>
         /// <returns>A string representation of the matrix.</returns>
         public override string ToString()
         {
@@ -252,9 +314,7 @@ namespace Molten
             M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44);
         }
 
-        /// <summary>
-        /// Returns a <see cref="String"/> that represents this instance.
-        /// </summary>
+        /// <summary> Returns a <see cref="String"/> that represents this instance.</summary>
         /// <param name="format">The format.</param>
         /// <returns>
         /// A <see cref="string"/> that represents this instance.
@@ -356,15 +416,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Transposes the current <see cref="Matrix4F"/> and outputs it to <paramref name="result"/>.
-        /// </summary>
-        /// <param name="result"></param>
-        public void Transpose(out Matrix4F result)
-        {
-            Transpose(ref this, out result);
-        }
-
-        /// <summary>
         /// Creates an array containing the elements of the <see cref="Matrix4F"/>.
         /// </summary>
         /// <returns>A 16-element array containing the components of the matrix.</returns>
@@ -374,13 +425,24 @@ namespace Molten
         }
 
         /// <summary>
+        /// Transposes the current <see cref="Matrix4F"/> and outputs it to <paramref name="result"/>.
+        /// </summary>
+        /// <param name="result"></param>
+        public void Transpose(out Matrix4F result)
+        {
+            Transpose(ref this, out result);
+        }
+      
+        /// <summary>
         /// Transposes the current <see cref="Matrix4F"/> in-place.
         /// </summary>
-        public void Transpose()
+        public Matrix4F Transpose()
         {
-            Transpose(ref this, out this);
+            Transpose(ref this, out Matrix4F result);
+            return result;
         }
         
+
         /// <summary>
         /// Calculates the transpose of the specified <see cref="Matrix4F"/>.
         /// </summary>
@@ -547,15 +609,16 @@ namespace Molten
         /// <param name="row">The row of the matrix to access.</param>
         /// <param name="column">The column of the matrix to access.</param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> or <paramref name="column"/>is out of the range [0, 3].</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> [0 to 3] or <paramref name="column"/> [0 to 3] is out of the range .</exception>
         public unsafe float this[int row, int column]
         {
             get
             {
                 if (row < 0 || row > 3)
-                    throw new ArgumentOutOfRangeException("row", "Rows and columns for matrices run from 0 to 3, inclusive.");
+                    throw new ArgumentOutOfRangeException("row", "Rolumns for Matrix4F run from 0 to 3, inclusive.");
+
                 if (column < 0 || column > 3)
-                    throw new ArgumentOutOfRangeException("column", "Rows and columns for matrices run from 0 to 3, inclusive.");
+                    throw new ArgumentOutOfRangeException("column", "Columns for Matrix4F run from 0 to 3, inclusive.");
 
                 return Values[(row * 4) + column];
             }
@@ -563,9 +626,10 @@ namespace Molten
             set
             {
                 if (row < 0 || row > 3)
-                    throw new ArgumentOutOfRangeException("row", "Rows and columns for matrices run from 0 to 3, inclusive.");
+                    throw new ArgumentOutOfRangeException("row", "Rows for Matrix4F run from 0 to 3, inclusive.");
+
                 if (column < 0 || column > 3)
-                    throw new ArgumentOutOfRangeException("column", "Rows and columns for matrices run from 0 to 3, inclusive.");
+                    throw new ArgumentOutOfRangeException("column", "Columns for Matrix4F run from 0 to 3, inclusive.");
 
                 Values[(row * 4) + column] = value;
             }
@@ -578,15 +642,16 @@ namespace Molten
         /// <param name="row">The row of the matrix to access.</param>
         /// <param name="column">The column of the matrix to access.</param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> or <paramref name="column"/>is out of the range [0, 3].</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> [0 to 3] or <paramref name="column"/> [0 to 3] is out of the range .</exception>
         public unsafe float this[uint row, uint column]
         {
             get
             {
                 if (row > 3)
-                    throw new ArgumentOutOfRangeException("row", "Rows and columns for matrices run from 0 to 3, inclusive.");
+                    throw new ArgumentOutOfRangeException("row", "Row index must be less than 3");
+
                 if (column > 3)
-                    throw new ArgumentOutOfRangeException("column", "Rows and columns for matrices run from 0 to 3, inclusive.");
+                    throw new ArgumentOutOfRangeException("row", "Column index must be less than 3");
 
                 return Values[(row * 4) + column];
             }
@@ -594,10 +659,10 @@ namespace Molten
             set
             {
                 if (row > 3)
-                    throw new ArgumentOutOfRangeException("row", "Row and column index must be less than 4");
+                    throw new ArgumentOutOfRangeException("row", "Row and column index must be less than 3");
 
                 if (column > 3)
-                    throw new ArgumentOutOfRangeException("column", "Row and column index must be less than 4");
+                    throw new ArgumentOutOfRangeException("column", "Row and column index must be less than 3");
 
                 Values[(row * 4) + column] = value;
             }

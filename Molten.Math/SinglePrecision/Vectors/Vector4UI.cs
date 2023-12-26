@@ -8,7 +8,7 @@ using Molten.DoublePrecision;
 
 namespace Molten
 {
-	///<summary>A <see cref="uint"/> vector comprised of four components.</summary>
+	///<summary>A <see cref="uint"/> vector comprised of 4 components.</summary>
 	[StructLayout(LayoutKind.Explicit)]
     [DataContract]
 	public partial struct Vector4UI : IFormattable, IUnsignedVector<Vector4UI, uint>, IEquatable<Vector4UI>
@@ -64,10 +64,7 @@ namespace Molten
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
-        public bool IsZero
-        {
-            get => X == 0U && Y == 0U && Z == 0U && W == 0U;
-        }
+        public bool IsZero => X == 0U && Y == 0U && Z == 0U && W == 0U;
 
 #region Constructors
 		/// <summary>
@@ -94,7 +91,7 @@ namespace Molten
 			W = value;
 		}
 		/// <summary>Initializes a new instance of <see cref="Vector4UI"/> from an array.</summary>
-		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least four elements.</param>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least 4 elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
 		public unsafe Vector4UI(uint[] values)
@@ -111,7 +108,7 @@ namespace Molten
 			}
 		}
 		/// <summary>Initializes a new instance of <see cref="Vector4UI"/> from a span.</summary>
-		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least four elements.</param>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least 4 elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
 		public Vector4UI(Span<uint> values)
@@ -119,7 +116,7 @@ namespace Molten
 			if (values == null)
 				throw new ArgumentNullException("values");
 			if (values.Length < 4)
-				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for Vector4UI.");
+				throw new ArgumentOutOfRangeException("values", "There must be at least 4 input values for Vector4UI.");
 
 			X = values[0];
 			Y = values[1];
@@ -128,7 +125,7 @@ namespace Molten
 		}
 		/// <summary>Initializes a new instance of <see cref="Vector4UI"/> from a an unsafe pointer.</summary>
 		/// <param name="ptrValues">The values to assign to the X, Y, Z, W components of the color.
-		/// <para>There must be at least four elements available or undefined behaviour will occur.</para></param>
+		/// <para>There must be at least 4 elements available or undefined behaviour will occur.</para></param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 4 elements.</exception>
 		public unsafe Vector4UI(uint* ptrValues)
@@ -142,7 +139,7 @@ namespace Molten
 			W = ptrValues[3];
 		}
 
-		///<summary>Creates a new instance of <see cref="Vector4UI"/>, using a <see cref="Vector2UI"/> to populate the first two components.</summary>
+		///<summary>Creates a new instance of <see cref="Vector4UI"/>, using a <see cref="Vector2UI"/> to populate the first 2 components.</summary>
 		public Vector4UI(Vector2UI vector, uint z, uint w)
 		{
 			X = vector.X;
@@ -151,7 +148,7 @@ namespace Molten
 			W = w;
 		}
 
-		///<summary>Creates a new instance of <see cref="Vector4UI"/>, using a <see cref="Vector3UI"/> to populate the first three components.</summary>
+		///<summary>Creates a new instance of <see cref="Vector4UI"/>, using a <see cref="Vector3UI"/> to populate the first 3 components.</summary>
 		public Vector4UI(Vector3UI vector, uint w)
 		{
 			X = vector.X;
@@ -222,6 +219,32 @@ namespace Molten
             }
         }
 
+#region Tuples
+        /// <summary>
+        /// Deconstructs the current vector into 4 separate component variables. This method is also used for tuple deconstruction.
+        /// </summary>
+        /// <param name="x">The output for the X component.</param>
+        /// <param name="y">The output for the Y component.</param>
+        /// <param name="z">The output for the Z component.</param>
+        /// <param name="w">The output for the W component.</param>
+        public void Deconstruct(out uint x, out uint y, out uint z, out uint w)
+        {
+            x = X;
+            y = Y;
+            z = Z;
+            w = W;
+        }
+
+        /// <summary>
+        /// Constructs a <see cref="Vector4UI"/> from 4 component values.
+        /// </summary>
+        /// <param name="tuple">The 4-component tuple containing the values.</param>
+        public static implicit operator Vector4UI((uint x, uint y, uint z, uint w) tuple)
+        {
+            return new Vector4UI(tuple.x, tuple.y, tuple.z, tuple.w);
+        }
+#endregion
+
         /// <summary>
         /// Calculates the squared length of the vector.
         /// </summary>
@@ -238,7 +261,7 @@ namespace Molten
 		/// <summary>
         /// Creates an array containing the elements of the current <see cref="Vector4UI"/>.
         /// </summary>
-        /// <returns>A four-element array containing the components of the vector.</returns>
+        /// <returns>A 4-element array containing the components of the vector.</returns>
         public uint[] ToArray()
         {
             return [X, Y, Z, W];
@@ -1039,18 +1062,6 @@ namespace Molten
 				Z = (uint)(vector.Z - ((2 * dot) * normal.Z)),
 				W = (uint)(vector.W - ((2 * dot) * normal.W)),
             };
-        }
-#endregion
-
-#region Tuples
-        public static implicit operator (uint x, uint y, uint z, uint w)(Vector4UI val)
-        {
-            return (val.X, val.Y, val.Z, val.W);
-        }
-
-        public static implicit operator Vector4UI((uint x, uint y, uint z, uint w) val)
-        {
-            return new Vector4UI(val.x, val.y, val.z, val.w);
         }
 #endregion
 

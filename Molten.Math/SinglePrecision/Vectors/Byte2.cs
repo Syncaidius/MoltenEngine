@@ -8,7 +8,7 @@ using Molten.DoublePrecision;
 
 namespace Molten
 {
-	///<summary>A <see cref="byte"/> vector comprised of two components.</summary>
+	///<summary>A <see cref="byte"/> vector comprised of 2 components.</summary>
 	[StructLayout(LayoutKind.Explicit)]
     [DataContract]
 	public partial struct Byte2 : IFormattable, IUnsignedVector<Byte2, byte>, IEquatable<Byte2>
@@ -48,10 +48,7 @@ namespace Molten
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
-        public bool IsZero
-        {
-            get => X == (byte)0 && Y == (byte)0;
-        }
+        public bool IsZero => X == (byte)0 && Y == (byte)0;
 
 #region Constructors
 		/// <summary>
@@ -72,7 +69,7 @@ namespace Molten
 			Y = value;
 		}
 		/// <summary>Initializes a new instance of <see cref="Byte2"/> from an array.</summary>
-		/// <param name="values">The values to assign to the X, Y components of the color. This must be an array with at least two elements.</param>
+		/// <param name="values">The values to assign to the X, Y components of the color. This must be an array with at least 2 elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 2 elements.</exception>
 		public unsafe Byte2(byte[] values)
@@ -89,7 +86,7 @@ namespace Molten
 			}
 		}
 		/// <summary>Initializes a new instance of <see cref="Byte2"/> from a span.</summary>
-		/// <param name="values">The values to assign to the X, Y components of the color. This must be an array with at least two elements.</param>
+		/// <param name="values">The values to assign to the X, Y components of the color. This must be an array with at least 2 elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 2 elements.</exception>
 		public Byte2(Span<byte> values)
@@ -97,14 +94,14 @@ namespace Molten
 			if (values == null)
 				throw new ArgumentNullException("values");
 			if (values.Length < 2)
-				throw new ArgumentOutOfRangeException("values", "There must be at least two input values for Byte2.");
+				throw new ArgumentOutOfRangeException("values", "There must be at least 2 input values for Byte2.");
 
 			X = values[0];
 			Y = values[1];
 		}
 		/// <summary>Initializes a new instance of <see cref="Byte2"/> from a an unsafe pointer.</summary>
 		/// <param name="ptrValues">The values to assign to the X, Y components of the color.
-		/// <para>There must be at least two elements available or undefined behaviour will occur.</para></param>
+		/// <para>There must be at least 2 elements available or undefined behaviour will occur.</para></param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 2 elements.</exception>
 		public unsafe Byte2(byte* ptrValues)
@@ -176,6 +173,28 @@ namespace Molten
             }
         }
 
+#region Tuples
+        /// <summary>
+        /// Deconstructs the current vector into 4 separate component variables. This method is also used for tuple deconstruction.
+        /// </summary>
+        /// <param name="x">The output for the X component.</param>
+        /// <param name="y">The output for the Y component.</param>
+        public void Deconstruct(out byte x, out byte y)
+        {
+            x = X;
+            y = Y;
+        }
+
+        /// <summary>
+        /// Constructs a <see cref="Byte2"/> from 2 component values.
+        /// </summary>
+        /// <param name="tuple">The 2-component tuple containing the values.</param>
+        public static implicit operator Byte2((byte x, byte y) tuple)
+        {
+            return new Byte2(tuple.x, tuple.y);
+        }
+#endregion
+
         /// <summary>
         /// Calculates the squared length of the vector.
         /// </summary>
@@ -192,7 +211,7 @@ namespace Molten
 		/// <summary>
         /// Creates an array containing the elements of the current <see cref="Byte2"/>.
         /// </summary>
-        /// <returns>A two-element array containing the components of the vector.</returns>
+        /// <returns>A 2-element array containing the components of the vector.</returns>
         public byte[] ToArray()
         {
             return [X, Y];
@@ -937,18 +956,6 @@ namespace Molten
 				X = (byte)(vector.X - ((2 * dot) * normal.X)),
 				Y = (byte)(vector.Y - ((2 * dot) * normal.Y)),
             };
-        }
-#endregion
-
-#region Tuples
-        public static implicit operator (byte x, byte y)(Byte2 val)
-        {
-            return (val.X, val.Y);
-        }
-
-        public static implicit operator Byte2((byte x, byte y) val)
-        {
-            return new Byte2(val.x, val.y);
         }
 #endregion
 

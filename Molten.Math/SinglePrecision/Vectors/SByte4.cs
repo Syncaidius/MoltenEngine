@@ -8,7 +8,7 @@ using Molten.DoublePrecision;
 
 namespace Molten
 {
-	///<summary>A <see cref="sbyte"/> vector comprised of four components.</summary>
+	///<summary>A <see cref="sbyte"/> vector comprised of 4 components.</summary>
 	[StructLayout(LayoutKind.Explicit)]
     [DataContract]
 	public partial struct SByte4 : IFormattable, ISignedVector<SByte4, sbyte>, IEquatable<SByte4>
@@ -64,10 +64,7 @@ namespace Molten
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
-        public bool IsZero
-        {
-            get => X == (sbyte)0 && Y == (sbyte)0 && Z == (sbyte)0 && W == (sbyte)0;
-        }
+        public bool IsZero => X == (sbyte)0 && Y == (sbyte)0 && Z == (sbyte)0 && W == (sbyte)0;
 
 #region Constructors
 		/// <summary>
@@ -94,7 +91,7 @@ namespace Molten
 			W = value;
 		}
 		/// <summary>Initializes a new instance of <see cref="SByte4"/> from an array.</summary>
-		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least four elements.</param>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least 4 elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
 		public unsafe SByte4(sbyte[] values)
@@ -111,7 +108,7 @@ namespace Molten
 			}
 		}
 		/// <summary>Initializes a new instance of <see cref="SByte4"/> from a span.</summary>
-		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least four elements.</param>
+		/// <param name="values">The values to assign to the X, Y, Z, W components of the color. This must be an array with at least 4 elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
 		public SByte4(Span<sbyte> values)
@@ -119,7 +116,7 @@ namespace Molten
 			if (values == null)
 				throw new ArgumentNullException("values");
 			if (values.Length < 4)
-				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for SByte4.");
+				throw new ArgumentOutOfRangeException("values", "There must be at least 4 input values for SByte4.");
 
 			X = values[0];
 			Y = values[1];
@@ -128,7 +125,7 @@ namespace Molten
 		}
 		/// <summary>Initializes a new instance of <see cref="SByte4"/> from a an unsafe pointer.</summary>
 		/// <param name="ptrValues">The values to assign to the X, Y, Z, W components of the color.
-		/// <para>There must be at least four elements available or undefined behaviour will occur.</para></param>
+		/// <para>There must be at least 4 elements available or undefined behaviour will occur.</para></param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 4 elements.</exception>
 		public unsafe SByte4(sbyte* ptrValues)
@@ -142,7 +139,7 @@ namespace Molten
 			W = ptrValues[3];
 		}
 
-		///<summary>Creates a new instance of <see cref="SByte4"/>, using a <see cref="SByte2"/> to populate the first two components.</summary>
+		///<summary>Creates a new instance of <see cref="SByte4"/>, using a <see cref="SByte2"/> to populate the first 2 components.</summary>
 		public SByte4(SByte2 vector, sbyte z, sbyte w)
 		{
 			X = vector.X;
@@ -151,7 +148,7 @@ namespace Molten
 			W = w;
 		}
 
-		///<summary>Creates a new instance of <see cref="SByte4"/>, using a <see cref="SByte3"/> to populate the first three components.</summary>
+		///<summary>Creates a new instance of <see cref="SByte4"/>, using a <see cref="SByte3"/> to populate the first 3 components.</summary>
 		public SByte4(SByte3 vector, sbyte w)
 		{
 			X = vector.X;
@@ -222,6 +219,32 @@ namespace Molten
             }
         }
 
+#region Tuples
+        /// <summary>
+        /// Deconstructs the current vector into 4 separate component variables. This method is also used for tuple deconstruction.
+        /// </summary>
+        /// <param name="x">The output for the X component.</param>
+        /// <param name="y">The output for the Y component.</param>
+        /// <param name="z">The output for the Z component.</param>
+        /// <param name="w">The output for the W component.</param>
+        public void Deconstruct(out sbyte x, out sbyte y, out sbyte z, out sbyte w)
+        {
+            x = X;
+            y = Y;
+            z = Z;
+            w = W;
+        }
+
+        /// <summary>
+        /// Constructs a <see cref="SByte4"/> from 4 component values.
+        /// </summary>
+        /// <param name="tuple">The 4-component tuple containing the values.</param>
+        public static implicit operator SByte4((sbyte x, sbyte y, sbyte z, sbyte w) tuple)
+        {
+            return new SByte4(tuple.x, tuple.y, tuple.z, tuple.w);
+        }
+#endregion
+
         /// <summary>
         /// Calculates the squared length of the vector.
         /// </summary>
@@ -238,7 +261,7 @@ namespace Molten
 		/// <summary>
         /// Creates an array containing the elements of the current <see cref="SByte4"/>.
         /// </summary>
-        /// <returns>A four-element array containing the components of the vector.</returns>
+        /// <returns>A 4-element array containing the components of the vector.</returns>
         public sbyte[] ToArray()
         {
             return [X, Y, Z, W];
@@ -1072,18 +1095,6 @@ namespace Molten
 				Z = (sbyte)(vector.Z - ((2 * dot) * normal.Z)),
 				W = (sbyte)(vector.W - ((2 * dot) * normal.W)),
             };
-        }
-#endregion
-
-#region Tuples
-        public static implicit operator (sbyte x, sbyte y, sbyte z, sbyte w)(SByte4 val)
-        {
-            return (val.X, val.Y, val.Z, val.W);
-        }
-
-        public static implicit operator SByte4((sbyte x, sbyte y, sbyte z, sbyte w) val)
-        {
-            return new SByte4(val.x, val.y, val.z, val.w);
         }
 #endregion
 
