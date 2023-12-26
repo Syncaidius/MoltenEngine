@@ -302,7 +302,7 @@ namespace Molten.DoublePrecision
 			if (ptrValues == null)
 				throw new ArgumentNullException("ptrValues");
 
-			fixed (float* dst = Values)
+			fixed (double* dst = Values)
 				Unsafe.CopyBlock(ptrValues, dst, (sizeof(double) * 16));
 		}
 

@@ -14,10 +14,11 @@ TypeGenerator gen = new TypeGenerator(this.GenerationEnvironment, this.Host, "de
 
 gen.Generate(null, (d, def) =>
 {
-    string vectorName = $"Vector{d.Size}{d.DT.Literal}";
-    string blackParams = gen.FieldsToArgs(new string[] {$"{d.DT.Zero}", $"{d.DT.Zero}", $"{d.DT.Zero}"}, "" ,"" , 4, d.Size, $"{d.DT.One}");
-    string whiteParams = gen.FieldsToArgs(new string[]{}, "", "", 3, d.Size, $"{d.DT.One}");
-    string transparentParams = gen.FieldsToArgs(new string[]{}, "", "", 3, d.Size, $"{d.DT.Zero}");
+    int size = d.GetDimension(0);
+    string vectorName = $"Vector{size}{d.DT.Literal}";
+    string blackParams = gen.FieldsToArgs(new string[] {$"{d.DT.Zero}", $"{d.DT.Zero}", $"{d.DT.Zero}"}, "" ,"" , 4, size, $"{d.DT.One}");
+    string whiteParams = gen.FieldsToArgs(new string[]{}, "", "", 3, size, $"{d.DT.One}");
+    string transparentParams = gen.FieldsToArgs(new string[]{}, "", "", 3, size, $"{d.DT.Zero}");
 #>
 using System;
 using System.Globalization;
@@ -42,7 +43,7 @@ namespace Molten<#=d.SubNamespace#>
     [DataContract]
     public struct <#=d.Name#> : IEquatable<<#=d.Name#>>, IFormattable
     {
-        private const string toStringFormat = "R:{0} G:{1} B:{2}<#=(d.Size > 3 ? " A:{3}" : "")#>";
+        private const string toStringFormat = "R:{0} G:{1} B:{2}<#=(size > 3 ? " A:{3}" : "")#>";
 
         /// <summary>
         /// Black (<#=blackParams#>).
@@ -69,7 +70,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <param name="value">The <#=gen.FieldsToArgs(d.FieldNames)#> components of the color.</param>
         public <#=d.Name#>(<#=vectorName#> value)
         {
-<#for(int i = 0; i < d.Size; i++){#>
+<#for(int i = 0; i < size; i++){#>
             <#=d.FieldNames[i]#> = value.<#=vecFieldNames[i]#>;
 <#}#>
         }
@@ -81,7 +82,7 @@ namespace Molten<#=d.SubNamespace#>
         /// The alpha component is ignored.</param>
         public <#=d.Name#>(int packed)
         {
-            <#=(d.Size > 3 ? $"A = ((packed >> 24) & 255) / 255.0{d.DT.Literal};" : "")#>
+            <#=(size > 3 ? $"A = ((packed >> 24) & 255) / 255.0{d.DT.Literal};" : "")#>
             B = ((packed >> 16) & 255) / 255.0<#=d.DT.Literal#>;
             G = ((packed >> 8) & 255) / 255.0<#=d.DT.Literal#>;
             R = (packed & 255) / 255.0<#=d.DT.Literal#>;
@@ -91,22 +92,22 @@ namespace Molten<#=d.SubNamespace#>
         /// Gets or sets the component at the specified index.
         /// </summary>
         /// <value>The value of a component, depending on the index.</value>
-        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and <#=(d.Size - 1)#></param>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and <#=(size - 1)#></param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, <#=(d.Size-1)#>].</exception>  
+        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, <#=(size-1)#>].</exception>  
 		public unsafe <#=d.DT#> this[int index]
 		{
 			get
             {
-                if(index > <#=(d.Size-1)#> || index < 0)
-                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(d.Size-1)#>, inclusive.");
+                if(index > <#=(size-1)#> || index < 0)
+                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(size-1)#>, inclusive.");
 
                 return Values[index];
             }
             set
             {
-                if (index > <#=(d.Size-1)#> || index < 0)
-                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(d.Size-1)#>, inclusive.");
+                if (index > <#=(size-1)#> || index < 0)
+                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(size-1)#>, inclusive.");
 
                 Values[index] = value;
             }
@@ -118,20 +119,20 @@ namespace Molten<#=d.SubNamespace#>
         /// <value>The value of the red, green, or blue component, depending on the index.</value>
         /// <param name="index">The index of the component to access. Use 0 for the red component, 1 for the green component, and 2 for the blue component.</param>
         /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, <#=(d.Size-1)#>].</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, <#=(size-1)#>].</exception>
         public unsafe <#=d.DT#> this[uint index]
 		{
 			get
             {
-                if(index > <#=(d.Size-1)#>)
-                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(d.Size-1)#>, inclusive.");
+                if(index > <#=(size-1)#>)
+                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(size-1)#>, inclusive.");
 
                 return Values[index];
             }
             set
             {
-                if (index > <#=(d.Size-1)#>)
-                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(d.Size-1)#>, inclusive.");
+                if (index > <#=(size-1)#>)
+                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(size-1)#>, inclusive.");
 
                 Values[index] = value;
             }
@@ -145,7 +146,7 @@ namespace Molten<#=d.SubNamespace#>
         public int PackRGBA()
         {
 <#gen.IterateFields((i, field) => $"uint {d.ArgNames[i]} = (uint)({field} * 255.0{d.DT.Literal}) & 255;");#>
-<#if(d.Size < 4){#>
+<#if(size < 4){#>
             uint a = 255;
 <#}#>
 
@@ -160,11 +161,11 @@ namespace Molten<#=d.SubNamespace#>
         /// <summary>
         /// Converts the color into a packed integer.
         /// </summary>
-        /// <returns>A packed integer containing all <#=def.SizeNames[d.Size]#> color components.<#=(d.Size < 4 ? "The alpha channel is set to 255." : "")#></returns>
+        /// <returns>A packed integer containing all <#=d.FieldNames.Length#> color components.<#=(size < 4 ? "The alpha channel is set to 255." : "")#></returns>
         public int PackBGRA()
         {
 <#gen.IterateFields((i, field) => $"uint {d.ArgNames[i]} = (uint)({field} * 255.0{d.DT.Literal}) & 255;");#>
-<#if(d.Size < 4){#>
+<#if(size < 4){#>
             uint a = 255;
 <#}#>
 
@@ -258,7 +259,7 @@ namespace Molten<#=d.SubNamespace#>
         public static void Clamp(ref <#=d.Name#> value, ref <#=d.Name#> min, ref <#=d.Name#> max, out <#=d.Name#> result)
         {
 <#
-    for(int i = 0; i < d.Size; i++)
+    for(int i = 0; i < size; i++)
     {
         string n = d.FieldLabels[i];
         string p = d.FieldNames[i];
@@ -281,7 +282,7 @@ namespace Molten<#=d.SubNamespace#>
         public void Clamp(ref <#=d.Name#> min, ref <#=d.Name#> max)
         {
 <#
-    for(int i = 0; i < d.Size; i++)
+    for(int i = 0; i < size; i++)
     {
         string p = d.FieldNames[i];
 #>
@@ -302,7 +303,7 @@ namespace Molten<#=d.SubNamespace#>
         public static void Clamp(ref <#=d.Name#> value, <#=d.DT#> min, <#=d.DT#> max, out <#=d.Name#> result)
         {
 <#
-    for(int i = 0; i < d.Size; i++)
+    for(int i = 0; i < size; i++)
     {
         string n = d.FieldLabels[i];
         string p = d.FieldNames[i];
@@ -338,7 +339,7 @@ namespace Molten<#=d.SubNamespace#>
         public void Clamp(<#=d.DT#> min, <#=d.DT#> max)
         {
 <#
-    for(int i = 0; i < d.Size; i++)
+    for(int i = 0; i < size; i++)
     {
         string p = d.FieldNames[i];
 #>
@@ -461,7 +462,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <returns></returns>
         public static <#=d.DT#> Dot(<#=d.Name#> c0,<#=d.Name#> c1)
         {
-            return c0.R * c1.R + c0.G * c1.G + c0.B * c1.B<#=(d.Size > 3 ? " + c0.A * c1.A" : "")#>;
+            return c0.R * c1.R + c0.G * c1.G + c0.B * c1.B<#=(size > 3 ? " + c0.A * c1.A" : "")#>;
         }
 
         /// <summary>
@@ -473,7 +474,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <returns></returns>
         public static <#=d.DT#> Dot(ref <#=d.Name#> c0, ref <#=d.Name#> c1)
         {
-            return c0.R * c1.R + c0.G * c1.G + c0.B * c1.B<#=(d.Size > 3 ? " + c0.A * c1.A" : "")#>;
+            return c0.R * c1.R + c0.G * c1.G + c0.B * c1.B<#=(size > 3 ? " + c0.A * c1.A" : "")#>;
         }
 
         /// <summary>
@@ -485,7 +486,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <returns></returns>
         public static void Dot(ref <#=d.Name#> c0,ref <#=d.Name#>  c1, out <#=d.DT#> result)
         {
-            result = c0.R * c1.R + c0.G * c1.G + c0.B * c1.B<#=(d.Size > 3 ? " + c0.A * c1.A" : "")#>;
+            result = c0.R * c1.R + c0.G * c1.G + c0.B * c1.B<#=(size > 3 ? " + c0.A * c1.A" : "")#>;
         }
 
         /// <summary>
@@ -508,7 +509,7 @@ namespace Molten<#=d.SubNamespace#>
         public static <#=d.Name#> AdjustContrast(<#=d.Name#> value, <#=d.DT#> contrast)
         {
             return new <#=d.Name#>(
-<#gen.IterateFields((i, field) => $"    0.5{d.DT.Literal} + contrast * (value.{field} - 0.5{d.DT.Literal}){(i < d.Size -1 ? "," : "")}");#>
+<#gen.IterateFields((i, field) => $"    0.5{d.DT.Literal} + contrast * (value.{field} - 0.5{d.DT.Literal}){(i < size -1 ? "," : "")}");#>
             );
         }
 
@@ -535,7 +536,7 @@ namespace Molten<#=d.SubNamespace#>
             <#=d.DT#> grey = value.R * 0.2125<#=d.DT.Literal#> + value.G * 0.7154<#=d.DT.Literal#> + value.B * 0.0721<#=d.DT.Literal#>;
 
             return new <#=d.Name#>(
-<#gen.IterateFields((i, field) => $"    grey + saturation * (value.{field} - grey){(i < d.Size -1 ? "," : "")}");#>
+<#gen.IterateFields((i, field) => $"    grey + saturation * (value.{field} - grey){(i < size -1 ? "," : "")}");#>
             );
         }
 
@@ -688,7 +689,7 @@ namespace Molten<#=d.SubNamespace#>
 
             return string.Format(formatProvider,
                 toStringFormat,
-<#gen.IterateFields((i, field) => $"\t{field}.ToString(format, formatProvider){(i < d.Size - 1 ? "," : "" )}", 0);#>
+<#gen.IterateFields((i, field) => $"\t{field}.ToString(format, formatProvider){(i < size - 1 ? "," : "" )}", 0);#>
             );
         }
 
@@ -718,7 +719,7 @@ namespace Molten<#=d.SubNamespace#>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref <#=d.Name#> other)
         {
-            return R == other.R && G == other.G && B == other.B<#=(d.Size > 3 ? " && A == other.A" : "")#>;
+            return R == other.R && G == other.G && B == other.B<#=(size > 3 ? " && A == other.A" : "")#>;
         }
 
         /// <summary>
@@ -756,7 +757,7 @@ namespace Molten<#=d.SubNamespace#>
         /// For example, a swizzle input of (2,2,3) on a <#=gen.See()#> with RGBA values of 100,20,255, will return a <see cref="Color4"/> with values 20,20,255.
         /// </summary>
         /// <param name="col">The color to use as a source for values.</param>
-<#gen.IterateFields((i, field) => $"/// <param name=\"{d.ArgNames[i]}Index\">The component index of the source color to use for the new {d.FieldLabels[i]} value. This should be a value between 0 and {d.Size - 1}.</param>");#>
+<#gen.IterateFields((i, field) => $"/// <param name=\"{d.ArgNames[i]}Index\">The component index of the source color to use for the new {d.FieldLabels[i]} value. This should be a value between 0 and {size - 1}.</param>");#>
         /// <returns></returns>
         public static unsafe <#=d.Name#> Swizzle(<#=d.Name#> col, <#=gen.FieldsToArgs(d.ArgNames, "int ", "Index")#>)
         {

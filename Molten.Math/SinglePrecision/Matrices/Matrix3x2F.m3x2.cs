@@ -189,8 +189,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created rotation matrix.</param>
         public static void Rotation(float angle, out Matrix3x2F result)
         {
-            float cos = (float)MathF.Cos(angle);
-            float sin = (float)MathF.Sin(angle);
+            float cos = MathF.Cos(angle);
+            float sin = MathF.Sin(angle);
 
             result = Identity;
             result.M11 = cos;
@@ -429,6 +429,18 @@ namespace Molten
                 M31 = matrix.M41,
                 M32 = matrix.M42
             };
+        }
+
+        /// <summary>
+        /// Multiplies two matrices.
+        /// </summary>
+        /// <param name="left">The first matrix to multiply.</param>
+        /// <param name="right">The second matrix to multiply.</param>
+        /// <returns>The product of the two matrices.</returns>
+        public static Matrix3x2F operator *(Matrix3x2F left, Matrix3x2F right)
+        {
+            Multiply(ref left, ref right, out Matrix3x2F result);
+            return result;
         }
     }
 }

@@ -109,8 +109,8 @@ namespace Molten.HalfPrecision
 			if (ptrValues == null)
 				throw new ArgumentNullException("ptrValues");
 
-			X = ptrValues[0];
-			Y = ptrValues[1];
+			fixed (short* dst = Values)
+				Unsafe.CopyBlock(ptrValues, dst, (sizeof(short) * 2));
 		}
 
 #endregion

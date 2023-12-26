@@ -9,7 +9,7 @@
 <#
 TypeGenerator gen = new TypeGenerator(this.GenerationEnvironment, this.Host, "def_matrices.json", "m2");
 
-gen.Generate((d) => d.Size == 2, (d, def) =>
+gen.Generate((d) => d.GetDimension(0) == 2 && d.GetDimension(1) == 2, (d, def) =>
 {
     string vectorName = $"Vector2{d.DT.Literal}";
     string mat4Name = $"Matrix4{d.DT.Literal}";

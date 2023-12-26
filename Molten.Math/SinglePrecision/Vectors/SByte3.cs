@@ -121,9 +121,8 @@ namespace Molten
 			if (ptrValues == null)
 				throw new ArgumentNullException("ptrValues");
 
-			X = ptrValues[0];
-			Y = ptrValues[1];
-			Z = ptrValues[2];
+			fixed (sbyte* dst = Values)
+				Unsafe.CopyBlock(ptrValues, dst, (sizeof(sbyte) * 3));
 		}
 
 		///<summary>Creates a new instance of <see cref="SByte3"/>, using a <see cref="SByte2"/> to populate the first 2 components.</summary>

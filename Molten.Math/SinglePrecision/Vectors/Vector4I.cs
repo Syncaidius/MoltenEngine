@@ -133,10 +133,8 @@ namespace Molten
 			if (ptrValues == null)
 				throw new ArgumentNullException("ptrValues");
 
-			X = ptrValues[0];
-			Y = ptrValues[1];
-			Z = ptrValues[2];
-			W = ptrValues[3];
+			fixed (int* dst = Values)
+				Unsafe.CopyBlock(ptrValues, dst, (sizeof(int) * 4));
 		}
 
 		///<summary>Creates a new instance of <see cref="Vector4I"/>, using a <see cref="Vector2I"/> to populate the first 2 components.</summary>

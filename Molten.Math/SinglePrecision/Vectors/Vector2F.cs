@@ -109,8 +109,8 @@ namespace Molten
 			if (ptrValues == null)
 				throw new ArgumentNullException("ptrValues");
 
-			X = ptrValues[0];
-			Y = ptrValues[1];
+			fixed (float* dst = Values)
+				Unsafe.CopyBlock(ptrValues, dst, (sizeof(float) * 2));
 		}
 
 #endregion

@@ -121,9 +121,8 @@ namespace Molten.DoublePrecision
 			if (ptrValues == null)
 				throw new ArgumentNullException("ptrValues");
 
-			X = ptrValues[0];
-			Y = ptrValues[1];
-			Z = ptrValues[2];
+			fixed (long* dst = Values)
+				Unsafe.CopyBlock(ptrValues, dst, (sizeof(long) * 3));
 		}
 
 		///<summary>Creates a new instance of <see cref="Vector3L"/>, using a <see cref="Vector2L"/> to populate the first 2 components.</summary>

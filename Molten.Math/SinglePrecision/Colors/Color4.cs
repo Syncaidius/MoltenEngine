@@ -80,7 +80,7 @@ namespace Molten
 			A = value;
 		}
 		/// <summary>Initializes a new instance of <see cref="Color4"/> from an array.</summary>
-		/// <param name="values">The values to assign to the R, G, B, A components of the color. This must be an array with at least four elements.</param>
+		/// <param name="values">The values to assign to the R, G, B, A components of the color. This must be an array with at least 4 elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
 		public unsafe Color4(float[] values)
@@ -97,7 +97,7 @@ namespace Molten
 			}
 		}
 		/// <summary>Initializes a new instance of <see cref="Color4"/> from a span.</summary>
-		/// <param name="values">The values to assign to the R, G, B, A components of the color. This must be an array with at least four elements.</param>
+		/// <param name="values">The values to assign to the R, G, B, A components of the color. This must be an array with at least 4 elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than 4 elements.</exception>
 		public Color4(Span<float> values)
@@ -105,7 +105,7 @@ namespace Molten
 			if (values == null)
 				throw new ArgumentNullException("values");
 			if (values.Length < 4)
-				throw new ArgumentOutOfRangeException("values", "There must be at least four input values for Color4.");
+				throw new ArgumentOutOfRangeException("values", "There must be at least 4 input values for Color4.");
 
 			R = values[0];
 			G = values[1];
@@ -114,7 +114,7 @@ namespace Molten
 		}
 		/// <summary>Initializes a new instance of <see cref="Color4"/> from a an unsafe pointer.</summary>
 		/// <param name="ptrValues">The values to assign to the R, G, B, A components of the color.
-		/// <para>There must be at least four elements available or undefined behaviour will occur.</para></param>
+		/// <para>There must be at least 4 elements available or undefined behaviour will occur.</para></param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="ptrValues"/> is <c>null</c>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="ptrValues"/> contains more or less than 4 elements.</exception>
 		public unsafe Color4(float* ptrValues)
@@ -122,12 +122,10 @@ namespace Molten
 			if (ptrValues == null)
 				throw new ArgumentNullException("ptrValues");
 
-			R = ptrValues[0];
-			G = ptrValues[1];
-			B = ptrValues[2];
-			A = ptrValues[3];
+			fixed (float* dst = Values)
+				Unsafe.CopyBlock(ptrValues, dst, (sizeof(float) * 4));
 		}
-		///<summary>Creates a new instance of <see cref="Color4"/>, using a <see cref="Color3"/> to populate the first three components.</summary>
+		///<summary>Creates a new instance of <see cref="Color4"/>, using a <see cref="Color3"/> to populate the first 3 components.</summary>
 		public Color4(Color3 vector, float a)
 		{
 			R = vector.R;
@@ -235,7 +233,7 @@ namespace Molten
         /// <summary>
         /// Converts the color into a packed integer.
         /// </summary>
-        /// <returns>A packed integer containing all four color components.</returns>
+        /// <returns>A packed integer containing all 4 color components.</returns>
         public int PackBGRA()
         {
 			uint r = (uint)(R * 255.0F) & 255;

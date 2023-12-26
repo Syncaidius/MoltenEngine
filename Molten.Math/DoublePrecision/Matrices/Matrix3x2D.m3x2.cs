@@ -189,8 +189,8 @@ namespace Molten.DoublePrecision
         /// <param name="result">When the method completes, contains the created rotation matrix.</param>
         public static void Rotation(double angle, out Matrix3x2D result)
         {
-            double cos = (double)MathF.Cos(angle);
-            double sin = (double)MathF.Sin(angle);
+            double cos = Math.Cos(angle);
+            double sin = Math.Sin(angle);
 
             result = Identity;
             result.M11 = cos;
@@ -429,6 +429,18 @@ namespace Molten.DoublePrecision
                 M31 = matrix.M41,
                 M32 = matrix.M42
             };
+        }
+
+        /// <summary>
+        /// Multiplies two matrices.
+        /// </summary>
+        /// <param name="left">The first matrix to multiply.</param>
+        /// <param name="right">The second matrix to multiply.</param>
+        /// <returns>The product of the two matrices.</returns>
+        public static Matrix3x2D operator *(Matrix3x2D left, Matrix3x2D right)
+        {
+            Multiply(ref left, ref right, out Matrix3x2D result);
+            return result;
         }
     }
 }

@@ -73,7 +73,7 @@
     {
       "DefName": "Matrix{size}D",
       "DataTypeName": "double",
-      "Sizes": [ "2x2", "3x4", "3x2", "2x3", "4x4" ]
+      "Sizes": [ "2x2", "3x3", "3x2", "2x3", "4x4" ]
     }
   ]
 }

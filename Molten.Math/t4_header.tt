@@ -519,7 +519,7 @@ public class TypeGenerator
 
         //for(int i = 0; i < fieldCount; i++)
         //    Out(indent + 1, $"{_curDef.FieldNames[i]} = ptrValues[{i}];");
-        Out(indent + 1, "fixed (float* dst = Values)");
+        Out(indent + 1, $"fixed ({_curDef.DT}* dst = Values)");
         Out(indent + 2, $"Unsafe.CopyBlock(ptrValues, dst, (sizeof({_curDef.DT}) * {fieldCount}));");
         Out(indent, "}");
     } 

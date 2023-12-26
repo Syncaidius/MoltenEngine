@@ -109,8 +109,8 @@ namespace Molten.DoublePrecision
 			if (ptrValues == null)
 				throw new ArgumentNullException("ptrValues");
 
-			X = ptrValues[0];
-			Y = ptrValues[1];
+			fixed (long* dst = Values)
+				Unsafe.CopyBlock(ptrValues, dst, (sizeof(long) * 2));
 		}
 
 #endregion

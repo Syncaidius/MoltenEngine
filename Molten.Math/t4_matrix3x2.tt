@@ -212,8 +212,8 @@ namespace Molten<#=d.SubNamespace#>
         /// <param name="result">When the method completes, contains the created rotation matrix.</param>
         public static void Rotation(<#=d.DT#> angle, out <#=d.Name#> result)
         {
-            <#=d.DT#> cos = (<#=d.DT#>)MathF.Cos(angle);
-            <#=d.DT#> sin = (<#=d.DT#>)MathF.Sin(angle);
+            <#=d.DT#> cos = <#=d.DT.Math#>.Cos(angle);
+            <#=d.DT#> sin = <#=d.DT.Math#>.Sin(angle);
 
             result = Identity;
             result.M11 = cos;
@@ -452,6 +452,18 @@ namespace Molten<#=d.SubNamespace#>
                 M31 = matrix.M41,
                 M32 = matrix.M42
             };
+        }
+
+        /// <summary>
+        /// Multiplies two matrices.
+        /// </summary>
+        /// <param name="left">The first matrix to multiply.</param>
+        /// <param name="right">The second matrix to multiply.</param>
+        /// <returns>The product of the two matrices.</returns>
+        public static <#=d.Name#> operator *(<#=d.Name#> left, <#=d.Name#> right)
+        {
+            Multiply(ref left, ref right, out <#=d.Name#> result);
+            return result;
         }
     }
 }
