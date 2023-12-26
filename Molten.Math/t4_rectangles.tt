@@ -24,6 +24,7 @@ using System.Runtime.Serialization;
     {
 #>
 using Molten.DoublePrecision;
+using Molten.HalfPrecision;
 <#
     }
 #>
@@ -54,7 +55,7 @@ namespace Molten<#=d.SubNamespace#>
             Bottom = position.Y + size.Y;
         }
 
-/// <summary>
+        /// <summary>
         /// Initializes a new instance of the <see cref="Rectangle"/> struct.
         /// </summary>
         /// <param name="x">The left.</param>
@@ -416,8 +417,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <returns>The intersection rectangle.</returns>
         public static <#=d.Name#> Intersect(<#=d.Name#> value1, <#=d.Name#> value2)
         {
-            <#=d.Name#> result;
-            Intersect(ref value1, ref value2, out result);
+            Intersect(ref value1, ref value2, out <#=d.Name#> result);
             return result;
         }
 
@@ -474,11 +474,10 @@ namespace Molten<#=d.SubNamespace#>
         /// </returns>
         public override bool Equals(object obj)
         {
-            if(!(obj is <#=d.Name#>))
-                return false;
+            if(obj is <#=d.Name#> rect)
+                return Equals(ref rect);
 
-            var strongValue = (<#=d.Name#>)obj;
-            return Equals(ref strongValue);
+            return false;
         }
 
         /// <summary>
@@ -551,6 +550,8 @@ namespace Molten<#=d.SubNamespace#>
                 Bottom = MathHelper.Lerp(start.Bottom, end.Bottom, percent),
             };
         }
+
+<#gen.GenerateIndexers(["index"], "index");#>
 
         #region Operators
         /// <summary>

@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using Molten.DoublePrecision;
+using Molten.HalfPrecision;
 
 namespace Molten
 {
@@ -54,7 +55,7 @@ namespace Molten
             Bottom = position.Y + size.Y;
         }
 
-/// <summary>
+        /// <summary>
         /// Initializes a new instance of the <see cref="Rectangle"/> struct.
         /// </summary>
         /// <param name="x">The left.</param>
@@ -416,8 +417,7 @@ namespace Molten
         /// <returns>The intersection rectangle.</returns>
         public static RectangleUI Intersect(RectangleUI value1, RectangleUI value2)
         {
-            RectangleUI result;
-            Intersect(ref value1, ref value2, out result);
+            Intersect(ref value1, ref value2, out RectangleUI result);
             return result;
         }
 
@@ -474,11 +474,10 @@ namespace Molten
         /// </returns>
         public override bool Equals(object obj)
         {
-            if(!(obj is RectangleUI))
-                return false;
+            if(obj is RectangleUI rect)
+                return Equals(ref rect);
 
-            var strongValue = (RectangleUI)obj;
-            return Equals(ref strongValue);
+            return false;
         }
 
         /// <summary>
@@ -551,6 +550,53 @@ namespace Molten
                 Bottom = MathHelper.Lerp(start.Bottom, end.Bottom, percent),
             };
         }
+
+		/// <summary> Gets or sets the component at the specified index. </summary>
+		/// <value>The value of the <see cref="RectangleUI"/> component, depending on the index.</value>
+		/// <param name="index">The index of the index component to access, ranging from 0 to 3, inclusive.</param>
+		/// <returns>The value of the component at the specified index value provided.</returns>
+		/// <exception cref="IndexOutOfRangeException">Thrown if the index is out of range.</exception>
+		public unsafe uint this[int index]
+		{
+			get
+			{
+				if(index < 0 || index > 3)
+					throw new IndexOutOfRangeException("index for RectangleUI must be between 0 and 3, inclusive.");
+
+				return Values[index];
+			}
+			set
+			{
+				if(index < 0 || index > 3)
+					throw new IndexOutOfRangeException("index for RectangleUI must be between 0 and 3, inclusive.");
+
+				Values[index] = value;
+			}
+		}
+
+		/// <summary> Gets or sets the component at the specified index. </summary>
+		/// <value>The value of the <see cref="RectangleUI"/> component, depending on the index.</value>
+		/// <param name="index">The index of the index component to access, ranging from 0 to 3, inclusive.</param>
+		/// <returns>The value of the component at the specified index value provided.</returns>
+		/// <exception cref="IndexOutOfRangeException">Thrown if the index is out of range.</exception>
+		public unsafe uint this[uint index]
+		{
+			get
+			{
+				if(index > 3)
+					throw new IndexOutOfRangeException("index for RectangleUI must be between 0 and 3, inclusive.");
+
+				return Values[index];
+			}
+			set
+			{
+				if(index > 3)
+					throw new IndexOutOfRangeException("index for RectangleUI must be between 0 and 3, inclusive.");
+
+				Values[index] = value;
+			}
+		}
+
 
         #region Operators
         /// <summary>
