@@ -15,7 +15,6 @@ gen.Generate(null, (d, def) =>
 {
     string vectorName = $"Vector3{d.DT.Literal}";
 #>
-using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -24,7 +23,7 @@ using System.Runtime.Serialization;
 namespace Molten<#=d.SubNamespace#>
 {
 	///<summary>Represents a four dimensional mathematical <#=d.Name#>.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack = <#=d.DT.Pack#>)]
+	[StructLayout(LayoutKind.Explicit)]
     [Serializable]
 	public partial struct <#=d.Name#> : IFormattable, IEquatable<<#=d.Name#>>
 	{
@@ -87,7 +86,7 @@ namespace Molten<#=d.SubNamespace#>
                     break;
 
                 default:
-                    Radians = 0<#=d.FP.Literal#>;
+                    Radians = <#=d.FP.Zero#>;
                     break;
             }
         }

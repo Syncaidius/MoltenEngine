@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -7,7 +6,7 @@ using System.Runtime.Serialization;
 namespace Molten.DoublePrecision
 {
 	///<summary>Represents a four dimensional mathematical AngleD.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack = 8)]
+	[StructLayout(LayoutKind.Explicit)]
     [Serializable]
 	public partial struct AngleD : IFormattable, IEquatable<AngleD>
 	{
@@ -43,6 +42,7 @@ namespace Molten.DoublePrecision
 
 		/// <summary>The radians component.</summary>
 		[DataMember]
+		[FieldOffset(0)]
 		public double Radians;
 
 

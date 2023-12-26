@@ -552,121 +552,112 @@ namespace Molten.DoublePrecision
             return result;
         }
 
-        /// <summary>
-        /// Gets or sets the component at the specified index.
-        /// </summary>
-        /// <value>The value of the matrix component, depending on the index.</value>
-        /// <param name="index">The zero-based index of the component to access.</param>
-        /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, 15].</exception>  
+		/// <summary> Gets or sets the component at the specified index. </summary>
+		/// <value>The value of the <see cref="Matrix4D"/> component, depending on the index.</value>
+		/// <param name="index">The index of the index component to access, ranging from 0 to 3, inclusive.</param>
+		/// <returns>The value of the component at the specified index value provided.</returns>
+		/// <exception cref="IndexOutOfRangeException">Thrown if the index is out of range.</exception>
 		public unsafe double this[int index]
 		{
 			get
-            {
-                if(index > 15 || index < 0)
-                    throw new IndexOutOfRangeException("Index for Matrix4D must be between from 0 to 15, inclusive.");
+			{
+				if(index < 0 || index > 15)
+					throw new IndexOutOfRangeException("index for Matrix4D must be between 0 and 15, inclusive.");
 
-                return Values[index];
-            }
-            set
-            {
-                if (index > 15 || index < 0)
-                    throw new IndexOutOfRangeException("Index for Matrix4D must be between from 0 to 15, inclusive.");
+				return Values[index];
+			}
+			set
+			{
+				if(index < 0 || index > 15)
+					throw new IndexOutOfRangeException("index for Matrix4D must be between 0 and 15, inclusive.");
 
-                Values[index] = value;
-            }
+				Values[index] = value;
+			}
 		}
 
-        /// <summary>
-        /// Gets or sets the component at the specified index.
-        /// </summary>
-        /// <value>The value of the matrix component, depending on the index.</value>
-        /// <param name="index">The zero-based index of the component to access.</param>
-        /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is greater than 15.</exception>
+		/// <summary> Gets or sets the component at the specified index. </summary>
+		/// <value>The value of the <see cref="Matrix4D"/> component, depending on the index.</value>
+		/// <param name="index">The index of the index component to access, ranging from 0 to 3, inclusive.</param>
+		/// <returns>The value of the component at the specified index value provided.</returns>
+		/// <exception cref="IndexOutOfRangeException">Thrown if the index is out of range.</exception>
 		public unsafe double this[uint index]
 		{
 			get
-            {
-                if(index > 15)
-                    throw new IndexOutOfRangeException("Index for Matrix4D must less than 16.");
+			{
+				if(index > 15)
+					throw new IndexOutOfRangeException("index for Matrix4D must be between 0 and 15, inclusive.");
 
-                return Values[index];
-            }
-            set
-            {
-                if (index > 15)
-                    throw new IndexOutOfRangeException("Index for Matrix4D must less than 16.");
+				return Values[index];
+			}
+			set
+			{
+				if(index > 15)
+					throw new IndexOutOfRangeException("index for Matrix4D must be between 0 and 15, inclusive.");
 
-                Values[index] = value;
-            }
+				Values[index] = value;
+			}
 		}
 
-        /// <summary>
-        /// Gets or sets the component at the specified index.
-        /// </summary>
-        /// <value>The value of the matrix component, depending on the index.</value>
-        /// <param name="row">The row of the matrix to access.</param>
-        /// <param name="column">The column of the matrix to access.</param>
-        /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> [0 to 3] or <paramref name="column"/> [0 to 3] is out of the range .</exception>
-        public unsafe double this[int row, int column]
-        {
-            get
-            {
-                if (row < 0 || row > 3)
-                    throw new ArgumentOutOfRangeException("row", "Rolumns for Matrix4D run from 0 to 3, inclusive.");
+		/// <summary> Gets or sets the component at the specified index. </summary>
+		/// <value>The value of the <see cref="Matrix4D"/> component, depending on the index.</value>
+		/// <param name="row">The index of the row component to access, ranging from 0 to 3, inclusive.</param>
+		/// <param name="column">The index of the column component to access, ranging from 0 to 3, inclusive.</param>
+		/// <returns>The value of the component at the specified index values provided.</returns>
+		/// <exception cref="IndexOutOfRangeException">Thrown if the index is out of range.</exception>
+		public unsafe double this[int row, int column]
+		{
+			get
+			{
+				if(row < 0 || row > 15)
+					throw new IndexOutOfRangeException("row for Matrix4D must be between 0 and 15, inclusive.");
 
-                if (column < 0 || column > 3)
-                    throw new ArgumentOutOfRangeException("column", "Columns for Matrix4D run from 0 to 3, inclusive.");
+				if(column < 0 || column > 15)
+					throw new IndexOutOfRangeException("column for Matrix4D must be between 0 and 15, inclusive.");
 
-                return Values[(row * 4) + column];
-            }
+				return Values[(row * 4) + column];
+			}
+			set
+			{
+				if(row < 0 || row > 15)
+					throw new IndexOutOfRangeException("row for Matrix4D must be between 0 and 15, inclusive.");
 
-            set
-            {
-                if (row < 0 || row > 3)
-                    throw new ArgumentOutOfRangeException("row", "Rows for Matrix4D run from 0 to 3, inclusive.");
+				if(column < 0 || column > 15)
+					throw new IndexOutOfRangeException("column for Matrix4D must be between 0 and 15, inclusive.");
 
-                if (column < 0 || column > 3)
-                    throw new ArgumentOutOfRangeException("column", "Columns for Matrix4D run from 0 to 3, inclusive.");
+				Values[(row * 4) + column] = value;
+			}
+		}
 
-                Values[(row * 4) + column] = value;
-            }
-        }
+		/// <summary> Gets or sets the component at the specified index. </summary>
+		/// <value>The value of the <see cref="Matrix4D"/> component, depending on the index.</value>
+		/// <param name="row">The index of the row component to access, ranging from 0 to 3, inclusive.</param>
+		/// <param name="column">The index of the column component to access, ranging from 0 to 3, inclusive.</param>
+		/// <returns>The value of the component at the specified index values provided.</returns>
+		/// <exception cref="IndexOutOfRangeException">Thrown if the index is out of range.</exception>
+		public unsafe double this[uint row, uint column]
+		{
+			get
+			{
+				if(row > 15)
+					throw new IndexOutOfRangeException("row for Matrix4D must be between 0 and 15, inclusive.");
 
-        /// <summary>
-        /// Gets or sets the component at the specified index.
-        /// </summary>
-        /// <value>The value of the matrix component, depending on the index.</value>
-        /// <param name="row">The row of the matrix to access.</param>
-        /// <param name="column">The column of the matrix to access.</param>
-        /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> [0 to 3] or <paramref name="column"/> [0 to 3] is out of the range .</exception>
-        public unsafe double this[uint row, uint column]
-        {
-            get
-            {
-                if (row > 3)
-                    throw new ArgumentOutOfRangeException("row", "Row index must be less than 3");
+				if(column > 15)
+					throw new IndexOutOfRangeException("column for Matrix4D must be between 0 and 15, inclusive.");
 
-                if (column > 3)
-                    throw new ArgumentOutOfRangeException("row", "Column index must be less than 3");
+				return Values[(row * 4) + column];
+			}
+			set
+			{
+				if(row > 15)
+					throw new IndexOutOfRangeException("row for Matrix4D must be between 0 and 15, inclusive.");
 
-                return Values[(row * 4) + column];
-            }
+				if(column > 15)
+					throw new IndexOutOfRangeException("column for Matrix4D must be between 0 and 15, inclusive.");
 
-            set
-            {
-                if (row > 3)
-                    throw new ArgumentOutOfRangeException("row", "Row and column index must be less than 3");
+				Values[(row * 4) + column] = value;
+			}
+		}
 
-                if (column > 3)
-                    throw new ArgumentOutOfRangeException("column", "Row and column index must be less than 3");
-
-                Values[(row * 4) + column] = value;
-            }
-        }
 
         /// <summary>
         /// Returns a hash code for the current <see cref="Matrix4D"/>.
@@ -679,22 +670,23 @@ namespace Molten.DoublePrecision
             unchecked
             {
                 var hashCode = M11.GetHashCode();
-                 hashCode = (hashCode * 397) ^ M12.GetHashCode();
-                 hashCode = (hashCode * 397) ^ M13.GetHashCode();
-                 hashCode = (hashCode * 397) ^ M14.GetHashCode();
-                 hashCode = (hashCode * 397) ^ M21.GetHashCode();
-                 hashCode = (hashCode * 397) ^ M22.GetHashCode();
-                 hashCode = (hashCode * 397) ^ M23.GetHashCode();
-                 hashCode = (hashCode * 397) ^ M24.GetHashCode();
-                 hashCode = (hashCode * 397) ^ M31.GetHashCode();
-                 hashCode = (hashCode * 397) ^ M32.GetHashCode();
-                 hashCode = (hashCode * 397) ^ M33.GetHashCode();
-                 hashCode = (hashCode * 397) ^ M34.GetHashCode();
-                 hashCode = (hashCode * 397) ^ M41.GetHashCode();
-                 hashCode = (hashCode * 397) ^ M42.GetHashCode();
-                 hashCode = (hashCode * 397) ^ M43.GetHashCode();
-                 hashCode = (hashCode * 397) ^ M44.GetHashCode();
-                 return hashCode;
+                    hashCode = (hashCode * 397) ^ M12.GetHashCode();
+                    hashCode = (hashCode * 397) ^ M13.GetHashCode();
+                    hashCode = (hashCode * 397) ^ M14.GetHashCode();
+                    hashCode = (hashCode * 397) ^ M21.GetHashCode();
+                    hashCode = (hashCode * 397) ^ M22.GetHashCode();
+                    hashCode = (hashCode * 397) ^ M23.GetHashCode();
+                    hashCode = (hashCode * 397) ^ M24.GetHashCode();
+                    hashCode = (hashCode * 397) ^ M31.GetHashCode();
+                    hashCode = (hashCode * 397) ^ M32.GetHashCode();
+                    hashCode = (hashCode * 397) ^ M33.GetHashCode();
+                    hashCode = (hashCode * 397) ^ M34.GetHashCode();
+                    hashCode = (hashCode * 397) ^ M41.GetHashCode();
+                    hashCode = (hashCode * 397) ^ M42.GetHashCode();
+                    hashCode = (hashCode * 397) ^ M43.GetHashCode();
+                    hashCode = (hashCode * 397) ^ M44.GetHashCode();
+                    
+                return hashCode;
             }
         }
 

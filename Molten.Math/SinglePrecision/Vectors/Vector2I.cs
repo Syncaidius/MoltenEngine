@@ -991,55 +991,52 @@ namespace Molten
 #endregion
 
 #region Indexers
-		/// <summary>
-        /// Gets or sets the component at the specified index.
-        /// </summary>
-        /// <value>The value of a component, depending on the index.</value>
-        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 1</param>
-        /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, 1].</exception>  
+		/// <summary> Gets or sets the component at the specified index. </summary>
+		/// <value>The value of the <see cref="Vector2I"/> component, depending on the index.</value>
+		/// <param name="index">The index of the index component to access, ranging from 0 to 1, inclusive.</param>
+		/// <returns>The value of the component at the specified index value provided.</returns>
+		/// <exception cref="IndexOutOfRangeException">Thrown if the index is out of range.</exception>
 		public unsafe int this[int index]
 		{
 			get
-            {
-                if(index > 1 || index < 0)
-                    throw new IndexOutOfRangeException("Index for Vector2I must be between from 0 to 1, inclusive.");
+			{
+				if(index < 0 || index > 1)
+					throw new IndexOutOfRangeException("index for Vector2I must be between 0 and 1, inclusive.");
 
-                return Values[index];
-            }
-            set
-            {
-                if (index > 1 || index < 0)
-                    throw new IndexOutOfRangeException("Index for Vector2I must be between from 0 to 1, inclusive.");
+				return Values[index];
+			}
+			set
+			{
+				if(index < 0 || index > 1)
+					throw new IndexOutOfRangeException("index for Vector2I must be between 0 and 1, inclusive.");
 
-                Values[index] = value;
-            }
+				Values[index] = value;
+			}
 		}
 
-        /// <summary>
-        /// Gets or sets the component at the specified index.
-        /// </summary>
-        /// <value>The value of a component, depending on the index.</value>
-        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 1</param>
-        /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is greater than 1.</exception>  
+		/// <summary> Gets or sets the component at the specified index. </summary>
+		/// <value>The value of the <see cref="Vector2I"/> component, depending on the index.</value>
+		/// <param name="index">The index of the index component to access, ranging from 0 to 1, inclusive.</param>
+		/// <returns>The value of the component at the specified index value provided.</returns>
+		/// <exception cref="IndexOutOfRangeException">Thrown if the index is out of range.</exception>
 		public unsafe int this[uint index]
 		{
 			get
-            {
-                if(index > 1)
-                    throw new IndexOutOfRangeException("Index for Vector2I must be between from 0 to 1, inclusive.");
+			{
+				if(index > 1)
+					throw new IndexOutOfRangeException("index for Vector2I must be between 0 and 1, inclusive.");
 
-                return Values[index];
-            }
-            set
-            {
-                if (index > 1)
-                    throw new IndexOutOfRangeException("Index for Vector2I must be between from 0 to 1, inclusive.");
+				return Values[index];
+			}
+			set
+			{
+				if(index > 1)
+					throw new IndexOutOfRangeException("index for Vector2I must be between 0 and 1, inclusive.");
 
-                Values[index] = value;
-            }
+				Values[index] = value;
+			}
 		}
+
 #endregion
 
 #region Casts - vectors

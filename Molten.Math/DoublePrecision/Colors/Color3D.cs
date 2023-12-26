@@ -11,7 +11,7 @@ namespace Molten.DoublePrecision
     /// </summary>
     [StructLayout(LayoutKind.Explicit)]
     [DataContract]
-    public struct Color3D : IEquatable<Color3D>, IFormattable
+    public struct Color3D : IEquatable<Color3D>, IFormattable, IVector<double>
     {
         private const string toStringFormat = "R:{0} G:{1} B:{2}";
 
@@ -29,6 +29,11 @@ namespace Molten.DoublePrecision
         /// Transparent (0D, 0D, 0D).
         /// </summary>
         public static readonly Color3D Zero = new Color3D(0D, 0D, 0D);
+
+        /// <summary>
+        /// Gets a value indicting whether this vector is zero
+        /// </summary>
+        public bool IsZero => R == 0D && G == 0D && B == 0D;
 
 		/// <summary>The red component.</summary>
 		[DataMember]
@@ -140,55 +145,54 @@ namespace Molten.DoublePrecision
             R = (packed & 255) / 255.0D;
         }
 
-        /// <summary>
-        /// Gets or sets the component at the specified index.
-        /// </summary>
-        /// <value>The value of a component, depending on the index.</value>
-        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and 2</param>
-        /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, 2].</exception>  
+#region Indexers
+		/// <summary> Gets or sets the component at the specified index. </summary>
+		/// <value>The value of the <see cref="Color3D"/> component, depending on the index.</value>
+		/// <param name="index">The index of the index component to access, ranging from 0 to 2, inclusive.</param>
+		/// <returns>The value of the component at the specified index value provided.</returns>
+		/// <exception cref="IndexOutOfRangeException">Thrown if the index is out of range.</exception>
 		public unsafe double this[int index]
 		{
 			get
-            {
-                if(index > 2 || index < 0)
-                    throw new IndexOutOfRangeException("Index for Color3D must be between from 0 to 2, inclusive.");
+			{
+				if(index < 0 || index > 2)
+					throw new IndexOutOfRangeException("index for Color3D must be between 0 and 2, inclusive.");
 
-                return Values[index];
-            }
-            set
-            {
-                if (index > 2 || index < 0)
-                    throw new IndexOutOfRangeException("Index for Color3D must be between from 0 to 2, inclusive.");
+				return Values[index];
+			}
+			set
+			{
+				if(index < 0 || index > 2)
+					throw new IndexOutOfRangeException("index for Color3D must be between 0 and 2, inclusive.");
 
-                Values[index] = value;
-            }
+				Values[index] = value;
+			}
 		}
 
-        /// <summary>
-        /// Gets or sets the component at the specified index.
-        /// </summary>
-        /// <value>The value of the red, green, or blue component, depending on the index.</value>
-        /// <param name="index">The index of the component to access. Use 0 for the red component, 1 for the green component, and 2 for the blue component.</param>
-        /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 2].</exception>
-        public unsafe double this[uint index]
+		/// <summary> Gets or sets the component at the specified index. </summary>
+		/// <value>The value of the <see cref="Color3D"/> component, depending on the index.</value>
+		/// <param name="index">The index of the index component to access, ranging from 0 to 2, inclusive.</param>
+		/// <returns>The value of the component at the specified index value provided.</returns>
+		/// <exception cref="IndexOutOfRangeException">Thrown if the index is out of range.</exception>
+		public unsafe double this[uint index]
 		{
 			get
-            {
-                if(index > 2)
-                    throw new IndexOutOfRangeException("Index for Color3D must be between from 0 to 2, inclusive.");
+			{
+				if(index > 2)
+					throw new IndexOutOfRangeException("index for Color3D must be between 0 and 2, inclusive.");
 
-                return Values[index];
-            }
-            set
-            {
-                if (index > 2)
-                    throw new IndexOutOfRangeException("Index for Color3D must be between from 0 to 2, inclusive.");
+				return Values[index];
+			}
+			set
+			{
+				if(index > 2)
+					throw new IndexOutOfRangeException("index for Color3D must be between 0 and 2, inclusive.");
 
-                Values[index] = value;
-            }
+				Values[index] = value;
+			}
 		}
+
+#endregion
 
         /// <summary>
         /// Converts the color into a packed integer.
@@ -472,6 +476,19 @@ namespace Molten.DoublePrecision
 
 
         /// <summary>
+        /// Calculates the squared length of the vector.
+        /// </summary>
+        /// <returns>The squared length of the vector.</returns>
+        /// <remarks>
+        /// This method may be preferred to <see cref="Vector2F.Length"/> when only a relative length is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public double LengthSquared()
+        {
+            return ((R * R) + (G * G) + (B * B));
+        }
+
+        /// <summary>
         /// Scales a color.
         /// </summary>
         /// <param name="value">The color to scale.</param>
@@ -722,7 +739,6 @@ namespace Molten.DoublePrecision
         /// </summary>
         /// <param name="c0">The first <see cref="Color3D"/>.</param>
         /// <param name="c1">The second <see cref="Color3D"/>.</param>
-        /// <param name="result">The destination for the result.</param>
         /// <returns></returns>
         public static double Dot(Color3D c0,Color3D c1)
         {
@@ -734,7 +750,6 @@ namespace Molten.DoublePrecision
         /// </summary>
         /// <param name="c0">The first <see cref="Color3D"/>.</param>
         /// <param name="c1">The second <see cref="Color3D"/>.</param>
-        /// <param name="result">The destination for the result.</param>
         /// <returns></returns>
         public static double Dot(ref Color3D c0, ref Color3D c1)
         {

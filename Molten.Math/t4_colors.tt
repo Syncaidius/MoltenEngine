@@ -41,7 +41,7 @@ namespace Molten<#=d.SubNamespace#>
     /// </summary>
     [StructLayout(LayoutKind.Explicit)]
     [DataContract]
-    public struct <#=d.Name#> : IEquatable<<#=d.Name#>>, IFormattable
+    public struct <#=d.Name#> : IEquatable<<#=d.Name#>>, IFormattable, IVector<<#=d.DT#>>
     {
         private const string toStringFormat = "R:{0} G:{1} B:{2}<#=(size > 3 ? " A:{3}" : "")#>";
 
@@ -59,6 +59,11 @@ namespace Molten<#=d.SubNamespace#>
         /// Transparent (<#=transparentParams#>).
         /// </summary>
         public static readonly <#=d.Name#> Zero = new <#=d.Name#>(<#=transparentParams#>);
+
+        /// <summary>
+        /// Gets a value indicting whether this vector is zero
+        /// </summary>
+        public bool IsZero => <#for(int p = 0; p < size; p++){#><#=d.FieldNames[p]#> == <#=d.DT.Zero#><#=(p < (size-1) ? " && " : "")#><#}#>;
 
 <#=gen.GenerateFields()#>
 <#gen.GenerateStandardConstructors();#>
@@ -88,55 +93,9 @@ namespace Molten<#=d.SubNamespace#>
             R = (packed & 255) / 255.0<#=d.DT.Literal#>;
         }
 
-        /// <summary>
-        /// Gets or sets the component at the specified index.
-        /// </summary>
-        /// <value>The value of a component, depending on the index.</value>
-        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on. This must be between 0 and <#=(size - 1)#></param>
-        /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, <#=(size-1)#>].</exception>  
-		public unsafe <#=d.DT#> this[int index]
-		{
-			get
-            {
-                if(index > <#=(size-1)#> || index < 0)
-                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(size-1)#>, inclusive.");
-
-                return Values[index];
-            }
-            set
-            {
-                if (index > <#=(size-1)#> || index < 0)
-                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(size-1)#>, inclusive.");
-
-                Values[index] = value;
-            }
-		}
-
-        /// <summary>
-        /// Gets or sets the component at the specified index.
-        /// </summary>
-        /// <value>The value of the red, green, or blue component, depending on the index.</value>
-        /// <param name="index">The index of the component to access. Use 0 for the red component, 1 for the green component, and 2 for the blue component.</param>
-        /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, <#=(size-1)#>].</exception>
-        public unsafe <#=d.DT#> this[uint index]
-		{
-			get
-            {
-                if(index > <#=(size-1)#>)
-                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(size-1)#>, inclusive.");
-
-                return Values[index];
-            }
-            set
-            {
-                if (index > <#=(size-1)#>)
-                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(size-1)#>, inclusive.");
-
-                Values[index] = value;
-            }
-		}
+#region Indexers
+<#gen.GenerateIndexers(["index"], "index");#>
+#endregion
 
         /// <summary>
         /// Converts the color into a packed integer.
@@ -206,6 +165,19 @@ namespace Molten<#=d.SubNamespace#>
 
 <#gen.GenerateOperator("/", "divide");#>
 <#gen.GenerateOperator("/", "divide", d.DT.Name);#>
+
+        /// <summary>
+        /// Calculates the squared length of the vector.
+        /// </summary>
+        /// <returns>The squared length of the vector.</returns>
+        /// <remarks>
+        /// This method may be preferred to <see cref="Vector2F.Length"/> when only a relative length is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public <#=d.DT#> LengthSquared()
+        {
+            return <#=d.DT.TypeCast#>(<#for(int p = 0; p < size; p++){#>(<#=d.FieldNames[p]#> * <#=d.FieldNames[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>);
+        }
 
         /// <summary>
         /// Scales a color.
@@ -458,7 +430,6 @@ namespace Molten<#=d.SubNamespace#>
         /// </summary>
         /// <param name="c0">The first <#=gen.See()#>.</param>
         /// <param name="c1">The second <#=gen.See()#>.</param>
-        /// <param name="result">The destination for the result.</param>
         /// <returns></returns>
         public static <#=d.DT#> Dot(<#=d.Name#> c0,<#=d.Name#> c1)
         {
@@ -470,7 +441,6 @@ namespace Molten<#=d.SubNamespace#>
         /// </summary>
         /// <param name="c0">The first <#=gen.See()#>.</param>
         /// <param name="c1">The second <#=gen.See()#>.</param>
-        /// <param name="result">The destination for the result.</param>
         /// <returns></returns>
         public static <#=d.DT#> Dot(ref <#=d.Name#> c0, ref <#=d.Name#> c1)
         {

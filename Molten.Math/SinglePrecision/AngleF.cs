@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -7,7 +6,7 @@ using System.Runtime.Serialization;
 namespace Molten
 {
 	///<summary>Represents a four dimensional mathematical AngleF.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack = 4)]
+	[StructLayout(LayoutKind.Explicit)]
     [Serializable]
 	public partial struct AngleF : IFormattable, IEquatable<AngleF>
 	{
@@ -43,6 +42,7 @@ namespace Molten
 
 		/// <summary>The radians component.</summary>
 		[DataMember]
+		[FieldOffset(0)]
 		public float Radians;
 
 

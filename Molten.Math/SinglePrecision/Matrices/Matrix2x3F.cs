@@ -405,121 +405,112 @@ namespace Molten
             return result;
         }
 
-        /// <summary>
-        /// Gets or sets the component at the specified index.
-        /// </summary>
-        /// <value>The value of the matrix component, depending on the index.</value>
-        /// <param name="index">The zero-based index of the component to access.</param>
-        /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, 5].</exception>  
+		/// <summary> Gets or sets the component at the specified index. </summary>
+		/// <value>The value of the <see cref="Matrix2x3F"/> component, depending on the index.</value>
+		/// <param name="index">The index of the index component to access, ranging from 0 to 1, inclusive.</param>
+		/// <returns>The value of the component at the specified index value provided.</returns>
+		/// <exception cref="IndexOutOfRangeException">Thrown if the index is out of range.</exception>
 		public unsafe float this[int index]
 		{
 			get
-            {
-                if(index > 5 || index < 0)
-                    throw new IndexOutOfRangeException("Index for Matrix2x3F must be between from 0 to 5, inclusive.");
+			{
+				if(index < 0 || index > 5)
+					throw new IndexOutOfRangeException("index for Matrix2x3F must be between 0 and 5, inclusive.");
 
-                return Values[index];
-            }
-            set
-            {
-                if (index > 5 || index < 0)
-                    throw new IndexOutOfRangeException("Index for Matrix2x3F must be between from 0 to 5, inclusive.");
+				return Values[index];
+			}
+			set
+			{
+				if(index < 0 || index > 5)
+					throw new IndexOutOfRangeException("index for Matrix2x3F must be between 0 and 5, inclusive.");
 
-                Values[index] = value;
-            }
+				Values[index] = value;
+			}
 		}
 
-        /// <summary>
-        /// Gets or sets the component at the specified index.
-        /// </summary>
-        /// <value>The value of the matrix component, depending on the index.</value>
-        /// <param name="index">The zero-based index of the component to access.</param>
-        /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is greater than 5.</exception>
+		/// <summary> Gets or sets the component at the specified index. </summary>
+		/// <value>The value of the <see cref="Matrix2x3F"/> component, depending on the index.</value>
+		/// <param name="index">The index of the index component to access, ranging from 0 to 1, inclusive.</param>
+		/// <returns>The value of the component at the specified index value provided.</returns>
+		/// <exception cref="IndexOutOfRangeException">Thrown if the index is out of range.</exception>
 		public unsafe float this[uint index]
 		{
 			get
-            {
-                if(index > 5)
-                    throw new IndexOutOfRangeException("Index for Matrix2x3F must less than 6.");
+			{
+				if(index > 5)
+					throw new IndexOutOfRangeException("index for Matrix2x3F must be between 0 and 5, inclusive.");
 
-                return Values[index];
-            }
-            set
-            {
-                if (index > 5)
-                    throw new IndexOutOfRangeException("Index for Matrix2x3F must less than 6.");
+				return Values[index];
+			}
+			set
+			{
+				if(index > 5)
+					throw new IndexOutOfRangeException("index for Matrix2x3F must be between 0 and 5, inclusive.");
 
-                Values[index] = value;
-            }
+				Values[index] = value;
+			}
 		}
 
-        /// <summary>
-        /// Gets or sets the component at the specified index.
-        /// </summary>
-        /// <value>The value of the matrix component, depending on the index.</value>
-        /// <param name="row">The row of the matrix to access.</param>
-        /// <param name="column">The column of the matrix to access.</param>
-        /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> [0 to 1] or <paramref name="column"/> [0 to 2] is out of the range .</exception>
-        public unsafe float this[int row, int column]
-        {
-            get
-            {
-                if (row < 0 || row > 1)
-                    throw new ArgumentOutOfRangeException("row", "Rolumns for Matrix2x3F run from 0 to 1, inclusive.");
+		/// <summary> Gets or sets the component at the specified index. </summary>
+		/// <value>The value of the <see cref="Matrix2x3F"/> component, depending on the index.</value>
+		/// <param name="row">The index of the row component to access, ranging from 0 to 1, inclusive.</param>
+		/// <param name="column">The index of the column component to access, ranging from 0 to 2, inclusive.</param>
+		/// <returns>The value of the component at the specified index values provided.</returns>
+		/// <exception cref="IndexOutOfRangeException">Thrown if the index is out of range.</exception>
+		public unsafe float this[int row, int column]
+		{
+			get
+			{
+				if(row < 0 || row > 5)
+					throw new IndexOutOfRangeException("row for Matrix2x3F must be between 0 and 5, inclusive.");
 
-                if (column < 0 || column > 2)
-                    throw new ArgumentOutOfRangeException("column", "Columns for Matrix2x3F run from 0 to 2, inclusive.");
+				if(column < 0 || column > 5)
+					throw new IndexOutOfRangeException("column for Matrix2x3F must be between 0 and 5, inclusive.");
 
-                return Values[(row * 3) + column];
-            }
+				return Values[(row * 3) + column];
+			}
+			set
+			{
+				if(row < 0 || row > 5)
+					throw new IndexOutOfRangeException("row for Matrix2x3F must be between 0 and 5, inclusive.");
 
-            set
-            {
-                if (row < 0 || row > 1)
-                    throw new ArgumentOutOfRangeException("row", "Rows for Matrix2x3F run from 0 to 1, inclusive.");
+				if(column < 0 || column > 5)
+					throw new IndexOutOfRangeException("column for Matrix2x3F must be between 0 and 5, inclusive.");
 
-                if (column < 0 || column > 2)
-                    throw new ArgumentOutOfRangeException("column", "Columns for Matrix2x3F run from 0 to 2, inclusive.");
+				Values[(row * 3) + column] = value;
+			}
+		}
 
-                Values[(row * 3) + column] = value;
-            }
-        }
+		/// <summary> Gets or sets the component at the specified index. </summary>
+		/// <value>The value of the <see cref="Matrix2x3F"/> component, depending on the index.</value>
+		/// <param name="row">The index of the row component to access, ranging from 0 to 1, inclusive.</param>
+		/// <param name="column">The index of the column component to access, ranging from 0 to 2, inclusive.</param>
+		/// <returns>The value of the component at the specified index values provided.</returns>
+		/// <exception cref="IndexOutOfRangeException">Thrown if the index is out of range.</exception>
+		public unsafe float this[uint row, uint column]
+		{
+			get
+			{
+				if(row > 5)
+					throw new IndexOutOfRangeException("row for Matrix2x3F must be between 0 and 5, inclusive.");
 
-        /// <summary>
-        /// Gets or sets the component at the specified index.
-        /// </summary>
-        /// <value>The value of the matrix component, depending on the index.</value>
-        /// <param name="row">The row of the matrix to access.</param>
-        /// <param name="column">The column of the matrix to access.</param>
-        /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> [0 to 1] or <paramref name="column"/> [0 to 2] is out of the range .</exception>
-        public unsafe float this[uint row, uint column]
-        {
-            get
-            {
-                if (row > 1)
-                    throw new ArgumentOutOfRangeException("row", "Row index must be less than 1");
+				if(column > 5)
+					throw new IndexOutOfRangeException("column for Matrix2x3F must be between 0 and 5, inclusive.");
 
-                if (column > 2)
-                    throw new ArgumentOutOfRangeException("row", "Column index must be less than 2");
+				return Values[(row * 3) + column];
+			}
+			set
+			{
+				if(row > 5)
+					throw new IndexOutOfRangeException("row for Matrix2x3F must be between 0 and 5, inclusive.");
 
-                return Values[(row * 3) + column];
-            }
+				if(column > 5)
+					throw new IndexOutOfRangeException("column for Matrix2x3F must be between 0 and 5, inclusive.");
 
-            set
-            {
-                if (row > 1)
-                    throw new ArgumentOutOfRangeException("row", "Row and column index must be less than 1");
+				Values[(row * 3) + column] = value;
+			}
+		}
 
-                if (column > 2)
-                    throw new ArgumentOutOfRangeException("column", "Row and column index must be less than 2");
-
-                Values[(row * 3) + column] = value;
-            }
-        }
 
         /// <summary>
         /// Returns a hash code for the current <see cref="Matrix2x3F"/>.
@@ -532,12 +523,13 @@ namespace Molten
             unchecked
             {
                 var hashCode = M11.GetHashCode();
-                 hashCode = (hashCode * 397) ^ M12.GetHashCode();
-                 hashCode = (hashCode * 397) ^ M13.GetHashCode();
-                 hashCode = (hashCode * 397) ^ M21.GetHashCode();
-                 hashCode = (hashCode * 397) ^ M22.GetHashCode();
-                 hashCode = (hashCode * 397) ^ M23.GetHashCode();
-                 return hashCode;
+                    hashCode = (hashCode * 397) ^ M12.GetHashCode();
+                    hashCode = (hashCode * 397) ^ M13.GetHashCode();
+                    hashCode = (hashCode * 397) ^ M21.GetHashCode();
+                    hashCode = (hashCode * 397) ^ M22.GetHashCode();
+                    hashCode = (hashCode * 397) ^ M23.GetHashCode();
+                    
+                return hashCode;
             }
         }
 

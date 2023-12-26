@@ -1,5 +1,9 @@
 ﻿namespace Molten
 {
+    /// <summary>
+    /// Represents an implementation of a matrix.
+    /// </summary>
+    /// <typeparam name="T">The type of the the underlying matrix components.</typeparam>
     public interface IMatrix<T> 
         where T : unmanaged
     {
@@ -9,6 +13,10 @@
         /// </value>
         bool IsIdentity { get; }
 
+        /// <summary>
+        /// Creates an array containing the elements of the <see cref="IMatrix{T}"/>.
+        /// </summary>
+        /// <returns>An array containing the components of the current <see cref="IMatrix{T}"/>.</returns>
         T[] ToArray();
 
         /// <summary>

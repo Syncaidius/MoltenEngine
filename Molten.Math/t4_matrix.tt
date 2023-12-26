@@ -15,8 +15,6 @@ gen.Generate(null, (d, def) =>
 
     int rowCount = d.GetDimension(0);
     int colCount = d.GetDimension(1);
-    int maxRowIndex = rowCount - 1;
-    int maxColIndex = colCount - 1;
 
     string rowVectorName = $"Vector{colCount}{d.DT.Literal}";
     string colVectorName = $"Vector{rowCount}{d.DT.Literal}";
@@ -340,121 +338,8 @@ namespace Molten<#=d.SubNamespace#>
             return result;
         }
 
-        /// <summary>
-        /// Gets or sets the component at the specified index.
-        /// </summary>
-        /// <value>The value of the matrix component, depending on the index.</value>
-        /// <param name="index">The zero-based index of the component to access.</param>
-        /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is outside the range [0, <#=(d.FieldNames.Length-1)#>].</exception>  
-		public unsafe <#=d.DT#> this[int index]
-		{
-			get
-            {
-                if(index > <#=(d.FieldNames.Length-1)#> || index < 0)
-                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(d.FieldNames.Length-1)#>, inclusive.");
-
-                return Values[index];
-            }
-            set
-            {
-                if (index > <#=(d.FieldNames.Length-1)#> || index < 0)
-                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must be between from 0 to <#=(d.FieldNames.Length-1)#>, inclusive.");
-
-                Values[index] = value;
-            }
-		}
-
-        /// <summary>
-        /// Gets or sets the component at the specified index.
-        /// </summary>
-        /// <value>The value of the matrix component, depending on the index.</value>
-        /// <param name="index">The zero-based index of the component to access.</param>
-        /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is greater than <#=(d.FieldNames.Length-1)#>.</exception>
-		public unsafe <#=d.DT#> this[uint index]
-		{
-			get
-            {
-                if(index > <#=(d.FieldNames.Length-1)#>)
-                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must less than <#=d.FieldNames.Length#>.");
-
-                return Values[index];
-            }
-            set
-            {
-                if (index > <#=(d.FieldNames.Length-1)#>)
-                    throw new IndexOutOfRangeException("Index for <#=d.Name#> must less than <#=d.FieldNames.Length#>.");
-
-                Values[index] = value;
-            }
-		}
-
-        /// <summary>
-        /// Gets or sets the component at the specified index.
-        /// </summary>
-        /// <value>The value of the matrix component, depending on the index.</value>
-        /// <param name="row">The row of the matrix to access.</param>
-        /// <param name="column">The column of the matrix to access.</param>
-        /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> [0 to <#=(maxRowIndex)#>] or <paramref name="column"/> [0 to <#=(maxColIndex)#>] is out of the range .</exception>
-        public unsafe <#=d.DT#> this[int row, int column]
-        {
-            get
-            {
-                if (row < 0 || row > <#=maxRowIndex#>)
-                    throw new ArgumentOutOfRangeException("row", "Rolumns for <#=d.Name#> run from 0 to <#=maxRowIndex#>, inclusive.");
-
-                if (column < 0 || column > <#=maxColIndex#>)
-                    throw new ArgumentOutOfRangeException("column", "Columns for <#=d.Name#> run from 0 to <#=maxColIndex#>, inclusive.");
-
-                return Values[(row * <#=colCount#>) + column];
-            }
-
-            set
-            {
-                if (row < 0 || row > <#=maxRowIndex#>)
-                    throw new ArgumentOutOfRangeException("row", "Rows for <#=d.Name#> run from 0 to <#=maxRowIndex#>, inclusive.");
-
-                if (column < 0 || column > <#=maxColIndex#>)
-                    throw new ArgumentOutOfRangeException("column", "Columns for <#=d.Name#> run from 0 to <#=maxColIndex#>, inclusive.");
-
-                Values[(row * <#=colCount#>) + column] = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the component at the specified index.
-        /// </summary>
-        /// <value>The value of the matrix component, depending on the index.</value>
-        /// <param name="row">The row of the matrix to access.</param>
-        /// <param name="column">The column of the matrix to access.</param>
-        /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="row"/> [0 to <#=(maxRowIndex)#>] or <paramref name="column"/> [0 to <#=(maxColIndex)#>] is out of the range .</exception>
-        public unsafe <#=d.DT#> this[uint row, uint column]
-        {
-            get
-            {
-                if (row > <#=maxRowIndex#>)
-                    throw new ArgumentOutOfRangeException("row", "Row index must be less than <#=maxRowIndex#>");
-
-                if (column > <#=maxColIndex#>)
-                    throw new ArgumentOutOfRangeException("row", "Column index must be less than <#=maxColIndex#>");
-
-                return Values[(row * <#=colCount#>) + column];
-            }
-
-            set
-            {
-                if (row > <#=maxRowIndex#>)
-                    throw new ArgumentOutOfRangeException("row", "Row and column index must be less than <#=maxRowIndex#>");
-
-                if (column > <#=maxColIndex#>)
-                    throw new ArgumentOutOfRangeException("column", "Row and column index must be less than <#=maxColIndex#>");
-
-                Values[(row * <#=colCount#>) + column] = value;
-            }
-        }
+<#gen.GenerateIndexers(["index"], "index");#>
+<#gen.GenerateIndexers(["row", "column"], $"(row * {colCount}) + column");#>
 
         /// <summary>
         /// Returns a hash code for the current <#=gen.See()#>.
@@ -467,9 +352,10 @@ namespace Molten<#=d.SubNamespace#>
             unchecked
             {
                 var hashCode = <#=d.FieldNames[0]#>.GetHashCode();
- <#for(int p = 1; p < d.FieldNames.Length; p++){#>
+    <#for(int p = 1; p < d.FieldNames.Length; p++){#>
                 hashCode = (hashCode * 397) ^ <#=d.FieldNames[p]#>.GetHashCode();
- <#}#>
+    <#}#>
+                
                 return hashCode;
             }
         }

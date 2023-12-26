@@ -132,6 +132,7 @@ public class TypeGenerator
     GeneratorDefinition _def;
     List<DataType> _supportedDataTypes;
     Dictionary<string, DataType> _dataTypes;
+    string[] indexerTypes = new string[]{ "int", "uint" };
 
     public TypeGenerator(StringBuilder genEnvironment, ITextTemplatingEngineHost host, string typeDefFileName, string filePostfix = "")
     {
@@ -375,7 +376,7 @@ public class TypeGenerator
             r += $"{indent}public {_curDef.DT} {_curDef.FieldNames[i]};{n}{n}";
         }
 
-        if(_curDef.DT.Pack > 0)
+        if(_curDef.DT.Pack > 0 && _curDef.FieldNames.Length > 1)
         {
             r += $"{indent}/// <summary>A fixed array mapped to the same memory space as the individual {See()} components.</summary>{n}";
             r += $"{indent}[IgnoreDataMember]{n}";
@@ -385,6 +386,62 @@ public class TypeGenerator
 
         return r;
     }
+
+    public void GenerateIndexers(string[] dimensions, string indexCalculation, int indent = 2)
+    {
+        // Don't generate indexers for types that only have one field.
+        if(_curDef.FieldNames.Length == 1)
+            return;
+
+        // A helper method for outputting bounds check exceptions within GenerateIndexers().
+        void OutputBoundsCheck(string indexType)
+        {
+            foreach(string dim in dimensions)
+            {
+                string exMessage = $"{dim} for {_curDef.Name} must be between 0 and {(_curDef.FieldNames.Length-1)}, inclusive.";
+                string condition = $"{dim} > {(_curDef.FieldNames.Length-1)}";
+                if(indexType == "int")
+                    condition = $"{dim} < 0 || {condition}";
+
+                Out(indent+2, $"if({condition})");
+                Out(indent+3, $"throw new IndexOutOfRangeException(\"{exMessage}\");");
+                Out(0, "");
+            }
+        }
+
+        string n = Environment.NewLine;
+
+        // Generate indexers.
+        foreach(string indexType in indexerTypes)
+        {
+            Out(indent, "/// <summary> Gets or sets the component at the specified index. </summary>");
+            Out(indent, $"/// <value>The value of the {See()} component, depending on the index.</value>");
+
+            for(int i = 0; i < dimensions.Length; i++)
+            {
+                int dimSize = _curDef.GetDimension(i);
+                Out(indent, $"/// <param name=\"{dimensions[i]}\">The index of the {dimensions[i]} component to access, ranging from 0 to {(dimSize-1)}, inclusive.</param>");
+             }
+
+            Out(indent, $"/// <returns>The value of the component at the specified index {(dimensions.Length > 1 ? "values" : "value")} provided.</returns>");
+            Out(indent, $"/// <exception cref=\"IndexOutOfRangeException\">Thrown if the index is out of range.</exception>");
+            Out(indent, $"public unsafe {_curDef.DT} this[{FieldsToArgs(dimensions, $"{indexType} ")}]");
+            Out(indent, "{");
+            Out(indent+1, "get");
+            Out(indent+1, "{");       
+            OutputBoundsCheck(indexType);
+            Out(indent+2, $"return Values[{indexCalculation}];");
+            Out(indent+1, "}");
+            Out(indent+1, "set");
+            Out(indent+1, "{");
+            OutputBoundsCheck(indexType);
+            Out(indent + 2, $"Values[{indexCalculation}] = value;");
+            Out(indent+1, "}");
+            Out(indent, "}");
+            Out(0, "");
+        }
+    }
+    
 
     public string FieldsToArgs(string[] pMap, string prefix = "", string postfix = "", int count = 0, int expectedCount = 0, string defaultValue = ""){
         string r = "";
