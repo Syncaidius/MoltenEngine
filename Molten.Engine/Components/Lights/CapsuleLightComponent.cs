@@ -17,7 +17,7 @@ namespace Molten
 
             _data = new LightData()
             {
-                Color3 = _color.ToColor3(),
+                Color3 = (Color3)_color,
                 Intensity = 1.0f,
                 Position = Vector3F.Zero,
                 RangeRcp = 1.0f / _range,
@@ -120,7 +120,7 @@ namespace Molten
             set
             {
                 _color = value;
-                _data.Color3 = _color.ToColor3();
+                _data.Color3 = (Color3)_color;
             }
         }
 

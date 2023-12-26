@@ -1,24 +1,4 @@
-﻿// Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-
-using System.Globalization;
+﻿using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
@@ -327,6 +307,31 @@ namespace Molten
         }
 
         /// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of the alpha, red, green, or blue component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the alpha component, 1 for the red component, 2 for the green component, and 3 for the blue component.</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 3].</exception>
+        public unsafe byte this[uint index]
+        {
+            get
+            {
+                if (index > 3 || index < 0)
+                    throw new IndexOutOfRangeException("Index for Color must be between from 0 to 3, inclusive.");
+
+                return Values[index];
+            }
+            set
+            {
+                if (index > 3 || index < 0)
+                    throw new IndexOutOfRangeException("Index for Color must be between from 0 to 3, inclusive.");
+
+                Values[index] = value;
+            }
+        }
+
+        /// <summary>
         /// Converts the color into a packed integer.
         /// </summary>
         /// <returns>A packed integer containing all four color components.</returns>
@@ -369,40 +374,10 @@ namespace Molten
         }
 
         /// <summary>
-        /// Converts the color into a three component vector.
-        /// </summary>
-        /// <returns>A three component vector containing the red, green, and blue components of the color.</returns>
-        public Vector3F ToVector3()
-        {
-            return new Vector3F(R / 255.0f, G / 255.0f, B / 255.0f);
-        }
-
-        /// <summary>
-        /// Converts the color into a three component color.
-        /// </summary>
-        /// <returns>A three component color containing the red, green, and blue components of the color.</returns>
-        public Color3 ToColor3()
-        {
-            return new Color3(R / 255.0f, G / 255.0f, B / 255.0f);
-        }
-
-        /// <summary>
-        /// Converts the color into a four component vector.
-        /// </summary>
-        /// <returns>A four component vector containing all four color components.</returns>
-        public Vector4F ToVector4()
-        {
-            return new Vector4F(R / 255.0f, G / 255.0f, B / 255.0f, A / 255.0f);
-        }
-
-        /// <summary>
         /// Creates an array containing the elements of the color.
         /// </summary>
         /// <returns>A four-element array containing the components of the color in RGBA order.</returns>
-        public byte[] ToArray()
-        {
-            return new [] { R, G , B, A };
-        }
+        public byte[] ToArray() => [R, G, B, A];
 
         /// <summary>
         /// Gets the brightness.
@@ -455,23 +430,17 @@ namespace Molten
             delta = max - min;
 
             if (r == max)
-            {
                 hue = (g - b) / delta;
-            }
             else if (g == max)
-            {
                 hue = 2 + (b - r) / delta;
-            }
             else if (b == max)
-            {
                 hue = 4 + (r - g) / delta;
-            }
+
             hue *= 60;
 
             if (hue < 0.0f)
-            {
                 hue += 360.0f;
-            }
+
             return hue;
         }
 
@@ -504,13 +473,9 @@ namespace Molten
                 l = (max + min) / 2;
 
                 if (l <= .5)
-                {
                     s = (max - min) / (max + min);
-                }
                 else
-                {
                     s = (max - min) / (2 - max - min);
-                }
             }
             return s;
         }
@@ -564,17 +529,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Adds two colors.
-        /// </summary>
-        /// <param name="left">The first color to add.</param>
-        /// <param name="right">The second color to add.</param>
-        /// <returns>The sum of the two colors.</returns>
-        public static Color Add(Color left, Color right)
-        {
-            return new Color(left.R + right.R, left.G + right.G, left.B + right.B, left.A + right.A);
-        }
-
-        /// <summary>
         /// Subtracts two colors.
         /// </summary>
         /// <param name="left">The first color to subtract.</param>
@@ -591,17 +545,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Subtracts two colors.
-        /// </summary>
-        /// <param name="left">The first color to subtract.</param>
-        /// <param name="right">The second color to subtract</param>
-        /// <returns>The difference of the two colors.</returns>
-        public static Color Subtract(Color left, Color right)
-        {
-            return new Color(left.R - right.R, left.G - right.G, left.B - right.B, left.A - right.A);
-        }
-
-        /// <summary>
         /// Modulates two colors.
         /// </summary>
         /// <param name="left">The first color to modulate.</param>
@@ -615,17 +558,6 @@ namespace Molten
             result.R = (byte)(left.R * right.R / 255.0f);
             result.G = (byte)(left.G * right.G / 255.0f);
             result.B = (byte)(left.B * right.B / 255.0f);
-        }
-
-        /// <summary>
-        /// Modulates two colors.
-        /// </summary>
-        /// <param name="left">The first color to modulate.</param>
-        /// <param name="right">The second color to modulate.</param>
-        /// <returns>The modulated color.</returns>
-        public static Color Modulate(Color left, Color right)
-        {
-            return new Color(left.R * right.R, left.G * right.G, left.B * right.B, left.A * right.A);
         }
 
         /// <summary>
@@ -1070,7 +1002,8 @@ namespace Molten
         /// <returns>The modulated color.</returns>
         public static Color operator *(Color left, Color right)
         {
-            return new Color((byte)(left.R * right.R / 255.0f), (byte)(left.G * right.G / 255.0f), (byte)(left.B * right.B / 255.0f), (byte)(left.A * right.A / 255.0f));
+            Modulate(ref left, ref right, out Color result);
+            return result;
         }
 
         /// <summary>
@@ -1104,7 +1037,7 @@ namespace Molten
         /// <returns>The result of the conversion.</returns>
         public static explicit operator Color3(Color value)
         {
-            return value.ToColor3();
+            return new Color3(value.R / 255.0f, value.G / 255.0f, value.B / 255.0f);
         }
 
         /// <summary>
