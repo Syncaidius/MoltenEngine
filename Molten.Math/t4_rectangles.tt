@@ -24,7 +24,6 @@ using System.Runtime.Serialization;
     {
 #>
 using Molten.DoublePrecision;
-using Molten.HalfPrecision;
 <#
     }
 #>
@@ -280,13 +279,18 @@ namespace Molten<#=d.SubNamespace#>
             }
         }
 
-        /// <summary>
-        /// Returns the area of the rectangle based on its width and height.
-        /// </summary>
+        /// <summary>Returns the area of the rectangle based on its width and height.</summary>
         /// <returns></returns>
         public <#=d.FP#> Area()
         {
             return Width * Height;
+        }
+
+        /// <summary>Creates and returns an array containing the left, top, right and bottom values of the current <#=gen.See()#>.</summary>
+        /// <returns>An array containing the left, top, right and bottom values of the current <#=gen.See()#>.</returns>
+        public <#=d.DT#>[] ToArray()
+        {
+            return [Left, Top, Right, Bottom];
         }
 
         /// <summary>

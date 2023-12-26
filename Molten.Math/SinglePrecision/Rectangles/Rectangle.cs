@@ -3,7 +3,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using Molten.DoublePrecision;
-using Molten.HalfPrecision;
 
 namespace Molten
 {
@@ -280,13 +279,18 @@ namespace Molten
             }
         }
 
-        /// <summary>
-        /// Returns the area of the rectangle based on its width and height.
-        /// </summary>
+        /// <summary>Returns the area of the rectangle based on its width and height.</summary>
         /// <returns></returns>
         public float Area()
         {
             return Width * Height;
+        }
+
+        /// <summary>Creates and returns an array containing the left, top, right and bottom values of the current <see cref="Rectangle"/>.</summary>
+        /// <returns>An array containing the left, top, right and bottom values of the current <see cref="Rectangle"/>.</returns>
+        public int[] ToArray()
+        {
+            return [Left, Top, Right, Bottom];
         }
 
         /// <summary>

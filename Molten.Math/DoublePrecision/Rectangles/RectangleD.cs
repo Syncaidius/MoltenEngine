@@ -278,13 +278,18 @@ namespace Molten.DoublePrecision
             }
         }
 
-        /// <summary>
-        /// Returns the area of the rectangle based on its width and height.
-        /// </summary>
+        /// <summary>Returns the area of the rectangle based on its width and height.</summary>
         /// <returns></returns>
         public double Area()
         {
             return Width * Height;
+        }
+
+        /// <summary>Creates and returns an array containing the left, top, right and bottom values of the current <see cref="RectangleD"/>.</summary>
+        /// <returns>An array containing the left, top, right and bottom values of the current <see cref="RectangleD"/>.</returns>
+        public double[] ToArray()
+        {
+            return [Left, Top, Right, Bottom];
         }
 
         /// <summary>
