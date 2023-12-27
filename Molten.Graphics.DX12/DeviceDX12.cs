@@ -11,6 +11,7 @@ namespace Molten.Graphics.DX12
         ID3D12Device10* _native;
         DeviceBuilderDX12 _builder;
         GraphicsQueueDX12 _cmdDirect;
+        ID3D12InfoQueue1* _debugInfo;
 
         public DeviceDX12(RenderService renderer, GraphicsManagerDXGI manager, IDXGIAdapter4* adapter, DeviceBuilderDX12 deviceBuilder) : 
             base(renderer, manager, adapter)
@@ -24,6 +25,21 @@ namespace Molten.Graphics.DX12
             if (!_builder.CheckResult(r, () => $"Failed to initialize {nameof(DeviceDX12)}"))
                 return false;
 
+            // Now we need to retrieve a debug info queue from the device.
+            if (Settings.EnableDebugLayer)
+            {
+                void* ptr = null;
+                Guid guidDebugInfo = ID3D12InfoQueue1.Guid;
+                _native->QueryInterface(&guidDebugInfo, &ptr);
+                _debugInfo = (ID3D12InfoQueue1*)ptr;
+                _debugInfo->PushEmptyStorageFilter();
+
+                uint debugCallbackID = 0;
+                r = _debugInfo->RegisterMessageCallback(new PfnMessageFunc(ProcessDebugMessage), MessageCallbackFlags.FlagNone, null, &debugCallbackID);
+                if (!r.IsSuccess)
+                    Log.Error("Failed to register debug callback");
+            }
+
             CommandQueueDesc cmdDesc = new CommandQueueDesc()
             {
                 Type = CommandListType.Direct,
@@ -31,6 +47,33 @@ namespace Molten.Graphics.DX12
 
             _cmdDirect = new GraphicsQueueDX12(Log, this, _builder, ref cmdDesc);
             return true;
+        }
+
+        private void ProcessDebugMessage(MessageCategory category, MessageSeverity severity, MessageID id, byte* pDescription, void* prContext)
+        {
+            string desc = SilkMarshal.PtrToString((nint)pDescription, NativeStringEncoding.LPStr);
+            string msg = $"[DX12] [Frame {Renderer.FrameID}] [{severity} - {category}] {desc}";
+
+            switch (severity)
+            {
+                case MessageSeverity.Corruption:
+                case MessageSeverity.Error:
+                    Log.Error(msg);
+                    break;
+
+                case MessageSeverity.Warning:
+                    Log.Warning(msg);
+                    break;
+
+                case MessageSeverity.Info:
+                    Log.WriteLine(msg);
+                    break;
+
+                default:
+                case MessageSeverity.Message:
+                    Log.Write(msg);
+                    break;
+            }
         }
 
         protected override uint MinimumFrameBufferSize()
@@ -41,6 +84,7 @@ namespace Molten.Graphics.DX12
         protected override void OnDispose()
         {
             _cmdDirect.Dispose();
+            SilkUtil.ReleasePtr(ref _debugInfo);
             base.OnDispose();
         }
 

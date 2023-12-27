@@ -5,10 +5,11 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics.DX12
 {
-    public class RendererDX12 : RenderService
+    public unsafe class RendererDX12 : RenderService
     {
         D3D12 _api;
         GraphicsManagerDXGI _displayManager;
+        ID3D12Debug6* _debug;
 
         public RendererDX12()
         {
@@ -18,6 +19,17 @@ namespace Molten.Graphics.DX12
         protected override unsafe GraphicsManager OnInitializeDisplayManager(GraphicsSettings settings)
         {
             _api = D3D12.GetApi();
+
+            // The DX12 debug layer must be setup before any devices are created.
+            if (settings.EnableDebugLayer)
+            {
+                Guid guidDebug = ID3D12Debug6.Guid;
+                void* ptr = null;
+                _api.GetDebugInterface(&guidDebug, &ptr);
+                _debug = (ID3D12Debug6*)ptr;
+                _debug->EnableDebugLayer();
+            }
+
             Builder = new DeviceBuilderDX12(_api, this);
             _displayManager = new GraphicsManagerDXGI(CreateDevice, Builder.GetCapabilities);
             return _displayManager;
@@ -47,6 +59,8 @@ namespace Molten.Graphics.DX12
         protected override void OnDisposeBeforeRender()
         {
             NativeDevice?.Dispose();
+
+            SilkUtil.ReleasePtr(ref _debug);
             _api.Dispose();
         }
 
@@ -55,5 +69,7 @@ namespace Molten.Graphics.DX12
         internal DeviceBuilderDX12 Builder { get; private set; }
 
         protected override DxcCompiler Compiler { get; }
+
+        internal ID3D12Debug6* Debug => _debug;
     }
 }

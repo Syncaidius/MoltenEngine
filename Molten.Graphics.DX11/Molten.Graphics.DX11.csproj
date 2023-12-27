@@ -37,8 +37,11 @@
 
   <ItemGroup>
     <Compile Remove="Data\**" />
+    <Compile Remove="Resources\Textures\Exceptions\**" />
     <EmbeddedResource Remove="Data\**" />
+    <EmbeddedResource Remove="Resources\Textures\Exceptions\**" />
     <None Remove="Data\**" />
+    <None Remove="Resources\Textures\Exceptions\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -55,10 +58,6 @@
     <ProjectReference Include="..\Molten.Graphics.DXGI\Molten.Graphics.DXGI.csproj" />
     <ProjectReference Include="..\Molten.Math\Molten.Math.csproj" />
     <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Resources\Textures\Exceptions\" />
   </ItemGroup>
 
 </Project>

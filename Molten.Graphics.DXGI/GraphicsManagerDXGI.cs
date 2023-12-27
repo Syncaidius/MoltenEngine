@@ -25,7 +25,7 @@ namespace Molten.Graphics.Dxgi
 
         public GraphicsManagerDXGI(DXGICreateDeviceCallback createCallback, DXGIDetectCapabilitiesCallback capabilitiesCallback)
         {
-            _api = DXGI.GetApi();
+            _api = DXGI.GetApi(null);
             _createCallback = createCallback;
             _capabilitiesCallback = capabilitiesCallback; 
             _devices = new List<DeviceDXGI>();

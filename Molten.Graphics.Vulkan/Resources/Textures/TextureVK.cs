@@ -1,5 +1,4 @@
-﻿using Silk.NET.Direct3D.Compilers;
-using Silk.NET.Vulkan;
+﻿using Silk.NET.Vulkan;
 
 namespace Molten.Graphics.Vulkan
 {
