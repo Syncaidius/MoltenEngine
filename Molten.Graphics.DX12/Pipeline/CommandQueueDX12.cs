@@ -3,12 +3,12 @@ using Silk.NET.Direct3D12;
 
 namespace Molten.Graphics.DX12
 {
-    internal unsafe class GraphicsQueueDX12 : GraphicsQueue
+    internal unsafe class CommandQueueDX12 : GraphicsQueue
     {
         CommandQueueDesc _desc;
         ID3D12CommandQueue* _ptr;
 
-        internal GraphicsQueueDX12(Logger log, DeviceDX12 device, DeviceBuilderDX12 builder, ref CommandQueueDesc desc) : 
+        internal CommandQueueDX12(Logger log, DeviceDX12 device, DeviceBuilderDX12 builder, ref CommandQueueDesc desc) : 
             base(device)
         {
             _desc = desc;
@@ -24,7 +24,7 @@ namespace Molten.Graphics.DX12
 
             DeviceDX12 device = Device as DeviceDX12; 
             HResult r = device.Ptr->CreateCommandQueue(_desc, &cmdGuid, &cmdQueue);
-            if (!builder.CheckResult(r))
+            if (!device.Log.CheckResult(r))
             {
                 Log.Error($"Failed to initialize '{_desc.Type}' command queue");
                 return;
@@ -137,8 +137,14 @@ namespace Molten.Graphics.DX12
             throw new NotImplementedException();
         }
 
+        internal ID3D12CommandQueue* Ptr => _ptr;
+
         internal Logger Log { get; }
 
-        protected override GraphicsCommandList Cmd { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        protected override GraphicsCommandList Cmd
+        {
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
+        }
     }
 }

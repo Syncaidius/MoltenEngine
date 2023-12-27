@@ -25,22 +25,6 @@ namespace Molten.Graphics.DX12
             _api = api;
         }
 
-        internal bool CheckResult(HResult r, Func<string> getMsg = null)
-        {
-            if (r.IsFailure)
-            {
-                if (getMsg != null)
-                {
-                    string msg = getMsg() + $" - Code: {r}";
-                    _renderer.Log.Error(msg);
-                }
-
-                return false;
-            }
-
-            return true;
-        }
-
         internal  HResult CreateDevice(
             DeviceDXGI device,
             out ID3D12Device10* d3dDevice)
@@ -64,7 +48,7 @@ namespace Molten.Graphics.DX12
             GraphicsCapabilities cap = device.Capabilities;
             ID3D12Device10* ptrDevice = null;
             HResult r = CreateDevice(device, out ptrDevice);
-            if(!CheckResult(r, () => $"Failed to detect capabilities for adapter '{device.Name}'"))
+            if(!_renderer.Log.CheckResult(r, () => $"Failed to detect capabilities for adapter '{device.Name}'"))
                 return;
 
             FeatureDataFeatureLevels dataFeatures = new FeatureDataFeatureLevels();
@@ -187,7 +171,7 @@ namespace Molten.Graphics.DX12
         {
             uint sizeOf = (uint)sizeof(T);
             HResult r = device->CheckFeatureSupport(feature, pData, sizeOf);
-            if (!CheckResult(r))
+            if (!_renderer.Log.CheckResult(r))
             {
                 string valName = feature.ToString().Replace("Features", "").Replace("Feature", "");
                 _renderer.Log.Error($"Failed to retrieve '{valName}' features. Code: {r}");

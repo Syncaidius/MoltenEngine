@@ -59,4 +59,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Resources\Textures\" />
+  </ItemGroup>
+
 </Project>

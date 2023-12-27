@@ -10,7 +10,7 @@ namespace Molten.Graphics.DX12
     {
         ID3D12Device10* _native;
         DeviceBuilderDX12 _builder;
-        GraphicsQueueDX12 _cmdDirect;
+        CommandQueueDX12 _cmdDirect;
         ID3D12InfoQueue1* _debugInfo;
 
         public DeviceDX12(RenderService renderer, GraphicsManagerDXGI manager, IDXGIAdapter4* adapter, DeviceBuilderDX12 deviceBuilder) : 
@@ -22,7 +22,7 @@ namespace Molten.Graphics.DX12
         protected override bool OnInitialize()
         {
             HResult r = _builder.CreateDevice(this, out PtrRef);
-            if (!_builder.CheckResult(r, () => $"Failed to initialize {nameof(DeviceDX12)}"))
+            if (!Renderer.Log.CheckResult(r, () => $"Failed to initialize {nameof(DeviceDX12)}"))
                 return false;
 
             // Now we need to retrieve a debug info queue from the device.
@@ -45,7 +45,8 @@ namespace Molten.Graphics.DX12
                 Type = CommandListType.Direct,
             };
 
-            _cmdDirect = new GraphicsQueueDX12(Log, this, _builder, ref cmdDesc);
+            _cmdDirect = new CommandQueueDX12(Log, this, _builder, ref cmdDesc);
+            FenceDX12 testFence = new FenceDX12(this, FenceFlags.None);
             return true;
         }
 
@@ -174,6 +175,6 @@ namespace Molten.Graphics.DX12
         /// </summary>
         protected ref ID3D12Device10* PtrRef => ref _native;
 
-        public override GraphicsQueueDX12 Queue => _cmdDirect;
+        public override CommandQueueDX12 Queue => _cmdDirect;
     }
 }

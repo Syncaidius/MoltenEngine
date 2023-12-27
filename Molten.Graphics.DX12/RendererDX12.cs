@@ -1,5 +1,6 @@
 ﻿using Molten.Graphics.Dxc;
 using Molten.Graphics.Dxgi;
+using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
 using Silk.NET.DXGI;
 
@@ -11,10 +12,7 @@ namespace Molten.Graphics.DX12
         GraphicsManagerDXGI _displayManager;
         ID3D12Debug6* _debug;
 
-        public RendererDX12()
-        {
-            
-        }
+        public RendererDX12() { }
 
         protected override unsafe GraphicsManager OnInitializeDisplayManager(GraphicsSettings settings)
         {

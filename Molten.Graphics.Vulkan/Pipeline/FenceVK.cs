@@ -15,7 +15,6 @@ namespace Molten.Graphics.Vulkan
         internal unsafe FenceVK(DeviceVK device, FenceCreateFlags flags)
         {
             _device = device;
-
             _native = new Fence();
             FenceCreateInfo fInfo = new FenceCreateInfo(StructureType.FenceCreateInfo, null, flags);
 
@@ -71,7 +70,7 @@ namespace Molten.Graphics.Vulkan
 
         public override bool Wait(ulong nsTimeout = ulong.MaxValue)
         {
-            Span<Fence> f = stackalloc Fence[] { _native };
+            Span<Fence> f = [_native];
             Result r = _device.VK.WaitForFences(_device, 1, f, true, nsTimeout);
             return r == Result.Success;
         }
