@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Silk.NET.Vulkan;
+﻿using Silk.NET.Vulkan;
 
 namespace Molten.Graphics.Vulkan
 {
@@ -67,7 +65,7 @@ namespace Molten.Graphics.Vulkan
 
         internal unsafe DescriptorSetVK Allocate(ShaderPassVK pass, DescriptorSetLayoutVK layout)
         {
-            return Allocate(pass, new DescriptorSetLayoutVK[] { layout })[0];
+            return Allocate(pass, [layout])[0];
         }
 
         internal unsafe DescriptorSetVK[] Allocate(ShaderPassVK pass, DescriptorSetLayoutVK[] layouts)
