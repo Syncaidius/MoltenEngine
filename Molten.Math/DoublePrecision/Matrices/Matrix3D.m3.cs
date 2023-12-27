@@ -750,7 +750,7 @@ namespace Molten.DoublePrecision
         {
             //Adapted from the row echelon code.
             Matrix3D temp = value;
-            Matrix3D.Transpose(ref temp, out result);
+            Matrix3D.TransposeTo(ref temp, out result);
 
             int lead = 0;
             int rowcount = 3;
@@ -797,7 +797,7 @@ namespace Molten.DoublePrecision
                 lead++;
             }
 
-            Matrix3D.Transpose(ref result, out result);
+            Matrix3D.TransposeTo(ref result, out result);
         }
 
         /// <summary>

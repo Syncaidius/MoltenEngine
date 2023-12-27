@@ -8,7 +8,7 @@ namespace Molten
     /// <summary>Represents a single-precision 4x4 Matrix. Contains only scale and rotation.</summary>
     [StructLayout(LayoutKind.Explicit)]
     [DataContract]
-	public partial struct Matrix4F : IEquatable<Matrix4F>, IFormattable, ITransposableMatrix<Matrix4F, Matrix4F>, IMatrix<float>
+	public partial struct Matrix4F : IEquatable<Matrix4F>, IFormattable, ITransposableMatrix<Matrix4F, Matrix4F>, IUniformMatrix<float>
     {
         /// <summary>
         /// A single-precision <see cref="Matrix4F"/> with values intialized to the identity of a 2 x 2 matrix
@@ -428,45 +428,53 @@ namespace Molten
         /// Transposes the current <see cref="Matrix4F"/> and outputs it to <paramref name="result"/>.
         /// </summary>
         /// <param name="result"></param>
-        public void Transpose(out Matrix4F result)
+        public void TransposeTo(out Matrix4F result)
         {
-            Transpose(ref this, out result);
+            TransposeTo(ref this, out result);
         }
       
         /// <summary>
-        /// Transposes the current <see cref="Matrix4F"/> in-place.
+        /// Transposes the current <see cref="Matrix4F"/> in-place, to a <see cref="Matrix4F"/>.
         /// </summary>
-        public Matrix4F Transpose()
+        public Matrix4F TransposeTo()
         {
-            Transpose(ref this, out Matrix4F result);
+            TransposeTo(ref this, out Matrix4F result);
             return result;
         }
         
+        /// <summary>
+        /// Transposes the current <see cref="Matrix4F"/> in-place.
+        /// </summary>
+        public void Transpose()
+        {
+            TransposeTo(ref this, out this);
+        }
 
         /// <summary>
         /// Calculates the transpose of the specified <see cref="Matrix4F"/>.
         /// </summary>
         /// <param name="matrix">The <see cref="Matrix4F"/> whose transpose is to be calculated.</param>
         /// <param name="result">When the method completes, contains the transpose of the specified matrix.</param>
-        public static void Transpose(ref Matrix4F matrix, out Matrix4F result)
+        public static void TransposeTo(ref Matrix4F matrix, out Matrix4F result)
         {
-            Unsafe.SkipInit(out result);
-            result.M11 = matrix.M11;
-            result.M12 = matrix.M21;
-            result.M13 = matrix.M31;
-            result.M14 = matrix.M41;
-            result.M21 = matrix.M12;
-            result.M22 = matrix.M22;
-            result.M23 = matrix.M32;
-            result.M24 = matrix.M42;
-            result.M31 = matrix.M13;
-            result.M32 = matrix.M23;
-            result.M33 = matrix.M33;
-            result.M34 = matrix.M43;
-            result.M41 = matrix.M14;
-            result.M42 = matrix.M24;
-            result.M43 = matrix.M34;
-            result.M44 = matrix.M44;
+            Matrix4F temp = new Matrix4F();
+            temp.M11 = matrix.M11;
+            temp.M12 = matrix.M21;
+            temp.M13 = matrix.M31;
+            temp.M14 = matrix.M41;
+            temp.M21 = matrix.M12;
+            temp.M22 = matrix.M22;
+            temp.M23 = matrix.M32;
+            temp.M24 = matrix.M42;
+            temp.M31 = matrix.M13;
+            temp.M32 = matrix.M23;
+            temp.M33 = matrix.M33;
+            temp.M34 = matrix.M43;
+            temp.M41 = matrix.M14;
+            temp.M42 = matrix.M24;
+            temp.M43 = matrix.M34;
+            temp.M44 = matrix.M44;
+            result = temp;
         }
 
         /// <summary>
@@ -474,9 +482,9 @@ namespace Molten
         /// </summary>
         /// <param name="value">The <see cref="Matrix4F"/> whose transpose is to be calculated.</param>
         /// <returns>The transpose of the specified <see cref="Matrix4F"/>.</returns>
-        public static Matrix4F Transpose(Matrix4F value)
+        public static Matrix4F TransposeTo(Matrix4F value)
         {
-            Transpose(ref value, out Matrix4F result);
+            TransposeTo(ref value, out Matrix4F result);
             return result;
         }
 
@@ -909,8 +917,7 @@ namespace Molten
         /// <returns>The negated <see cref="Matrix4F"/>.</returns>
         public static Matrix4F Negate(Matrix4F value)
         {
-            Matrix4F result;
-            Negate(ref value, out result);
+            Negate(ref value, out Matrix4F result);
             return result;
         }
 

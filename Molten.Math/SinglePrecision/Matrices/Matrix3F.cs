@@ -8,7 +8,7 @@ namespace Molten
     /// <summary>Represents a single-precision 3x3 Matrix. Contains only scale and rotation.</summary>
     [StructLayout(LayoutKind.Explicit)]
     [DataContract]
-	public partial struct Matrix3F : IEquatable<Matrix3F>, IFormattable, ITransposableMatrix<Matrix3F, Matrix3F>, IMatrix<float>
+	public partial struct Matrix3F : IEquatable<Matrix3F>, IFormattable, ITransposableMatrix<Matrix3F, Matrix3F>, IUniformMatrix<float>
     {
         /// <summary>
         /// A single-precision <see cref="Matrix3F"/> with values intialized to the identity of a 2 x 2 matrix
@@ -341,38 +341,46 @@ namespace Molten
         /// Transposes the current <see cref="Matrix3F"/> and outputs it to <paramref name="result"/>.
         /// </summary>
         /// <param name="result"></param>
-        public void Transpose(out Matrix3F result)
+        public void TransposeTo(out Matrix3F result)
         {
-            Transpose(ref this, out result);
+            TransposeTo(ref this, out result);
         }
       
         /// <summary>
-        /// Transposes the current <see cref="Matrix3F"/> in-place.
+        /// Transposes the current <see cref="Matrix3F"/> in-place, to a <see cref="Matrix3F"/>.
         /// </summary>
-        public Matrix3F Transpose()
+        public Matrix3F TransposeTo()
         {
-            Transpose(ref this, out Matrix3F result);
+            TransposeTo(ref this, out Matrix3F result);
             return result;
         }
         
+        /// <summary>
+        /// Transposes the current <see cref="Matrix3F"/> in-place.
+        /// </summary>
+        public void Transpose()
+        {
+            TransposeTo(ref this, out this);
+        }
 
         /// <summary>
         /// Calculates the transpose of the specified <see cref="Matrix3F"/>.
         /// </summary>
         /// <param name="matrix">The <see cref="Matrix3F"/> whose transpose is to be calculated.</param>
         /// <param name="result">When the method completes, contains the transpose of the specified matrix.</param>
-        public static void Transpose(ref Matrix3F matrix, out Matrix3F result)
+        public static void TransposeTo(ref Matrix3F matrix, out Matrix3F result)
         {
-            Unsafe.SkipInit(out result);
-            result.M11 = matrix.M11;
-            result.M12 = matrix.M21;
-            result.M13 = matrix.M31;
-            result.M21 = matrix.M12;
-            result.M22 = matrix.M22;
-            result.M23 = matrix.M32;
-            result.M31 = matrix.M13;
-            result.M32 = matrix.M23;
-            result.M33 = matrix.M33;
+            Matrix3F temp = new Matrix3F();
+            temp.M11 = matrix.M11;
+            temp.M12 = matrix.M21;
+            temp.M13 = matrix.M31;
+            temp.M21 = matrix.M12;
+            temp.M22 = matrix.M22;
+            temp.M23 = matrix.M32;
+            temp.M31 = matrix.M13;
+            temp.M32 = matrix.M23;
+            temp.M33 = matrix.M33;
+            result = temp;
         }
 
         /// <summary>
@@ -380,9 +388,9 @@ namespace Molten
         /// </summary>
         /// <param name="value">The <see cref="Matrix3F"/> whose transpose is to be calculated.</param>
         /// <returns>The transpose of the specified <see cref="Matrix3F"/>.</returns>
-        public static Matrix3F Transpose(Matrix3F value)
+        public static Matrix3F TransposeTo(Matrix3F value)
         {
-            Transpose(ref value, out Matrix3F result);
+            TransposeTo(ref value, out Matrix3F result);
             return result;
         }
 
@@ -766,8 +774,7 @@ namespace Molten
         /// <returns>The negated <see cref="Matrix3F"/>.</returns>
         public static Matrix3F Negate(Matrix3F value)
         {
-            Matrix3F result;
-            Negate(ref value, out result);
+            Negate(ref value, out Matrix3F result);
             return result;
         }
 

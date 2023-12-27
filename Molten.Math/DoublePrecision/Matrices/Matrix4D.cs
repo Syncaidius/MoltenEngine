@@ -8,7 +8,7 @@ namespace Molten.DoublePrecision
     /// <summary>Represents a double-precision 4x4 Matrix. Contains only scale and rotation.</summary>
     [StructLayout(LayoutKind.Explicit)]
     [DataContract]
-	public partial struct Matrix4D : IEquatable<Matrix4D>, IFormattable, ITransposableMatrix<Matrix4D, Matrix4D>, IMatrix<double>
+	public partial struct Matrix4D : IEquatable<Matrix4D>, IFormattable, ITransposableMatrix<Matrix4D, Matrix4D>, IUniformMatrix<double>
     {
         /// <summary>
         /// A single-precision <see cref="Matrix4D"/> with values intialized to the identity of a 2 x 2 matrix
@@ -428,45 +428,53 @@ namespace Molten.DoublePrecision
         /// Transposes the current <see cref="Matrix4D"/> and outputs it to <paramref name="result"/>.
         /// </summary>
         /// <param name="result"></param>
-        public void Transpose(out Matrix4D result)
+        public void TransposeTo(out Matrix4D result)
         {
-            Transpose(ref this, out result);
+            TransposeTo(ref this, out result);
         }
       
         /// <summary>
-        /// Transposes the current <see cref="Matrix4D"/> in-place.
+        /// Transposes the current <see cref="Matrix4D"/> in-place, to a <see cref="Matrix4D"/>.
         /// </summary>
-        public Matrix4D Transpose()
+        public Matrix4D TransposeTo()
         {
-            Transpose(ref this, out Matrix4D result);
+            TransposeTo(ref this, out Matrix4D result);
             return result;
         }
         
+        /// <summary>
+        /// Transposes the current <see cref="Matrix4D"/> in-place.
+        /// </summary>
+        public void Transpose()
+        {
+            TransposeTo(ref this, out this);
+        }
 
         /// <summary>
         /// Calculates the transpose of the specified <see cref="Matrix4D"/>.
         /// </summary>
         /// <param name="matrix">The <see cref="Matrix4D"/> whose transpose is to be calculated.</param>
         /// <param name="result">When the method completes, contains the transpose of the specified matrix.</param>
-        public static void Transpose(ref Matrix4D matrix, out Matrix4D result)
+        public static void TransposeTo(ref Matrix4D matrix, out Matrix4D result)
         {
-            Unsafe.SkipInit(out result);
-            result.M11 = matrix.M11;
-            result.M12 = matrix.M21;
-            result.M13 = matrix.M31;
-            result.M14 = matrix.M41;
-            result.M21 = matrix.M12;
-            result.M22 = matrix.M22;
-            result.M23 = matrix.M32;
-            result.M24 = matrix.M42;
-            result.M31 = matrix.M13;
-            result.M32 = matrix.M23;
-            result.M33 = matrix.M33;
-            result.M34 = matrix.M43;
-            result.M41 = matrix.M14;
-            result.M42 = matrix.M24;
-            result.M43 = matrix.M34;
-            result.M44 = matrix.M44;
+            Matrix4D temp = new Matrix4D();
+            temp.M11 = matrix.M11;
+            temp.M12 = matrix.M21;
+            temp.M13 = matrix.M31;
+            temp.M14 = matrix.M41;
+            temp.M21 = matrix.M12;
+            temp.M22 = matrix.M22;
+            temp.M23 = matrix.M32;
+            temp.M24 = matrix.M42;
+            temp.M31 = matrix.M13;
+            temp.M32 = matrix.M23;
+            temp.M33 = matrix.M33;
+            temp.M34 = matrix.M43;
+            temp.M41 = matrix.M14;
+            temp.M42 = matrix.M24;
+            temp.M43 = matrix.M34;
+            temp.M44 = matrix.M44;
+            result = temp;
         }
 
         /// <summary>
@@ -474,9 +482,9 @@ namespace Molten.DoublePrecision
         /// </summary>
         /// <param name="value">The <see cref="Matrix4D"/> whose transpose is to be calculated.</param>
         /// <returns>The transpose of the specified <see cref="Matrix4D"/>.</returns>
-        public static Matrix4D Transpose(Matrix4D value)
+        public static Matrix4D TransposeTo(Matrix4D value)
         {
-            Transpose(ref value, out Matrix4D result);
+            TransposeTo(ref value, out Matrix4D result);
             return result;
         }
 
@@ -909,8 +917,7 @@ namespace Molten.DoublePrecision
         /// <returns>The negated <see cref="Matrix4D"/>.</returns>
         public static Matrix4D Negate(Matrix4D value)
         {
-            Matrix4D result;
-            Negate(ref value, out result);
+            Negate(ref value, out Matrix4D result);
             return result;
         }
 

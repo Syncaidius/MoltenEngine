@@ -8,7 +8,7 @@ namespace Molten.DoublePrecision
     /// <summary>Represents a double-precision 2x2 Matrix. Contains only scale and rotation.</summary>
     [StructLayout(LayoutKind.Explicit)]
     [DataContract]
-	public partial struct Matrix2D : IEquatable<Matrix2D>, IFormattable, ITransposableMatrix<Matrix2D, Matrix2D>, IMatrix<double>
+	public partial struct Matrix2D : IEquatable<Matrix2D>, IFormattable, ITransposableMatrix<Matrix2D, Matrix2D>, IUniformMatrix<double>
     {
         /// <summary>
         /// A single-precision <see cref="Matrix2D"/> with values intialized to the identity of a 2 x 2 matrix
@@ -274,33 +274,41 @@ namespace Molten.DoublePrecision
         /// Transposes the current <see cref="Matrix2D"/> and outputs it to <paramref name="result"/>.
         /// </summary>
         /// <param name="result"></param>
-        public void Transpose(out Matrix2D result)
+        public void TransposeTo(out Matrix2D result)
         {
-            Transpose(ref this, out result);
+            TransposeTo(ref this, out result);
         }
       
         /// <summary>
-        /// Transposes the current <see cref="Matrix2D"/> in-place.
+        /// Transposes the current <see cref="Matrix2D"/> in-place, to a <see cref="Matrix2D"/>.
         /// </summary>
-        public Matrix2D Transpose()
+        public Matrix2D TransposeTo()
         {
-            Transpose(ref this, out Matrix2D result);
+            TransposeTo(ref this, out Matrix2D result);
             return result;
         }
         
+        /// <summary>
+        /// Transposes the current <see cref="Matrix2D"/> in-place.
+        /// </summary>
+        public void Transpose()
+        {
+            TransposeTo(ref this, out this);
+        }
 
         /// <summary>
         /// Calculates the transpose of the specified <see cref="Matrix2D"/>.
         /// </summary>
         /// <param name="matrix">The <see cref="Matrix2D"/> whose transpose is to be calculated.</param>
         /// <param name="result">When the method completes, contains the transpose of the specified matrix.</param>
-        public static void Transpose(ref Matrix2D matrix, out Matrix2D result)
+        public static void TransposeTo(ref Matrix2D matrix, out Matrix2D result)
         {
-            Unsafe.SkipInit(out result);
-            result.M11 = matrix.M11;
-            result.M12 = matrix.M21;
-            result.M21 = matrix.M12;
-            result.M22 = matrix.M22;
+            Matrix2D temp = new Matrix2D();
+            temp.M11 = matrix.M11;
+            temp.M12 = matrix.M21;
+            temp.M21 = matrix.M12;
+            temp.M22 = matrix.M22;
+            result = temp;
         }
 
         /// <summary>
@@ -308,9 +316,9 @@ namespace Molten.DoublePrecision
         /// </summary>
         /// <param name="value">The <see cref="Matrix2D"/> whose transpose is to be calculated.</param>
         /// <returns>The transpose of the specified <see cref="Matrix2D"/>.</returns>
-        public static Matrix2D Transpose(Matrix2D value)
+        public static Matrix2D TransposeTo(Matrix2D value)
         {
-            Transpose(ref value, out Matrix2D result);
+            TransposeTo(ref value, out Matrix2D result);
             return result;
         }
 
@@ -659,8 +667,7 @@ namespace Molten.DoublePrecision
         /// <returns>The negated <see cref="Matrix2D"/>.</returns>
         public static Matrix2D Negate(Matrix2D value)
         {
-            Matrix2D result;
-            Negate(ref value, out result);
+            Negate(ref value, out Matrix2D result);
             return result;
         }
 

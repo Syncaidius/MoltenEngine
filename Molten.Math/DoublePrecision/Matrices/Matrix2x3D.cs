@@ -302,17 +302,17 @@ namespace Molten.DoublePrecision
         /// Transposes the current <see cref="Matrix2x3D"/> and outputs it to <paramref name="result"/>.
         /// </summary>
         /// <param name="result"></param>
-        public void Transpose(out Matrix3x2D result)
+        public void TransposeTo(out Matrix3x2D result)
         {
-            Transpose(ref this, out result);
+            TransposeTo(ref this, out result);
         }
       
         /// <summary>
-        /// Transposes the current <see cref="Matrix2x3D"/> in-place.
+        /// Transposes the current <see cref="Matrix2x3D"/> in-place, to a <see cref="Matrix3x2D"/>.
         /// </summary>
-        public Matrix3x2D Transpose()
+        public Matrix3x2D TransposeTo()
         {
-            Transpose(ref this, out Matrix3x2D result);
+            TransposeTo(ref this, out Matrix3x2D result);
             return result;
         }
         
@@ -321,7 +321,7 @@ namespace Molten.DoublePrecision
         /// </summary>
         /// <param name="matrix">The <see cref="Matrix2x3D"/> whose transpose is to be calculated.</param>
         /// <param name="result">A <see cref="Matrix3x2D"/> containing the transposed <see cref="Matrix2x3D"/></param>
-        public static void Transpose(ref Matrix2x3D matrix, out Matrix3x2D result)
+        public static void TransposeTo(ref Matrix2x3D matrix, out Matrix3x2D result)
         {
             Unsafe.SkipInit(out result);
             result.M11 = matrix.M11;
@@ -337,9 +337,9 @@ namespace Molten.DoublePrecision
         /// </summary>
         /// <param name="value">The <see cref="Matrix2x3D"/> whose transpose is to be calculated.</param>
         /// <returns>The transpose of the specified <see cref="Matrix2x3D"/>.</returns>
-        public static Matrix3x2D Transpose(Matrix2x3D value)
+        public static Matrix3x2D TransposeTo(Matrix2x3D value)
         {
-            Transpose(ref value, out Matrix3x2D result);
+            TransposeTo(ref value, out Matrix3x2D result);
             return result;
         }
 
@@ -702,8 +702,7 @@ namespace Molten.DoublePrecision
         /// <returns>The negated <see cref="Matrix2x3D"/>.</returns>
         public static Matrix2x3D Negate(Matrix2x3D value)
         {
-            Matrix2x3D result;
-            Negate(ref value, out result);
+            Negate(ref value, out Matrix2x3D result);
             return result;
         }
 

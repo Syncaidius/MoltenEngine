@@ -8,7 +8,7 @@ namespace Molten
     /// <summary>Represents a single-precision 2x2 Matrix. Contains only scale and rotation.</summary>
     [StructLayout(LayoutKind.Explicit)]
     [DataContract]
-	public partial struct Matrix2F : IEquatable<Matrix2F>, IFormattable, ITransposableMatrix<Matrix2F, Matrix2F>, IMatrix<float>
+	public partial struct Matrix2F : IEquatable<Matrix2F>, IFormattable, ITransposableMatrix<Matrix2F, Matrix2F>, IUniformMatrix<float>
     {
         /// <summary>
         /// A single-precision <see cref="Matrix2F"/> with values intialized to the identity of a 2 x 2 matrix
@@ -274,33 +274,41 @@ namespace Molten
         /// Transposes the current <see cref="Matrix2F"/> and outputs it to <paramref name="result"/>.
         /// </summary>
         /// <param name="result"></param>
-        public void Transpose(out Matrix2F result)
+        public void TransposeTo(out Matrix2F result)
         {
-            Transpose(ref this, out result);
+            TransposeTo(ref this, out result);
         }
       
         /// <summary>
-        /// Transposes the current <see cref="Matrix2F"/> in-place.
+        /// Transposes the current <see cref="Matrix2F"/> in-place, to a <see cref="Matrix2F"/>.
         /// </summary>
-        public Matrix2F Transpose()
+        public Matrix2F TransposeTo()
         {
-            Transpose(ref this, out Matrix2F result);
+            TransposeTo(ref this, out Matrix2F result);
             return result;
         }
         
+        /// <summary>
+        /// Transposes the current <see cref="Matrix2F"/> in-place.
+        /// </summary>
+        public void Transpose()
+        {
+            TransposeTo(ref this, out this);
+        }
 
         /// <summary>
         /// Calculates the transpose of the specified <see cref="Matrix2F"/>.
         /// </summary>
         /// <param name="matrix">The <see cref="Matrix2F"/> whose transpose is to be calculated.</param>
         /// <param name="result">When the method completes, contains the transpose of the specified matrix.</param>
-        public static void Transpose(ref Matrix2F matrix, out Matrix2F result)
+        public static void TransposeTo(ref Matrix2F matrix, out Matrix2F result)
         {
-            Unsafe.SkipInit(out result);
-            result.M11 = matrix.M11;
-            result.M12 = matrix.M21;
-            result.M21 = matrix.M12;
-            result.M22 = matrix.M22;
+            Matrix2F temp = new Matrix2F();
+            temp.M11 = matrix.M11;
+            temp.M12 = matrix.M21;
+            temp.M21 = matrix.M12;
+            temp.M22 = matrix.M22;
+            result = temp;
         }
 
         /// <summary>
@@ -308,9 +316,9 @@ namespace Molten
         /// </summary>
         /// <param name="value">The <see cref="Matrix2F"/> whose transpose is to be calculated.</param>
         /// <returns>The transpose of the specified <see cref="Matrix2F"/>.</returns>
-        public static Matrix2F Transpose(Matrix2F value)
+        public static Matrix2F TransposeTo(Matrix2F value)
         {
-            Transpose(ref value, out Matrix2F result);
+            TransposeTo(ref value, out Matrix2F result);
             return result;
         }
 
@@ -659,8 +667,7 @@ namespace Molten
         /// <returns>The negated <see cref="Matrix2F"/>.</returns>
         public static Matrix2F Negate(Matrix2F value)
         {
-            Matrix2F result;
-            Negate(ref value, out result);
+            Negate(ref value, out Matrix2F result);
             return result;
         }
 

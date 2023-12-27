@@ -13,25 +13,25 @@
         /// Transposes the current matrix and outputs it to <paramref name="result"/>.
         /// </summary>
         /// <param name="result"></param>
-        void Transpose(out D result);
+        void TransposeTo(out D result);
 
         /// <summary>
-        /// Transposes the current matrix in-place.
+        /// Transposes the current matrix in-place, to a matrix of type <typeparamref name="D"/>.
         /// </summary>
-        D Transpose();
+        D TransposeTo();
 
         /// <summary>
         /// Calculates the transpose of the specified matrix.
         /// </summary>
         /// <param name="matrix">The matrix whose transpose is to be calculated.</param>
         /// <param name="result">When the method completes, contains the transpose of the specified matrix.</param>
-        static abstract void Transpose(ref S matrix, out D result);
+        static abstract void TransposeTo(ref S matrix, out D result);
 
         /// <summary>
         /// Calculates the transpose of the specified matrix.
         /// </summary>
         /// <param name="matrix">The matrix whose transpose is to be calculated.</param>
         /// <returns>The transpose of the specified matrix.</returns>
-        static abstract D Transpose(S matrix);
+        static abstract D TransposeTo(S matrix);
     }
 }

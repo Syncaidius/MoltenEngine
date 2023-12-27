@@ -775,7 +775,7 @@ namespace Molten
         {
             //Adapted from the row echelon code.
             Matrix4F temp = value;
-            Matrix4F.Transpose(ref temp, out result);
+            Matrix4F.TransposeTo(ref temp, out result);
 
             int lead = 0;
             int rowcount = 4;
@@ -823,7 +823,7 @@ namespace Molten
                 lead++;
             }
 
-            Matrix4F.Transpose(ref result, out result);
+            Matrix4F.TransposeTo(ref result, out result);
         }
 
         /// <summary>
@@ -2067,7 +2067,7 @@ namespace Molten
         {
             FromQuaternion(ref scalingRotation, out Matrix4F sr);
 
-            result = CreateTranslation(-scalingCenter) * Transpose(sr) * Scaling(scaling) * sr * CreateTranslation(scalingCenter) * CreateTranslation(-rotationCenter) *
+            result = CreateTranslation(-scalingCenter) * TransposeTo(sr) * Scaling(scaling) * sr * CreateTranslation(scalingCenter) * CreateTranslation(-rotationCenter) *
                 FromQuaternion(rotation) * CreateTranslation(rotationCenter) * CreateTranslation(translation);       
         }
 

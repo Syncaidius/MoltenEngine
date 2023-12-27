@@ -750,7 +750,7 @@ namespace Molten
         {
             //Adapted from the row echelon code.
             Matrix3F temp = value;
-            Matrix3F.Transpose(ref temp, out result);
+            Matrix3F.TransposeTo(ref temp, out result);
 
             int lead = 0;
             int rowcount = 3;
@@ -797,7 +797,7 @@ namespace Molten
                 lead++;
             }
 
-            Matrix3F.Transpose(ref result, out result);
+            Matrix3F.TransposeTo(ref result, out result);
         }
 
         /// <summary>

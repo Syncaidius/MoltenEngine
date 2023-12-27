@@ -775,7 +775,7 @@ namespace Molten.DoublePrecision
         {
             //Adapted from the row echelon code.
             Matrix4D temp = value;
-            Matrix4D.Transpose(ref temp, out result);
+            Matrix4D.TransposeTo(ref temp, out result);
 
             int lead = 0;
             int rowcount = 4;
@@ -823,7 +823,7 @@ namespace Molten.DoublePrecision
                 lead++;
             }
 
-            Matrix4D.Transpose(ref result, out result);
+            Matrix4D.TransposeTo(ref result, out result);
         }
 
         /// <summary>
@@ -2067,7 +2067,7 @@ namespace Molten.DoublePrecision
         {
             FromQuaternion(ref scalingRotation, out Matrix4D sr);
 
-            result = CreateTranslation(-scalingCenter) * Transpose(sr) * Scaling(scaling) * sr * CreateTranslation(scalingCenter) * CreateTranslation(-rotationCenter) *
+            result = CreateTranslation(-scalingCenter) * TransposeTo(sr) * Scaling(scaling) * sr * CreateTranslation(scalingCenter) * CreateTranslation(-rotationCenter) *
                 FromQuaternion(rotation) * CreateTranslation(rotationCenter) * CreateTranslation(translation);       
         }
 

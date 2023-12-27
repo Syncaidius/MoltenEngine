@@ -16,6 +16,7 @@ gen.Generate(null, (d, def) =>
     int rowCount = d.GetDimension(0);
     int colCount = d.GetDimension(1);
 
+    string matInterface = rowCount == colCount ? "IUniformMatrix" : "IMatrix";
     string rowVectorName = $"Vector{colCount}{d.DT.Literal}";
     string colVectorName = $"Vector{rowCount}{d.DT.Literal}";
 
@@ -53,7 +54,7 @@ namespace Molten<#=d.SubNamespace#>
     /// <summary>Represents a <#=(d.DT.Bits > 32 ? "double" : "single")#>-precision <#=rowCount#>x<#=colCount#> Matrix. Contains only scale and rotation.</summary>
     [StructLayout(LayoutKind.Explicit)]
     [DataContract]
-	public partial struct <#=d.Name#> : IEquatable<<#=d.Name#>>, IFormattable, ITransposableMatrix<<#=d.Name#>, <#=transposedName#>>, IMatrix<<#=d.DT#>>
+	public partial struct <#=d.Name#> : IEquatable<<#=d.Name#>>, IFormattable, ITransposableMatrix<<#=d.Name#>, <#=transposedName#>>, <#=matInterface#><<#=d.DT#>>
     {
         /// <summary>
         /// A single-precision <#=gen.See()#> with values intialized to the identity of a 2 x 2 matrix
@@ -225,33 +226,41 @@ namespace Molten<#=d.SubNamespace#>
         /// Transposes the current <#=gen.See()#> and outputs it to <paramref name="result"/>.
         /// </summary>
         /// <param name="result"></param>
-        public void Transpose(out <#=transposedName#> result)
+        public void TransposeTo(out <#=transposedName#> result)
         {
-            Transpose(ref this, out result);
+            TransposeTo(ref this, out result);
         }
       
         /// <summary>
-        /// Transposes the current <#=gen.See()#> in-place.
+        /// Transposes the current <#=gen.See()#> in-place, to a <#=gen.See(transposedName)#>.
         /// </summary>
-        public <#=transposedName#> Transpose()
+        public <#=transposedName#> TransposeTo()
         {
-            Transpose(ref this, out <#=transposedName#> result);
+            TransposeTo(ref this, out <#=transposedName#> result);
             return result;
         }
         
 <# if(rowCount == colCount){#>
+        /// <summary>
+        /// Transposes the current <#=gen.See()#> in-place.
+        /// </summary>
+        public void Transpose()
+        {
+            TransposeTo(ref this, out this);
+        }
 
         /// <summary>
         /// Calculates the transpose of the specified <#=gen.See()#>.
         /// </summary>
         /// <param name="matrix">The <#=gen.See()#> whose transpose is to be calculated.</param>
         /// <param name="result">When the method completes, contains the transpose of the specified matrix.</param>
-        public static void Transpose(ref <#=d.Name#> matrix, out <#=d.Name#> result)
+        public static void TransposeTo(ref <#=d.Name#> matrix, out <#=d.Name#> result)
         {
-            Unsafe.SkipInit(out result);
+            <#=transposedName#> temp = new <#=transposedName#>();
 <#for(int i = 0; i < d.FieldNames.Length; i++){#>
-            result.<#=d.FieldNames[i]#> = matrix.<#char[] c = d.FieldNames[i].ToCharArray(); Array.Reverse(c);#><#=d.FieldNames[i][0]#><#=(new string(c, 0, 2))#>;
+            temp.<#=d.FieldNames[i]#> = matrix.<#char[] c = d.FieldNames[i].ToCharArray(); Array.Reverse(c);#><#=d.FieldNames[i][0]#><#=(new string(c, 0, 2))#>;
 <#}#>
+            result = temp;
         }
 <#}else{#>
         /// <summary>
@@ -259,7 +268,7 @@ namespace Molten<#=d.SubNamespace#>
         /// </summary>
         /// <param name="matrix">The <#=gen.See()#> whose transpose is to be calculated.</param>
         /// <param name="result">A <see cref="<#=transposedName#>"/> containing the transposed <#=gen.See()#></param>
-        public static void Transpose(ref <#=d.Name#> matrix, out <#=transposedName#> result)
+        public static void TransposeTo(ref <#=d.Name#> matrix, out <#=transposedName#> result)
         {
             Unsafe.SkipInit(out result);
 <#for(int i = 0; i < d.FieldNames.Length; i++){#>
@@ -273,9 +282,9 @@ namespace Molten<#=d.SubNamespace#>
         /// </summary>
         /// <param name="value">The <#=gen.See()#> whose transpose is to be calculated.</param>
         /// <returns>The transpose of the specified <#=gen.See()#>.</returns>
-        public static <#=transposedName#> Transpose(<#=d.Name#> value)
+        public static <#=transposedName#> TransposeTo(<#=d.Name#> value)
         {
-            Transpose(ref value, out <#=transposedName#> result);
+            TransposeTo(ref value, out <#=transposedName#> result);
             return result;
         }
 
@@ -408,8 +417,7 @@ namespace Molten<#=d.SubNamespace#>
         /// <returns>The negated <#=gen.See()#>.</returns>
         public static <#=d.Name#> Negate(<#=d.Name#> value)
         {
-            <#=d.Name#> result;
-            Negate(ref value, out result);
+            Negate(ref value, out <#=d.Name#> result);
             return result;
         }
 

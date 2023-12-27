@@ -302,17 +302,17 @@ namespace Molten
         /// Transposes the current <see cref="Matrix3x2F"/> and outputs it to <paramref name="result"/>.
         /// </summary>
         /// <param name="result"></param>
-        public void Transpose(out Matrix2x3F result)
+        public void TransposeTo(out Matrix2x3F result)
         {
-            Transpose(ref this, out result);
+            TransposeTo(ref this, out result);
         }
       
         /// <summary>
-        /// Transposes the current <see cref="Matrix3x2F"/> in-place.
+        /// Transposes the current <see cref="Matrix3x2F"/> in-place, to a <see cref="Matrix2x3F"/>.
         /// </summary>
-        public Matrix2x3F Transpose()
+        public Matrix2x3F TransposeTo()
         {
-            Transpose(ref this, out Matrix2x3F result);
+            TransposeTo(ref this, out Matrix2x3F result);
             return result;
         }
         
@@ -321,7 +321,7 @@ namespace Molten
         /// </summary>
         /// <param name="matrix">The <see cref="Matrix3x2F"/> whose transpose is to be calculated.</param>
         /// <param name="result">A <see cref="Matrix2x3F"/> containing the transposed <see cref="Matrix3x2F"/></param>
-        public static void Transpose(ref Matrix3x2F matrix, out Matrix2x3F result)
+        public static void TransposeTo(ref Matrix3x2F matrix, out Matrix2x3F result)
         {
             Unsafe.SkipInit(out result);
             result.M11 = matrix.M11;
@@ -337,9 +337,9 @@ namespace Molten
         /// </summary>
         /// <param name="value">The <see cref="Matrix3x2F"/> whose transpose is to be calculated.</param>
         /// <returns>The transpose of the specified <see cref="Matrix3x2F"/>.</returns>
-        public static Matrix2x3F Transpose(Matrix3x2F value)
+        public static Matrix2x3F TransposeTo(Matrix3x2F value)
         {
-            Transpose(ref value, out Matrix2x3F result);
+            TransposeTo(ref value, out Matrix2x3F result);
             return result;
         }
 
@@ -702,8 +702,7 @@ namespace Molten
         /// <returns>The negated <see cref="Matrix3x2F"/>.</returns>
         public static Matrix3x2F Negate(Matrix3x2F value)
         {
-            Matrix3x2F result;
-            Negate(ref value, out result);
+            Negate(ref value, out Matrix3x2F result);
             return result;
         }
 
