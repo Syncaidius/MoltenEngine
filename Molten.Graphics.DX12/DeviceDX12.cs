@@ -46,7 +46,6 @@ namespace Molten.Graphics.DX12
             };
 
             _cmdDirect = new CommandQueueDX12(Log, this, _builder, ref cmdDesc);
-            FenceDX12 testFence = new FenceDX12(this, FenceFlags.None);
             return true;
         }
 

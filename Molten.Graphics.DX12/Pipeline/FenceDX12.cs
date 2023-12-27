@@ -13,12 +13,14 @@ namespace Molten.Graphics.DX12
 
         internal FenceDX12(DeviceDX12 device, FenceFlags flags)
         {
+            _device = device;
             void* ptr = null;
             Guid guid = ID3D12Fence.Guid;
-            HResult hr = device.Ptr->CreateFence(0, flags, &guid, &ptr);
+            HResult hr = device.Ptr->CreateFence(_value, flags, &guid, &ptr);
             if (!device.Log.CheckResult(hr, () => "Failed to create fence"))
                 return;
 
+            _value++;
             _ptr = (ID3D12Fence*)ptr;
             void* ptrEvent = DX12Win32.CreateEvent(null, false, false, null);
             if (ptrEvent == null)
@@ -58,11 +60,6 @@ namespace Molten.Graphics.DX12
                     case Win32WaitForSingleObjectResult.FAILED:
                         _device.Log.Error($"Failed to wait for fence - {result}");
                         return false;
-
-                    case Win32WaitForSingleObjectResult.OBJECT_0:
-                    case Win32WaitForSingleObjectResult.IO_COMPLETION:
-                        return true;
-
                 }
             }
 
