@@ -2,19 +2,12 @@
 
 namespace Molten.Graphics.DX12
 {
-    internal unsafe class CommandListDX12 : GraphicsObject
+    internal abstract class CommandListDX12 : GraphicsObject
     {
-        ID3D12CommandList* _handle;
-
-        internal CommandListDX12(CommandAllocatorDX12 allocator, void* handle) : base(allocator.Device)
-        {
-            Allocator = allocator;
-            _handle = (ID3D12CommandList*)handle;
-        }
+        protected CommandListDX12(CommandAllocatorDX12 allocator) : base(allocator.Device) { }
 
         protected override void OnGraphicsRelease()
         {
-            SilkUtil.ReleasePtr(ref _handle);
             Allocator.Unallocate(this);
         }
 
@@ -22,5 +15,30 @@ namespace Molten.Graphics.DX12
         /// Gets the parent <see cref="CommandAllocatorDX12"/> from which the current <see cref="CommandListDX12"/> was allocated.
         /// </summary>
         public CommandAllocatorDX12 Allocator { get; }
+
+        public unsafe abstract ID3D12CommandList* BaseHandle { get; }
+    }
+
+    internal abstract unsafe class CommandListDX12<T> : CommandListDX12
+        where T : unmanaged
+    {
+        T* _handle;
+
+        internal CommandListDX12(CommandAllocatorDX12 allocator, T* handle) : base(allocator)
+        {
+            _handle = handle;
+        }
+
+        protected override void OnGraphicsRelease()
+        {
+            SilkUtil.ReleasePtr(ref _handle);
+            base.OnGraphicsRelease();
+        }
+
+        public static implicit operator ID3D12CommandList*(CommandListDX12<T> cmd) => (ID3D12CommandList*)cmd._handle;
+
+        public override unsafe ID3D12CommandList* BaseHandle => (ID3D12CommandList*)_handle;
+
+        protected ref T* Handle => ref _handle;
     }
 }

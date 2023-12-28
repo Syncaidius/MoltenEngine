@@ -19,21 +19,27 @@ namespace Molten.Graphics.DX12
             void* ptr = null;
             HResult hr = device.Ptr->CreateCommandAllocator(CommandListType.Direct, &guid, &ptr);
             if (!device.Log.CheckResult(hr, () => "Failed to create command allocator"))
-                return;
+                hr.Throw();
 
             _handle = (ID3D12CommandAllocator*)ptr;
             _allocated = new ThreadedList<CommandListDX12>();
         }
 
-        internal CommandListDX12 Allocate(ID3D12PipelineState* pInitialState /*TODO Properly provide a PipelineStateDX12*/)
+        private T* Allocate<T>(Guid guid, ID3D12PipelineState* pInitialState /*TODO Properly provide a PipelineStateDX12*/)
+            where T : unmanaged
         {
             void* ptr = null;
-            Guid guid = ID3D12GraphicsCommandList.Guid;
             HResult hr = _device.Ptr->CreateCommandList(0, Type, _handle, pInitialState, &guid, &ptr);
-            if(!_device.Log.CheckResult(hr, () => $"Failed to allocate {Type} command list"))
-                return null;
+            if (!_device.Log.CheckResult(hr, () => $"Failed to allocate {Type} command list"))
+                hr.Throw();
 
-            CommandListDX12 list = new CommandListDX12(this, ptr);
+            return (T*)ptr;
+        }
+
+        internal GraphicsCommandListDX12 AllocateGraphics<T>(ID3D12PipelineState* pInitialState /*TODO Properly provide a PipelineStateDX12*/)
+        {
+            ID3D12GraphicsCommandList* ptr = Allocate<ID3D12GraphicsCommandList>(ID3D12GraphicsCommandList.Guid, pInitialState);
+            GraphicsCommandListDX12 list = new GraphicsCommandListDX12(this, ptr);
             _allocated.Add(list);
 
             return list;
