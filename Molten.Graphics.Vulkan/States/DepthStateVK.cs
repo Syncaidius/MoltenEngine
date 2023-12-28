@@ -2,11 +2,11 @@
 
 namespace Molten.Graphics.Vulkan
 {
-    public unsafe class DepthStateVK : GraphicsObject, IEquatable<DepthStateVK>, IEquatable<PipelineDepthStencilStateCreateInfo>
+    public unsafe class DepthStateVK : GraphicsObject<DeviceVK>, IEquatable<DepthStateVK>, IEquatable<PipelineDepthStencilStateCreateInfo>
     {
         PipelineDepthStencilStateCreateInfo* _desc;
 
-        public DepthStateVK(GraphicsDevice device, ref ShaderPassParameters parameters) :
+        public DepthStateVK(DeviceVK device, ref ShaderPassParameters parameters) :
             base(device)
         {
             _desc = EngineUtil.Alloc<PipelineDepthStencilStateCreateInfo>();

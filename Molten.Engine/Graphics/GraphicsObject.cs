@@ -47,4 +47,23 @@
         /// </summary>
         internal ulong ReleaseFrameID { get; set; }
     }
+
+    /// <summary>
+    /// A generic version of <see cref="GraphicsObject"/> which is bound to a specific type of <see cref="GraphicsDevice"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of <see cref="GraphicsDevice"/> to bind to.</typeparam>
+    public abstract class GraphicsObject<T> : GraphicsObject
+        where T : GraphicsDevice
+    {
+        protected GraphicsObject(T device) : base(device)
+        {
+            Device = device;
+
+        }
+
+        /// <summary>
+        /// Gets the <typeparamref name="T"/> that the current <see cref="GraphicsObject"/> is bound to.
+        /// </summary>
+        public new T Device { get; }
+    }
 }

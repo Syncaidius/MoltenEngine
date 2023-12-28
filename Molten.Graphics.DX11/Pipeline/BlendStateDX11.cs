@@ -1,10 +1,9 @@
-﻿using Silk.NET.Core;
-using Silk.NET.Direct3D11;
+﻿using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics.DX11
 {
     /// <summary>Stores a blend state for use with a <see cref="GraphicsQueueDX11"/>.</summary>
-    public unsafe class BlendStateDX11 : GraphicsObject, IEquatable<BlendStateDX11>, IEquatable<BlendStateDX11.CombinedDesc>
+    public unsafe class BlendStateDX11 : GraphicsObject<DeviceDX11>, IEquatable<BlendStateDX11>, IEquatable<BlendStateDX11.CombinedDesc>
     {
         public struct CombinedDesc
         {

@@ -19,7 +19,7 @@ namespace Molten.Graphics.DX11
         /// </summary>
         List<ResourceHandleDX11<ID3D11Resource>> _oldHandles;
 
-        internal TextureDX11(GraphicsDevice device, GraphicsTextureType type, 
+        internal TextureDX11(DeviceDX11 device, GraphicsTextureType type, 
             TextureDimensions dimensions, 
             AntiAliasLevel aaLevel, 
             MSAAQuality sampleQuality, 
@@ -29,6 +29,7 @@ namespace Molten.Graphics.DX11
             string name) :
             base(device, type, dimensions, aaLevel, sampleQuality, format, flags | GraphicsResourceFlags.GpuRead, allowMipMapGen, name)
         {
+            Device = device;
             _oldHandles = new List<ResourceHandleDX11<ID3D11Resource>>();
         }
 
@@ -81,7 +82,6 @@ namespace Molten.Graphics.DX11
 
         protected override void OnCreateResource(uint frameBufferSize, uint frameBufferIndex, ulong frameID)
         {
-            DeviceDX11 device = Device as DeviceDX11;
             _handles = new ResourceHandleDX11<ID3D11Resource>[frameBufferSize];
 
             if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
@@ -94,7 +94,7 @@ namespace Molten.Graphics.DX11
             {
                 ResourceHandleDX11<ID3D11Resource> handle = CreateHandle();
                 _handles[i] = handle;
-                CreateTexture(device, handle, i);
+                CreateTexture(Device, handle, i);
 
                 SetDebugName(handle.NativePtr, $"{Name}_FI{i}");
 
@@ -193,5 +193,7 @@ namespace Molten.Graphics.DX11
         public override unsafe void* SRV => _curHandle.SRV.Ptr;
 
         public override unsafe void* UAV => _curHandle.UAV.Ptr;
+
+        public new DeviceDX11 Device { get; }
     }
 }

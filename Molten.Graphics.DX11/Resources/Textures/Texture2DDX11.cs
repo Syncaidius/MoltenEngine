@@ -9,7 +9,7 @@ namespace Molten.Graphics.DX11
         protected Texture2DDesc1 Desc;
 
         internal Texture2DDX11(
-            GraphicsDevice device,
+            DeviceDX11 device,
             uint width,
             uint height,
             GraphicsResourceFlags flags,
@@ -44,7 +44,7 @@ namespace Molten.Graphics.DX11
 
             ID3D11Texture2D1* ptrTex = null;
             fixed (Texture2DDesc1* pDesc = &Desc)
-                (Device as DeviceDX11).Ptr->CreateTexture2D1(pDesc, subData, ref ptrTex);
+                Device.Ptr->CreateTexture2D1(pDesc, subData, ref ptrTex);
 
             EngineUtil.Free(ref subData);
             handle.NativePtr = (ID3D11Resource*)ptrTex;

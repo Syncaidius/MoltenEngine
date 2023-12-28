@@ -1,6 +1,5 @@
 ﻿using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
-using Silk.NET.DXGI;
 
 namespace Molten.Graphics.DX11
 {
@@ -25,7 +24,7 @@ namespace Molten.Graphics.DX11
         { }
 
         internal Texture3DDX11(
-            GraphicsDevice device,
+            DeviceDX11 device,
             uint width,
             uint height,
             uint depth,
@@ -56,7 +55,7 @@ namespace Molten.Graphics.DX11
             SubresourceData* subData = null;
 
             fixed(Texture3DDesc1* pDesc = &_desc)
-                (Device as DeviceDX11).Ptr->CreateTexture3D1(pDesc, subData, ref NativeTexture);
+                Device.Ptr->CreateTexture3D1(pDesc, subData, ref NativeTexture);
 
             handle.NativePtr = (ID3D11Resource*)NativeTexture;
         }

@@ -1,5 +1,4 @@
 ﻿using Silk.NET.Direct3D11;
-using Silk.NET.DXGI;
 
 namespace Molten.Graphics.DX11
 {
@@ -8,7 +7,7 @@ namespace Molten.Graphics.DX11
         RTViewDX11[] _rtvs;
 
         internal RenderSurface1DDX11(
-            GraphicsDevice device,
+            DeviceDX11 device,
             uint width,
             GraphicsResourceFlags flags = GraphicsResourceFlags.None,
             GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm,

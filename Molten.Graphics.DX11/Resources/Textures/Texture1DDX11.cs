@@ -10,7 +10,7 @@ namespace Molten.Graphics.DX11
         protected Texture1DDesc Desc;
 
         internal Texture1DDX11(
-            GraphicsDevice device, 
+            DeviceDX11 device, 
             uint width, 
             GraphicsResourceFlags flags,
             GraphicsFormat format = GraphicsFormat.R8G8B8A8_UNorm, 
@@ -66,7 +66,7 @@ namespace Molten.Graphics.DX11
             SubresourceData* subData = GetImmutableData(Desc.Usage);
 
             fixed(Texture1DDesc* pDesc = &Desc)
-                (Device as DeviceDX11).Ptr->CreateTexture1D(pDesc, subData, ref NativeTexture);
+                Device.Ptr->CreateTexture1D(pDesc, subData, ref NativeTexture);
 
             handle.NativePtr = (ID3D11Resource*)NativeTexture;
         }

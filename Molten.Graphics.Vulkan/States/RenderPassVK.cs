@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.Vulkan
 {
-    internal unsafe class RenderPassVK : GraphicsObject, IEquatable<RenderPassVK>
+    internal unsafe class RenderPassVK : GraphicsObject<DeviceVK>, IEquatable<RenderPassVK>
     {
         // TODO abstract the render pass system into Molten.Engine.RenderStep.
         //  - Each RenderStep will provide a RenderPass.
@@ -82,8 +82,7 @@ namespace Molten.Graphics.Vulkan
         {
             if (_handle.Handle != 0)
             {
-                DeviceVK device = Device as DeviceVK;
-                device.VK.DestroyRenderPass(device, _handle, null);
+                Device.VK.DestroyRenderPass(Device, _handle, null);
                 _handle = new RenderPass();
 
                 // Free subpass info allocations.

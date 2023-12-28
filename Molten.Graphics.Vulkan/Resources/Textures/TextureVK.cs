@@ -10,10 +10,12 @@ namespace Molten.Graphics.Vulkan
         ResourceHandleVK<Image, ImageHandleVK>[] _handles;
         ResourceHandleVK<Image, ImageHandleVK> _curHandle;
 
-        protected TextureVK(GraphicsDevice device, GraphicsTextureType type, TextureDimensions dimensions,
+        protected TextureVK(DeviceVK device, GraphicsTextureType type, TextureDimensions dimensions,
             AntiAliasLevel aaLevel, MSAAQuality sampleQuality, GraphicsFormat format, GraphicsResourceFlags flags, bool allowMipMapGen, string name) :
             base(device, type, dimensions, aaLevel, sampleQuality, format, flags, allowMipMapGen, name)
-        { }
+        {
+            Device = device;
+        }
 
         protected override void OnNextFrame(GraphicsQueue queue, uint frameBufferIndex, ulong frameID)
         {
@@ -31,8 +33,6 @@ namespace Molten.Graphics.Vulkan
             // If either of the CPU access flags were provided, we need to add both.
             if (Flags.Has(GraphicsResourceFlags.CpuRead) || Flags.Has(GraphicsResourceFlags.CpuWrite))
                 Flags |= GraphicsResourceFlags.CpuRead | GraphicsResourceFlags.CpuWrite;
-
-            DeviceVK device = Device as DeviceVK;
 
             _handles = new ResourceHandleVK<Image, ImageHandleVK>[frameBufferSize];
 
@@ -88,7 +88,7 @@ namespace Molten.Graphics.Vulkan
             _viewInfo.SubresourceRange.LayerCount = ArraySize;
             _viewInfo.Flags = ImageViewCreateFlags.None;
 
-            SetCreateInfo(device, ref _info, ref _viewInfo);
+            SetCreateInfo(Device, ref _info, ref _viewInfo);
 
             // Creation of images with tiling VK_IMAGE_TILING_LINEAR may not be supported unless other parameters meet all of the constraints
             if (_info.Tiling == ImageTiling.Linear)
@@ -119,7 +119,7 @@ namespace Molten.Graphics.Vulkan
             else
                 memFlags |= MemoryPropertyFlags.DeviceLocalBit;
 
-            CreateImages(device, _handles, memFlags, ref _info, ref _viewInfo);
+            CreateImages(Device, _handles, memFlags, ref _info, ref _viewInfo);
         }
 
         protected virtual void CreateImages(DeviceVK device, ResourceHandleVK<Image, ImageHandleVK>[] handles, MemoryPropertyFlags memFlags, ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo)
@@ -244,5 +244,7 @@ namespace Molten.Graphics.Vulkan
         public override unsafe void* SRV => Handle.SubHandle.ViewPtr;
 
         public override unsafe void* UAV => throw new NotImplementedException();
+
+        public new DeviceVK Device { get; }
     }
 }

@@ -24,7 +24,7 @@ namespace Molten.Graphics.DX11
         /// <param name="aaLevel"></param>
         /// <param name="msaa"></param>
         /// <param name="flags">Texture flags</param>
-        internal DepthSurfaceDX11(GraphicsDevice device,
+        internal DepthSurfaceDX11(DeviceDX11 device,
             uint width, 
             uint height,
             GraphicsResourceFlags flags = GraphicsResourceFlags.GpuWrite,

@@ -4,21 +4,21 @@ using Silk.NET.Vulkan;
 
 namespace Molten.Graphics.Vulkan
 {
-    internal unsafe class PipelineStateVK : GraphicsObject
+    internal unsafe class PipelineStateVK : GraphicsObject<DeviceVK>
     {
         /// <summary>
         /// A list of all shader stages in the order they are expected by Vulkan and Molten.
         /// </summary>
-        internal static readonly ShaderType[] ShaderTypes = new ShaderType[] {
+        internal static readonly ShaderType[] ShaderTypes = [
             ShaderType.Vertex,
             ShaderType.Hull,
             ShaderType.Domain,
             ShaderType.Geometry,
             ShaderType.Pixel,
             ShaderType.Compute
-        };
+        ];
 
-        internal static readonly Dictionary<ShaderType, ShaderStageFlags> ShaderStageLookup = new Dictionary<ShaderType, ShaderStageFlags>()
+        internal static readonly Dictionary<ShaderType, ShaderStageFlags> ShaderStageLookup = new()
         {
             [ShaderType.Vertex] = ShaderStageFlags.VertexBit,
             [ShaderType.Hull] = ShaderStageFlags.TessellationControlBit,
@@ -164,8 +164,7 @@ namespace Molten.Graphics.Vulkan
 
         internal PipelineStateVK GetState(IRenderSurfaceVK[] surfaces, DepthSurfaceVK depthSurface)
         {
-            DeviceVK device = Device as DeviceVK;
-            if (_renderPass != null && _renderPass.DoSurfacesMatch(device, surfaces, depthSurface))
+            if (_renderPass != null && _renderPass.DoSurfacesMatch(Device, surfaces, depthSurface))
                 return this;
 
 
@@ -175,19 +174,17 @@ namespace Molten.Graphics.Vulkan
                 if (derivative._renderPass == null)
                     continue;
 
-                if (derivative._renderPass.DoSurfacesMatch(device, surfaces, depthSurface))
+                if (derivative._renderPass.DoSurfacesMatch(Device, surfaces, depthSurface))
                     return derivative;
             }
 
-            PipelineStateVK derivation = new PipelineStateVK(device, this, surfaces, depthSurface);
+            PipelineStateVK derivation = new PipelineStateVK(Device, this, surfaces, depthSurface);
             _derivatives.Add(derivation);
             return derivation;
         }
 
         protected override void OnGraphicsRelease()
         {
-            DeviceVK device = Device as DeviceVK;
-
             // Release indirect memory allocations for pipleine shader stages
             for (uint i = 0; i < _info.StageCount; i++)
             {
@@ -201,7 +198,7 @@ namespace Molten.Graphics.Vulkan
 
             if (_pipeline.Handle != 0)
             {
-                device.VK.DestroyPipeline(device, _pipeline, null);
+                Device.VK.DestroyPipeline(Device, _pipeline, null);
                 _pipeline = new Pipeline();
             }
         }

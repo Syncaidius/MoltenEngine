@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.Vulkan
 {
-    public unsafe class DynamicStateVK : GraphicsObject, IEquatable<DynamicStateVK>, IEquatable<PipelineDynamicStateCreateInfo>
+    public unsafe class DynamicStateVK : GraphicsObject<DeviceVK>, IEquatable<DynamicStateVK>, IEquatable<PipelineDynamicStateCreateInfo>
     {
         PipelineDynamicStateCreateInfo* _desc;
 
@@ -12,7 +12,7 @@ namespace Molten.Graphics.Vulkan
         /// <param name="device"></param>
         /// <param name="parameters"></param>
         /// <param name="states">A list of state values to say which parts of a piepline state will be dynamic.</param>
-        public DynamicStateVK(GraphicsDevice device, ref ShaderPassParameters parameters, DynamicState[] states) :
+        public DynamicStateVK(DeviceVK device, ref ShaderPassParameters parameters, DynamicState[] states) :
             base(device)
         {
             _desc = EngineUtil.Alloc<PipelineDynamicStateCreateInfo>();

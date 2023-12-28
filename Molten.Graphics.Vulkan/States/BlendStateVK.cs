@@ -2,11 +2,11 @@
 
 namespace Molten.Graphics.Vulkan
 {
-    public unsafe class BlendStateVK : GraphicsObject, IEquatable<BlendStateVK>, IEquatable<PipelineColorBlendStateCreateInfo>
+    public unsafe class BlendStateVK : GraphicsObject<DeviceVK>, IEquatable<BlendStateVK>, IEquatable<PipelineColorBlendStateCreateInfo>
     {
         PipelineColorBlendStateCreateInfo* _desc;
 
-        public BlendStateVK(GraphicsDevice device, ref ShaderPassParameters parameters) :
+        public BlendStateVK(DeviceVK device, ref ShaderPassParameters parameters) :
             base(device)
         {
             _desc = EngineUtil.Alloc<PipelineColorBlendStateCreateInfo>();

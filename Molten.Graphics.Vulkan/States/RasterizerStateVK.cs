@@ -2,11 +2,11 @@
 
 namespace Molten.Graphics.Vulkan
 {
-    public unsafe class RasterizerStateVK : GraphicsObject, IEquatable<RasterizerStateVK>, IEquatable<PipelineRasterizationStateCreateInfo>
+    public unsafe class RasterizerStateVK : GraphicsObject<DeviceVK>, IEquatable<RasterizerStateVK>, IEquatable<PipelineRasterizationStateCreateInfo>
     {
         PipelineRasterizationStateCreateInfo* _desc;
 
-        public RasterizerStateVK(GraphicsDevice device, ref ShaderPassParameters parameters) :
+        public RasterizerStateVK(DeviceVK device, ref ShaderPassParameters parameters) :
             base(device)
         {
             _desc = EngineUtil.Alloc<PipelineRasterizationStateCreateInfo>();

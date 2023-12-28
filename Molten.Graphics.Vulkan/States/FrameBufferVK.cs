@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Silk.NET.Vulkan;
+﻿using Silk.NET.Vulkan;
 
 namespace Molten.Graphics.Vulkan
 {
-    internal unsafe class FrameBufferVK : GraphicsObject
+    internal unsafe class FrameBufferVK : GraphicsObject<DeviceVK>
     {
         Framebuffer _frameBuffer;
         FramebufferCreateInfo _info;
@@ -76,10 +71,8 @@ namespace Molten.Graphics.Vulkan
 
         protected override void OnGraphicsRelease()
         {
-            DeviceVK device = Device as DeviceVK;
-
             if(_frameBuffer.Handle != 0)
-                device.VK.DestroyFramebuffer(device, _frameBuffer, null);
+                Device.VK.DestroyFramebuffer(Device, _frameBuffer, null);
 
             EngineUtil.Free(ref _views);
         }

@@ -17,7 +17,7 @@ namespace Molten.Graphics.Vulkan
         /// <param name="flags">Resource flags.</param>
         /// <param name="allowMipMapGen">If true, the generation of mip-maps will be allowed on the current <see cref="RenderSurface2DVK"/> instance.</param>
         /// <param name="name"></param>
-        public RenderSurface2DVK(GraphicsDevice device, uint width, uint height, uint mipCount, uint arraySize, 
+        public RenderSurface2DVK(DeviceVK device, uint width, uint height, uint mipCount, uint arraySize, 
             AntiAliasLevel aaLevel, MSAAQuality sampleQuality, 
             GraphicsFormat format, GraphicsResourceFlags flags, 
             bool allowMipMapGen, string name) : 

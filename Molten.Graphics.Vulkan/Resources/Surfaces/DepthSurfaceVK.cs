@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Silk.NET.Vulkan;
+﻿using Silk.NET.Vulkan;
 
 namespace Molten.Graphics.Vulkan
 {
     internal class DepthSurfaceVK : Texture2DVK, IDepthStencilSurface
     {
-        internal DepthSurfaceVK(GraphicsDevice device, uint width, uint height, uint mipCount, uint arraySize,
+        internal DepthSurfaceVK(DeviceVK device, uint width, uint height, uint mipCount, uint arraySize,
             AntiAliasLevel aaLevel, 
             MSAAQuality sampleQuality, 
             DepthFormat format, 

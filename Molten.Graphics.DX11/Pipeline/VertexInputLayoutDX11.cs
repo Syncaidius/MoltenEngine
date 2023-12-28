@@ -4,7 +4,7 @@ using Silk.NET.Direct3D11;
 namespace Molten.Graphics.DX11
 {
     /// <summary>A helper class that safely wraps InputLayout.</summary>
-    internal unsafe class VertexInputLayoutDX11 : GraphicsObject
+    internal unsafe class VertexInputLayoutDX11 : GraphicsObject<DeviceDX11>
     {
         ID3D11InputLayout* _native;
         ulong[] _expectedFormatIDs;

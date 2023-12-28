@@ -3,7 +3,7 @@
 namespace Molten.Graphics.DX11
 {
     /// <summary>Stores a rasterizer state for use with a <see cref="GraphicsQueueDX11"/>.</summary>
-    internal unsafe class RasterizerStateDX11 : GraphicsObject, IEquatable<RasterizerStateDX11>, IEquatable<RasterizerDesc2>
+    internal unsafe class RasterizerStateDX11 : GraphicsObject<DeviceDX11>, IEquatable<RasterizerStateDX11>, IEquatable<RasterizerDesc2>
     {
         RasterizerDesc2 _desc;
         ID3D11RasterizerState2* _native;

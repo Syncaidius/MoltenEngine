@@ -5,11 +5,11 @@ namespace Molten.Graphics.Vulkan
     /// <summary>
     /// See for info: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPipelineInputAssemblyStateCreateInfo.html
     /// </summary>
-    internal unsafe class InputAssemblyStateVK : GraphicsObject, IEquatable<InputAssemblyStateVK>, IEquatable<PipelineInputAssemblyStateCreateInfo>
+    internal unsafe class InputAssemblyStateVK : GraphicsObject<DeviceVK>, IEquatable<InputAssemblyStateVK>, IEquatable<PipelineInputAssemblyStateCreateInfo>
     {
         PipelineInputAssemblyStateCreateInfo* _desc;
 
-        public unsafe InputAssemblyStateVK(GraphicsDevice device, ref ShaderPassParameters parameters) :
+        public unsafe InputAssemblyStateVK(DeviceVK device, ref ShaderPassParameters parameters) :
             base(device)
         {
             _desc = EngineUtil.Alloc<PipelineInputAssemblyStateCreateInfo>();

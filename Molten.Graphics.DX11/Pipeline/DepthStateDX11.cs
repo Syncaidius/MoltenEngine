@@ -4,7 +4,7 @@ using static Molten.Graphics.DX11.DepthStateDX11;
 namespace Molten.Graphics.DX11
 {
     /// <summary>Stores a depth-stencil state for use with a <see cref="GraphicsQueueDX11"/>.</summary>
-    internal unsafe class DepthStateDX11 : GraphicsObject, IEquatable<DepthStateDX11>, IEquatable<CombinedDesc>
+    internal unsafe class DepthStateDX11 : GraphicsObject<DeviceDX11>, IEquatable<DepthStateDX11>, IEquatable<CombinedDesc>
     {
         public struct CombinedDesc
         {

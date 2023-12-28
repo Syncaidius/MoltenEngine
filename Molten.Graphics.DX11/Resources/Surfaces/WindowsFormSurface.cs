@@ -77,7 +77,7 @@ namespace Molten.Graphics.DX11
         System.Drawing.Point? _preBorderlessLocation;
         System.Drawing.Rectangle? _preBorderlessScreenArea;
 
-        public WindowsFormSurface(GraphicsDevice device, uint width, uint height, uint mipCount, string title, string controlName,
+        public WindowsFormSurface(DeviceDX11 device, uint width, uint height, uint mipCount, string title, string controlName,
             GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm) : 
             base(device, width, height, mipCount, format)
         {

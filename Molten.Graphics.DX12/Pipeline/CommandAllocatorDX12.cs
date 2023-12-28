@@ -25,7 +25,7 @@ namespace Molten.Graphics.DX12
             _allocated = new ThreadedList<CommandListDX12>();
         }
 
-        private T* Allocate<T>(Guid guid, ID3D12PipelineState* pInitialState /*TODO Properly provide a PipelineStateDX12*/)
+        private T* CreateCommandList<T>(Guid guid, ID3D12PipelineState* pInitialState /*TODO Properly provide a PipelineStateDX12*/)
             where T : unmanaged
         {
             void* ptr = null;
@@ -36,9 +36,9 @@ namespace Molten.Graphics.DX12
             return (T*)ptr;
         }
 
-        internal GraphicsCommandListDX12 AllocateGraphics<T>(ID3D12PipelineState* pInitialState /*TODO Properly provide a PipelineStateDX12*/)
+        internal GraphicsCommandListDX12 AllocateGraphics(ID3D12PipelineState* pInitialState /*TODO Properly provide a PipelineStateDX12*/)
         {
-            ID3D12GraphicsCommandList* ptr = Allocate<ID3D12GraphicsCommandList>(ID3D12GraphicsCommandList.Guid, pInitialState);
+            ID3D12GraphicsCommandList* ptr = CreateCommandList<ID3D12GraphicsCommandList>(ID3D12GraphicsCommandList.Guid, pInitialState);
             GraphicsCommandListDX12 list = new GraphicsCommandListDX12(this, ptr);
             _allocated.Add(list);
 

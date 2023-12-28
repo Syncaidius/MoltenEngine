@@ -1,8 +1,4 @@
-﻿using Silk.NET.Core.Native;
-using Silk.NET.Direct3D.Compilers;
-using Silk.NET.Vulkan;
-
-namespace Molten.Graphics.Vulkan
+﻿namespace Molten.Graphics.Vulkan
 {
     internal unsafe class ShaderPassVK : HlslPass
     {

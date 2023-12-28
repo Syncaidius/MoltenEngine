@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Silk.NET.Vulkan;
+﻿using Silk.NET.Vulkan;
 
 namespace Molten.Graphics.Vulkan
 {
-    internal unsafe class DescriptorSetLayoutVK : GraphicsObject, IEquatable<DescriptorSetLayoutVK>, IEquatable<DescriptorSetLayoutCreateInfo>
+    internal unsafe class DescriptorSetLayoutVK : GraphicsObject<DeviceVK>, IEquatable<DescriptorSetLayoutVK>, IEquatable<DescriptorSetLayoutCreateInfo>
     {
         DescriptorSetLayoutBinding* _ptrBindings;
         DescriptorSetLayout _handle;
@@ -131,8 +128,7 @@ namespace Molten.Graphics.Vulkan
         {
             if (_handle.Handle != 0)
             {
-                DeviceVK device = Device as DeviceVK;
-                device.VK.DestroyDescriptorSetLayout(device, _handle, null);
+                Device.VK.DestroyDescriptorSetLayout(Device, _handle, null);
                 _handle = new DescriptorSetLayout();
             }
 

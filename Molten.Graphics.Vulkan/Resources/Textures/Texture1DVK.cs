@@ -4,7 +4,7 @@ namespace Molten.Graphics.Vulkan
 {
     public class Texture1DVK : TextureVK, ITexture1D
     {
-        internal Texture1DVK(GraphicsDevice device, uint width, uint mipCount, uint arraySize, 
+        internal Texture1DVK(DeviceVK device, uint width, uint mipCount, uint arraySize, 
             GraphicsFormat format, GraphicsResourceFlags flags, bool allowMipMapGen, string name, bool isSurface = false) : 
             base(device, 
                 isSurface ? GraphicsTextureType.Texture1D : GraphicsTextureType.Surface1D, 

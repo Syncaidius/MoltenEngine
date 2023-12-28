@@ -101,7 +101,7 @@ namespace Molten.Graphics.DX11
                 Device.Frame.Track(_cmd);
 
                 if (_cmd.Flags.Has(GraphicsCommandListFlags.CpuSyncable))
-                    _cmd.Fence = new GraphicsOpenFence();
+                    _cmd.Fence = new GraphicsOpenFence(Device);
             }
 
             return _cmd;

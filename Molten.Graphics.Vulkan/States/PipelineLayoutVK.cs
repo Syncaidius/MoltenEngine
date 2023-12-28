@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.Vulkan
 {
-    internal class PipelineLayoutVK : GraphicsObject, IEquatable<PipelineLayoutVK>, IEquatable<PipelineLayoutCreateInfo>
+    internal class PipelineLayoutVK : GraphicsObject<DeviceVK>, IEquatable<PipelineLayoutVK>, IEquatable<PipelineLayoutCreateInfo>
     {
         PipelineLayout _handle;
         PipelineLayoutCreateInfo _info;
@@ -97,8 +97,7 @@ namespace Molten.Graphics.Vulkan
         {
             if (_handle.Handle != 0)
             {
-                DeviceVK device = Device as DeviceVK;
-                device.VK.DestroyPipelineLayout(device, _handle, null);
+                Device.VK.DestroyPipelineLayout(Device, _handle, null);
                 _handle = new PipelineLayout();
             }
         }

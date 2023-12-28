@@ -19,7 +19,7 @@ namespace Molten.Graphics.DX11
         ThreadedQueue<Action> _dispatchQueue;
         uint _vsync;
 
-        internal SwapChainSurfaceDX11(GraphicsDevice device, uint width, uint height, uint mipCount, GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm)
+        internal SwapChainSurfaceDX11(DeviceDX11 device, uint width, uint height, uint mipCount, GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm)
             : base(device, width, height, 
                   GraphicsResourceFlags.NoShaderAccess | GraphicsResourceFlags.None | GraphicsResourceFlags.GpuWrite,
                   format, mipCount, 1, AntiAliasLevel.None, MSAAQuality.Default)
@@ -84,10 +84,9 @@ namespace Molten.Graphics.DX11
 
         protected void CreateSwapChain(DisplayModeDXGI mode, bool windowed, IntPtr controlHandle)
         {
-            DeviceDX11 nativeDevice = (Device as DeviceDX11);
             GraphicsManagerDXGI dxgiManager = Device.Manager as GraphicsManagerDXGI;
 
-            NativeSwapChain = dxgiManager.CreateSwapChain(mode, SwapEffect.FlipDiscard, Device.FrameBufferSize, Device.Log, (IUnknown*)nativeDevice.Ptr, controlHandle);
+            NativeSwapChain = dxgiManager.CreateSwapChain(mode, SwapEffect.FlipDiscard, Device.FrameBufferSize, Device.Log, (IUnknown*)Device.Ptr, controlHandle);
         }
 
         private void VSync_OnChanged(bool oldValue, bool newValue)

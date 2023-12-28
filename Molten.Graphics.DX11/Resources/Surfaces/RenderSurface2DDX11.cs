@@ -8,7 +8,7 @@ namespace Molten.Graphics.DX11
         RTViewDX11[] _rtvs;
 
         internal RenderSurface2DDX11(
-            GraphicsDevice device,
+            DeviceDX11 device,
             uint width,
             uint height,
             GraphicsResourceFlags flags = GraphicsResourceFlags.None,
