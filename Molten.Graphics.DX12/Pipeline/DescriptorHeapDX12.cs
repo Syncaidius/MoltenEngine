@@ -5,7 +5,7 @@ namespace Molten.Graphics.DX12
 {
     internal unsafe class DescriptorHeapDX12 : GraphicsObject
     {
-        internal delegate void IterateCallback<T>(ref T handle) where T : unmanaged;
+        internal unsafe delegate void IterateCallback<T>(ref T handle, void* ptr) where T : unmanaged;
 
         ID3D12DescriptorHeap* _handle;
         DescriptorHeapDesc _desc;
@@ -47,7 +47,7 @@ namespace Molten.Graphics.DX12
             CpuDescriptorHandle handle = _cpuStartHandle;
             for(int i = 0; i < _desc.NumDescriptors; i++)
             {
-                callback(ref handle);   
+                callback(ref handle, (void*)handle.Ptr);   
                 handle.Ptr += IncrementSize;
             }
         }
@@ -60,7 +60,7 @@ namespace Molten.Graphics.DX12
             GpuDescriptorHandle handle = _gpuStartHandle;
             for (int i = 0; i < _desc.NumDescriptors; i++)
             {
-                callback(ref handle);
+                callback(ref handle, (void*)handle.Ptr);
                 handle.Ptr += IncrementSize;
             }
         }

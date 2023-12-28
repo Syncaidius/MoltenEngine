@@ -69,9 +69,16 @@ namespace Molten.Graphics.DX12
             return true;
         }
 
+        public void Increment()
+        {
+            _value++;
+        }
+
         protected override void OnGraphicsRelease()
         {
             SilkUtil.ReleasePtr(ref _ptr);
         }
+
+        public ulong Value => _value;
     }
 }
