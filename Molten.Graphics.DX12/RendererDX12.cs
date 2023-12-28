@@ -28,6 +28,7 @@ namespace Molten.Graphics.DX12
                 _debug->EnableDebugLayer();
             }
 
+            _api->SEr
             Builder = new DeviceBuilderDX12(_api, this);
             _displayManager = new GraphicsManagerDXGI(CreateDevice, Builder.GetCapabilities);
             return _displayManager;
@@ -67,6 +68,8 @@ namespace Molten.Graphics.DX12
         internal DeviceBuilderDX12 Builder { get; private set; }
 
         protected override DxcCompiler Compiler { get; }
+
+        internal D3D12 Api => _api;
 
         internal ID3D12Debug6* Debug => _debug;
     }
