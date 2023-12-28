@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
-    public abstract class GraphicsFence
+    public abstract class GraphicsFence : GraphicsObject
     {
+        protected GraphicsFence(GraphicsDevice device) : base(device) { }
+
         /// <summary>
         /// Halts execution on the current thread until the fence is signaled by the GPU.
         /// </summary>
@@ -23,11 +19,15 @@ namespace Molten.Graphics
     /// </summary>
     public class GraphicsOpenFence : GraphicsFence
     {
+        public GraphicsOpenFence(GraphicsDevice device) : base(device) { }
+
         public override bool Wait(ulong nsTimeout = ulong.MaxValue)
         {
             return true;
         }
 
         public override void Reset() { }
+
+        protected override void OnGraphicsRelease() { }
     }
 }

@@ -3,7 +3,7 @@ using Silk.NET.Direct3D12;
 
 namespace Molten.Graphics.DX12
 {
-    internal unsafe class DescriptorHeapDX12
+    internal unsafe class DescriptorHeapDX12 : GraphicsObject
     {
         internal delegate void IterateCallback<T>(ref T handle) where T : unmanaged;
 
@@ -12,7 +12,8 @@ namespace Molten.Graphics.DX12
         CpuDescriptorHandle _cpuStartHandle;
         GpuDescriptorHandle _gpuStartHandle;
 
-        internal DescriptorHeapDX12(DeviceDX12 device, uint capacity, DescriptorHeapType type, DescriptorHeapFlags flags)
+        internal DescriptorHeapDX12(DeviceDX12 device, uint capacity, DescriptorHeapType type, DescriptorHeapFlags flags) : 
+            base(device)
         {
             _desc = new DescriptorHeapDesc()
             {
@@ -74,9 +75,9 @@ namespace Molten.Graphics.DX12
             return new GpuDescriptorHandle(_gpuStartHandle.Ptr + (index * IncrementSize));
         }
 
-        public void Dispose()
+        protected override void OnGraphicsRelease()
         {
-           SilkUtil.ReleasePtr(ref _handle);
+            SilkUtil.ReleasePtr(ref _handle);
         }
 
         public ref readonly uint Capacity => ref _desc.NumDescriptors;

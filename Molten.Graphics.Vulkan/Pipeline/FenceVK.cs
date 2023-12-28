@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Silk.NET.Vulkan;
+﻿using Silk.NET.Vulkan;
 
 namespace Molten.Graphics.Vulkan
 {
-    internal class FenceVK : GraphicsFence, IDisposable
+    internal class FenceVK : GraphicsFence
     {
         Fence _native;
         DeviceVK _device;
 
-        internal unsafe FenceVK(DeviceVK device, FenceCreateFlags flags)
+        internal unsafe FenceVK(DeviceVK device, FenceCreateFlags flags) : 
+            base(device)
         {
             _device = device;
             _native = new Fence();
@@ -75,7 +71,7 @@ namespace Molten.Graphics.Vulkan
             return r == Result.Success;
         }
 
-        public unsafe void Dispose()
+        protected unsafe override void OnGraphicsRelease()
         {
             _device.VK.DestroyFence(_device, _native, null);
         }

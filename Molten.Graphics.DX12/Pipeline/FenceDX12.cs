@@ -5,14 +5,14 @@ using Silk.NET.Direct3D12;
 
 namespace Molten.Graphics.DX12
 {
-    internal unsafe class FenceDX12 : GraphicsFence, IDisposable
+    internal unsafe class FenceDX12 : GraphicsFence
     {
         ID3D12Fence* _ptr;
         DeviceDX12 _device;
         ulong _value;
         void* _fenceEvent;
 
-        internal FenceDX12(DeviceDX12 device, FenceFlags flags)
+        internal FenceDX12(DeviceDX12 device, FenceFlags flags) : base(device)
         {
             _device = device;
             void* ptr = null;
@@ -69,7 +69,7 @@ namespace Molten.Graphics.DX12
             return true;
         }
 
-        public void Dispose()
+        protected override void OnGraphicsRelease()
         {
             SilkUtil.ReleasePtr(ref _ptr);
         }
