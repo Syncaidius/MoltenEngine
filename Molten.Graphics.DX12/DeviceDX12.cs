@@ -47,8 +47,7 @@ namespace Molten.Graphics.DX12
 
             _cmdDirect = new CommandQueueDX12(Log, this, _builder, ref cmdDesc);
 
-            DescriptorHeapDX12 testHeap = new DescriptorHeapDX12(this, FrameBufferSize, DescriptorHeapType.Rtv, DescriptorHeapFlags.None);
-            testHeap.Dispose();
+            
             return true;
         }
 

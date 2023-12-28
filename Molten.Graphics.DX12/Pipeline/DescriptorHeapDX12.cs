@@ -37,7 +37,7 @@ namespace Molten.Graphics.DX12
             IncrementSize = device.Ptr->GetDescriptorHandleIncrementSize(type);
 
             // Only create a GPU start handle if the heap is shader visible.
-            if((flags & DescriptorHeapFlags.ShaderVisible) == DescriptorHeapFlags.ShaderVisible)
+            if(flags.HasFlag(DescriptorHeapFlags.ShaderVisible))
                 _gpuStartHandle = _handle->GetGPUDescriptorHandleForHeapStart();
         }
 
@@ -53,6 +53,9 @@ namespace Molten.Graphics.DX12
 
         internal void IterateForGpu(IterateCallback<GpuDescriptorHandle> callback)
         {
+            if (!_desc.Flags.HasFlag(DescriptorHeapFlags.ShaderVisible))
+                throw new InvalidOperationException("Cannot iterate as GPU descriptor handles without being visible to shaders.");
+
             GpuDescriptorHandle handle = _gpuStartHandle;
             for (int i = 0; i < _desc.NumDescriptors; i++)
             {

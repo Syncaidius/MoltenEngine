@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using Molten.Windows32;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
 
@@ -22,7 +23,7 @@ namespace Molten.Graphics.DX12
 
             _value++;
             _ptr = (ID3D12Fence*)ptr;
-            void* ptrEvent = DX12Win32.CreateEvent(null, false, false, null);
+            void* ptrEvent = Win32Events.CreateEvent(null, false, false, null);
             if (ptrEvent == null)
             {
                 hr = Marshal.GetLastWin32Error();
@@ -50,14 +51,14 @@ namespace Molten.Graphics.DX12
             if(_ptr->GetCompletedValue() < _value)
             {
                 uint msTimeout = (uint)nsTimeout / 1000000U; // Convert from nanoseconds to milliseconds.
-                Win32WaitForSingleObjectResult result = (Win32WaitForSingleObjectResult)DX12Win32.WaitForSingleObjectEx(_fenceEvent, msTimeout, false);
+                WaitForSingleObjectResult result = (WaitForSingleObjectResult)Win32Events.WaitForSingleObjectEx(_fenceEvent, msTimeout, false);
 
                 // Handle wait result.
                 switch (result)
                 {
-                    case Win32WaitForSingleObjectResult.ABANDONED:
-                    case Win32WaitForSingleObjectResult.TIMEOUT:
-                    case Win32WaitForSingleObjectResult.FAILED:
+                    case WaitForSingleObjectResult.ABANDONED:
+                    case WaitForSingleObjectResult.TIMEOUT:
+                    case WaitForSingleObjectResult.FAILED:
                         _device.Log.Error($"Failed to wait for fence - {result}");
                         return false;
                 }

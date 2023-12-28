@@ -1,20 +1,22 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Molten.Graphics.DX12
+namespace Molten.Windows32
 {
-    internal static class DX12Win32
+    public class Win32Events
     {
+        internal Win32Events() { }
+
         [DllImport("kernel32.dll")]
-        internal unsafe static extern void* CreateEvent(void* lpEventAttributes, bool bManualReset, bool bInitialState, string lpName);
+        public unsafe static extern void* CreateEvent(void* lpEventAttributes, bool bManualReset, bool bInitialState, string lpName);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        internal unsafe static extern uint WaitForSingleObjectEx(void* hHandle, uint dwMilliseconds, bool bAlertable);
+        public unsafe static extern uint WaitForSingleObjectEx(void* hHandle, uint dwMilliseconds, bool bAlertable);
     }
 
     /// <summary>
     /// Represents the result of waiting for a single object in the Win32 API.
     /// </summary>
-    public enum Win32WaitForSingleObjectResult : uint
+    public enum WaitForSingleObjectResult : uint
     {
         /// <summary>
         /// The state of the specified object is signaled.
