@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Silk.NET.Core.Native;
+﻿using Silk.NET.Core.Native;
 using Silk.NET.DXGI;
 
 namespace Molten.Graphics.Dxgi
@@ -12,7 +7,7 @@ namespace Molten.Graphics.Dxgi
     {
         /// <summary>Gets the native DXGI adapter that this instance represents.</summary>
         public IDXGIAdapter4* _adapter;
-        AdapterDesc3* _adapterDesc;
+        AdapterDesc3 _adapterDesc;
         List<DisplayOutputDXGI> _outputs;
         List<DisplayOutputDXGI> _activeOutputs;
 
@@ -22,20 +17,21 @@ namespace Molten.Graphics.Dxgi
             _adapter = adapter;
             Capabilities = new GraphicsCapabilities();
 
-            _adapterDesc = EngineUtil.Alloc<AdapterDesc3>();
-            adapter->GetDesc3(_adapterDesc);
-            ID = (DeviceID)_adapterDesc->AdapterLuid;
+            AdapterDesc3 desc = new AdapterDesc3();
+            _adapterDesc = desc;
+            adapter->GetDesc3(&desc);
+            ID = (DeviceID)desc.AdapterLuid;
 
-            Name = SilkMarshal.PtrToString((nint)_adapterDesc->Description, NativeStringEncoding.LPWStr);
-            Vendor = EngineUtil.VendorFromPCI(_adapterDesc->VendorId);
+            Name = SilkMarshal.PtrToString((nint)desc.Description, NativeStringEncoding.LPWStr);
+            Vendor = EngineUtil.VendorFromPCI(desc.VendorId);
 
-            Capabilities.DedicatedSystemMemory = ByteMath.ToMegabytes(_adapterDesc->DedicatedSystemMemory);
-            Capabilities.DedicatedVideoMemory = ByteMath.ToMegabytes(_adapterDesc->DedicatedVideoMemory);
+            Capabilities.DedicatedSystemMemory = ByteMath.ToMegabytes(desc.DedicatedSystemMemory);
+            Capabilities.DedicatedVideoMemory = ByteMath.ToMegabytes(desc.DedicatedVideoMemory);
 
-            nuint sharedMemory = _adapterDesc->SharedSystemMemory;
+            nuint sharedMemory = desc.SharedSystemMemory;
             sharedMemory = sharedMemory < 0 ? 0 : sharedMemory;
             Capabilities.SharedSystemMemory = ByteMath.ToMegabytes(sharedMemory);
-            Type = GetAdapterType(Capabilities, _adapterDesc->Flags);
+            Type = GetAdapterType(Capabilities, desc.Flags);
 
             IDXGIOutput1*[] dxgiOutputs = DXGIHelper.EnumArray<IDXGIOutput1, IDXGIOutput>((uint index, ref IDXGIOutput* ptrOutput) =>
             {
@@ -105,7 +101,6 @@ namespace Molten.Graphics.Dxgi
 
         protected override void OnDispose()
         {
-            EngineUtil.Free(ref _adapterDesc);
             SilkUtil.ReleasePtr(ref _adapter);
         }
 
@@ -118,7 +113,7 @@ namespace Molten.Graphics.Dxgi
         /// <inheritdoc/>
         public override GraphicsDeviceType Type { get; }
 
-        internal AdapterDesc3* Description => _adapterDesc;
+        internal ref readonly AdapterDesc3 Description => ref _adapterDesc;
 
         /// <inheritdoc/>
         public override IReadOnlyList<IDisplayOutput> Outputs { get; }

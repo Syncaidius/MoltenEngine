@@ -3,7 +3,7 @@ using Silk.NET.Core;
 
 namespace Molten.Graphics
 {
-    public partial class GraphicsCapabilities
+    public sealed partial class GraphicsCapabilities
     {   
         Dictionary<ShaderType, ShaderStageCapabilities> _shaderCap;
 

@@ -8,6 +8,11 @@ namespace Molten.Graphics.DX12
 {
     public unsafe class RendererDX12 : RenderService
     {
+        /// <summary>
+        /// The maximum allowed root signature version in this renderer.
+        /// </summary>
+        internal const D3DRootSignatureVersion MAX_ROOT_SIG_VERSION = D3DRootSignatureVersion.Version11;
+
         D3D12 _api;
         GraphicsManagerDXGI _displayManager;
         ID3D12Debug6* _debug;
@@ -28,7 +33,6 @@ namespace Molten.Graphics.DX12
                 _debug->EnableDebugLayer();
             }
 
-            _api->SEr
             Builder = new DeviceBuilderDX12(_api, this);
             _displayManager = new GraphicsManagerDXGI(CreateDevice, Builder.GetCapabilities);
             return _displayManager;

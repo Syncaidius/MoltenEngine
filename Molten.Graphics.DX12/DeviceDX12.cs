@@ -13,10 +13,11 @@ namespace Molten.Graphics.DX12
         CommandQueueDX12 _cmdDirect;
         ID3D12InfoQueue1* _debugInfo;
 
-        public DeviceDX12(RenderService renderer, GraphicsManagerDXGI manager, IDXGIAdapter4* adapter, DeviceBuilderDX12 deviceBuilder) : 
+        public DeviceDX12(RenderService renderer, GraphicsManagerDXGI manager, IDXGIAdapter4* adapter, DeviceBuilderDX12 deviceBuilder) :
             base(renderer, manager, adapter)
         {
             _builder = deviceBuilder;
+            CapabilitiesDX12 = new CapabilitiesDX12();
         }
 
         protected override bool OnInitialize()
@@ -47,7 +48,6 @@ namespace Molten.Graphics.DX12
 
             _cmdDirect = new CommandQueueDX12(Log, this, _builder, ref cmdDesc);
 
-            
             return true;
         }
 
@@ -177,5 +177,10 @@ namespace Molten.Graphics.DX12
         protected ref ID3D12Device10* PtrRef => ref _native;
 
         public override CommandQueueDX12 Queue => _cmdDirect;
+
+        /// <summary>
+        /// Gets DirectX 12-specific capabilities.
+        /// </summary>
+        public CapabilitiesDX12 CapabilitiesDX12 { get; }
     }
 }

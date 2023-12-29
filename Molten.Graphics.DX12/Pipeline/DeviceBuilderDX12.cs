@@ -10,14 +10,13 @@ namespace Molten.Graphics.DX12
         RendererDX12 _renderer;
         D3D12 _api;
 
-        readonly D3DFeatureLevel[] _featureLevels = new D3DFeatureLevel[]
-        {
+        readonly D3DFeatureLevel[] _featureLevels = [   
             D3DFeatureLevel.Level122,
             D3DFeatureLevel.Level121,
             D3DFeatureLevel.Level120,
             D3DFeatureLevel.Level111,
             D3DFeatureLevel.Level110
-        };
+        ];
 
         internal DeviceBuilderDX12(D3D12 api, RendererDX12 renderer)
         {
@@ -25,7 +24,7 @@ namespace Molten.Graphics.DX12
             _api = api;
         }
 
-        internal  HResult CreateDevice(
+        internal HResult CreateDevice(
             DeviceDXGI device,
             out ID3D12Device10* d3dDevice)
         {
@@ -46,6 +45,8 @@ namespace Molten.Graphics.DX12
         internal void GetCapabilities(GraphicsSettings settings, DeviceDXGI device)
         {
             GraphicsCapabilities cap = device.Capabilities;
+            CapabilitiesDX12 features = (device as DeviceDX12).CapabilitiesDX12;
+
             ID3D12Device10* ptrDevice = null;
             HResult r = CreateDevice(device, out ptrDevice);
             if(!_renderer.Log.CheckResult(r, () => $"Failed to detect capabilities for adapter '{device.Name}'"))
@@ -137,6 +138,11 @@ namespace Molten.Graphics.DX12
                 features12_0.MinPrecisionSupport, 
                 features12_0.DoublePrecisionFloatShaderOps, 
                 features12_1.Int64ShaderOps);
+
+            FeatureDataRootSignature rootSig = new FeatureDataRootSignature();
+            rootSig.HighestVersion = RendererDX12.MAX_ROOT_SIG_VERSION;
+            GetFeatureSupport(ptrDevice, Feature.RootSignature, &rootSig);
+            features.RootSignatureVersion = rootSig.HighestVersion;
 
             SilkUtil.ReleasePtr(ref ptrDevice);
         }

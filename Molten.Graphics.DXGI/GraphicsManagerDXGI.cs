@@ -42,7 +42,7 @@ namespace Molten.Graphics.Dxgi
         protected override void OnInitialize(GraphicsSettings settings)
         {
             // Create factory
-            Guid factoryGuid = IDXGIFactory2.Guid;
+            Guid factoryGuid = IDXGIFactory7.Guid;
             void* ptrFactory = null;
             uint debugFlag = settings.EnableDebugLayer ? DXGI_CREATE_FACTORY_DEBUG : DXGI_CREATE_FACTORY_NODEBUG;
 

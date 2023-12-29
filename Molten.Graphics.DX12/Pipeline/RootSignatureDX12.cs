@@ -9,19 +9,32 @@ namespace Molten.Graphics.DX12
 
         internal RootSignatureDX12(DeviceDX12 device/*, ShaderPassDX12 pass*/) : base(device)
         {
-            // TODO Check device feature support for root signature max version.
+            VersionedRootSignatureDesc sigDesc = new VersionedRootSignatureDesc()
+            {
+                Version = device.CapabilitiesDX12.RootSignatureVersion,
+            };
 
-            RootParameter1* parameters = EngineUtil.AllocArray<RootParameter1>(1); // TODO Get the correct size based on the provided pass.
-            RootSignatureDesc1 rootSignatureDesc1 = new()
+            sigDesc.Desc10 = new RootSignatureDesc
             {
                 Flags = RootSignatureFlags.None,
                 NumParameters = 0, // TODO Get this from the number of input parameters (textures, constant buffers, etc) required by the shader pass.
-                PParameters = parameters,
                 NumStaticSamplers = 0,
-                PStaticSamplers = null,
+                PStaticSamplers = null
             };
 
-            EngineUtil.Free(ref parameters);
+            switch(sigDesc.Version)
+            {
+                case D3DRootSignatureVersion.Version10:
+                    sigDesc.Desc10.PParameters = null; // EngineUtil.AllocArray<RootParameter>(1); // TODO Get the correct size based on the provided pass.
+                    break;
+
+                case D3DRootSignatureVersion.Version11:
+                    sigDesc.Desc11.PParameters = null; // EngineUtil.AllocArray<RootParameter1>(1); // TODO Get the correct size based on the provided pass.
+                    break;
+
+                default:
+                    throw new NotSupportedException($"Unsupported root signature version: {sigDesc.Version}.");
+            }
 
             // TODO build based on input resources, output resources and samplers of the provided shader pass.
             // TODO Note for Vulkan: Shaders only operate on a set number of render target outputs, so we'll always know how many should be bound based on this.
@@ -33,7 +46,7 @@ namespace Molten.Graphics.DX12
             ID3D10Blob* signature = null;
             ID3D10Blob* error = null;
             RendererDX12 renderer = device.Renderer as RendererDX12;
-            HResult hr = renderer.Api.SerializeRootSignature((RootSignatureDesc*)&rootSignatureDesc1, D3DRootSignatureVersion.Version11, &signature, &error);
+            HResult hr = renderer.Api.SerializeVersionedRootSignature(&sigDesc, &signature, &error);
             if(!device.Log.CheckResult(hr, () => "Failed to serialize root signature"))
                 hr.Throw();
 
@@ -43,6 +56,8 @@ namespace Molten.Graphics.DX12
             hr = device.Ptr->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), &guid, &ptr);
             if (!device.Log.CheckResult(hr, () => "Failed to create root signature"))
                 hr.Throw();
+
+            EngineUtil.Free(ref sigDesc.Desc10.PParameters);
         }
 
         protected override void OnGraphicsRelease()
