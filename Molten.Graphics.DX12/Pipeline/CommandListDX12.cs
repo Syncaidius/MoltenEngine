@@ -31,7 +31,7 @@ namespace Molten.Graphics.DX12
 
         protected override void OnGraphicsRelease()
         {
-            SilkUtil.ReleasePtr(ref _handle);
+            NativeUtil.ReleasePtr(ref _handle);
             base.OnGraphicsRelease();
         }
 

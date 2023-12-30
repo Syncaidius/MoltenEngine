@@ -2,7 +2,7 @@
 
 namespace Molten
 {
-    public unsafe static class SilkUtil
+    public unsafe static class NativeUtil
     {
         /// <summary>Releases the specified pointer, sets it to null and returns the updated, unmanaged reference count.</summary>
         /// <typeparam name="T">The type of pointer.</typeparam>

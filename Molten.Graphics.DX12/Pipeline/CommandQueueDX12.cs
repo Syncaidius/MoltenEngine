@@ -124,7 +124,7 @@ namespace Molten.Graphics.DX12
 
         protected override void OnDispose()
         {
-            SilkUtil.ReleasePtr(ref _ptr);
+            NativeUtil.ReleasePtr(ref _ptr);
         }
 
         public override GraphicsBindResult Dispatch(HlslShader shader, Vector3UI groups)

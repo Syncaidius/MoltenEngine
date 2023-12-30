@@ -101,7 +101,7 @@ namespace Molten.Graphics.Dxgi
 
         protected override void OnDispose()
         {
-            SilkUtil.ReleasePtr(ref _adapter);
+            NativeUtil.ReleasePtr(ref _adapter);
         }
 
         /// <<inheritdoc/>

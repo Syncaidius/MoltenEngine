@@ -76,7 +76,7 @@ namespace Molten.Graphics.DX12
 
         protected override void OnGraphicsRelease()
         {
-            SilkUtil.ReleasePtr(ref _ptr);
+            NativeUtil.ReleasePtr(ref _ptr);
         }
 
         public ulong Value => _value;

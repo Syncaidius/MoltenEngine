@@ -34,7 +34,7 @@ namespace Molten.Graphics.Dxgi
 
         protected override void OnDispose()
         {
-            SilkUtil.ReleasePtr(ref _dxgiFactory);
+            NativeUtil.ReleasePtr(ref _dxgiFactory);
             _api.Dispose();
         }
 

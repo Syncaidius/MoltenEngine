@@ -54,7 +54,7 @@ namespace Molten.Graphics.DX12
         protected override void OnGraphicsRelease()
         {
             _allocated.For(0, (index, cmd) => cmd.Dispose());
-            SilkUtil.ReleasePtr(ref _handle);
+            NativeUtil.ReleasePtr(ref _handle);
         }
 
         public CommandListType Type { get; }

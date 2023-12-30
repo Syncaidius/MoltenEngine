@@ -168,8 +168,8 @@ namespace Molten.Graphics.DX11
             {
                 ProcessDebugLayerMessages();
                 _debug->ReportLiveDeviceObjects(RldoFlags.Detail);
-                SilkUtil.ReleasePtr(ref _debugInfo);
-                SilkUtil.ReleasePtr(ref _debug);
+                NativeUtil.ReleasePtr(ref _debugInfo);
+                NativeUtil.ReleasePtr(ref _debug);
             }
 
             base.OnDispose();

@@ -581,8 +581,8 @@ namespace Molten.Graphics.DX11
         /// <summary>Dispoes of the current <see cref="Graphics.GraphicsQueueDX11"/> instance.</summary>
         protected override void OnDispose()
         {
-            SilkUtil.ReleasePtr(ref _native);
-            SilkUtil.ReleasePtr(ref _debugAnnotation);
+            NativeUtil.ReleasePtr(ref _native);
+            NativeUtil.ReleasePtr(ref _debugAnnotation);
 
             // Dispose context.
             if (Type != CommandQueueType.Immediate)

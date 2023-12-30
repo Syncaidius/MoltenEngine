@@ -88,7 +88,7 @@ namespace Molten.Graphics.DX11
 
         protected override void OnGraphicsRelease()
         {
-            SilkUtil.ReleasePtr(ref _native);
+            NativeUtil.ReleasePtr(ref _native);
         }
 
         internal unsafe ref ID3D11DepthStencilState* NativePtr => ref _native;

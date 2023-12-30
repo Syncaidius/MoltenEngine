@@ -218,7 +218,7 @@ namespace Molten.Graphics.DX11
             //            return (FormatSupport2)pData.OutFormatSupport2;
             //        }
 
-            SilkUtil.ReleasePtr(ref device);
+            NativeUtil.ReleasePtr(ref device);
         }
 
         private void DetectShaderStages(ID3D11Device5* device, GraphicsCapabilities cap, D3DFeatureLevel featureLevel)

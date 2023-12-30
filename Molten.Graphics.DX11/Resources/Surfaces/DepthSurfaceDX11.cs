@@ -107,8 +107,8 @@ namespace Molten.Graphics.DX11
 
         protected override void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle, uint handleIndex)
         {
-            SilkUtil.ReleasePtr(ref _depthView);
-            SilkUtil.ReleasePtr(ref _readOnlyView);
+            NativeUtil.ReleasePtr(ref _depthView);
+            NativeUtil.ReleasePtr(ref _readOnlyView);
 
             Desc.Width = Math.Max(1, Desc.Width);
             Desc.Height = Math.Max(1, Desc.Height);
@@ -154,8 +154,8 @@ namespace Molten.Graphics.DX11
 
         protected override void OnGraphicsRelease()
         {
-            SilkUtil.ReleasePtr(ref _depthView);
-            SilkUtil.ReleasePtr(ref _readOnlyView);
+            NativeUtil.ReleasePtr(ref _depthView);
+            NativeUtil.ReleasePtr(ref _readOnlyView);
 
             base.OnGraphicsRelease();
         }

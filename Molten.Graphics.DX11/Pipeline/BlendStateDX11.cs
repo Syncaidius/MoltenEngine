@@ -55,7 +55,7 @@ namespace Molten.Graphics.DX11
 
         protected override void OnGraphicsRelease()
         {
-            SilkUtil.ReleasePtr(ref _native);
+            NativeUtil.ReleasePtr(ref _native);
         }
 
         public override bool Equals(object obj) => obj switch

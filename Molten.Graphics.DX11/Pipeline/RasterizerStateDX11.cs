@@ -63,7 +63,7 @@ namespace Molten.Graphics.DX11
 
         protected override void OnGraphicsRelease()
         {
-            SilkUtil.ReleasePtr(ref _native);
+            NativeUtil.ReleasePtr(ref _native);
         }
 
         public static implicit operator ID3D11RasterizerState*(RasterizerStateDX11 state)

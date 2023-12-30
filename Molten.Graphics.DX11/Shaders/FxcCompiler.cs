@@ -241,8 +241,8 @@ namespace Molten.Graphics.DX11
                     context.Shaders.Add(entryPoint, result);
                 }
 
-                SilkUtil.ReleasePtr(ref pProcessedSrc);
-                SilkUtil.ReleasePtr(ref pErrors);
+                NativeUtil.ReleasePtr(ref pProcessedSrc);
+                NativeUtil.ReleasePtr(ref pErrors);
                 EngineUtil.Free(ref pSrc);
                 EngineUtil.Free(ref pSourceName);
                 SilkMarshal.Free((nint)pEntryPoint);

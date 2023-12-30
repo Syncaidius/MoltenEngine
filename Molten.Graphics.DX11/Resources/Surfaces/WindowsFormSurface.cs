@@ -363,7 +363,7 @@ namespace Molten.Graphics.DX11
             {
                 unsafe
                 {
-                    SilkUtil.ReleasePtr(ref NativeSwapChain);
+                    NativeUtil.ReleasePtr(ref NativeSwapChain);
                 }
 
                 DisposeForm();

@@ -39,7 +39,7 @@ namespace Molten.Graphics.DX11
             if (Handle.Ptr == null)
                 throw new InvalidOperationException($"Cannot create view for resource with handle ptr of 0x0 (null).");
 
-            SilkUtil.ReleasePtr(ref _native);
+            NativeUtil.ReleasePtr(ref _native);
 
             fixed (D* ptrDesc = &_desc)
                 OnCreateView((ID3D11Resource*)Handle.Ptr, ptrDesc, ref _native);
@@ -67,7 +67,7 @@ namespace Molten.Graphics.DX11
 
         internal void Release()
         {
-            SilkUtil.ReleasePtr(ref _native);
+            NativeUtil.ReleasePtr(ref _native);
         }
     }
 }

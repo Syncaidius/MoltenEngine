@@ -78,7 +78,7 @@ namespace Molten.Graphics.DX12
 
         protected override void OnDisposeBeforeRender()
         {
-            SilkUtil.ReleasePtr(ref _debug);
+            NativeUtil.ReleasePtr(ref _debug);
             _shaderCompiler?.Dispose();
             _displayManager?.Dispose();
             _api?.Dispose();

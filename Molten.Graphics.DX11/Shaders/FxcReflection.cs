@@ -16,7 +16,7 @@ namespace Molten.Graphics.DX11
 
         public void Dispose()
         {
-            SilkUtil.ReleasePtr(ref Ptr);
+            NativeUtil.ReleasePtr(ref Ptr);
         }
     }
 }

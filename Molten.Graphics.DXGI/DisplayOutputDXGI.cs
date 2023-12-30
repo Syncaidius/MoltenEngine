@@ -24,7 +24,7 @@ namespace Molten.Graphics.Dxgi
         protected override void OnDispose()
         {
             EngineUtil.Free(ref _desc);
-            SilkUtil.ReleasePtr(ref Native);
+            NativeUtil.ReleasePtr(ref Native);
         }
 
         public IReadOnlyList<IDisplayMode> GetModes(GraphicsFormat format)

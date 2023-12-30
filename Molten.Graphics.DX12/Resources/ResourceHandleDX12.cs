@@ -34,7 +34,7 @@ namespace Molten.Graphics.DX12
 
         public override void Dispose()
         {
-            SilkUtil.ReleasePtr(ref _ptr);
+            NativeUtil.ReleasePtr(ref _ptr);
         }
 
         public static implicit operator T*(ResourceHandleDX12<T> handle)

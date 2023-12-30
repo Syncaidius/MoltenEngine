@@ -144,7 +144,7 @@ namespace Molten.Graphics.DX12
             GetFeatureSupport(ptrDevice, Feature.RootSignature, &rootSig);
             features.RootSignatureVersion = rootSig.HighestVersion;
 
-            SilkUtil.ReleasePtr(ref ptrDevice);
+            NativeUtil.ReleasePtr(ref ptrDevice);
         }
 
         private void DetectShaderStages(ID3D12Device10* device, GraphicsCapabilities cap, 

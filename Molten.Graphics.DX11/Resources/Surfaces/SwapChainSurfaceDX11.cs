@@ -40,7 +40,7 @@ namespace Molten.Graphics.DX11
             }
             else
             {
-                SilkUtil.ReleasePtr(ref NativeSwapChain);
+                NativeUtil.ReleasePtr(ref NativeSwapChain);
                 OnCreateSwapchain(ref Desc);
                 NativeSwapChain->GetDesc1(ref _swapDesc);
 
@@ -138,7 +138,7 @@ namespace Molten.Graphics.DX11
 
         protected override void OnGraphicsRelease()
         {
-            SilkUtil.ReleasePtr(ref NativeSwapChain);
+            NativeUtil.ReleasePtr(ref NativeSwapChain);
             EngineUtil.Free(ref _presentParams);
             base.OnGraphicsRelease();
         }

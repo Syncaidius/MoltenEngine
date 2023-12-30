@@ -6,6 +6,14 @@ namespace Molten.Graphics.DX12
 {
     internal unsafe class DescriptorHeapDX12 : GraphicsObject<DeviceDX12>
     {
+        public class DescriptorHeapIndexException(DescriptorHeapDX12 heap, uint requestedIndex) : 
+            Exception($"Requested descriptor heap index is out of range.")
+        {
+            public DescriptorHeapDX12 Heap => heap;
+
+            public uint RequestedIndex => requestedIndex;
+        }
+
         internal unsafe delegate void IterateCallback<T>(ref T handle, void* ptr) where T : unmanaged;
 
         ID3D12DescriptorHeap* _handle;
@@ -46,12 +54,18 @@ namespace Molten.Graphics.DX12
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal CpuDescriptorHandle GetCpuHandle(uint index)
         {
+            if (index > Capacity)
+                throw new DescriptorHeapIndexException(this, index);
+
             return new CpuDescriptorHandle(_cpuStartHandle.Ptr + (index * IncrementSize));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal GpuDescriptorHandle GetGpuHandle(uint index)
         {
+            if (index > Capacity)
+                throw new DescriptorHeapIndexException(this, index);
+
             return new GpuDescriptorHandle(_gpuStartHandle.Ptr + (index * IncrementSize));
         }
 
@@ -73,9 +87,27 @@ namespace Molten.Graphics.DX12
             Device.Ptr->CreateRenderTargetView(view.Handle, view.Desc, handle);
         }
 
+        internal void Assign(ResourceViewDX12<DepthStencilViewDesc> view, uint handleIndex)
+        {
+            CpuDescriptorHandle handle = GetCpuHandle(handleIndex);
+            Device.Ptr->CreateDepthStencilView(view.Handle, view.Desc, handle);
+        }
+
+        internal void Assign(ResourceViewDX12<ConstantBufferViewDesc> view, uint handleIndex)
+        {
+            CpuDescriptorHandle handle = GetCpuHandle(handleIndex);
+            Device.Ptr->CreateConstantBufferView(view.Desc, handle);
+        }
+
+        internal void Assign(ResourceViewDX12<SamplerDesc> view, uint handleIndex)
+        {
+            CpuDescriptorHandle handle = GetCpuHandle(handleIndex);
+            Device.Ptr->CreateSampler(view.Desc, handle);
+        }
+
         protected override void OnGraphicsRelease()
         {
-            SilkUtil.ReleasePtr(ref _handle);
+            NativeUtil.ReleasePtr(ref _handle);
         }
 
         public ref readonly uint Capacity => ref _desc.NumDescriptors;

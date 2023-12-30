@@ -93,7 +93,7 @@ namespace Molten.Graphics.DX12
             if (_debugInfo != null)
             {
                 _debugInfo->UnregisterMessageCallback(_debugCookieID);
-                SilkUtil.ReleasePtr(ref _debugInfo);
+                NativeUtil.ReleasePtr(ref _debugInfo);
             }
             base.OnDispose();
         }
