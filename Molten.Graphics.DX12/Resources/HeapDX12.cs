@@ -38,10 +38,15 @@ namespace Molten.Graphics.DX12.Resources
             _handle = (ID3D12Heap1*)ptr;
         }
 
-
         protected override void OnGraphicsRelease()
         {
             NativeUtil.ReleasePtr(ref _handle);
         }
+
+        public static implicit operator ID3D12Heap1*(HeapDX12 heap) => heap._handle;
+
+        public ID3D12Heap1* Handle => _handle;
+
+        public ref readonly HeapType Type => ref _desc.Properties.Type;
     }
 }

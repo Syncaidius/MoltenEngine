@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.DX12
 {
-    internal abstract class CommandListDX12 : GraphicsObject
+    internal abstract class CommandListDX12 : GraphicsObject<DeviceDX12>
     {
         protected CommandListDX12(CommandAllocatorDX12 allocator) : base(allocator.Device) { }
 
@@ -17,6 +17,8 @@ namespace Molten.Graphics.DX12
         public CommandAllocatorDX12 Allocator { get; }
 
         public unsafe abstract ID3D12CommandList* BaseHandle { get; }
+
+        public CommandListType Type => Allocator.Type;
     }
 
     internal abstract unsafe class CommandListDX12<T> : CommandListDX12

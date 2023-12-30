@@ -1,4 +1,5 @@
-﻿using Molten.Collections;
+﻿using System;
+using Molten.Collections;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
 
@@ -23,21 +24,15 @@ namespace Molten.Graphics.DX12
             _allocated = new ThreadedList<CommandListDX12>();
         }
 
-        private T* CreateCommandList<T>(Guid guid, ID3D12PipelineState* pInitialState /*TODO Properly provide a PipelineStateDX12*/)
-            where T : unmanaged
+        internal GraphicsCommandListDX12 Allocate(ID3D12PipelineState* pInitialState = null /*TODO Properly provide a PipelineStateDX12*/)
         {
             void* ptr = null;
+            Guid guid = ID3D12GraphicsCommandList.Guid;
             HResult hr = Device.Ptr->CreateCommandList(0, Type, _handle, pInitialState, &guid, &ptr);
             if (!Device.Log.CheckResult(hr, () => $"Failed to allocate {Type} command list"))
                 hr.Throw();
 
-            return (T*)ptr;
-        }
-
-        internal GraphicsCommandListDX12 AllocateGraphics(ID3D12PipelineState* pInitialState /*TODO Properly provide a PipelineStateDX12*/)
-        {
-            ID3D12GraphicsCommandList* ptr = CreateCommandList<ID3D12GraphicsCommandList>(ID3D12GraphicsCommandList.Guid, pInitialState);
-            GraphicsCommandListDX12 list = new GraphicsCommandListDX12(this, ptr);
+            GraphicsCommandListDX12 list = new GraphicsCommandListDX12(this, (ID3D12GraphicsCommandList*) ptr);
             _allocated.Add(list);
 
             return list;

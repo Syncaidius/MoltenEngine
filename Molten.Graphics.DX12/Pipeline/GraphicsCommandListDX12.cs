@@ -4,11 +4,9 @@ namespace Molten.Graphics.DX12
 {
     internal unsafe class GraphicsCommandListDX12 : CommandListDX12<ID3D12GraphicsCommandList>
     {
-        public GraphicsCommandListDX12(CommandAllocatorDX12 allocator, ID3D12GraphicsCommandList* handle) : 
+        internal GraphicsCommandListDX12(CommandAllocatorDX12 allocator, ID3D12GraphicsCommandList* handle) :
             base(allocator, handle)
-        {
-            
-        }
+        { }
 
         public void Close()
         {
