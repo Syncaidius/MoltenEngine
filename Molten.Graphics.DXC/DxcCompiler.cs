@@ -65,8 +65,8 @@ namespace Molten.Graphics.Dxc
 
         protected override void OnDispose()
         {
-            SilkUtil.ReleasePtr(ref _native);
-            SilkUtil.ReleasePtr(ref _utils);
+            NativeUtil.ReleasePtr(ref _native);
+            NativeUtil.ReleasePtr(ref _utils);
             _dxc.Dispose();
         }
 
@@ -133,7 +133,7 @@ namespace Molten.Graphics.Dxc
                 }
 
                 LoadErrors(context, dxcResult, NativeStringEncoding.UTF8);
-                SilkUtil.ReleasePtr(ref pdbData);
+                NativeUtil.ReleasePtr(ref pdbData);
 
                 if (context.HasErrors)
                     return false;
@@ -170,7 +170,7 @@ namespace Molten.Graphics.Dxc
                 nuint dataSize = data->GetBufferSize();
                 context.AddDebug($"\t Loaded DXC PDB data -- Bytes: {dataSize} -- Path: {pdbPath}");
 
-                SilkUtil.ReleasePtr(ref pPdbPath);
+                NativeUtil.ReleasePtr(ref pPdbPath);
             }
         }
 
@@ -237,7 +237,7 @@ namespace Molten.Graphics.Dxc
                 }
             }
 
-            SilkUtil.ReleasePtr(ref pErrorBlob);
+            NativeUtil.ReleasePtr(ref pErrorBlob);
         }
 
         /// <summary>
