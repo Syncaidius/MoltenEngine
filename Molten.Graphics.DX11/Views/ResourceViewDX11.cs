@@ -31,7 +31,7 @@ namespace Molten.Graphics.DX11
         /// </summary>
         internal ResourceHandleDX11 Handle { get; }
 
-        internal virtual void Create()
+        internal void Create()
         {
             if (!Handle.Resource.Flags.Has(_requiredFlags))
                 throw new InvalidOperationException($"Cannot create view for resource that does not have {_requiredFlags}");

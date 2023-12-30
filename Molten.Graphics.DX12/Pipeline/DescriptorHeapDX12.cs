@@ -1,9 +1,10 @@
-﻿using Silk.NET.Core.Native;
+﻿using System.Runtime.CompilerServices;
+using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
 
 namespace Molten.Graphics.DX12
 {
-    internal unsafe class DescriptorHeapDX12 : GraphicsObject
+    internal unsafe class DescriptorHeapDX12 : GraphicsObject<DeviceDX12>
     {
         internal unsafe delegate void IterateCallback<T>(ref T handle, void* ptr) where T : unmanaged;
 
@@ -42,37 +43,34 @@ namespace Molten.Graphics.DX12
                 _gpuStartHandle = _handle->GetGPUDescriptorHandleForHeapStart();
         }
 
-        internal void IterateForCpu(IterateCallback<CpuDescriptorHandle> callback)
-        {
-            CpuDescriptorHandle handle = _cpuStartHandle;
-            for(int i = 0; i < _desc.NumDescriptors; i++)
-            {
-                callback(ref handle, (void*)handle.Ptr);   
-                handle.Ptr += IncrementSize;
-            }
-        }
-
-        internal void IterateForGpu(IterateCallback<GpuDescriptorHandle> callback)
-        {
-            if (!_desc.Flags.HasFlag(DescriptorHeapFlags.ShaderVisible))
-                throw new InvalidOperationException("Cannot iterate as GPU descriptor handles without being visible to shaders.");
-
-            GpuDescriptorHandle handle = _gpuStartHandle;
-            for (int i = 0; i < _desc.NumDescriptors; i++)
-            {
-                callback(ref handle, (void*)handle.Ptr);
-                handle.Ptr += IncrementSize;
-            }
-        }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal CpuDescriptorHandle GetCpuHandle(uint index)
         {
             return new CpuDescriptorHandle(_cpuStartHandle.Ptr + (index * IncrementSize));
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal GpuDescriptorHandle GetGpuHandle(uint index)
         {
             return new GpuDescriptorHandle(_gpuStartHandle.Ptr + (index * IncrementSize));
+        }
+
+        internal void Assign(ResourceViewDX12<ShaderResourceViewDesc> view, uint handleIndex)
+        {
+            CpuDescriptorHandle handle = GetCpuHandle(handleIndex);
+            Device.Ptr->CreateShaderResourceView(view.Handle, view.Desc, handle);
+        }
+
+        internal void Assign(ResourceViewDX12<UnorderedAccessViewDesc> view, uint handleIndex)
+        {
+            CpuDescriptorHandle handle = GetCpuHandle(handleIndex);
+            Device.Ptr->CreateUnorderedAccessView(view.Handle, null, view.Desc, handle);
+        }
+
+        internal void Assign(ResourceViewDX12<RenderTargetViewDesc> view, uint handleIndex)
+        {
+            CpuDescriptorHandle handle = GetCpuHandle(handleIndex);
+            Device.Ptr->CreateRenderTargetView(view.Handle, view.Desc, handle);
         }
 
         protected override void OnGraphicsRelease()

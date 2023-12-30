@@ -60,6 +60,8 @@ namespace Molten.Graphics.DX12
             EngineUtil.Free(ref sigDesc.Desc10.PParameters);
         }
 
+        public static implicit operator ID3D12RootSignature*(RootSignatureDX12 sig) => sig._handle;
+
         protected override void OnGraphicsRelease()
         {
             SilkUtil.ReleasePtr(ref _handle);

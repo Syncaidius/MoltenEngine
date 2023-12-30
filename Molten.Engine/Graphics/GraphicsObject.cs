@@ -58,7 +58,6 @@
         protected GraphicsObject(T device) : base(device)
         {
             Device = device;
-
         }
 
         /// <summary>
