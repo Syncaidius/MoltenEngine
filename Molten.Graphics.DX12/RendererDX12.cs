@@ -1,4 +1,5 @@
-﻿using Molten.Graphics.Dxc;
+﻿using System.Reflection;
+using Molten.Graphics.Dxc;
 using Molten.Graphics.Dxgi;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
@@ -16,6 +17,7 @@ namespace Molten.Graphics.DX12
         D3D12 _api;
         GraphicsManagerDXGI _displayManager;
         ID3D12Debug6* _debug;
+        HlslDxcCompiler _shaderCompiler;
 
         public RendererDX12() { }
 
@@ -46,32 +48,47 @@ namespace Molten.Graphics.DX12
         protected override List<GraphicsDevice> OnInitializeDevices(GraphicsSettings settings, GraphicsManager manager)
         {
             List<GraphicsDevice> result = new List<GraphicsDevice>();
-            
+          
+            // Initialize the primary device
             NativeDevice = _displayManager.PrimaryDevice as DeviceDX12;
             NativeDevice.Initialize();
             result.Add(NativeDevice);
+
+            // Initialize all secondary devices
+            foreach(GraphicsDevice device in _displayManager.Devices)
+            {
+                DeviceDX12 dxDevice = device as DeviceDX12;
+                if (dxDevice == NativeDevice ||
+                    dxDevice.Type == GraphicsDeviceType.Cpu ||
+                    dxDevice.Type == GraphicsDeviceType.Other)
+                    continue;
+
+                if(dxDevice.Initialize())
+                    result.Add(dxDevice);
+            }
 
             return result;
         }
 
         protected override void OnInitializeRenderer(EngineSettings settings)
         {
-            
+            Assembly includeAssembly = GetType().Assembly;
+            _shaderCompiler = new HlslDxcCompiler(this, "\\Assets\\HLSL\\include\\", includeAssembly);
         }
 
         protected override void OnDisposeBeforeRender()
         {
-            NativeDevice?.Dispose();
-
             SilkUtil.ReleasePtr(ref _debug);
-            _api.Dispose();
+            _shaderCompiler?.Dispose();
+            _displayManager?.Dispose();
+            _api?.Dispose();
         }
 
         internal DeviceDX12 NativeDevice { get; private set; }
 
         internal DeviceBuilderDX12 Builder { get; private set; }
 
-        protected override DxcCompiler Compiler { get; }
+        protected override DxcCompiler Compiler => _shaderCompiler;
 
         internal D3D12 Api => _api;
 

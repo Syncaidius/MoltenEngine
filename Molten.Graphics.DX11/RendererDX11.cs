@@ -35,12 +35,13 @@ namespace Molten.Graphics.DX11
 
         protected override List<GraphicsDevice> OnInitializeDevices(GraphicsSettings settings, GraphicsManager manager)
         {
+            // Initialize the primary device first.
             List<GraphicsDevice> result = new List<GraphicsDevice>();
-
             NativeDevice = _displayManager.PrimaryDevice as DeviceDX11;
             NativeDevice.Initialize();
             result.Add(NativeDevice);
 
+            // Initialize secondary devices.
             foreach(GraphicsDevice device in _displayManager.Devices)
             {
                 DeviceDX11 dxDevice = device as DeviceDX11;
@@ -58,16 +59,15 @@ namespace Molten.Graphics.DX11
 
         protected override void OnInitializeRenderer(EngineSettings settings)
         {
-            Assembly includeAssembly = GetType().Assembly;
-            
+            Assembly includeAssembly = GetType().Assembly;       
             _shaderCompiler = new FxcCompiler(this, Log, "\\Assets\\HLSL\\include\\", includeAssembly);
         }
 
         protected override void OnDisposeBeforeRender()
         {
-            _displayManager.Dispose();
-            NativeDevice?.Dispose();
-            _api.Dispose();
+            _shaderCompiler?.Dispose();
+            _displayManager?.Dispose();
+            _api?.Dispose();
         }
 
         internal DeviceDX11 NativeDevice { get; private set; }

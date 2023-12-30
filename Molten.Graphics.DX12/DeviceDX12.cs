@@ -12,6 +12,7 @@ namespace Molten.Graphics.DX12
         DeviceBuilderDX12 _builder;
         CommandQueueDX12 _cmdDirect;
         ID3D12InfoQueue1* _debugInfo;
+        uint _debugCookieID;
 
         public DeviceDX12(RenderService renderer, GraphicsManagerDXGI manager, IDXGIAdapter4* adapter, DeviceBuilderDX12 deviceBuilder) :
             base(renderer, manager, adapter)
@@ -35,8 +36,10 @@ namespace Molten.Graphics.DX12
                 _debugInfo = (ID3D12InfoQueue1*)ptr;
                 _debugInfo->PushEmptyStorageFilter();
 
-                uint debugCallbackID = 0;
-                r = _debugInfo->RegisterMessageCallback(new PfnMessageFunc(ProcessDebugMessage), MessageCallbackFlags.FlagNone, null, &debugCallbackID);
+                uint debugCookieID = 0;
+                r = _debugInfo->RegisterMessageCallback(new PfnMessageFunc(ProcessDebugMessage), MessageCallbackFlags.FlagNone, null, &debugCookieID);
+                _debugCookieID = debugCookieID;
+
                 if (!r.IsSuccess)
                     Log.Error("Failed to register debug callback");
             }
@@ -86,7 +89,12 @@ namespace Molten.Graphics.DX12
         protected override void OnDispose()
         {
             _cmdDirect.Dispose();
-            SilkUtil.ReleasePtr(ref _debugInfo);
+
+            if (_debugInfo != null)
+            {
+                _debugInfo->UnregisterMessageCallback(_debugCookieID);
+                SilkUtil.ReleasePtr(ref _debugInfo);
+            }
             base.OnDispose();
         }
 

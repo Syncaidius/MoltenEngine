@@ -180,6 +180,10 @@ namespace Molten.Graphics
                 IsInitialized = true;
                 CheckFrameBufferSize(true);
             }
+            else
+            {
+                Log.Error($"Failed to initialize {this.Name}");
+            }
 
             return IsInitialized;
         }

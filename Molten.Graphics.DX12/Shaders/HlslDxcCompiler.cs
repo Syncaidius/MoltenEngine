@@ -7,9 +7,9 @@ using DxcBuffer = Silk.NET.Direct3D.Compilers.Buffer;
 
 namespace Molten.Graphics.DX12
 {
-    internal class HlslDx12Compiler : DxcCompiler
+    internal class HlslDxcCompiler : DxcCompiler
     {
-        public HlslDx12Compiler(RenderService renderer, string includePath, Assembly includeAssembly) : 
+        public HlslDxcCompiler(RendererDX12 renderer, string includePath, Assembly includeAssembly) : 
             base(renderer, includePath, includeAssembly)
         {
         }

@@ -128,11 +128,11 @@ namespace Molten.Graphics.Vulkan
             return _loader.HasExtension(extName);
         }
 
-        internal void PreInitialize(CommandSetCapabilityFlags capFlags)
+        internal void PreInitialize(CommandSetCapabilityFlags requiredCmdFlags)
         {
             _native = EngineUtil.Alloc<Device>();
             _queues = new List<GraphicsQueueVK>();
-            _loader = new DeviceLoaderVK(_renderer, this, capFlags);
+            _loader = new DeviceLoaderVK(_renderer, this, requiredCmdFlags);
         }
 
         private DeviceVendor ParseVendorID(uint vendorID)

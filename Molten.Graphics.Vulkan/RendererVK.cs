@@ -79,6 +79,7 @@ namespace Molten.Graphics.Vulkan
 
         protected override List<GraphicsDevice> OnInitializeDevices(GraphicsSettings settings, GraphicsManager manager)
         {
+            // Initialize the primary device
             List<GraphicsDevice> result = new List<GraphicsDevice>();
             NativeDevice = _displayManager.PrimaryDevice as DeviceVK;
             NativeDevice.PreInitialize(CommandSetCapabilityFlags.Graphics);
