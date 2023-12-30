@@ -21,14 +21,12 @@ Blank - Not Started\
 🚫 Not-applicable
 
 | Feature                    | Windows    | Android  | Linux  | Mac  | iOS |
-| :---                       | :-------:  | :-----:  | :---:  | :-:  | :-: |
-| Renderer - OpenGL          |            | 🚫       |        |      |    |
-| Renderer - OpenES          |            |          | 🚫     | 🚫   |    |     
+| :---                       | :-------:  | :-----:  | :---:  | :-:  | :-: |  
 | Renderer - Vulkan          | 🚧         |          |        |      |     |
 | Renderer - DirectX 11      | 🚧         | 🚫       | 🚫    | 🚫   |     |
 | Renderer - DirectX 12      | 🚧         | 🚫       | 🚫    | 🚫   |     |
-| Audio - OpenAL             | 🚧         |          |        |      |     |
-| Audio - XAudio 2           |            | 🚫       | 🚫    | 🚫   |     |
+| Networking - MNet          |            |          |        |      |     |
+| Audio Engine               | 🚧         |          |        |      |     |
 | Keyboard support           | ✔️          |          |        |      |    |
 | Mouse support              | ✔️          |          |        |      |    |
 | Touch support              | 🚧         | 🚧       |        |      |    |
@@ -36,13 +34,12 @@ Blank - Not Started\
 | Entity component system    | ✔️         | ✔️       | ✔️     | ✔️    |     |
 | Content Management System  | ✔️         |          |        |      |     |
 | Example projects           | 🚧         |          |        |      |     |
-| Networking - MNet          |            |          |        |      |     |
 | 2D Physics engine          |            |          |        |      |     |
 | 3D Physics engine          |            |          |        |      |     |
-| Tool - Content editor      |            |          |        |      |     |
-| Tool - Scene editor        |            |          |        |      |     |
+| Tooling - Scene editor     |            |          |        |      |     |
+| Tooling - Shader editor    |            |          |        |      |     |
+| Tooling - Sprite editor    |            |          |        |      |     |
 | Project templates          |            |          |        |      |     |
-
 
 # Renderer Feature Status
 See the following table for the per-renderer support and status of each feature.
