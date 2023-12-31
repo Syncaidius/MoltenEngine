@@ -162,25 +162,16 @@
         /// <exception cref="GraphicsResourceException"></exception>
         public unsafe GraphicsStream MapResource(GraphicsResource resource, uint subresource, uint offsetBytes, GraphicsMapType mapType)
         {
-            if (resource.Stream != null)
-                throw new GraphicsResourceException(resource, $"Cannot map a resource that is already mapped. Dispose of the provided {nameof(GraphicsStream)} first");
-
             resource.Ensure(this);
             ResourceMap map = GetResourcePtr(resource, subresource, mapType);
-            resource.Stream = new GraphicsStream(this, resource, ref map);
-            resource.Stream.Position = offsetBytes;
-            return resource.Stream;
+            GraphicsStream stream = new GraphicsStream(this, resource, ref map);
+            stream.Position = offsetBytes;
+            return stream;
         }
 
-        internal void UnmapResource(GraphicsResource resource)
+        internal void UnmapResource(GraphicsStream stream)
         {
-#if DEBUG
-            if (resource.Stream == null)
-                throw new GraphicsResourceException(resource, "$Cannot unmap a resource that has not been mapped yet. Call MapResource first");
-#endif
-
-            OnUnmapResource(resource, resource.Stream.SubResourceIndex);
-            resource.Stream = null;
+            OnUnmapResource(stream.Resource, stream.SubResourceIndex);
         }
 
         /// <summary>

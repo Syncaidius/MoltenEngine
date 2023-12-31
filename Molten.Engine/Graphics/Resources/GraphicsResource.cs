@@ -171,8 +171,6 @@ namespace Molten.Graphics
         /// </summary>
         public GraphicsResourceFlags Flags { get; protected set; }
 
-        internal GraphicsStream Stream { get; set; }
-
         /// <summary>
         /// Gets the underlying native resource handle.
         /// </summary>

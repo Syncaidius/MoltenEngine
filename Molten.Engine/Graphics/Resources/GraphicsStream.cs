@@ -20,7 +20,7 @@ namespace Molten.Graphics
 
         protected override void Dispose(bool disposing)
         {
-            Queue.UnmapResource(Resource);
+            Queue.UnmapResource(this);
             base.Dispose(disposing);
         }
 
