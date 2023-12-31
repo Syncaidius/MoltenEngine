@@ -190,10 +190,6 @@ namespace Molten.Graphics.DX11
 
         public override ResourceHandleDX11<ID3D11Resource> Handle => _curHandle;
 
-        public override unsafe void* SRV => _curHandle.SRV.Ptr;
-
-        public override unsafe void* UAV => _curHandle.UAV.Ptr;
-
         public new DeviceDX11 Device { get; }
     }
 }

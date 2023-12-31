@@ -104,7 +104,7 @@ namespace Molten.Graphics.DX11
             for (int i = 0; i < _resources.Length; i++)
             {
                 if (_resources.BoundValues[i] != null)
-                    res[i] = (ID3D11ShaderResourceView1*)_resources.BoundValues[i].SRV;
+                    res[i] = ((ResourceHandleDX11)_resources.BoundValues[i].Handle).SRV;
                 else
                     res[i] = null;
             }

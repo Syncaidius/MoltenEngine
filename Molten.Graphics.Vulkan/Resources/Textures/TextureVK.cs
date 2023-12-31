@@ -241,10 +241,6 @@ namespace Molten.Graphics.Vulkan
 
         public override ResourceHandleVK<Image, ImageHandleVK> Handle => _curHandle;
 
-        public override unsafe void* SRV => Handle.SubHandle.ViewPtr;
-
-        public override unsafe void* UAV => throw new NotImplementedException();
-
         public new DeviceVK Device { get; }
     }
 }

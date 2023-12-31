@@ -129,10 +129,6 @@ namespace Molten.Graphics.Vulkan
 
         public override unsafe ResourceHandleVK<Buffer, BufferHandleVK> Handle => _curHandle;
 
-        public override unsafe void* UAV => throw new NotImplementedException();
-
-        public override unsafe void* SRV => _curHandle.SubHandle.ViewPtr;
-
         public override GraphicsFormat ResourceFormat { get; protected set; }
     }
 }

@@ -178,12 +178,6 @@ namespace Molten.Graphics
         /// </summary>
         public abstract GraphicsResourceHandle Handle { get; }
 
-        /// <summary>Gets the native shader resource view attached to the object.</summary>
-        public abstract unsafe void* SRV { get; }
-
-        /// <summary>Gets the native unordered-acess/storage view attached to the object.</summary>
-        public abstract unsafe void* UAV { get; }
-
         /// <summary>
         /// Gets or [protected] sets the <see cref="GraphicsFormat"/> of the resource.
         /// </summary>

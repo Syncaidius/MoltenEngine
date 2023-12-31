@@ -280,7 +280,7 @@ namespace Molten.Graphics.DX11
                 for (int i = 0; i < count; i++)
                 {
                     if (_omUAVs.BoundValues[i] != null)
-                        pUavs[i] = (ID3D11UnorderedAccessView*)_omUAVs.BoundValues[i].UAV;
+                        pUavs[i] = ((ResourceHandleDX11)_omUAVs.BoundValues[i].Handle).UAV;
                     else
                         pUavs = null;
                 }

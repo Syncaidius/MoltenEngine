@@ -35,7 +35,7 @@ namespace Molten.Graphics.DX11
                     for (int i = 0; i < count; i++)
                     {
                         if (_uavs.BoundValues[i] != null)
-                            pUavs[i] = (ID3D11UnorderedAccessView1*)_uavs.BoundValues[i].UAV;
+                            pUavs[i] = ((ResourceHandleDX11)_uavs.BoundValues[i].Handle).UAV;
                         else
                             pUavs[i] = null;
 

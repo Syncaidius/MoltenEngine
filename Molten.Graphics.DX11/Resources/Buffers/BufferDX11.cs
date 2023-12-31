@@ -214,12 +214,6 @@ namespace Molten.Graphics.DX11
         public override ResourceHandleDX11<ID3D11Buffer> Handle => _curHandle;
 
         /// <inheritdoc/>
-        public override unsafe void* SRV => _curHandle.SRV.Ptr;
-
-        /// <inheritdoc/>
-        public override unsafe void* UAV => _curHandle.UAV.Ptr;
-
-        /// <inheritdoc/>
         public override GraphicsFormat ResourceFormat { get; protected set; }
 
         internal Format D3DFormat { get; }
