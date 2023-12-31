@@ -70,7 +70,7 @@ namespace Molten.Graphics.DX11
 
         public void Clear(GraphicsPriority priority, Color color)
         {
-            QueueTask(priority, new Surface1DClearTask()
+            Device.Renderer.PushTask(priority, this, new Surface1DClearTask()
             {
                 Color = color,
                 Surface = this,

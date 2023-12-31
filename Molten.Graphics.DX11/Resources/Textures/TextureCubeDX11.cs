@@ -74,7 +74,7 @@ namespace Molten.Graphics.DX11
 
         public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight, uint newMipMapCount)
         {
-            QueueTask(priority, new TextureResizeTask()
+            Device.Renderer.PushTask(priority, this, new TextureResizeTask()
             {
                 NewDimensions = new TextureDimensions()
                 {
@@ -90,7 +90,7 @@ namespace Molten.Graphics.DX11
 
         public void Resize(GraphicsPriority priority, uint newWidth, uint newMipMapCount)
         {
-            QueueTask(priority, new TextureResizeTask()
+            Device.Renderer.PushTask(priority, this, new TextureResizeTask()
             {
                 NewDimensions = new TextureDimensions()
                 {

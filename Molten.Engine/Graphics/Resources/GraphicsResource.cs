@@ -4,13 +4,11 @@ namespace Molten.Graphics
 {
     public abstract class GraphicsResource : GraphicsObject, IGraphicsResource
     {
-        ThreadedQueue<IGraphicsResourceTask> _applyTaskQueue;
-
         protected GraphicsResource(GraphicsDevice device, GraphicsResourceFlags flags) : 
             base(device)
         {
             Flags = flags;
-            _applyTaskQueue = new ThreadedQueue<IGraphicsResourceTask>();
+            ApplyQueue = new ThreadedQueue<IGraphicsResourceTask>();
             LastUsedFrameID = Device.Renderer.FrameID;
         }
 
@@ -90,55 +88,16 @@ namespace Molten.Graphics
         /// <param name="cmd">The graphics queue to use when process changes.</param>
         protected virtual void OnApply(GraphicsQueue cmd)
         {
-            if (_applyTaskQueue.Count > 0)
+            if (ApplyQueue.Count > 0)
             {
                 IGraphicsResourceTask op = null;
                 bool altered = false;
-                while (_applyTaskQueue.TryDequeue(out op))
+                while (ApplyQueue.TryDequeue(out op))
                     altered = op.Process(cmd, this);
 
                 // If the resource was invalided, let the pipeline know it needs to be reapplied by incrementing version.
                 if (altered)
                     Version++;
-            }
-        }
-
-        /// <summary>
-        /// Queues a <see cref="IGraphicsResourceTask"/> on the current <see cref="GraphicsResource"/>.
-        /// </summary>
-        /// <param name="priority"></param>
-        /// <param name="op"></param>
-        protected void QueueTask(GraphicsPriority priority, IGraphicsResourceTask op)
-        {
-            switch (priority)
-            {
-                default:
-                case GraphicsPriority.Immediate:
-                    if (op.Process(Device.Queue, this))
-                        Version++;
-                    break;
-
-                case GraphicsPriority.Apply:
-                    _applyTaskQueue.Enqueue(op);
-                    break;
-
-                case GraphicsPriority.StartOfFrame:
-                    {
-                        RunResourceTask task = RunResourceTask.Get();
-                        task.Task = op;
-                        task.Resource = this;
-                        Device.Renderer.PushTask(RenderTaskPriority.StartOfFrame, task);
-                    }
-                    break;
-
-                case GraphicsPriority.EndOfFrame:
-                    {
-                        RunResourceTask task = RunResourceTask.Get();
-                        task.Task = op;
-                        task.Resource = this;
-                        Device.Renderer.PushTask(RenderTaskPriority.EndOfFrame, task);
-                    }
-                    break;
             }
         }
 
@@ -151,9 +110,9 @@ namespace Molten.Graphics
         protected bool DequeueTaskIfType<T>(out T result)
             where T : IGraphicsResourceTask
         {
-            if (_applyTaskQueue.Count > 0 && _applyTaskQueue.IsNext<T>())
+            if (ApplyQueue.Count > 0 && ApplyQueue.IsNext<T>())
             {
-                if (_applyTaskQueue.TryDequeue(out IGraphicsResourceTask task))
+                if (ApplyQueue.TryDequeue(out IGraphicsResourceTask task))
                 {
                     result = (T)task;
                     return true;
@@ -190,7 +149,7 @@ namespace Molten.Graphics
                     throw new GraphicsResourceException(this, "The destination buffer is not large enough.");
             }
 
-            QueueTask(priority, new ResourceCopyTask()
+            Device.Renderer.PushTask(priority, this, new ResourceCopyTask()
             {
                 Destination = destination,
                 CompletionCallback = completeCallback,
@@ -199,7 +158,7 @@ namespace Molten.Graphics
 
         internal void Clear()
         {
-            _applyTaskQueue.Clear();
+            ApplyQueue.Clear();
         }
 
         /// <summary>
@@ -252,8 +211,8 @@ namespace Molten.Graphics
         public ulong LastFrameResizedID { get; internal set; }
 
         /// <summary>
-        /// Gets the number of items in the current <see cref="GraphicsResource"/> apply queue.
+        /// Gets the queue of tasks that need to be applied to the current <see cref="GraphicsResource"/> during the next <see cref="Apply(GraphicsQueue)"/> call.
         /// </summary>
-        public int ApplyQueueCount => _applyTaskQueue.Count;
+        public ThreadedQueue<IGraphicsResourceTask> ApplyQueue { get; }
     }
 }

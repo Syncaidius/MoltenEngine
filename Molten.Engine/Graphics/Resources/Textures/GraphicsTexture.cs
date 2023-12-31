@@ -111,7 +111,7 @@ namespace Molten.Graphics
             if (TextureType != GraphicsTextureType.Texture3D || TextureType != GraphicsTextureType.Surface3D)
                 depth = 1;
 
-            QueueTask(priority, new TextureResizeTask()
+            Device.Renderer.PushTask(priority, this, new TextureResizeTask()
             {
                 NewFormat = newFormat == GraphicsFormat.Unknown ? ResourceFormat : newFormat,
                 NewDimensions = new TextureDimensions()
@@ -142,7 +142,7 @@ namespace Molten.Graphics
             if (!texBounds.Contains(area))
                 throw new Exception("The provided area would go outside of the current texture's bounds.");
 
-            QueueTask(priority, new TextureSetTask(data, (uint)sizeof(T), 0, numElements)
+            Device.Renderer.PushTask(priority, this, new TextureSetTask(data, (uint)sizeof(T), 0, numElements)
             {
                 Pitch = texturePitch,
                 StartIndex = 0,
@@ -187,7 +187,7 @@ namespace Molten.Graphics
         public unsafe void SetData(GraphicsPriority priority, TextureSlice data, uint mipIndex, uint arraySlice, Action<GraphicsResource> completeCallback = null)
         {
             // Store pending change.
-            QueueTask(priority, new TextureSetTask(data.Data, 1, 0, data.TotalBytes)
+            Device.Renderer.PushTask(priority, this, new TextureSetTask(data.Data, 1, 0, data.TotalBytes)
             {
                 Pitch = data.Pitch,
                 ArrayIndex = arraySlice,
@@ -202,7 +202,7 @@ namespace Molten.Graphics
         {
             fixed (T* ptrData = data)
             {
-                QueueTask(priority, new TextureSetTask(ptrData, (uint)sizeof(T), startIndex, count)
+                Device.Renderer.PushTask(priority, this, new TextureSetTask(ptrData, (uint)sizeof(T), startIndex, count)
                 {
                     Pitch = pitch,
                     ArrayIndex = arrayIndex,
@@ -223,7 +223,7 @@ namespace Molten.Graphics
         public unsafe void SetData<T>(GraphicsPriority priority, uint level, T* data, uint startIndex, uint count, uint pitch, uint arrayIndex, Action<GraphicsResource> completeCallback = null)
             where T : unmanaged
         {
-            QueueTask(priority, new TextureSetTask(data, (uint)sizeof(T), startIndex, count)
+            Device.Renderer.PushTask(priority, this, new TextureSetTask(data, (uint)sizeof(T), startIndex, count)
             {
                 Pitch = pitch,
                 ArrayIndex = arrayIndex,
@@ -234,7 +234,7 @@ namespace Molten.Graphics
 
         public void GetData(GraphicsPriority priority, GraphicsTexture stagingTexture, Action<TextureData> callback)
         {
-            QueueTask(priority, new TextureGetTask()
+            Device.Renderer.PushTask(priority, this, new TextureGetTask()
             {
                 Staging = stagingTexture,
                 CompleteCallback = callback,
@@ -243,7 +243,7 @@ namespace Molten.Graphics
 
         public void GetData(GraphicsPriority priority, GraphicsTexture stagingTexture, uint mipLevel, uint arrayIndex, Action<TextureSlice> callback)
         {
-            QueueTask(priority, new TextureGetSliceTask()
+            Device.Renderer.PushTask(priority, this, new TextureGetSliceTask()
             {
                 Staging = stagingTexture,
                 CompleteCallback = callback,
@@ -311,7 +311,7 @@ namespace Molten.Graphics
             if (destSlice >= destination.ArraySize)
                 throw new ResourceCopyException(this, destination, "The destination array slice exceeds the total number of slices in the destination texture.");
 
-            QueueTask(priority, new SubResourceCopyTask()
+            Device.Renderer.PushTask(priority, this, new SubResourceCopyTask()
             {
                 SrcRegion = null,
                 SrcSubResource = (sourceSlice * MipMapCount) + sourceLevel,
@@ -328,7 +328,7 @@ namespace Molten.Graphics
             if (!IsMipMapGenAllowed)
                 throw new Exception("Cannot generate mip-maps for texture. Must have flag: TextureFlags.AllowMipMapGeneration.");
 
-            QueueTask(priority, new GenerateMipMapsTask()
+            Device.Renderer.PushTask(priority, this, new GenerateMipMapsTask()
             {
                 OnCompleted = completionCallback
             });

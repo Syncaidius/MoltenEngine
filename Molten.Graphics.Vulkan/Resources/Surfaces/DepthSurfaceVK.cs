@@ -19,7 +19,7 @@ namespace Molten.Graphics.Vulkan
 
         public void Clear(GraphicsPriority priority, DepthClearFlags flags, float depthValue = 1.0f, byte stencilValue = 0)
         {
-            QueueTask(priority, new DepthClearTaskVK()
+            Device.Renderer.PushTask(priority, this, new DepthClearTaskVK()
             {
                 DepthValue = depthValue,
                 StencilValue = stencilValue,

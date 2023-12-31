@@ -1,6 +1,5 @@
 ﻿using Molten.Collections;
 using Molten.Graphics.Overlays;
-using Molten.Threading;
 
 namespace Molten.Graphics
 {
@@ -294,6 +293,47 @@ namespace Molten.Graphics
             PushTask(RenderTaskPriority.StartOfFrame, task);
         }
 
+        /// <summary>
+        /// Queues a <see cref="IGraphicsResourceTask"/> on the current <see cref="GraphicsResource"/>.
+        /// </summary>
+        /// <param name="priority"></param>
+        /// <param name="resource"></param>
+        /// <param name="op"></param>
+        public void PushTask<T>(GraphicsPriority priority, GraphicsResource resource, T op)
+            where T : IGraphicsResourceTask
+        {
+            switch (priority)
+            {
+                default:
+                case GraphicsPriority.Immediate:
+                    if (op.Process(Device.Queue, resource))
+                        resource.Version++;
+                    break;
+
+                case GraphicsPriority.Apply:
+                    resource.ApplyQueue.Enqueue(op);
+                    break;
+
+                case GraphicsPriority.StartOfFrame:
+                    {
+                        RunResourceTask task = RunResourceTask.Get();
+                        task.Task = op;
+                        task.Resource = resource;
+                        PushTask(RenderTaskPriority.StartOfFrame, task);
+                    }
+                    break;
+
+                case GraphicsPriority.EndOfFrame:
+                    {
+                        RunResourceTask task = RunResourceTask.Get();
+                        task.Task = op;
+                        task.Resource = resource;
+                        PushTask(RenderTaskPriority.EndOfFrame, task);
+                    }
+                    break;
+            }
+        }
+
         public void PushTask(RenderTaskPriority priority, RenderTask task)
         {
             _tasks[priority].Enqueue(task);
@@ -302,6 +342,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Pushes a compute-based shader as a task.
         /// </summary>
+        /// <param name="priority"></param>
         /// <param name="shader">The compute shader to be run inside the task.</param>
         /// <param name="groupsX">The number of X compute thread groups.</param>
         /// <param name="groupsY">The number of Y compute thread groups.</param>
@@ -309,10 +350,10 @@ namespace Molten.Graphics
         /// <param name="callback">A callback to run once the task is completed.</param>
         public void PushTask(RenderTaskPriority priority, HlslShader shader, uint groupsX, uint groupsY, uint groupsZ, ComputeTaskCompletionCallback callback = null)
         {
-            PushComputeTask(priority, shader, new Vector3UI(groupsX, groupsY, groupsZ), callback);
+            PushTask(priority, shader, new Vector3UI(groupsX, groupsY, groupsZ), callback);
         }
 
-        public void PushComputeTask(RenderTaskPriority priority, HlslShader shader, Vector3UI groups, ComputeTaskCompletionCallback callback = null)
+        public void PushTask(RenderTaskPriority priority, HlslShader shader, Vector3UI groups, ComputeTaskCompletionCallback callback = null)
         {
             ComputeTask task = ComputeTask.Get();
             task.Shader = shader;

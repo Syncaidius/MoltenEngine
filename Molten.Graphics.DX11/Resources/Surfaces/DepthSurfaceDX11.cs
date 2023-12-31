@@ -143,7 +143,7 @@ namespace Molten.Graphics.DX11
 
         public void Clear(GraphicsPriority priority, DepthClearFlags flags, float depth = 1.0f, byte stencil = 0)
         {
-            QueueTask(priority, new DepthClearTask()
+            Device.Renderer.PushTask(priority, this, new DepthClearTask()
             {
                 Flags = flags,
                 Surface = this,

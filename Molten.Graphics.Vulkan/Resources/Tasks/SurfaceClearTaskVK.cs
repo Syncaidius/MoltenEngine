@@ -14,7 +14,7 @@ namespace Molten.Graphics.Vulkan
 
             RenderSurface2DVK surface = resource as RenderSurface2DVK;
 
-            if (surface.ApplyQueueCount > 0)
+            if (surface.ApplyQueue.Count > 0)
             {
                 GraphicsQueueVK vkCmd = queue as GraphicsQueueVK;
                 surface.Ensure(queue);

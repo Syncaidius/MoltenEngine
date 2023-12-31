@@ -60,7 +60,7 @@
                 op.Data = new T[data.Length];
                 op.DataStartIndex = 0;
                 Array.Copy(data, (int)startIndex, op.Data, 0, elementCount);
-                QueueTask(priority, op);
+                Device.Renderer.PushTask(priority, this, op);
             }
         }
 
@@ -80,7 +80,7 @@
             if (destination.Length < count)
                 throw new ArgumentException("The provided destination array is not large enough.");
 
-            QueueTask(priority, new BufferGetTask<T>()
+            Device.Renderer.PushTask(priority, this, new BufferGetTask<T>()
             {
                 ByteOffset = byteOffset,
                 DestArray = destination,
@@ -100,7 +100,7 @@
         public void CopyTo(GraphicsPriority priority, GraphicsBuffer destination, ResourceRegion sourceRegion, uint destByteOffset = 0,
             Action<GraphicsResource> completionCallback = null)
         {
-            QueueTask(priority, new SubResourceCopyTask()
+            Device.Renderer.PushTask(priority, this, new SubResourceCopyTask()
             {
                 CompletionCallback = completionCallback,
                 DestResource = destination,
@@ -111,7 +111,7 @@
 
         public void GetStream(GraphicsPriority priority, GraphicsMapType mapType, Action<GraphicsBuffer, GraphicsStream> callback, GraphicsBuffer staging = null)
         {
-            QueueTask(priority, new BufferGetStreamTask()
+            Device.Renderer.PushTask(priority, this, new BufferGetStreamTask()
             {
                 ByteOffset = 0,
                 Staging = staging,

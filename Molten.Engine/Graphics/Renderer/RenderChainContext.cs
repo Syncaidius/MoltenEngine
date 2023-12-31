@@ -12,11 +12,10 @@ namespace Molten.Graphics
 
         public RenderChainContext(RenderService renderer)
         {
-            _composition = new IRenderSurface2D[]
-            {
+            _composition = [
                 renderer.Surfaces[MainSurfaceType.Composition1],
                 renderer.Surfaces[MainSurfaceType.Composition2]
-            };
+            ];
         }
 
         public void SwapComposition()

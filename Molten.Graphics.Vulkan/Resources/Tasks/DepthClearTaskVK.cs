@@ -16,7 +16,7 @@ namespace Molten.Graphics.Vulkan
 
             DepthSurfaceVK surface = resource as DepthSurfaceVK;
 
-            if (surface.ApplyQueueCount > 0)
+            if (surface.ApplyQueue.Count > 0)
             {
                 surface.ClearValue = null;
 

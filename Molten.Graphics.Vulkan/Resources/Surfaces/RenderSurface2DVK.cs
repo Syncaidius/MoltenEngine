@@ -36,7 +36,7 @@ namespace Molten.Graphics.Vulkan
         /// <inheritdoc/>
         public void Clear(GraphicsPriority priority, Color color)
         {
-            QueueTask(priority, new SurfaceClearTaskVK()
+            Device.Renderer.PushTask(priority, this, new SurfaceClearTaskVK()
             {
                 Color = color,
             });
