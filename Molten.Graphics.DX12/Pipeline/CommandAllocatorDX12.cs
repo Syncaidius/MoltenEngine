@@ -1,5 +1,4 @@
-﻿using System;
-using Molten.Collections;
+﻿using Molten.Collections;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
 

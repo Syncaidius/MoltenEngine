@@ -1,5 +1,4 @@
-﻿using Molten.Threading;
-using Silk.NET.Core.Attributes;
+﻿using Silk.NET.Core.Attributes;
 using Silk.NET.OpenAL;
 using Silk.NET.OpenAL.Extensions;
 using Silk.NET.OpenAL.Extensions.Enumeration;

@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic.Logging;
-using Molten.Collections;
+﻿using Molten.Collections;
 using Molten.Graphics.Dxgi;
 using Molten.Windows32;
 using Silk.NET.Core.Native;

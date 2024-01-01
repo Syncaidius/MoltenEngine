@@ -1,6 +1,4 @@
-﻿using Silk.NET.Direct3D12;
-
-namespace Molten.Graphics.DX12
+﻿namespace Molten.Graphics.DX12
 {
     /// <summary>
     /// Represents a view for a DirectX 12 resource, such as a shader resource (SRV), unordered-access (UAV) resource or render-target (RTV).

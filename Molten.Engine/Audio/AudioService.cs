@@ -1,5 +1,4 @@
 ﻿using Molten.Collections;
-using Molten.Threading;
 
 namespace Molten.Audio
 {

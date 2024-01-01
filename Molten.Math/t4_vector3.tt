@@ -9,103 +9,103 @@
 <#
 TypeGenerator gen = new TypeGenerator(this.GenerationEnvironment, this.Host, "def_vectors.json", "v3");
 
-gen.Generate((d) => d.Size == 3, (d, def) =>
+gen.Generate((d) => d.GetDimension(0) == 3, (d, def) =>
 {
+    int size = d.GetDimension(0);
 #>
 using System.Runtime.InteropServices;
 
-namespace Molten<#=d.SubNamespace#>
+namespace Molten<#=d.SubNamespace#>;
+
+///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=size#> components.</summary>
+public partial struct <#=d.Name#>
 {
-	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=d.Size#> components.</summary>
-	public partial struct <#=d.Name#>
-	{
 <#
-    if(!d.DT.IsUnsigned)
-    {
+if(!d.DT.IsUnsigned)
+{
 #>
-        /// <summary>
-        /// A unit <see cref="<#=d.Name#>"/> designating up (0, 1, 0).
-        /// </summary>
-        public static readonly <#=d.Name#> Up = new <#=d.Name#>(<#=d.DT.Zero#>, <#=d.DT.One#>, <#=d.DT.Zero#>);
+    /// <summary>
+    /// A unit <see cref="<#=d.Name#>"/> designating up (0, 1, 0).
+    /// </summary>
+    public static readonly <#=d.Name#> Up = new <#=d.Name#>(<#=d.DT.Zero#>, <#=d.DT.One#>, <#=d.DT.Zero#>);
 
-        /// <summary>
-        /// A unit <see cref="<#=d.Name#>"/> designating down (0, -1, 0).
-        /// </summary>
-        public static readonly <#=d.Name#> Down = new <#=d.Name#>(<#=d.DT.Zero#>, -<#=d.DT.One#>, <#=d.DT.Zero#>);
+    /// <summary>
+    /// A unit <see cref="<#=d.Name#>"/> designating down (0, -1, 0).
+    /// </summary>
+    public static readonly <#=d.Name#> Down = new <#=d.Name#>(<#=d.DT.Zero#>, -<#=d.DT.One#>, <#=d.DT.Zero#>);
 
-        /// <summary>
-        /// A unit <see cref="<#=d.Name#>"/> designating left (-1, 0, 0).
-        /// </summary>
-        public static readonly <#=d.Name#> Left = new <#=d.Name#>(-<#=d.DT.One#>, <#=d.DT.Zero#>, <#=d.DT.Zero#>);
+    /// <summary>
+    /// A unit <see cref="<#=d.Name#>"/> designating left (-1, 0, 0).
+    /// </summary>
+    public static readonly <#=d.Name#> Left = new <#=d.Name#>(-<#=d.DT.One#>, <#=d.DT.Zero#>, <#=d.DT.Zero#>);
 
-        /// <summary>
-        /// A unit <see cref="<#=d.Name#>"/> designating right (1, 0, 0).
-        /// </summary>
-        public static readonly <#=d.Name#> Right = new <#=d.Name#>(<#=d.DT.One#>, <#=d.DT.Zero#>, <#=d.DT.Zero#>);
+    /// <summary>
+    /// A unit <see cref="<#=d.Name#>"/> designating right (1, 0, 0).
+    /// </summary>
+    public static readonly <#=d.Name#> Right = new <#=d.Name#>(<#=d.DT.One#>, <#=d.DT.Zero#>, <#=d.DT.Zero#>);
 
-        /// <summary>
-        /// A unit <see cref="<#=d.Name#>"/> designating forward in a right-handed coordinate system (0, 0, -1).
-        /// </summary>
-        public static readonly <#=d.Name#> ForwardRH = new <#=d.Name#>(<#=d.DT.Zero#>, <#=d.DT.Zero#>, -<#=d.DT.One#>);
+    /// <summary>
+    /// A unit <see cref="<#=d.Name#>"/> designating forward in a right-handed coordinate system (0, 0, -1).
+    /// </summary>
+    public static readonly <#=d.Name#> ForwardRH = new <#=d.Name#>(<#=d.DT.Zero#>, <#=d.DT.Zero#>, -<#=d.DT.One#>);
 
-        /// <summary>
-        /// A unit <see cref="<#=d.Name#>"/> designating forward in a left-handed coordinate system (0, 0, 1).
-        /// </summary>
-        public static readonly <#=d.Name#> ForwardLH = new <#=d.Name#>(<#=d.DT.Zero#>, <#=d.DT.Zero#>, <#=d.DT.One#>);
+    /// <summary>
+    /// A unit <see cref="<#=d.Name#>"/> designating forward in a left-handed coordinate system (0, 0, 1).
+    /// </summary>
+    public static readonly <#=d.Name#> ForwardLH = new <#=d.Name#>(<#=d.DT.Zero#>, <#=d.DT.Zero#>, <#=d.DT.One#>);
 
-        /// <summary>
-        /// A unit <see cref="<#=d.Name#>"/> designating backward in a right-handed coordinate system (0, 0, 1).
-        /// </summary>
-        public static readonly <#=d.Name#> BackwardRH = new <#=d.Name#>(<#=d.DT.Zero#>, <#=d.DT.Zero#>, <#=d.DT.One#>);
+    /// <summary>
+    /// A unit <see cref="<#=d.Name#>"/> designating backward in a right-handed coordinate system (0, 0, 1).
+    /// </summary>
+    public static readonly <#=d.Name#> BackwardRH = new <#=d.Name#>(<#=d.DT.Zero#>, <#=d.DT.Zero#>, <#=d.DT.One#>);
 
-        /// <summary>
-        /// A unit <see cref="<#=d.Name#>"/> designating backward in a left-handed coordinate system (0, 0, -1).
-        /// </summary>
-        public static readonly <#=d.Name#> BackwardLH = new <#=d.Name#>(<#=d.DT.Zero#>, <#=d.DT.Zero#>, -<#=d.DT.One#>);
+    /// <summary>
+    /// A unit <see cref="<#=d.Name#>"/> designating backward in a left-handed coordinate system (0, 0, -1).
+    /// </summary>
+    public static readonly <#=d.Name#> BackwardLH = new <#=d.Name#>(<#=d.DT.Zero#>, <#=d.DT.Zero#>, -<#=d.DT.One#>);
 <#
-    }
+}
 #>
 
 #region Static Methods
-        /// <summary>
-        /// Calculates the cross product of two <#=gen.See()#>.
-        /// </summary>
-        /// <param name="left">First source <#=gen.See()#>.</param>
-        /// <param name="right">Second source <#=gen.See()#>.</param>
+    /// <summary>
+    /// Calculates the cross product of two <#=gen.See()#>.
+    /// </summary>
+    /// <param name="left">First source <#=gen.See()#>.</param>
+    /// <param name="right">Second source <#=gen.See()#>.</param>
 
-        public static void Cross(ref <#=d.Name#> left, ref <#=d.Name#> right, out <#=d.Name#> result)
-        {
-                result.X = <#=d.DT.TypeCast#>((left.Y * right.Z) - (left.Z * right.Y));
-                result.Y = <#=d.DT.TypeCast#>((left.Z * right.X) - (left.X * right.Z));
-                result.Z = <#=d.DT.TypeCast#>((left.X * right.Y) - (left.Y * right.X));
-        }
+    public static void Cross(ref <#=d.Name#> left, ref <#=d.Name#> right, out <#=d.Name#> result)
+    {
+            result.X = <#=d.DT.TypeCast#>((left.Y * right.Z) - (left.Z * right.Y));
+            result.Y = <#=d.DT.TypeCast#>((left.Z * right.X) - (left.X * right.Z));
+            result.Z = <#=d.DT.TypeCast#>((left.X * right.Y) - (left.Y * right.X));
+    }
 
-        /// <summary>
-        /// Calculates the cross product of two <#=gen.See()#>.
-        /// </summary>
-        /// <param name="left">First source <#=gen.See()#>.</param>
-        /// <param name="right">Second source <#=gen.See()#>.</param>
+    /// <summary>
+    /// Calculates the cross product of two <#=gen.See()#>.
+    /// </summary>
+    /// <param name="left">First source <#=gen.See()#>.</param>
+    /// <param name="right">Second source <#=gen.See()#>.</param>
 
-        public static <#=d.Name#> Cross(ref <#=d.Name#> left, ref <#=d.Name#> right)
-        {
-            return new <#=d.Name#>(
-                <#=d.DT.TypeCast#>((left.Y * right.Z) - (left.Z * right.Y)),
-                <#=d.DT.TypeCast#>((left.Z * right.X) - (left.X * right.Z)),
-                <#=d.DT.TypeCast#>((left.X * right.Y) - (left.Y * right.X)));
-        }
+    public static <#=d.Name#> Cross(ref <#=d.Name#> left, ref <#=d.Name#> right)
+    {
+        return new <#=d.Name#>(
+            <#=d.DT.TypeCast#>((left.Y * right.Z) - (left.Z * right.Y)),
+            <#=d.DT.TypeCast#>((left.Z * right.X) - (left.X * right.Z)),
+            <#=d.DT.TypeCast#>((left.X * right.Y) - (left.Y * right.X)));
+    }
 
-        /// <summary>
-        /// Calculates the cross product of two <#=gen.See()#>.
-        /// </summary>
-        /// <param name="left">First source <#=gen.See()#>.</param>
-        /// <param name="right">Second source <#=gen.See()#>.</param>
-        /// <returns>The cross product of the two <#=gen.See()#>.</returns>
-        public static <#=d.Name#> Cross(<#=d.Name#> left, <#=d.Name#> right)
-        {
-            return Cross(ref left, ref right);
-        }
+    /// <summary>
+    /// Calculates the cross product of two <#=gen.See()#>.
+    /// </summary>
+    /// <param name="left">First source <#=gen.See()#>.</param>
+    /// <param name="right">Second source <#=gen.See()#>.</param>
+    /// <returns>The cross product of the two <#=gen.See()#>.</returns>
+    public static <#=d.Name#> Cross(<#=d.Name#> left, <#=d.Name#> right)
+    {
+        return Cross(ref left, ref right);
+    }
 #endregion
-	}
 }
 <#
 });

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Windows32
+﻿namespace Molten.Windows32
 {
     // Generate enum which encapsulates win32 power management events.
     public enum WndPowerEventType

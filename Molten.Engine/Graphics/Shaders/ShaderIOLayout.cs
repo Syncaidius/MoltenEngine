@@ -1,7 +1,4 @@
-﻿
-using Silk.NET.Core.Native;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     public enum ShaderIOLayoutType
     {

@@ -12,6 +12,20 @@ namespace Molten.Graphics
             LastUsedFrameID = Device.Renderer.FrameID;
         }
 
+        protected virtual void ValidateFlags()
+        {
+            // Only staging resources have CPU-write access.
+            if (Flags.Has(GraphicsResourceFlags.CpuWrite))
+            {
+                if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
+                    throw new GraphicsResourceException(this, "Staging textures cannot allow shader access. Add GraphicsResourceFlags.NoShaderAccess flag.");
+
+                // Staging buffers cannot have any other flags aside from 
+                if (Flags != (GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.CpuRead | GraphicsResourceFlags.None | GraphicsResourceFlags.GpuWrite))
+                    throw new GraphicsResourceException(this, "Staging textures must have all CPU/GPU read and write flags.");
+            }
+        }
+
         /// <summary>
         /// Gives a derived resource implementation a chance to provide it's maximum supported frame-buffer size.
         /// </summary>

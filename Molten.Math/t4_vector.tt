@@ -23,34 +23,34 @@ using System.Runtime.Serialization;
 using Molten.HalfPrecision;
 using Molten.DoublePrecision;
 
-namespace Molten<#=d.SubNamespace#>
+namespace Molten<#=d.SubNamespace#>;
+
+///<summary>A <#=gen.See(d.DT.Name)#> vector comprised of <#=d.FieldNames.Length#> components.</summary>
+[StructLayout(LayoutKind.Explicit)]
+[DataContract]
+public partial struct <#=d.Name#> : IFormattable, <#=vectorInterface#><<#=d.Name#>, <#=d.DT#>>, IEquatable<<#=d.Name#>>
 {
-	///<summary>A <#=gen.See(d.DT.Name)#> vector comprised of <#=d.FieldNames.Length#> components.</summary>
-	[StructLayout(LayoutKind.Explicit)]
-    [DataContract]
-	public partial struct <#=d.Name#> : IFormattable, <#=vectorInterface#><<#=d.Name#>, <#=d.DT#>>, IEquatable<<#=d.Name#>>
-	{
-        ///<summary>The number of components in the current vector type.</summary>
-        public static readonly int ComponentCount = <#=size#>;
+    ///<summary>The number of components in the current vector type.</summary>
+    public static readonly int ComponentCount = <#=size#>;
 
-		///<summary>A <#=d.Name#> with every component set to <#=d.DT.One#>.</summary>
-		public static readonly <#=d.Name#> One = new <#=d.Name#>(<#for(int p = 0; p < size; p++){#><#=d.DT.One#><#=(p < (size-1) ? ", " : "")#><#}#>);
+	///<summary>A <#=d.Name#> with every component set to <#=d.DT.One#>.</summary>
+	public static readonly <#=d.Name#> One = new <#=d.Name#>(<#for(int p = 0; p < size; p++){#><#=d.DT.One#><#=(p < (size-1) ? ", " : "")#><#}#>);
 
-        static readonly string toStringFormat = "<#for(int i = 0; i < size; i++){#><#=$"{d.FieldNames[i]}:{{{i}}}"#><#=(i < size-1 ? " " : "")#><#}#>";
+    static readonly string toStringFormat = "<#for(int i = 0; i < size; i++){#><#=$"{d.FieldNames[i]}:{{{i}}}"#><#=(i < size-1 ? " " : "")#><#}#>";
 
 <#for(int p = 0; p < size; p++){#>
-		/// <summary>The <#=d.FieldNames[p]#> unit <#=gen.See()#>.</summary>
-		public static readonly <#=d.Name#> Unit<#=d.FieldNames[p]#> = new <#=d.Name#>(<#for(int u = 0; u < size; u++){#><#=(u == p ? d.DT.One : d.DT.Zero)#><#=(u < (size-1) ? ", " : "")#><#}#>);
+	/// <summary>The <#=d.FieldNames[p]#> unit <#=gen.See()#>.</summary>
+	public static readonly <#=d.Name#> Unit<#=d.FieldNames[p]#> = new <#=d.Name#>(<#for(int u = 0; u < size; u++){#><#=(u == p ? d.DT.One : d.DT.Zero)#><#=(u < (size-1) ? ", " : "")#><#}#>);
 
 <#}#>
-		/// <summary>Represents a zero'd <#=d.Name#>.</summary>
-		public static readonly <#=d.Name#> Zero = new <#=d.Name#>(<#for(int p = 0; p < size; p++){#><#=d.DT.Zero#><#=(p < (size-1) ? ", " : "")#><#}#>);
+	/// <summary>Represents a zero'd <#=d.Name#>.</summary>
+	public static readonly <#=d.Name#> Zero = new <#=d.Name#>(<#for(int p = 0; p < size; p++){#><#=d.DT.Zero#><#=(p < (size-1) ? ", " : "")#><#}#>);
 
 <#=gen.GenerateFields()#>
-        /// <summary>
-        /// Gets a value indicting whether this vector is zero
-        /// </summary>
-        public bool IsZero => <#for(int p = 0; p < size; p++){#><#=d.FieldNames[p]#> == <#=d.DT.Zero#><#=(p < (size-1) ? " && " : "")#><#}#>;
+    /// <summary>
+    /// Gets a value indicting whether this vector is zero
+    /// </summary>
+    public bool IsZero => <#for(int p = 0; p < size; p++){#><#=d.FieldNames[p]#> == <#=d.DT.Zero#><#=(p < (size-1) ? " && " : "")#><#}#>;
 
 #region Constructors
 <#gen.GenerateStandardConstructors();#>
@@ -59,251 +59,251 @@ namespace Molten<#=d.SubNamespace#>
 #endregion
 
 #region Instance Methods
-        /// <summary>
-        /// Determines whether the specified <see cref = "<#=d.Name#>"/> is equal to this instance.
-        /// </summary>
-        /// <param name="other">The <#=gen.See()#> to compare with this instance.</param>
-        /// <returns>
-        /// 	<c>true</c> if the specified <#=gen.See()#> is equal to this instance; otherwise, <c>false</c>.
-        /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(ref <#=d.Name#> other)
-        {
+    /// <summary>
+    /// Determines whether the specified <see cref = "<#=d.Name#>"/> is equal to this instance.
+    /// </summary>
+    /// <param name="other">The <#=gen.See()#> to compare with this instance.</param>
+    /// <returns>
+    /// 	<c>true</c> if the specified <#=gen.See()#> is equal to this instance; otherwise, <c>false</c>.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool Equals(ref <#=d.Name#> other)
+    {
 <#
-        if(d.DT.IsFPType)
-        {
-#>
-            return <#for(int p = 0; p < size; p++){#>MathHelper.NearEqual(other.<#=d.FieldNames[p]#>, <#=d.FieldNames[p]#>)<#=(p < (size-1) ? " && " : "")#><#}#>;
-<#
-        }
-        else
-        {
-#>
-            return <#for(int p = 0; p < size; p++){#>other.<#=d.FieldNames[p]#> == <#=d.FieldNames[p]#><#=(p < (size-1) ? " && " : "")#><#}#>;
-<#
-        }
-#>
-        }
-
-        /// <summary>
-        /// Determines whether the specified <#=gen.See()#> is equal to this instance.
-        /// </summary>
-        /// <param name="other">The <#=gen.See()#> to compare with this instance.</param>
-        /// <returns>
-        /// 	<c>true</c> if the specified <#=gen.See()#> is equal to this instance; otherwise, <c>false</c>.
-        /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(<#=d.Name#> other)
-        {
-            return Equals(ref other);
-        }
-
-        /// <summary>
-        /// Determines whether the specified <#=gen.See()#> is equal to this instance.
-        /// </summary>
-        /// <param name="value">The <#=gen.See()#> to compare with this instance.</param>
-        /// <returns>
-        /// 	<c>true</c> if the specified <#=gen.See()#> is equal to this instance; otherwise, <c>false</c>.
-        /// </returns>
-        public override bool Equals(object value)
-        {
-            if (value is <#=d.Name#> v)
-               return Equals(ref v);
-
-            return false;
-        }
-
-        /// <summary>
-        /// Returns a hash code for this instance.
-        /// </summary>
-        /// <returns>
-        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-        /// </returns>
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hashCode = X.GetHashCode();
-<#for(int p = 1; p < size; p++){#>
-                hashCode = (hashCode * 397) ^ <#=d.FieldNames[p]#>.GetHashCode();
-<#}#>
-                return hashCode;
-            }
-        }
-
-#region Tuples
-        /// <summary>
-        /// Deconstructs the current vector into 4 separate component variables. This method is also used for tuple deconstruction.
-        /// </summary>
-<#for(int p = 0; p < size; p++){#>
-        /// <param name="<#=d.ArgNames[p]#>">The output for the <#=d.FieldNames[p]#> component.</param>
-<#}#>
-        public void Deconstruct(<#=gen.FieldsToArgs(d.ArgNames, $"out {d.DT} ")#>)
-        {
-<#for(int p = 0; p < size; p++){#>
-            <#=d.ArgNames[p]#> = <#=d.FieldNames[p]#>;
-<#}#>
-        }
-
-        /// <summary>
-        /// Constructs a <#=gen.See()#> from <#=d.FieldNames.Length#> component values.
-        /// </summary>
-        /// <param name="tuple">The <#=d.FieldNames.Length#>-component tuple containing the values.</param>
-        public static implicit operator <#=d.Name#>((<#=gen.GetConstructorArgs()#>) tuple)
-        {
-            return new <#=d.Name#>(<#for(int p = 0; p < size; p++){#><#=(p > 0 ? ", " : "")#>tuple.<#=d.ArgNames[p]#><#}#>);
-        }
-#endregion
-
-        /// <summary>
-        /// Calculates the squared length of the vector.
-        /// </summary>
-        /// <returns>The squared length of the vector.</returns>
-        /// <remarks>
-        /// This method may be preferred to <see cref="Vector2F.Length"/> when only a relative length is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public <#=d.DT#> LengthSquared()
-        {
-            return <#=d.DT.TypeCast#>(<#for(int p = 0; p < size; p++){#>(<#=d.FieldNames[p]#> * <#=d.FieldNames[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>);
-        }
-
-		/// <summary>
-        /// Creates an array containing the elements of the current <#=gen.See()#>.
-        /// </summary>
-        /// <returns>A <#=d.FieldNames.Length#>-element array containing the components of the vector.</returns>
-        public <#=d.DT#>[] ToArray()
-        {
-            return [<#=gen.FieldsToArgs(d.FieldNames)#>];
-        }
-<#
-    if(!d.DT.IsUnsigned)
+    if(d.DT.IsFPType)
     {
 #>
-
-		/// <summary>
-        /// Reverses the direction of the current <#=gen.See()#>.
-        /// </summary>
-        /// <returns>A <#=gen.See()#> facing the opposite direction.</returns>
-		public <#=d.Name#> Negate()
-		{
-			return new <#=d.Name#>(<#=gen.FieldsToArgs(d.FieldNames, $"{d.DT.TypeCast}-")#>);
-		}
+        return <#for(int p = 0; p < size; p++){#>MathHelper.NearEqual(other.<#=d.FieldNames[p]#>, <#=d.FieldNames[p]#>)<#=(p < (size-1) ? " && " : "")#><#}#>;
 <#
     }
+    else
+    {
+#>
+        return <#for(int p = 0; p < size; p++){#>other.<#=d.FieldNames[p]#> == <#=d.FieldNames[p]#><#=(p < (size-1) ? " && " : "")#><#}#>;
+<#
+    }
+#>
+    }
+
+    /// <summary>
+    /// Determines whether the specified <#=gen.See()#> is equal to this instance.
+    /// </summary>
+    /// <param name="other">The <#=gen.See()#> to compare with this instance.</param>
+    /// <returns>
+    /// 	<c>true</c> if the specified <#=gen.See()#> is equal to this instance; otherwise, <c>false</c>.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool Equals(<#=d.Name#> other)
+    {
+        return Equals(ref other);
+    }
+
+    /// <summary>
+    /// Determines whether the specified <#=gen.See()#> is equal to this instance.
+    /// </summary>
+    /// <param name="value">The <#=gen.See()#> to compare with this instance.</param>
+    /// <returns>
+    /// 	<c>true</c> if the specified <#=gen.See()#> is equal to this instance; otherwise, <c>false</c>.
+    /// </returns>
+    public override bool Equals(object value)
+    {
+        if (value is <#=d.Name#> v)
+            return Equals(ref v);
+
+        return false;
+    }
+
+    /// <summary>
+    /// Returns a hash code for this instance.
+    /// </summary>
+    /// <returns>
+    /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+    /// </returns>
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            int hashCode = X.GetHashCode();
+<#for(int p = 1; p < size; p++){#>
+            hashCode = (hashCode * 397) ^ <#=d.FieldNames[p]#>.GetHashCode();
+<#}#>
+            return hashCode;
+        }
+    }
+
+#region Tuples
+    /// <summary>
+    /// Deconstructs the current vector into 4 separate component variables. This method is also used for tuple deconstruction.
+    /// </summary>
+<#for(int p = 0; p < size; p++){#>
+    /// <param name="<#=d.ArgNames[p]#>">The output for the <#=d.FieldNames[p]#> component.</param>
+<#}#>
+    public void Deconstruct(<#=gen.FieldsToArgs(d.ArgNames, $"out {d.DT} ")#>)
+    {
+<#for(int p = 0; p < size; p++){#>
+        <#=d.ArgNames[p]#> = <#=d.FieldNames[p]#>;
+<#}#>
+    }
+
+    /// <summary>
+    /// Constructs a <#=gen.See()#> from <#=d.FieldNames.Length#> component values.
+    /// </summary>
+    /// <param name="tuple">The <#=d.FieldNames.Length#>-component tuple containing the values.</param>
+    public static implicit operator <#=d.Name#>((<#=gen.GetConstructorArgs()#>) tuple)
+    {
+        return new <#=d.Name#>(<#for(int p = 0; p < size; p++){#><#=(p > 0 ? ", " : "")#>tuple.<#=d.ArgNames[p]#><#}#>);
+    }
+#endregion
+
+    /// <summary>
+    /// Calculates the squared length of the vector.
+    /// </summary>
+    /// <returns>The squared length of the vector.</returns>
+    /// <remarks>
+    /// This method may be preferred to <see cref="Vector2F.Length"/> when only a relative length is needed
+    /// and speed is of the essence.
+    /// </remarks>
+    public <#=d.DT#> LengthSquared()
+    {
+        return <#=d.DT.TypeCast#>(<#for(int p = 0; p < size; p++){#>(<#=d.FieldNames[p]#> * <#=d.FieldNames[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>);
+    }
+
+	/// <summary>
+    /// Creates an array containing the elements of the current <#=gen.See()#>.
+    /// </summary>
+    /// <returns>A <#=d.FieldNames.Length#>-element array containing the components of the vector.</returns>
+    public <#=d.DT#>[] ToArray()
+    {
+        return [<#=gen.FieldsToArgs(d.FieldNames)#>];
+    }
+<#
+if(!d.DT.IsUnsigned)
+{
+#>
+
+	/// <summary>
+    /// Reverses the direction of the current <#=gen.See()#>.
+    /// </summary>
+    /// <returns>A <#=gen.See()#> facing the opposite direction.</returns>
+	public <#=d.Name#> Negate()
+	{
+		return new <#=d.Name#>(<#=gen.FieldsToArgs(d.FieldNames, $"{d.DT.TypeCast}-")#>);
+	}
+<#
+}
 #>		
 
-		/// <summary>Clamps the component values to within the given range.</summary>
-        /// <param name="min">The minimum value of each component.</param>
-        /// <param name="max">The maximum value of each component.</param>
-        public void Clamp(<#=d.DT#> min, <#=d.DT#> max)
-        {
+	/// <summary>Clamps the component values to within the given range.</summary>
+    /// <param name="min">The minimum value of each component.</param>
+    /// <param name="max">The maximum value of each component.</param>
+    public void Clamp(<#=d.DT#> min, <#=d.DT#> max)
+    {
 <#
-		for(int p = 0; p < size; p++)
-		{
+	for(int p = 0; p < size; p++)
+	{
 #>
-			<#=d.FieldNames[p]#> = <#=d.FieldNames[p]#> < min ? min : <#=d.FieldNames[p]#> > max ? max : <#=d.FieldNames[p]#>;
+		<#=d.FieldNames[p]#> = <#=d.FieldNames[p]#> < min ? min : <#=d.FieldNames[p]#> > max ? max : <#=d.FieldNames[p]#>;
 <#
-		}
+	}
 #>
-        }
+    }
 
-        /// <summary>Clamps the component values to within the given range.</summary>
-        /// <param name="min">The minimum value of each component.</param>
-        /// <param name="max">The maximum value of each component.</param>
-        public void Clamp(<#=d.Name#> min, <#=d.Name#> max)
-        {
-            Clamp(min, max);
-        }
+    /// <summary>Clamps the component values to within the given range.</summary>
+    /// <param name="min">The minimum value of each component.</param>
+    /// <param name="max">The maximum value of each component.</param>
+    public void Clamp(<#=d.Name#> min, <#=d.Name#> max)
+    {
+        Clamp(min, max);
+    }
 
-		/// <summary>Clamps the component values to within the given range.</summary>
-        /// <param name="min">The minimum value of each component.</param>
-        /// <param name="max">The maximum value of each component.</param>
-        public void Clamp(ref <#=d.Name#> min, ref <#=d.Name#> max)
-        {
+	/// <summary>Clamps the component values to within the given range.</summary>
+    /// <param name="min">The minimum value of each component.</param>
+    /// <param name="max">The maximum value of each component.</param>
+    public void Clamp(ref <#=d.Name#> min, ref <#=d.Name#> max)
+    {
 <#
-		for(int p = 0; p < size; p++)
-		{
+	for(int p = 0; p < size; p++)
+	{
 #>
-			<#=d.FieldNames[p]#> = <#=d.FieldNames[p]#> < min.<#=d.FieldNames[p]#> ? min.<#=d.FieldNames[p]#> : <#=d.FieldNames[p]#> > max.<#=d.FieldNames[p]#> ? max.<#=d.FieldNames[p]#> : <#=d.FieldNames[p]#>;
+		<#=d.FieldNames[p]#> = <#=d.FieldNames[p]#> < min.<#=d.FieldNames[p]#> ? min.<#=d.FieldNames[p]#> : <#=d.FieldNames[p]#> > max.<#=d.FieldNames[p]#> ? max.<#=d.FieldNames[p]#> : <#=d.FieldNames[p]#>;
 <#
-		}
+	}
 #>
-        }
+    }
 #endregion
 
 #region To-String
-		/// <summary>
-        /// Returns a <#=gen.See("string")#> that represents this <#=gen.See()#>.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <returns>
-        /// A <#=gen.See("string")#> that represents this <#=gen.See()#>.
-        /// </returns>
-        public string ToString(string format)
-        {
-            if (format == null)
-                return ToString();
+	/// <summary>
+    /// Returns a <#=gen.See("string")#> that represents this <#=gen.See()#>.
+    /// </summary>
+    /// <param name="format">The format.</param>
+    /// <returns>
+    /// A <#=gen.See("string")#> that represents this <#=gen.See()#>.
+    /// </returns>
+    public string ToString(string format)
+    {
+        if (format == null)
+            return ToString();
 
-            return string.Format(CultureInfo.CurrentCulture, format, <#=gen.FieldsToArgs(d.FieldNames)#>);
-        }
+        return string.Format(CultureInfo.CurrentCulture, format, <#=gen.FieldsToArgs(d.FieldNames)#>);
+    }
 
-		/// <summary>
-        /// Returns a <#=gen.See("string")#> that represents this <#=gen.See()#>.
-        /// </summary>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <returns>
-        /// A <#=gen.See("string")#> that represents this <#=gen.See()#>.
-        /// </returns>
-        public string ToString(IFormatProvider formatProvider)
-        {
-            return string.Format(formatProvider, toStringFormat, <#=gen.FieldsToArgs(d.FieldNames)#>);
-        }
+	/// <summary>
+    /// Returns a <#=gen.See("string")#> that represents this <#=gen.See()#>.
+    /// </summary>
+    /// <param name="formatProvider">The format provider.</param>
+    /// <returns>
+    /// A <#=gen.See("string")#> that represents this <#=gen.See()#>.
+    /// </returns>
+    public string ToString(IFormatProvider formatProvider)
+    {
+        return string.Format(formatProvider, toStringFormat, <#=gen.FieldsToArgs(d.FieldNames)#>);
+    }
 
-		/// <summary>
-        /// Returns a <#=gen.See("string")#> that represents this <#=gen.See()#>.
-        /// </summary>
-        /// <returns>
-        /// A <#=gen.See("string")#> that represents this <#=gen.See()#>.
-        /// </returns>
-        public override string ToString()
-        {
-            return string.Format(CultureInfo.CurrentCulture, toStringFormat, <#=gen.FieldsToArgs(d.FieldNames)#>);
-        }
+	/// <summary>
+    /// Returns a <#=gen.See("string")#> that represents this <#=gen.See()#>.
+    /// </summary>
+    /// <returns>
+    /// A <#=gen.See("string")#> that represents this <#=gen.See()#>.
+    /// </returns>
+    public override string ToString()
+    {
+        return string.Format(CultureInfo.CurrentCulture, toStringFormat, <#=gen.FieldsToArgs(d.FieldNames)#>);
+    }
 
-		/// <summary>
-        /// Returns a <#=gen.See("string")#> that represents this <#=gen.See()#>.
-        /// </summary>
-        /// <param name="format">The format string.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <returns>
-        /// A <#=gen.See("string")#> that represents this <#=gen.See()#>.
-        /// </returns>
-        public string ToString(string format, IFormatProvider formatProvider)
-        {
-            if (format == null)
-                return ToString(formatProvider);
+	/// <summary>
+    /// Returns a <#=gen.See("string")#> that represents this <#=gen.See()#>.
+    /// </summary>
+    /// <param name="format">The format string.</param>
+    /// <param name="formatProvider">The format provider.</param>
+    /// <returns>
+    /// A <#=gen.See("string")#> that represents this <#=gen.See()#>.
+    /// </returns>
+    public string ToString(string format, IFormatProvider formatProvider)
+    {
+        if (format == null)
+            return ToString(formatProvider);
 
-            return string.Format(formatProvider,
-                toStringFormat,
+        return string.Format(formatProvider,
+            toStringFormat,
 <#gen.IterateFields((i, field) => $"\t{field}.ToString(format, formatProvider){(i < size-1 ? "," : "" )}", 0);#>
-            );
-        }
+        );
+    }
 #endregion
 
 #region Add operators
 <#gen.GenerateOperator("+", "add");#>
 <#gen.GenerateOperator("+", "add", d.DT.Name);#>
 
-		/// <summary>
-        /// Assert a <#=gen.See()#> (return it unchanged).
-        /// </summary>
-        /// <param name="value">The <#=gen.See()#> to assert (unchanged).</param>
-        /// <returns>The asserted (unchanged) <#=gen.See()#>.</returns>
-        public static <#=d.Name#> operator +(<#=d.Name#> value)
-        {
-            return value;
-        }
+	/// <summary>
+    /// Assert a <#=gen.See()#> (return it unchanged).
+    /// </summary>
+    /// <param name="value">The <#=gen.See()#> to assert (unchanged).</param>
+    /// <returns>The asserted (unchanged) <#=gen.See()#>.</returns>
+    public static <#=d.Name#> operator +(<#=d.Name#> value)
+    {
+        return value;
+    }
 #endregion
 
 #region Subtract operators
@@ -311,33 +311,33 @@ namespace Molten<#=d.SubNamespace#>
 <#gen.GenerateOperator("-", "subtract", d.DT.Name);#>
 
 <#
-        if(!d.DT.IsUnsigned)
-        {
+    if(!d.DT.IsUnsigned)
+    {
 #>
-        /// <summary>
-        /// Negate/reverse the direction of a <#=gen.See()#>.
-        /// </summary>
-        /// <param name="value">The <#=gen.See()#> to reverse.</param>
-        /// <param name="result">The output for the reversed <#=gen.See()#>.</param>
-        public static void Negate(ref <#=d.Name#> value, out <#=d.Name#> result)
-        {
+    /// <summary>
+    /// Negate/reverse the direction of a <#=gen.See()#>.
+    /// </summary>
+    /// <param name="value">The <#=gen.See()#> to reverse.</param>
+    /// <param name="result">The output for the reversed <#=gen.See()#>.</param>
+    public static void Negate(ref <#=d.Name#> value, out <#=d.Name#> result)
+    {
 <#for(int p = 0; p < size; p++){#>
-			result.<#=d.FieldNames[p]#> = <#=d.DT.TypeCast#>-value.<#=d.FieldNames[p]#>;
+		result.<#=d.FieldNames[p]#> = <#=d.DT.TypeCast#>-value.<#=d.FieldNames[p]#>;
 <#}#>            
-        }
+    }
 
-		/// <summary>
-        /// Negate/reverse the direction of a <#=gen.See()#>.
-        /// </summary>
-        /// <param name="value">The <#=gen.See()#> to reverse.</param>
-        /// <returns>The reversed <#=gen.See()#>.</returns>
-        public static <#=d.Name#> operator -(<#=d.Name#> value)
-        {
-            Negate(ref value, out value);
-            return value;
-        }
+	/// <summary>
+    /// Negate/reverse the direction of a <#=gen.See()#>.
+    /// </summary>
+    /// <param name="value">The <#=gen.See()#> to reverse.</param>
+    /// <returns>The reversed <#=gen.See()#>.</returns>
+    public static <#=d.Name#> operator -(<#=d.Name#> value)
+    {
+        Negate(ref value, out value);
+        return value;
+    }
 <#
-        }
+    }
 #>
 #endregion
 
@@ -352,454 +352,454 @@ namespace Molten<#=d.SubNamespace#>
 #endregion
 
 #region Operators - Equality
-        /// <summary>
-        /// Tests for equality between two objects.
-        /// </summary>
-        /// <param name="left">The first value to compare.</param>
-        /// <param name="right">The second value to compare.</param>
-        /// <returns><c>true</c> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <c>false</c>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(<#=d.Name#> left, <#=d.Name#> right)
-        {
-            return left.Equals(ref right);
-        }
+    /// <summary>
+    /// Tests for equality between two objects.
+    /// </summary>
+    /// <param name="left">The first value to compare.</param>
+    /// <param name="right">The second value to compare.</param>
+    /// <returns><c>true</c> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <c>false</c>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool operator ==(<#=d.Name#> left, <#=d.Name#> right)
+    {
+        return left.Equals(ref right);
+    }
 
-        /// <summary>
-        /// Tests for inequality between two objects.
-        /// </summary>
-        /// <param name="left">The first value to compare.</param>
-        /// <param name="right">The second value to compare.</param>
-        /// <returns><c>true</c> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <c>false</c>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(<#=d.Name#> left, <#=d.Name#> right)
-        {
-            return !left.Equals(ref right);
-        }
+    /// <summary>
+    /// Tests for inequality between two objects.
+    /// </summary>
+    /// <param name="left">The first value to compare.</param>
+    /// <param name="right">The second value to compare.</param>
+    /// <returns><c>true</c> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <c>false</c>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool operator !=(<#=d.Name#> left, <#=d.Name#> right)
+    {
+        return !left.Equals(ref right);
+    }
 #endregion
 
 #region Static Methods
-        /// <summary>
-        /// Performs a cubic interpolation between two vectors.
-        /// </summary>
-        /// <param name="start">Start vector.</param>
-        /// <param name="end">End vector.</param>
-        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static <#=d.Name#> SmoothStep(ref <#=d.Name#> start, ref <#=d.Name#> end, <#=d.FP#> amount)
+    /// <summary>
+    /// Performs a cubic interpolation between two vectors.
+    /// </summary>
+    /// <param name="start">Start vector.</param>
+    /// <param name="end">End vector.</param>
+    /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static <#=d.Name#> SmoothStep(ref <#=d.Name#> start, ref <#=d.Name#> end, <#=d.FP#> amount)
+    {
+        amount = MathHelper.SmoothStep(amount);
+        return Lerp(ref start, ref end, amount);
+    }
+
+    /// <summary>
+    /// Performs a cubic interpolation between two vectors.
+    /// </summary>
+    /// <param name="start">Start vector.</param>
+    /// <param name="end">End vector.</param>
+    /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+    /// <returns>The cubic interpolation of the two vectors.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static <#=d.Name#> SmoothStep(<#=d.Name#> start, <#=d.Name#> end, <#=d.DT#> amount)
+    {
+        return SmoothStep(ref start, ref end, amount);
+    }    
+
+    /// <summary>
+    /// Orthogonalizes a list of <#=gen.See()#>.
+    /// </summary>
+    /// <param name="destination">The list of orthogonalized <#=gen.See()#>.</param>
+    /// <param name="source">The list of vectors to orthogonalize.</param>
+    /// <remarks>
+    /// <para>Orthogonalization is the process of making all vectors orthogonal to each other. This
+    /// means that any given vector in the list will be orthogonal to any other given vector in the
+    /// list.</para>
+    /// <para>Because this method uses the modified Gram-Schmidt process, the resulting vectors
+    /// tend to be numerically unstable. The numeric stability decreases according to the vectors
+    /// position in the list so that the first vector is the most stable and the last vector is the
+    /// least stable.</para>
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
+    public static void Orthogonalize(<#=d.Name#>[] destination, params <#=d.Name#>[] source)
+    {
+        //Uses the modified Gram-Schmidt process.
+        //q1 = m1
+        //q2 = m2 - ((q1 ⋅ m2) / (q1 ⋅ q1)) * q1
+        //q3 = m3 - ((q1 ⋅ m3) / (q1 ⋅ q1)) * q1 - ((q2 ⋅ m3) / (q2 ⋅ q2)) * q2
+        //q4 = m4 - ((q1 ⋅ m4) / (q1 ⋅ q1)) * q1 - ((q2 ⋅ m4) / (q2 ⋅ q2)) * q2 - ((q3 ⋅ m4) / (q3 ⋅ q3)) * q3
+        //q5 = ...
+
+        if (source == null)
+            throw new ArgumentNullException("source");
+        if (destination == null)
+            throw new ArgumentNullException("destination");
+        if (destination.Length < source.Length)
+            throw new ArgumentOutOfRangeException("destination", "The destination array must be of same length or larger length than the source array.");
+
+        for (int i = 0; i < source.Length; ++i)
         {
-            amount = MathHelper.SmoothStep(amount);
-            return Lerp(ref start, ref end, amount);
+            <#=d.Name#> newvector = source[i];
+
+            for (int r = 0; r < i; ++r)
+                newvector -= <#=d.DT.TypeCast#>(Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
+
+            destination[i] = newvector;
         }
-
-        /// <summary>
-        /// Performs a cubic interpolation between two vectors.
-        /// </summary>
-        /// <param name="start">Start vector.</param>
-        /// <param name="end">End vector.</param>
-        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        /// <returns>The cubic interpolation of the two vectors.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static <#=d.Name#> SmoothStep(<#=d.Name#> start, <#=d.Name#> end, <#=d.DT#> amount)
-        {
-            return SmoothStep(ref start, ref end, amount);
-        }    
-
-        /// <summary>
-        /// Orthogonalizes a list of <#=gen.See()#>.
-        /// </summary>
-        /// <param name="destination">The list of orthogonalized <#=gen.See()#>.</param>
-        /// <param name="source">The list of vectors to orthogonalize.</param>
-        /// <remarks>
-        /// <para>Orthogonalization is the process of making all vectors orthogonal to each other. This
-        /// means that any given vector in the list will be orthogonal to any other given vector in the
-        /// list.</para>
-        /// <para>Because this method uses the modified Gram-Schmidt process, the resulting vectors
-        /// tend to be numerically unstable. The numeric stability decreases according to the vectors
-        /// position in the list so that the first vector is the most stable and the last vector is the
-        /// least stable.</para>
-        /// </remarks>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
-        public static void Orthogonalize(<#=d.Name#>[] destination, params <#=d.Name#>[] source)
-        {
-            //Uses the modified Gram-Schmidt process.
-            //q1 = m1
-            //q2 = m2 - ((q1 ⋅ m2) / (q1 ⋅ q1)) * q1
-            //q3 = m3 - ((q1 ⋅ m3) / (q1 ⋅ q1)) * q1 - ((q2 ⋅ m3) / (q2 ⋅ q2)) * q2
-            //q4 = m4 - ((q1 ⋅ m4) / (q1 ⋅ q1)) * q1 - ((q2 ⋅ m4) / (q2 ⋅ q2)) * q2 - ((q3 ⋅ m4) / (q3 ⋅ q3)) * q3
-            //q5 = ...
-
-            if (source == null)
-                throw new ArgumentNullException("source");
-            if (destination == null)
-                throw new ArgumentNullException("destination");
-            if (destination.Length < source.Length)
-                throw new ArgumentOutOfRangeException("destination", "The destination array must be of same length or larger length than the source array.");
-
-            for (int i = 0; i < source.Length; ++i)
-            {
-                <#=d.Name#> newvector = source[i];
-
-                for (int r = 0; r < i; ++r)
-                    newvector -= <#=d.DT.TypeCast#>(Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
-
-                destination[i] = newvector;
-            }
-        }
+    }
 
         
 
-        /// <summary>
-        /// Takes the value of an indexed component and assigns it to the axis of a new <#=gen.See()#>. <para />
-        /// For example, a swizzle input of (1,1) on a <#=gen.See()#> with the values, 20 and 10, will return a vector with values 10,10, because it took the value of component index 1, for both axis."
-        /// </summary>
-        /// <param name="val">The current vector.</param>
+    /// <summary>
+    /// Takes the value of an indexed component and assigns it to the axis of a new <#=gen.See()#>. <para />
+    /// For example, a swizzle input of (1,1) on a <#=gen.See()#> with the values, 20 and 10, will return a vector with values 10,10, because it took the value of component index 1, for both axis."
+    /// </summary>
+    /// <param name="val">The current vector.</param>
 <#for(int p = 0; p < size; p++){#>
-		/// <param name="<#=d.ArgNames[p]#>Index">The axis index to use for the new <#=d.FieldNames[p]#> value.</param>
+	/// <param name="<#=d.ArgNames[p]#>Index">The axis index to use for the new <#=d.FieldNames[p]#> value.</param>
 <#}#>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe <#=d.Name#> Swizzle(<#=d.Name#> val, <#for(int p = 0; p < size; p++){#>int <#=d.ArgNames[p]#>Index<#=(p < (size-1) ? ", " : "")#><#}#>)
-        {
-            return new <#=d.Name#>()
-            {
-<#for(int p = 0; p < size; p++){#>
-			   <#=d.FieldNames[p]#> = (&val.X)[<#=d.ArgNames[p]#>Index],
-<#}#>
-            };
-        }
-
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe <#=d.Name#> Swizzle(<#=d.Name#> val, <#for(int p = 0; p < size; p++){#>uint <#=d.ArgNames[p]#>Index<#=(p < (size-1) ? ", " : "")#><#}#>)
-        {
-            return new <#=d.Name#>()
-            {
-<#for(int p = 0; p < size; p++){#>
-			    <#=d.FieldNames[p]#> = (&val.X)[<#=d.ArgNames[p]#>Index],
-<#}#>
-            };
-        }
-
-        /// <summary>
-        /// Calculates the dot product of two <#=gen.See()#> vectors.
-        /// </summary>
-        /// <param name="left">First <#=gen.See()#> source vector</param>
-        /// <param name="right">Second <#=gen.See()#> source vector.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static <#=d.DT#> Dot(ref <#=d.Name#> left, ref <#=d.Name#> right)
-        {
-			return <#=d.DT.TypeCast#>(<#for(int p = 0; p < size; p++){#>(<#=d.DT.TypeCast#>left.<#=d.FieldNames[p]#> * right.<#=d.FieldNames[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>);
-        }
-
-		/// <summary>
-        /// Calculates the dot product of two <#=gen.See()#> vectors.
-        /// </summary>
-        /// <param name="left">First <#=gen.See()#> source vector</param>
-        /// <param name="right">Second <#=gen.See()#> source vector.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static <#=d.DT#> Dot(<#=d.Name#> left, <#=d.Name#> right)
-        {
-			return <#=d.DT.TypeCast#>(<#for(int p = 0; p < size; p++){#>(left.<#=d.FieldNames[p]#> * right.<#=d.FieldNames[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>);
-        }
-
-		/// <summary>
-        /// Returns a <#=gen.See()#> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
-        /// </summary>
-        /// <param name="value1">A <#=gen.See()#> containing the <#=size#>D Cartesian coordinates of vertex 1 of the triangle.</param>
-        /// <param name="value2">A <#=gen.See()#> containing the <#=size#>D Cartesian coordinates of vertex 2 of the triangle.</param>
-        /// <param name="value3">A <#=gen.See()#> containing the <#=size#>D Cartesian coordinates of vertex 3 of the triangle.</param>
-        /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
-        /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
-        public static <#=d.Name#> Barycentric(ref <#=d.Name#> value1, ref <#=d.Name#> value2, ref <#=d.Name#> value3, <#=d.DT#> amount1, <#=d.DT#> amount2)
-        {
-			return new <#=d.Name#>(
-<#for(int p = 0; p < size; p++){#>
-				<#=d.DT.TypeCast#>((value1.<#=d.FieldNames[p]#> + (amount1 * (value2.<#=d.FieldNames[p]#> - value1.<#=d.FieldNames[p]#>))) + (amount2 * (value3.<#=d.FieldNames[p]#> - value1.<#=d.FieldNames[p]#>)))<#=(p < (size-1) ? ", " : "")#>
-<#}#>
-			);
-        }
-
-        /// <summary>
-        /// Performs a linear interpolation between two <#=gen.See()#>.
-        /// </summary>
-        /// <param name="start">The start vector.</param>
-        /// <param name="end">The end vector.</param>
-        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        /// <param name="result">The output for the resultant <#=gen.See()#>.</param>
-        /// <remarks>
-        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
-        /// </remarks>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Lerp(ref <#=d.Name#> start, ref <#=d.Name#> end, <#=d.FP#> amount, out <#=d.Name#> result)
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static unsafe <#=d.Name#> Swizzle(<#=d.Name#> val, <#for(int p = 0; p < size; p++){#>int <#=d.ArgNames[p]#>Index<#=(p < (size-1) ? ", " : "")#><#}#>)
+    {
+        return new <#=d.Name#>()
         {
 <#for(int p = 0; p < size; p++){#>
-			result.<#=d.FieldNames[p]#> = <#=d.DT.FPCast#>((1<#=d.FP.Literal#> - amount) * start.<#=d.FieldNames[p]#> + amount * end.<#=d.FieldNames[p]#>);
+			<#=d.FieldNames[p]#> = (&val.X)[<#=d.ArgNames[p]#>Index],
 <#}#>
-        }
+        };
+    }
 
-        /// <summary>
-        /// Performs a linear interpolation between two <#=gen.See()#>.
-        /// </summary>
-        /// <param name="start">The start vector.</param>
-        /// <param name="end">The end vector.</param>
-        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        /// <remarks>
-        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
-        /// </remarks>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static <#=d.Name#> Lerp(<#=d.Name#> start, <#=d.Name#> end, <#=d.FP#> amount)
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static unsafe <#=d.Name#> Swizzle(<#=d.Name#> val, <#for(int p = 0; p < size; p++){#>uint <#=d.ArgNames[p]#>Index<#=(p < (size-1) ? ", " : "")#><#}#>)
+    {
+        return new <#=d.Name#>()
         {
-			return new <#=d.Name#>()
-			{
 <#for(int p = 0; p < size; p++){#>
-				<#=d.FieldNames[p]#> = <#=d.DT.FPCast#>((1<#=d.FP.Literal#> - amount) * start.<#=d.FieldNames[p]#> + amount * end.<#=d.FieldNames[p]#>),
+			<#=d.FieldNames[p]#> = (&val.X)[<#=d.ArgNames[p]#>Index],
 <#}#>
-			};
-        }
+        };
+    }
 
-		/// <summary>
-        /// Performs a linear interpolation between two <#=gen.See()#>.
-        /// </summary>
-        /// <param name="start">The start vector.</param>
-        /// <param name="end">The end vector.</param>
-        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        /// <remarks>
-        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
-        /// </remarks>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static <#=d.Name#> Lerp(ref <#=d.Name#> start, ref <#=d.Name#> end, <#=d.FP#> amount)
-        {
-			return new <#=d.Name#>()
-			{
+    /// <summary>
+    /// Calculates the dot product of two <#=gen.See()#> vectors.
+    /// </summary>
+    /// <param name="left">First <#=gen.See()#> source vector</param>
+    /// <param name="right">Second <#=gen.See()#> source vector.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static <#=d.DT#> Dot(ref <#=d.Name#> left, ref <#=d.Name#> right)
+    {
+		return <#=d.DT.TypeCast#>(<#for(int p = 0; p < size; p++){#>(<#=d.DT.TypeCast#>left.<#=d.FieldNames[p]#> * right.<#=d.FieldNames[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>);
+    }
+
+	/// <summary>
+    /// Calculates the dot product of two <#=gen.See()#> vectors.
+    /// </summary>
+    /// <param name="left">First <#=gen.See()#> source vector</param>
+    /// <param name="right">Second <#=gen.See()#> source vector.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static <#=d.DT#> Dot(<#=d.Name#> left, <#=d.Name#> right)
+    {
+		return <#=d.DT.TypeCast#>(<#for(int p = 0; p < size; p++){#>(left.<#=d.FieldNames[p]#> * right.<#=d.FieldNames[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>);
+    }
+
+	/// <summary>
+    /// Returns a <#=gen.See()#> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
+    /// </summary>
+    /// <param name="value1">A <#=gen.See()#> containing the <#=size#>D Cartesian coordinates of vertex 1 of the triangle.</param>
+    /// <param name="value2">A <#=gen.See()#> containing the <#=size#>D Cartesian coordinates of vertex 2 of the triangle.</param>
+    /// <param name="value3">A <#=gen.See()#> containing the <#=size#>D Cartesian coordinates of vertex 3 of the triangle.</param>
+    /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
+    /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
+    public static <#=d.Name#> Barycentric(ref <#=d.Name#> value1, ref <#=d.Name#> value2, ref <#=d.Name#> value3, <#=d.DT#> amount1, <#=d.DT#> amount2)
+    {
+		return new <#=d.Name#>(
 <#for(int p = 0; p < size; p++){#>
-				<#=d.FieldNames[p]#> = <#=d.DT.FPCast#>((1<#=d.FP.Literal#> - amount) * start.<#=d.FieldNames[p]#> + amount * end.<#=d.FieldNames[p]#>),
+			<#=d.DT.TypeCast#>((value1.<#=d.FieldNames[p]#> + (amount1 * (value2.<#=d.FieldNames[p]#> - value1.<#=d.FieldNames[p]#>))) + (amount2 * (value3.<#=d.FieldNames[p]#> - value1.<#=d.FieldNames[p]#>)))<#=(p < (size-1) ? ", " : "")#>
 <#}#>
-			};
-        }
+		);
+    }
 
-        /// <summary>
-        /// Returns a <#=gen.See()#> containing the smallest components of the specified vectors.
-        /// </summary>
-        /// <param name="left">The first source <#=gen.See()#>.</param>
-        /// <param name="right">The second source <#=gen.See()#>.</param>
-        /// <param name="result">The output for the resultant <#=gen.See()#>.</param>
-        /// <returns>A <#=gen.See()#> containing the smallest components of the source vectors.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Min(ref <#=d.Name#> left, ref <#=d.Name#> right, out <#=d.Name#> result)
+    /// <summary>
+    /// Performs a linear interpolation between two <#=gen.See()#>.
+    /// </summary>
+    /// <param name="start">The start vector.</param>
+    /// <param name="end">The end vector.</param>
+    /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+    /// <param name="result">The output for the resultant <#=gen.See()#>.</param>
+    /// <remarks>
+    /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void Lerp(ref <#=d.Name#> start, ref <#=d.Name#> end, <#=d.FP#> amount, out <#=d.Name#> result)
+    {
+<#for(int p = 0; p < size; p++){#>
+		result.<#=d.FieldNames[p]#> = <#=d.DT.FPCast#>((1<#=d.FP.Literal#> - amount) * start.<#=d.FieldNames[p]#> + amount * end.<#=d.FieldNames[p]#>);
+<#}#>
+    }
+
+    /// <summary>
+    /// Performs a linear interpolation between two <#=gen.See()#>.
+    /// </summary>
+    /// <param name="start">The start vector.</param>
+    /// <param name="end">The end vector.</param>
+    /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+    /// <remarks>
+    /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static <#=d.Name#> Lerp(<#=d.Name#> start, <#=d.Name#> end, <#=d.FP#> amount)
+    {
+		return new <#=d.Name#>()
 		{
 <#for(int p = 0; p < size; p++){#>
-				result.<#=d.FieldNames[p]#> = (left.<#=d.FieldNames[p]#> < right.<#=d.FieldNames[p]#>) ? left.<#=d.FieldNames[p]#> : right.<#=d.FieldNames[p]#>;
+			<#=d.FieldNames[p]#> = <#=d.DT.FPCast#>((1<#=d.FP.Literal#> - amount) * start.<#=d.FieldNames[p]#> + amount * end.<#=d.FieldNames[p]#>),
 <#}#>
-		}
+		};
+    }
 
-        /// <summary>
-        /// Returns a <#=gen.See()#> containing the smallest components of the specified vectors.
-        /// </summary>
-        /// <param name="left">The first source <#=gen.See()#>.</param>
-        /// <param name="right">The second source <#=gen.See()#>.</param>
-        /// <returns>A <#=gen.See()#> containing the smallest components of the source vectors.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static <#=d.Name#> Min(ref <#=d.Name#> left, ref <#=d.Name#> right)
+	/// <summary>
+    /// Performs a linear interpolation between two <#=gen.See()#>.
+    /// </summary>
+    /// <param name="start">The start vector.</param>
+    /// <param name="end">The end vector.</param>
+    /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+    /// <remarks>
+    /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static <#=d.Name#> Lerp(ref <#=d.Name#> start, ref <#=d.Name#> end, <#=d.FP#> amount)
+    {
+		return new <#=d.Name#>()
 		{
-			Min(ref left, ref right, out <#=d.Name#> result);
-            return result;
-		}
+<#for(int p = 0; p < size; p++){#>
+			<#=d.FieldNames[p]#> = <#=d.DT.FPCast#>((1<#=d.FP.Literal#> - amount) * start.<#=d.FieldNames[p]#> + amount * end.<#=d.FieldNames[p]#>),
+<#}#>
+		};
+    }
 
-		/// <summary>
-        /// Returns a <#=gen.See()#> containing the smallest components of the specified vectors.
-        /// </summary>
-        /// <param name="left">The first source <#=gen.See()#>.</param>
-        /// <param name="right">The second source <#=gen.See()#>.</param>
-        /// <returns>A <#=gen.See()#> containing the smallest components of the source vectors.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static <#=d.Name#> Min(<#=d.Name#> left, <#=d.Name#> right)
+    /// <summary>
+    /// Returns a <#=gen.See()#> containing the smallest components of the specified vectors.
+    /// </summary>
+    /// <param name="left">The first source <#=gen.See()#>.</param>
+    /// <param name="right">The second source <#=gen.See()#>.</param>
+    /// <param name="result">The output for the resultant <#=gen.See()#>.</param>
+    /// <returns>A <#=gen.See()#> containing the smallest components of the source vectors.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void Min(ref <#=d.Name#> left, ref <#=d.Name#> right, out <#=d.Name#> result)
+	{
+<#for(int p = 0; p < size; p++){#>
+			result.<#=d.FieldNames[p]#> = (left.<#=d.FieldNames[p]#> < right.<#=d.FieldNames[p]#>) ? left.<#=d.FieldNames[p]#> : right.<#=d.FieldNames[p]#>;
+<#}#>
+	}
+
+    /// <summary>
+    /// Returns a <#=gen.See()#> containing the smallest components of the specified vectors.
+    /// </summary>
+    /// <param name="left">The first source <#=gen.See()#>.</param>
+    /// <param name="right">The second source <#=gen.See()#>.</param>
+    /// <returns>A <#=gen.See()#> containing the smallest components of the source vectors.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static <#=d.Name#> Min(ref <#=d.Name#> left, ref <#=d.Name#> right)
+	{
+		Min(ref left, ref right, out <#=d.Name#> result);
+        return result;
+	}
+
+	/// <summary>
+    /// Returns a <#=gen.See()#> containing the smallest components of the specified vectors.
+    /// </summary>
+    /// <param name="left">The first source <#=gen.See()#>.</param>
+    /// <param name="right">The second source <#=gen.See()#>.</param>
+    /// <returns>A <#=gen.See()#> containing the smallest components of the source vectors.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static <#=d.Name#> Min(<#=d.Name#> left, <#=d.Name#> right)
+	{
+		return new <#=d.Name#>()
 		{
-			return new <#=d.Name#>()
-			{
 <#for(int p = 0; p < size; p++){
 #>
-				<#=d.FieldNames[p]#> = (left.<#=d.FieldNames[p]#> < right.<#=d.FieldNames[p]#>) ? left.<#=d.FieldNames[p]#> : right.<#=d.FieldNames[p]#>,
+			<#=d.FieldNames[p]#> = (left.<#=d.FieldNames[p]#> < right.<#=d.FieldNames[p]#>) ? left.<#=d.FieldNames[p]#> : right.<#=d.FieldNames[p]#>,
 <#}#>
-			};
-		}
+		};
+	}
 
-        /// <summary>
-        /// Returns a <#=gen.See()#> containing the largest components of the specified vectors.
-        /// </summary>
-        /// <param name="left">The first source <#=gen.See()#>.</param>
-        /// <param name="right">The second source <#=gen.See()#>.</param>
-        /// <param name="result">The output for the resultant <#=gen.See()#>.</param>
-        /// <returns>A <#=gen.See()#> containing the largest components of the source vectors.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Max(ref <#=d.Name#> left, ref <#=d.Name#> right, out <#=d.Name#> result)
+    /// <summary>
+    /// Returns a <#=gen.See()#> containing the largest components of the specified vectors.
+    /// </summary>
+    /// <param name="left">The first source <#=gen.See()#>.</param>
+    /// <param name="right">The second source <#=gen.See()#>.</param>
+    /// <param name="result">The output for the resultant <#=gen.See()#>.</param>
+    /// <returns>A <#=gen.See()#> containing the largest components of the source vectors.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void Max(ref <#=d.Name#> left, ref <#=d.Name#> right, out <#=d.Name#> result)
+	{
+<#for(int p = 0; p < size; p++){#>
+			result.<#=d.FieldNames[p]#> = (left.<#=d.FieldNames[p]#> > right.<#=d.FieldNames[p]#>) ? left.<#=d.FieldNames[p]#> : right.<#=d.FieldNames[p]#>;
+<#}#>
+	}
+
+    /// <summary>
+    /// Returns a <#=gen.See()#> containing the largest components of the specified vectors.
+    /// </summary>
+    /// <param name="left">The first source <#=gen.See()#>.</param>
+    /// <param name="right">The second source <#=gen.See()#>.</param>
+    /// <returns>A <#=gen.See()#> containing the largest components of the source vectors.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static <#=d.Name#> Max(ref <#=d.Name#> left, ref <#=d.Name#> right)
+	{
+		Max(ref left, ref right, out <#=d.Name#> result);
+        return result;
+	}
+
+	/// <summary>
+    /// Returns a <#=gen.See()#> containing the largest components of the specified vectors.
+    /// </summary>
+    /// <param name="left">The first source <#=gen.See()#>.</param>
+    /// <param name="right">The second source <#=gen.See()#>.</param>
+    /// <returns>A <#=gen.See()#> containing the largest components of the source vectors.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static <#=d.Name#> Max(<#=d.Name#> left, <#=d.Name#> right)
+	{
+		return new <#=d.Name#>()
 		{
 <#for(int p = 0; p < size; p++){#>
-				result.<#=d.FieldNames[p]#> = (left.<#=d.FieldNames[p]#> > right.<#=d.FieldNames[p]#>) ? left.<#=d.FieldNames[p]#> : right.<#=d.FieldNames[p]#>;
+			<#=d.FieldNames[p]#> = (left.<#=d.FieldNames[p]#> > right.<#=d.FieldNames[p]#>) ? left.<#=d.FieldNames[p]#> : right.<#=d.FieldNames[p]#>,
 <#}#>
-		}
+		};
+	}
 
-        /// <summary>
-        /// Returns a <#=gen.See()#> containing the largest components of the specified vectors.
-        /// </summary>
-        /// <param name="left">The first source <#=gen.See()#>.</param>
-        /// <param name="right">The second source <#=gen.See()#>.</param>
-        /// <returns>A <#=gen.See()#> containing the largest components of the source vectors.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static <#=d.Name#> Max(ref <#=d.Name#> left, ref <#=d.Name#> right)
+	/// <summary>
+    /// Calculates the squared distance between two <#=gen.See()#> vectors.
+    /// </summary>
+    /// <param name="value1">The first vector.</param>
+    /// <param name="value2">The second vector.</param>
+    /// <returns>The squared distance between the two vectors.</returns>
+    /// <remarks>Distance squared is the value before taking the square root. 
+    /// Distance squared can often be used in place of distance if relative comparisons are being made. 
+    /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
+    /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
+    /// involves two square roots, which are computationally expensive. However, using distance squared 
+    /// provides the same information and avoids calculating two square roots.
+    /// </remarks>
+	public static <#=d.DT#> DistanceSquared(ref <#=d.Name#> value1, ref <#=d.Name#> value2)
+    {
+<#
+		string r = "";
+		for(int p = 0; p < size; p++)
 		{
-			Max(ref left, ref right, out <#=d.Name#> result);
-            return result;
+			r+= $"({d.ArgNames[p]} * {d.ArgNames[p]}){(p < (size-1) ? " + " : "")}";
+#>
+        <#=d.DT.IntType#> <#=d.ArgNames[p]#> = value1.<#=d.FieldNames[p]#> - value2.<#=d.FieldNames[p]#>;
+<#
 		}
+#>
 
-		/// <summary>
-        /// Returns a <#=gen.See()#> containing the largest components of the specified vectors.
-        /// </summary>
-        /// <param name="left">The first source <#=gen.See()#>.</param>
-        /// <param name="right">The second source <#=gen.See()#>.</param>
-        /// <returns>A <#=gen.See()#> containing the largest components of the source vectors.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static <#=d.Name#> Max(<#=d.Name#> left, <#=d.Name#> right)
+        return <#=d.DT.TypeCast#>(<#=r#>);
+    }
+
+    /// <summary>
+    /// Calculates the squared distance between two <#=gen.See()#> vectors.
+    /// </summary>
+    /// <param name="value1">The first vector.</param>
+    /// <param name="value2">The second vector.</param>
+    /// <returns>The squared distance between the two vectors.</returns>
+    /// <remarks>Distance squared is the value before taking the square root. 
+    /// Distance squared can often be used in place of distance if relative comparisons are being made. 
+    /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
+    /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
+    /// involves two square roots, which are computationally expensive. However, using distance squared 
+    /// provides the same information and avoids calculating two square roots.
+    /// </remarks>
+	public static <#=d.DT#> DistanceSquared(<#=d.Name#> value1, <#=d.Name#> value2)
+    {
+<#
+		r = "";
+		for(int p = 0; p < size; p++)
 		{
-			return new <#=d.Name#>()
-			{
-<#for(int p = 0; p < size; p++){#>
-				<#=d.FieldNames[p]#> = (left.<#=d.FieldNames[p]#> > right.<#=d.FieldNames[p]#>) ? left.<#=d.FieldNames[p]#> : right.<#=d.FieldNames[p]#>,
-<#}#>
-			};
+			r+= $"({d.ArgNames[p]} * {d.ArgNames[p]}){(p < (size-1) ? " + " : "")}";
+#>
+        <#=d.DT.IntType#> <#=d.ArgNames[p]#> = value1.<#=d.FieldNames[p]#> - value2.<#=d.FieldNames[p]#>;
+<#
 		}
-
-		/// <summary>
-        /// Calculates the squared distance between two <#=gen.See()#> vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The squared distance between the two vectors.</returns>
-        /// <remarks>Distance squared is the value before taking the square root. 
-        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
-        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
-        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
-        /// involves two square roots, which are computationally expensive. However, using distance squared 
-        /// provides the same information and avoids calculating two square roots.
-        /// </remarks>
-		public static <#=d.DT#> DistanceSquared(ref <#=d.Name#> value1, ref <#=d.Name#> value2)
-        {
-<#
-			string r = "";
-			for(int p = 0; p < size; p++)
-			{
-				r+= $"({d.ArgNames[p]} * {d.ArgNames[p]}){(p < (size-1) ? " + " : "")}";
-#>
-            <#=d.DT.IntType#> <#=d.ArgNames[p]#> = value1.<#=d.FieldNames[p]#> - value2.<#=d.FieldNames[p]#>;
-<#
-			}
 #>
 
-            return <#=d.DT.TypeCast#>(<#=r#>);
-        }
+        return <#=d.DT.TypeCast#>(<#=r#>);
+    }
 
-        /// <summary>
-        /// Calculates the squared distance between two <#=gen.See()#> vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The squared distance between the two vectors.</returns>
-        /// <remarks>Distance squared is the value before taking the square root. 
-        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
-        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
-        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
-        /// involves two square roots, which are computationally expensive. However, using distance squared 
-        /// provides the same information and avoids calculating two square roots.
-        /// </remarks>
-		public static <#=d.DT#> DistanceSquared(<#=d.Name#> value1, <#=d.Name#> value2)
-        {
-<#
-			r = "";
-			for(int p = 0; p < size; p++)
-			{
-				r+= $"({d.ArgNames[p]} * {d.ArgNames[p]}){(p < (size-1) ? " + " : "")}";
-#>
-            <#=d.DT.IntType#> <#=d.ArgNames[p]#> = value1.<#=d.FieldNames[p]#> - value2.<#=d.FieldNames[p]#>;
-<#
-			}
-#>
-
-            return <#=d.DT.TypeCast#>(<#=r#>);
-        }
-
-		/// <summary>Clamps the component values to within the given range.</summary>
-        /// <param name="value">The <#=gen.See()#> value to be clamped.</param>
-        /// <param name="min">The minimum value of each component.</param>
-        /// <param name="max">The maximum value of each component.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static <#=d.Name#> Clamp(<#=d.Name#> value, <#=d.DT#> min, <#=d.DT#> max)
-        {
-			return new <#=d.Name#>()
-			{
+	/// <summary>Clamps the component values to within the given range.</summary>
+    /// <param name="value">The <#=gen.See()#> value to be clamped.</param>
+    /// <param name="min">The minimum value of each component.</param>
+    /// <param name="max">The maximum value of each component.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static <#=d.Name#> Clamp(<#=d.Name#> value, <#=d.DT#> min, <#=d.DT#> max)
+    {
+		return new <#=d.Name#>()
+		{
 <#for(int p = 0; p < size; p++){#>
-				<#=d.FieldNames[p]#> = value.<#=d.FieldNames[p]#> < min ? min : value.<#=d.FieldNames[p]#> > max ? max : value.<#=d.FieldNames[p]#>,
+			<#=d.FieldNames[p]#> = value.<#=d.FieldNames[p]#> < min ? min : value.<#=d.FieldNames[p]#> > max ? max : value.<#=d.FieldNames[p]#>,
 <#}#>
-			};
-        }
+		};
+    }
 
-        /// <summary>Clamps the component values to within the given range.</summary>
-        /// <param name="value">The <#=gen.See()#> value to be clamped.</param>
-        /// <param name="min">The minimum value of each component.</param>
-        /// <param name="max">The maximum value of each component.</param>
-        /// <param name="result">The output for the resultant <#=gen.See()#>.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Clamp(ref <#=d.Name#> value, ref <#=d.Name#> min, ref <#=d.Name#> max, out <#=d.Name#> result)
+    /// <summary>Clamps the component values to within the given range.</summary>
+    /// <param name="value">The <#=gen.See()#> value to be clamped.</param>
+    /// <param name="min">The minimum value of each component.</param>
+    /// <param name="max">The maximum value of each component.</param>
+    /// <param name="result">The output for the resultant <#=gen.See()#>.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void Clamp(ref <#=d.Name#> value, ref <#=d.Name#> min, ref <#=d.Name#> max, out <#=d.Name#> result)
+    {
+<#for(int p = 0; p < size; p++){#>
+			result.<#=d.FieldNames[p]#> = value.<#=d.FieldNames[p]#> < min.<#=d.FieldNames[p]#> ? min.<#=d.FieldNames[p]#> : value.<#=d.FieldNames[p]#> > max.<#=d.FieldNames[p]#> ? max.<#=d.FieldNames[p]#> : value.<#=d.FieldNames[p]#>;
+<#}#>
+    }
+
+	/// <summary>Clamps the component values to within the given range.</summary>
+    /// <param name="value">The <#=gen.See()#> value to be clamped.</param>
+    /// <param name="min">The minimum value of each component.</param>
+    /// <param name="max">The maximum value of each component.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static <#=d.Name#> Clamp(<#=d.Name#> value, <#=d.Name#> min, <#=d.Name#> max)
+    {
+		return new <#=d.Name#>()
+		{
+<#for(int p = 0; p < size; p++){#>
+			<#=d.FieldNames[p]#> = value.<#=d.FieldNames[p]#> < min.<#=d.FieldNames[p]#> ? min.<#=d.FieldNames[p]#> : value.<#=d.FieldNames[p]#> > max.<#=d.FieldNames[p]#> ? max.<#=d.FieldNames[p]#> : value.<#=d.FieldNames[p]#>,
+<#}#>
+		};
+    }
+
+    /// <summary>
+    /// Returns the reflection of a vector off a surface that has the specified normal. 
+    /// </summary>
+    /// <param name="vector">The source vector.</param>
+    /// <param name="normal">Normal of the surface.</param>
+    /// <remarks>Reflect only gives the direction of a reflection off a surface, it does not determine 
+    /// whether the original vector was close enough to the surface to hit it.</remarks>
+    public static <#=d.Name#> Reflect(<#=d.Name#> vector, <#=d.Name#> normal)
+    {
+        return Reflect(ref vector, ref normal);
+    }
+
+    /// <summary>
+    /// Returns the reflection of a vector off a surface that has the specified normal. 
+    /// </summary>
+    /// <param name="vector">The source vector.</param>
+    /// <param name="normal">Normal of the surface.</param>
+    /// <remarks>Reflect only gives the direction of a reflection off a surface, it does not determine 
+    /// whether the original vector was close enough to the surface to hit it.</remarks>
+    public static <#=d.Name#> Reflect(ref <#=d.Name#> vector, ref <#=d.Name#> normal)
+    {
+        <#=d.DT.IntType#> dot = <#for(int p = 0; p < size; p++){#>(vector.<#=d.FieldNames[p]#> * normal.<#=d.FieldNames[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>;
+
+        return new <#=d.Name#>()
         {
 <#for(int p = 0; p < size; p++){#>
-				result.<#=d.FieldNames[p]#> = value.<#=d.FieldNames[p]#> < min.<#=d.FieldNames[p]#> ? min.<#=d.FieldNames[p]#> : value.<#=d.FieldNames[p]#> > max.<#=d.FieldNames[p]#> ? max.<#=d.FieldNames[p]#> : value.<#=d.FieldNames[p]#>;
+			<#=d.FieldNames[p]#> = <#=d.DT.FPToTypeCast#>(vector.<#=d.FieldNames[p]#> - ((2 * dot) * normal.<#=d.FieldNames[p]#>)),
 <#}#>
-        }
-
-		/// <summary>Clamps the component values to within the given range.</summary>
-        /// <param name="value">The <#=gen.See()#> value to be clamped.</param>
-        /// <param name="min">The minimum value of each component.</param>
-        /// <param name="max">The maximum value of each component.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static <#=d.Name#> Clamp(<#=d.Name#> value, <#=d.Name#> min, <#=d.Name#> max)
-        {
-			return new <#=d.Name#>()
-			{
-<#for(int p = 0; p < size; p++){#>
-				<#=d.FieldNames[p]#> = value.<#=d.FieldNames[p]#> < min.<#=d.FieldNames[p]#> ? min.<#=d.FieldNames[p]#> : value.<#=d.FieldNames[p]#> > max.<#=d.FieldNames[p]#> ? max.<#=d.FieldNames[p]#> : value.<#=d.FieldNames[p]#>,
-<#}#>
-			};
-        }
-
-        /// <summary>
-        /// Returns the reflection of a vector off a surface that has the specified normal. 
-        /// </summary>
-        /// <param name="vector">The source vector.</param>
-        /// <param name="normal">Normal of the surface.</param>
-        /// <remarks>Reflect only gives the direction of a reflection off a surface, it does not determine 
-        /// whether the original vector was close enough to the surface to hit it.</remarks>
-        public static <#=d.Name#> Reflect(<#=d.Name#> vector, <#=d.Name#> normal)
-        {
-            return Reflect(ref vector, ref normal);
-        }
-
-        /// <summary>
-        /// Returns the reflection of a vector off a surface that has the specified normal. 
-        /// </summary>
-        /// <param name="vector">The source vector.</param>
-        /// <param name="normal">Normal of the surface.</param>
-        /// <remarks>Reflect only gives the direction of a reflection off a surface, it does not determine 
-        /// whether the original vector was close enough to the surface to hit it.</remarks>
-        public static <#=d.Name#> Reflect(ref <#=d.Name#> vector, ref <#=d.Name#> normal)
-        {
-            <#=d.DT.IntType#> dot = <#for(int p = 0; p < size; p++){#>(vector.<#=d.FieldNames[p]#> * normal.<#=d.FieldNames[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>;
-
-            return new <#=d.Name#>()
-            {
-<#for(int p = 0; p < size; p++){#>
-				<#=d.FieldNames[p]#> = <#=d.DT.FPToTypeCast#>(vector.<#=d.FieldNames[p]#> - ((2 * dot) * normal.<#=d.FieldNames[p]#>)),
-<#}#>
-            };
-        }
+        };
+    }
 #endregion
 
 #region Indexers
@@ -809,8 +809,8 @@ namespace Molten<#=d.SubNamespace#>
 #region Casts - vectors
 <#gen.GenerateCasts((other) => other.DT.One);#>
 #endregion
-	}
 }
+
 <#
 });
 #>

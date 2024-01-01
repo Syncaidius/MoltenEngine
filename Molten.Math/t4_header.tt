@@ -355,7 +355,7 @@ public class TypeGenerator
         return r;
     }
 
-    public string GenerateFields(Func<string, string> summaryCallback = null, int indentLevel = 2)
+    public string GenerateFields(Func<string, string> summaryCallback = null, int indentLevel = 1)
     {
         string r = "";
         string indent = indentLevel > 0 ? new string('\t', indentLevel) : "";
@@ -387,7 +387,7 @@ public class TypeGenerator
         return r;
     }
 
-    public void GenerateIndexers(string[] dimensions, string indexCalculation, int indent = 2)
+    public void GenerateIndexers(string[] dimensions, string indexCalculation, int indent = 1)
     {
         // Don't generate indexers for types that only have one field.
         if(_curDef.FieldNames.Length == 1)
@@ -491,7 +491,7 @@ public class TypeGenerator
         _sb.Append(text);
     }
 
-    public void GenerateStandardConstructors(int indent = 2, Func<string, string> summaryCallback = null)
+    public void GenerateStandardConstructors(int indent = 1, Func<string, string> summaryCallback = null)
     {
         int fieldCount = _curDef.GetFieldCount();
 
@@ -581,7 +581,7 @@ public class TypeGenerator
         Out(indent, "}");
     } 
 
-    public void GenerateUpgradeConstructors(int indent = 2)
+    public void GenerateUpgradeConstructors(int indent = 1)
     {
         foreach(TypeDef other in _def.Types)
         {
@@ -626,7 +626,7 @@ public class TypeGenerator
     /// Generates cast operators from the current TypeDef to every other TypeDef in the same GeneratorDefinition.
     /// If there are not enough fields in the current TypeDef to populate the args of another type constructor, 
     /// the default value of the other TypeDefs can be retrieved via the otherDefault callback, to be used for population.
-    public void GenerateCasts(Func<TypeDef, string> otherDefault = null, string[] argNames = null, int indent = 2)
+    public void GenerateCasts(Func<TypeDef, string> otherDefault = null, string[] argNames = null, int indent = 1)
     {
         argNames ??= _curDef.FieldNames;
 
@@ -668,7 +668,7 @@ public class TypeGenerator
 
     public void GenerateOperator(string op, string name, string otherName = null, string[] otherFields = null)
     {
-        int indent = 2;
+        int indent = 1;
 
         string capName = Capitalize(name);
         string first; 

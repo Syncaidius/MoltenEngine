@@ -1,6 +1,4 @@
-﻿using Molten.Font;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     public class GraphicsProfiler
     {

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Graphics.Vulkan
+﻿namespace Molten.Graphics.Vulkan
 {
     /// <summary>
     /// Represents a sub-handle for a <see cref="ResourceHandleVK{SH}"/>. 

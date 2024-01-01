@@ -1,5 +1,4 @@
 ﻿using Molten.Graphics;
-using Molten.Threading;
 
 namespace Molten.Input
 {

@@ -1,6 +1,5 @@
 ﻿using Molten.Collections;
 using Molten.Net.Message;
-using Molten.Threading;
 
 namespace Molten.Net
 {

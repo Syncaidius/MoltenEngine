@@ -12,7 +12,6 @@
 // http://go.microsoft.com/fwlink/?LinkId=248926
 //-------------------------------------------------------------------------------------
 using System.Diagnostics;
-using Silk.NET.Core.Native;
 using System.Runtime.CompilerServices;
 
 namespace Molten.Graphics.Textures

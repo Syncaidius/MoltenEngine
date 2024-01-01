@@ -1,9 +1,8 @@
 ﻿using System.Collections.Concurrent;
 using System.Reflection;
+using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Linq;
-using System.Runtime.Serialization;
 
 namespace Molten
 {

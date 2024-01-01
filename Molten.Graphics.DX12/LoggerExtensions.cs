@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic.Logging;
-using Silk.NET.Core.Native;
+﻿using Silk.NET.Core.Native;
 
 namespace Molten.Graphics.DX12
 {

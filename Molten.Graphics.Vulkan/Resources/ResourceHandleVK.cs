@@ -1,6 +1,4 @@
 ﻿using Silk.NET.Vulkan;
-using System.Reflection.Metadata;
-using Buffer = Silk.NET.Vulkan.Buffer;
 
 namespace Molten.Graphics.Vulkan
 {

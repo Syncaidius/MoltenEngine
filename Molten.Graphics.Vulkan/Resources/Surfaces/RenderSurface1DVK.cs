@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Molten.Graphics.Vulkan
+﻿namespace Molten.Graphics.Vulkan
 {
     public class RenderSurface1DVK : Texture1DVK, IRenderSurface1D, IRenderSurfaceVK
     {

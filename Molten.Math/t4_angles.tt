@@ -20,716 +20,715 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
-namespace Molten<#=d.SubNamespace#>
+namespace Molten<#=d.SubNamespace#>;
+
+///<summary>Represents a four dimensional mathematical <#=d.Name#>.</summary>
+[StructLayout(LayoutKind.Explicit)]
+[Serializable]
+public partial struct <#=d.Name#> : IFormattable, IEquatable<<#=d.Name#>>
 {
-	///<summary>Represents a four dimensional mathematical <#=d.Name#>.</summary>
-	[StructLayout(LayoutKind.Explicit)]
-    [Serializable]
-	public partial struct <#=d.Name#> : IFormattable, IEquatable<<#=d.Name#>>
-	{
-		/// <summary>
-        /// A value that specifies the size of a single degree.
-        /// </summary>
-        public const <#=d.DT#> Degree = 0.002777777777777778<#=d.FP.Literal#>;
+	/// <summary>
+    /// A value that specifies the size of a single degree.
+    /// </summary>
+    public const <#=d.DT#> Degree = 0.002777777777777778<#=d.FP.Literal#>;
 
-        /// <summary>
-        /// A value that specifies the size of a single minute.
-        /// </summary>
-        public const <#=d.DT#> Minute = 0.000046296296296296<#=d.FP.Literal#>;
+    /// <summary>
+    /// A value that specifies the size of a single minute.
+    /// </summary>
+    public const <#=d.DT#> Minute = 0.000046296296296296<#=d.FP.Literal#>;
 
-        /// <summary>
-        /// A value that specifies the size of a single second.
-        /// </summary>
-        public const <#=d.DT#> Second = 0.000000771604938272<#=d.FP.Literal#>;
+    /// <summary>
+    /// A value that specifies the size of a single second.
+    /// </summary>
+    public const <#=d.DT#> Second = 0.000000771604938272<#=d.FP.Literal#>;
 
-        /// <summary>
-        /// A value that specifies the size of a single radian.
-        /// </summary>
-        public const <#=d.DT#> Radian = 0.159154943091895336<#=d.FP.Literal#>;
+    /// <summary>
+    /// A value that specifies the size of a single radian.
+    /// </summary>
+    public const <#=d.DT#> Radian = 0.159154943091895336<#=d.FP.Literal#>;
 
-        /// <summary>
-        /// A value that specifies the size of a single milliradian.
-        /// </summary>
-        public const <#=d.DT#> Milliradian = 0.0001591549431<#=d.FP.Literal#>;
+    /// <summary>
+    /// A value that specifies the size of a single milliradian.
+    /// </summary>
+    public const <#=d.DT#> Milliradian = 0.0001591549431<#=d.FP.Literal#>;
 
-        /// <summary>
-        /// A value that specifies the size of a single gradian.
-        /// </summary>
-        public const <#=d.DT#> Gradian = 0.0025<#=d.FP.Literal#>;
+    /// <summary>
+    /// A value that specifies the size of a single gradian.
+    /// </summary>
+    public const <#=d.DT#> Gradian = 0.0025<#=d.FP.Literal#>;
 
 <#=gen.GenerateFields()#>
 
-         /// <summary>
-        /// Initializes a new instance of the <#=gen.See()#> structure with the
-        /// given unit dependant angle and unit type.
-        /// </summary>
-        /// <param name="angle">A unit dependant measure of the angle.</param>
-        /// <param name="type">The type of unit the angle argument is.</param>
-        public <#=d.Name#>(<#=d.DT#> angle, AngleType type)
+        /// <summary>
+    /// Initializes a new instance of the <#=gen.See()#> structure with the
+    /// given unit dependant angle and unit type.
+    /// </summary>
+    /// <param name="angle">A unit dependant measure of the angle.</param>
+    /// <param name="type">The type of unit the angle argument is.</param>
+    public <#=d.Name#>(<#=d.DT#> angle, AngleType type)
+    {
+        switch (type)
         {
-            switch (type)
+            case AngleType.Revolution:
+                Radians = MathHelper.RevolutionsToRadians(angle);
+                break;
+
+            case AngleType.Degree:
+                Radians = MathHelper.DegreesToRadians(angle);
+                break;
+
+            case AngleType.Radian:
+                Radians = angle;
+                break;
+
+            case AngleType.Gradian:
+                Radians = MathHelper.GradiansToRadians(angle);
+                break;
+
+            default:
+                Radians = <#=d.FP.Zero#>;
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <#=gen.See()#> structure using the
+    /// arc length formula (θ = s/r).
+    /// </summary>
+    /// <param name="arcLength">The measure of the arc.</param>
+    /// <param name="radius">The radius of the circle.</param>
+    public <#=d.Name#>(<#=d.DT#> arcLength, <#=d.DT#> radius)
+    {
+        Radians = arcLength / radius;
+    }
+
+    /// <summary>
+    /// Wraps this <#=gen.See()#> to be in the range [π, -π].
+    /// </summary>
+    public void Wrap()
+    {
+        Radians = MathHelper.WrapAngle(Radians);
+    }
+
+    /// <summary>
+    /// Wraps this <#=gen.See()#> to be in the range [0, 2π).
+    /// </summary>
+    public void WrapPositive()
+    {
+        <#=d.DT#> newangle = Radians % <#=d.DT#>.Tau;
+
+        if (newangle < <#=d.DT.Zero#>)
+            newangle += <#=d.DT#>.Tau;
+
+        Radians = newangle;
+    }
+
+    /// <summary>
+    /// Gets or sets the total number of revolutions this <#=gen.See()#> represents.
+    /// </summary>
+    public <#=d.DT#> Revolutions
+    {
+        get => MathHelper.RadiansToRevolutions(Radians);
+        set => Radians = MathHelper.RevolutionsToRadians(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the total number of degrees this <#=gen.See()#> represents.
+    /// </summary>
+    public <#=d.DT#> Degrees
+    {
+        get => MathHelper.RadiansToDegrees(Radians);
+        set => Radians = MathHelper.DegreesToRadians(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the minutes component of the degrees this <#=gen.See()#> represents.
+    /// When setting the minutes, if the value is in the range (-60, 60) the whole degrees are
+    /// not changed; otherwise, the whole degrees may be changed. Fractional values may set
+    /// the seconds component.
+    /// </summary>
+    public <#=d.DT#> Minutes
+    {
+        get
+        {
+            <#=d.DT#> degrees = MathHelper.RadiansToDegrees(Radians);
+
+            if (degrees < 0)
             {
-                case AngleType.Revolution:
-                    Radians = MathHelper.RevolutionsToRadians(angle);
-                    break;
-
-                case AngleType.Degree:
-                    Radians = MathHelper.DegreesToRadians(angle);
-                    break;
-
-                case AngleType.Radian:
-                    Radians = angle;
-                    break;
-
-                case AngleType.Gradian:
-                    Radians = MathHelper.GradiansToRadians(angle);
-                    break;
-
-                default:
-                    Radians = <#=d.FP.Zero#>;
-                    break;
+                <#=d.DT#> degreesfloor = <#=d.DT.Math#>.Ceiling(degrees);
+                return (degrees - degreesfloor) * 60.0<#=d.FP.Literal#>;
             }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <#=gen.See()#> structure using the
-        /// arc length formula (θ = s/r).
-        /// </summary>
-        /// <param name="arcLength">The measure of the arc.</param>
-        /// <param name="radius">The radius of the circle.</param>
-        public <#=d.Name#>(<#=d.DT#> arcLength, <#=d.DT#> radius)
-        {
-            Radians = arcLength / radius;
-        }
-
-        /// <summary>
-        /// Wraps this <#=gen.See()#> to be in the range [π, -π].
-        /// </summary>
-        public void Wrap()
-        {
-            Radians = MathHelper.WrapAngle(Radians);
-        }
-
-        /// <summary>
-        /// Wraps this <#=gen.See()#> to be in the range [0, 2π).
-        /// </summary>
-        public void WrapPositive()
-        {
-            <#=d.DT#> newangle = Radians % <#=d.DT#>.Tau;
-
-            if (newangle < <#=d.DT.Zero#>)
-                newangle += <#=d.DT#>.Tau;
-
-            Radians = newangle;
-        }
-
-        /// <summary>
-        /// Gets or sets the total number of revolutions this <#=gen.See()#> represents.
-        /// </summary>
-        public <#=d.DT#> Revolutions
-        {
-            get => MathHelper.RadiansToRevolutions(Radians);
-            set => Radians = MathHelper.RevolutionsToRadians(value);
-        }
-
-        /// <summary>
-        /// Gets or sets the total number of degrees this <#=gen.See()#> represents.
-        /// </summary>
-        public <#=d.DT#> Degrees
-        {
-            get => MathHelper.RadiansToDegrees(Radians);
-            set => Radians = MathHelper.DegreesToRadians(value);
-        }
-
-        /// <summary>
-        /// Gets or sets the minutes component of the degrees this <#=gen.See()#> represents.
-        /// When setting the minutes, if the value is in the range (-60, 60) the whole degrees are
-        /// not changed; otherwise, the whole degrees may be changed. Fractional values may set
-        /// the seconds component.
-        /// </summary>
-        public <#=d.DT#> Minutes
-        {
-            get
+            else
             {
-                <#=d.DT#> degrees = MathHelper.RadiansToDegrees(Radians);
-
-                if (degrees < 0)
-                {
-                    <#=d.DT#> degreesfloor = <#=d.DT.Math#>.Ceiling(degrees);
-                    return (degrees - degreesfloor) * 60.0<#=d.FP.Literal#>;
-                }
-                else
-                {
-                    <#=d.DT#> degreesfloor = <#=d.DT.Math#>.Floor(degrees);
-                    return (degrees - degreesfloor) * 60.0<#=d.FP.Literal#>;
-                }
-            }
-            set
-            {
-                <#=d.DT#> degrees = MathHelper.RadiansToDegrees(Radians);
                 <#=d.DT#> degreesfloor = <#=d.DT.Math#>.Floor(degrees);
-
-                degreesfloor += value / 60.0<#=d.FP.Literal#>;
-                Radians = MathHelper.DegreesToRadians(degreesfloor);
+                return (degrees - degreesfloor) * 60.0<#=d.FP.Literal#>;
             }
         }
-
-        /// <summary>
-        /// Gets or sets the seconds of the degrees this <#=gen.See()#> represents.
-        /// When setting the seconds, if the value is in the range (-60, 60) the whole minutes
-        /// or whole degrees are not changed; otherwise, the whole minutes or whole degrees
-        /// may be changed.
-        /// </summary>
-        public <#=d.DT#> Seconds
+        set
         {
-            get
+            <#=d.DT#> degrees = MathHelper.RadiansToDegrees(Radians);
+            <#=d.DT#> degreesfloor = <#=d.DT.Math#>.Floor(degrees);
+
+            degreesfloor += value / 60.0<#=d.FP.Literal#>;
+            Radians = MathHelper.DegreesToRadians(degreesfloor);
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the seconds of the degrees this <#=gen.See()#> represents.
+    /// When setting the seconds, if the value is in the range (-60, 60) the whole minutes
+    /// or whole degrees are not changed; otherwise, the whole minutes or whole degrees
+    /// may be changed.
+    /// </summary>
+    public <#=d.DT#> Seconds
+    {
+        get
+        {
+            <#=d.DT#> degrees = MathHelper.RadiansToDegrees(Radians);
+
+            if (degrees < 0)
             {
-                <#=d.DT#> degrees = MathHelper.RadiansToDegrees(Radians);
+                <#=d.DT#> degreesfloor = <#=d.DT.Math#>.Ceiling(degrees);
 
-                if (degrees < 0)
-                {
-                    <#=d.DT#> degreesfloor = <#=d.DT.Math#>.Ceiling(degrees);
+                <#=d.DT#> minutes = (degrees - degreesfloor) * 60.0<#=d.FP.Literal#>;
+                <#=d.DT#> minutesfloor = <#=d.DT.Math#>.Ceiling(minutes);
 
-                    <#=d.DT#> minutes = (degrees - degreesfloor) * 60.0<#=d.FP.Literal#>;
-                    <#=d.DT#> minutesfloor = <#=d.DT.Math#>.Ceiling(minutes);
-
-                    return (minutes - minutesfloor) * 60.0<#=d.FP.Literal#>;
-                }
-                else
-                {
-                    <#=d.DT#> degreesfloor = <#=d.DT.Math#>.Floor(degrees);
-
-                    <#=d.DT#> minutes = (degrees - degreesfloor) * 60.0<#=d.FP.Literal#>;
-                    <#=d.DT#> minutesfloor = <#=d.DT.Math#>.Floor(minutes);
-
-                    return (minutes - minutesfloor) * 60.0<#=d.FP.Literal#>;
-                }
+                return (minutes - minutesfloor) * 60.0<#=d.FP.Literal#>;
             }
-            set
+            else
             {
-                <#=d.DT#> degrees = MathHelper.RadiansToDegrees(Radians);
                 <#=d.DT#> degreesfloor = <#=d.DT.Math#>.Floor(degrees);
 
                 <#=d.DT#> minutes = (degrees - degreesfloor) * 60.0<#=d.FP.Literal#>;
                 <#=d.DT#> minutesfloor = <#=d.DT.Math#>.Floor(minutes);
 
-                minutesfloor += value / 60.0<#=d.FP.Literal#>;
-                degreesfloor += minutesfloor / 60.0<#=d.FP.Literal#>;
-                Radians = MathHelper.DegreesToRadians(degreesfloor);
+                return (minutes - minutesfloor) * 60.0<#=d.FP.Literal#>;
             }
         }
-
-        /// <summary>
-        /// Gets or sets the total number of milliradians this <#=gen.See()#> represents.
-        /// One milliradian is equal to 1/(2000π).
-        /// </summary>
-        public <#=d.DT#> Milliradians
+        set
         {
-            get => Radians / (Milliradian * <#=d.DT#>.Tau);
-            set => Radians = value * (Milliradian * <#=d.DT#>.Tau);
+            <#=d.DT#> degrees = MathHelper.RadiansToDegrees(Radians);
+            <#=d.DT#> degreesfloor = <#=d.DT.Math#>.Floor(degrees);
+
+            <#=d.DT#> minutes = (degrees - degreesfloor) * 60.0<#=d.FP.Literal#>;
+            <#=d.DT#> minutesfloor = <#=d.DT.Math#>.Floor(minutes);
+
+            minutesfloor += value / 60.0<#=d.FP.Literal#>;
+            degreesfloor += minutesfloor / 60.0<#=d.FP.Literal#>;
+            Radians = MathHelper.DegreesToRadians(degreesfloor);
         }
+    }
 
-        /// <summary>
-        /// Gets or sets the total number of gradians this <#=gen.See()#> represents.
-        /// </summary>
-        public <#=d.DT#> Gradians
-        {
-            get => MathHelper.RadiansToGradians(Radians);
-            set => Radians = MathHelper.RadiansToGradians(value);
-        }
+    /// <summary>
+    /// Gets or sets the total number of milliradians this <#=gen.See()#> represents.
+    /// One milliradian is equal to 1/(2000π).
+    /// </summary>
+    public <#=d.DT#> Milliradians
+    {
+        get => Radians / (Milliradian * <#=d.DT#>.Tau);
+        set => Radians = value * (Milliradian * <#=d.DT#>.Tau);
+    }
 
-        /// <summary>
-        /// Gets a System.Boolean that determines whether this <#=gen.See()#>
-        /// is a right angle (i.e. 90° or π/2).
-        /// </summary>
-        public bool IsRight => Radians == MathHelper.Constants<<#=d.DT#>>.PiOverTwo; 
+    /// <summary>
+    /// Gets or sets the total number of gradians this <#=gen.See()#> represents.
+    /// </summary>
+    public <#=d.DT#> Gradians
+    {
+        get => MathHelper.RadiansToGradians(Radians);
+        set => Radians = MathHelper.RadiansToGradians(value);
+    }
 
-        /// <summary>
-        /// Gets a System.Boolean that determines whether this <#=gen.See()#>
-        /// is a straight angle (i.e. 180° or π).
-        /// </summary>
-        public bool IsStraight => Radians == <#=d.DT#>.Pi;
+    /// <summary>
+    /// Gets a System.Boolean that determines whether this <#=gen.See()#>
+    /// is a right angle (i.e. 90° or π/2).
+    /// </summary>
+    public bool IsRight => Radians == MathHelper.Constants<<#=d.DT#>>.PiOverTwo; 
 
-        /// <summary>
-        /// Gets a System.Boolean that determines whether this <#=gen.See()#>
-        /// is a full rotation angle (i.e. 360° or 2π).
-        /// </summary>
-        public bool IsFullRotation => Radians == <#=d.DT#>.Tau;
+    /// <summary>
+    /// Gets a System.Boolean that determines whether this <#=gen.See()#>
+    /// is a straight angle (i.e. 180° or π).
+    /// </summary>
+    public bool IsStraight => Radians == <#=d.DT#>.Pi;
 
-        /// <summary>
-        /// Gets a System.Boolean that determines whether this <#=gen.See()#>
-        /// is an oblique angle (i.e. is not 90° or a multiple of 90°).
-        /// </summary>
-        public bool IsOblique => WrapPositive(this).Radians != MathHelper.Constants<<#=d.DT#>>.PiOverTwo; 
+    /// <summary>
+    /// Gets a System.Boolean that determines whether this <#=gen.See()#>
+    /// is a full rotation angle (i.e. 360° or 2π).
+    /// </summary>
+    public bool IsFullRotation => Radians == <#=d.DT#>.Tau;
 
-        /// <summary>
-        /// Gets a System.Boolean that determines whether this <#=gen.See()#>
-        /// is an acute angle (i.e. less than 90° but greater than 0°).
-        /// </summary>
-        public bool IsAcute => Radians > 0.0 && Radians < MathHelper.Constants<<#=d.DT#>>.PiOverTwo;
+    /// <summary>
+    /// Gets a System.Boolean that determines whether this <#=gen.See()#>
+    /// is an oblique angle (i.e. is not 90° or a multiple of 90°).
+    /// </summary>
+    public bool IsOblique => WrapPositive(this).Radians != MathHelper.Constants<<#=d.DT#>>.PiOverTwo; 
 
-        /// <summary>
-        /// Gets a System.Boolean that determines whether this <#=gen.See()#>
-        /// is an obtuse angle (i.e. greater than 90° but less than 180°).
-        /// </summary>
-        public bool IsObtuse => Radians > MathHelper.Constants<<#=d.DT#>>.PiOverTwo && Radians < <#=d.DT#>.Pi;
+    /// <summary>
+    /// Gets a System.Boolean that determines whether this <#=gen.See()#>
+    /// is an acute angle (i.e. less than 90° but greater than 0°).
+    /// </summary>
+    public bool IsAcute => Radians > 0.0 && Radians < MathHelper.Constants<<#=d.DT#>>.PiOverTwo;
 
-        /// <summary>
-        /// Gets a System.Boolean that determines whether this <#=gen.See()#>
-        /// is a reflex angle (i.e. greater than 180° but less than 360°).
-        /// </summary>
-        public bool IsReflex => Radians > <#=d.DT#>.Pi && Radians < <#=d.DT#>.Tau;
+    /// <summary>
+    /// Gets a System.Boolean that determines whether this <#=gen.See()#>
+    /// is an obtuse angle (i.e. greater than 90° but less than 180°).
+    /// </summary>
+    public bool IsObtuse => Radians > MathHelper.Constants<<#=d.DT#>>.PiOverTwo && Radians < <#=d.DT#>.Pi;
 
-        /// <summary>
-        /// Gets a <#=gen.See()#> instance that complements this angle (i.e. the two angles add to 90°).
-        /// </summary>
-        public <#=d.Name#> Complement => new <#=d.Name#>(MathHelper.Constants<<#=d.DT#>>.PiOverTwo - Radians, AngleType.Radian);
+    /// <summary>
+    /// Gets a System.Boolean that determines whether this <#=gen.See()#>
+    /// is a reflex angle (i.e. greater than 180° but less than 360°).
+    /// </summary>
+    public bool IsReflex => Radians > <#=d.DT#>.Pi && Radians < <#=d.DT#>.Tau;
 
-        /// <summary>
-        /// Gets a <#=gen.See()#> instance that supplements this angle (i.e. the two angles add to 180°).
-        /// </summary>
-        public <#=d.Name#> Supplement => new <#=d.Name#>(<#=d.DT#>.Pi - Radians, AngleType.Radian);
+    /// <summary>
+    /// Gets a <#=gen.See()#> instance that complements this angle (i.e. the two angles add to 90°).
+    /// </summary>
+    public <#=d.Name#> Complement => new <#=d.Name#>(MathHelper.Constants<<#=d.DT#>>.PiOverTwo - Radians, AngleType.Radian);
 
-        /// <summary>
-        /// Wraps the <#=gen.See()#> given in the value argument to be in the range [π, -π].
-        /// </summary>
-        /// <param name="value">A <#=gen.See()#> to wrap.</param>
-        /// <returns>The <#=gen.See()#> that is wrapped.</returns>
-        public static <#=d.Name#> Wrap(<#=d.Name#> value)
-        {
-            value.Wrap();
-            return value;
-        }
+    /// <summary>
+    /// Gets a <#=gen.See()#> instance that supplements this angle (i.e. the two angles add to 180°).
+    /// </summary>
+    public <#=d.Name#> Supplement => new <#=d.Name#>(<#=d.DT#>.Pi - Radians, AngleType.Radian);
 
-                /// <summary>
-        /// Wraps the <#=gen.See()#> given in the value argument to be in the range [π, -π].
-        /// </summary>
-        /// <param name="value">A <#=gen.See()#> to wrap.</param>
-        /// <returns>The <#=gen.See()#> that is wrapped.</returns>
-        public static <#=d.Name#> Wrap(ref <#=d.Name#> value)
-        {
-            value.Wrap();
-            return value;
-        }
+    /// <summary>
+    /// Wraps the <#=gen.See()#> given in the value argument to be in the range [π, -π].
+    /// </summary>
+    /// <param name="value">A <#=gen.See()#> to wrap.</param>
+    /// <returns>The <#=gen.See()#> that is wrapped.</returns>
+    public static <#=d.Name#> Wrap(<#=d.Name#> value)
+    {
+        value.Wrap();
+        return value;
+    }
 
-        /// <summary>
-        /// Wraps the <#=gen.See()#> given in the value argument to be in the range [0, 2π).
-        /// </summary>
-        /// <param name="value">A <#=gen.See()#> to wrap.</param>
-        /// <returns>The <#=gen.See()#> that is wrapped.</returns>
-        public static <#=d.Name#> WrapPositive(<#=d.Name#> value)
-        {
-            value.WrapPositive();
-            return value;
-        }
+            /// <summary>
+    /// Wraps the <#=gen.See()#> given in the value argument to be in the range [π, -π].
+    /// </summary>
+    /// <param name="value">A <#=gen.See()#> to wrap.</param>
+    /// <returns>The <#=gen.See()#> that is wrapped.</returns>
+    public static <#=d.Name#> Wrap(ref <#=d.Name#> value)
+    {
+        value.Wrap();
+        return value;
+    }
 
-                /// <summary>
-        /// Compares two <#=gen.See()#> instances and returns the smaller angle.
-        /// </summary>
-        /// <param name="left">The first <#=gen.See()#> instance to compare.</param>
-        /// <param name="right">The second <#=gen.See()#> instance to compare.</param>
-        /// <returns>The smaller of the two given <#=gen.See()#> instances.</returns>
-        public static <#=d.Name#> Min(ref <#=d.Name#> left, ref <#=d.Name#> right)
-        {
-            if (left.Radians < right.Radians)
-                return left;
+    /// <summary>
+    /// Wraps the <#=gen.See()#> given in the value argument to be in the range [0, 2π).
+    /// </summary>
+    /// <param name="value">A <#=gen.See()#> to wrap.</param>
+    /// <returns>The <#=gen.See()#> that is wrapped.</returns>
+    public static <#=d.Name#> WrapPositive(<#=d.Name#> value)
+    {
+        value.WrapPositive();
+        return value;
+    }
 
-            return right;
-        }
+            /// <summary>
+    /// Compares two <#=gen.See()#> instances and returns the smaller angle.
+    /// </summary>
+    /// <param name="left">The first <#=gen.See()#> instance to compare.</param>
+    /// <param name="right">The second <#=gen.See()#> instance to compare.</param>
+    /// <returns>The smaller of the two given <#=gen.See()#> instances.</returns>
+    public static <#=d.Name#> Min(ref <#=d.Name#> left, ref <#=d.Name#> right)
+    {
+        if (left.Radians < right.Radians)
+            return left;
 
-        /// <summary>
-        /// Compares two <#=gen.See()#> instances and returns the smaller angle.
-        /// </summary>
-        /// <param name="left">The first <#=gen.See()#> instance to compare.</param>
-        /// <param name="right">The second <#=gen.See()#> instance to compare.</param>
-        /// <returns>The smaller of the two given <#=gen.See()#> instances.</returns>
-        public static <#=d.Name#> Min(<#=d.Name#> left, <#=d.Name#> right)
-        {
-            if (left.Radians < right.Radians)
-                return left;
+        return right;
+    }
 
-            return right;
-        }
+    /// <summary>
+    /// Compares two <#=gen.See()#> instances and returns the smaller angle.
+    /// </summary>
+    /// <param name="left">The first <#=gen.See()#> instance to compare.</param>
+    /// <param name="right">The second <#=gen.See()#> instance to compare.</param>
+    /// <returns>The smaller of the two given <#=gen.See()#> instances.</returns>
+    public static <#=d.Name#> Min(<#=d.Name#> left, <#=d.Name#> right)
+    {
+        if (left.Radians < right.Radians)
+            return left;
 
-        /// <summary>
-        /// Compares two <#=gen.See()#> instances and returns the greater angle.
-        /// </summary>
-        /// <param name="left">The first <#=gen.See()#> instance to compare.</param>
-        /// <param name="right">The second <#=gen.See()#> instance to compare.</param>
-        /// <returns>The greater of the two given <#=gen.See()#> instances.</returns>
-        public static <#=d.Name#> Max(ref <#=d.Name#> left, ref <#=d.Name#> right)
-        {
-            if (left.Radians > right.Radians)
-                return left;
+        return right;
+    }
 
-            return right;
-        }
+    /// <summary>
+    /// Compares two <#=gen.See()#> instances and returns the greater angle.
+    /// </summary>
+    /// <param name="left">The first <#=gen.See()#> instance to compare.</param>
+    /// <param name="right">The second <#=gen.See()#> instance to compare.</param>
+    /// <returns>The greater of the two given <#=gen.See()#> instances.</returns>
+    public static <#=d.Name#> Max(ref <#=d.Name#> left, ref <#=d.Name#> right)
+    {
+        if (left.Radians > right.Radians)
+            return left;
 
-        /// <summary>
-        /// Compares two <#=gen.See()#> instances and returns the greater angle.
-        /// </summary>
-        /// <param name="left">The first <#=gen.See()#> instance to compare.</param>
-        /// <param name="right">The second <#=gen.See()#> instance to compare.</param>
-        /// <returns>The greater of the two given <#=gen.See()#> instances.</returns>
-        public static <#=d.Name#> Max(<#=d.Name#> left, <#=d.Name#> right)
-        {
-            if (left.Radians > right.Radians)
-                return left;
+        return right;
+    }
 
-            return right;
-        }
+    /// <summary>
+    /// Compares two <#=gen.See()#> instances and returns the greater angle.
+    /// </summary>
+    /// <param name="left">The first <#=gen.See()#> instance to compare.</param>
+    /// <param name="right">The second <#=gen.See()#> instance to compare.</param>
+    /// <returns>The greater of the two given <#=gen.See()#> instances.</returns>
+    public static <#=d.Name#> Max(<#=d.Name#> left, <#=d.Name#> right)
+    {
+        if (left.Radians > right.Radians)
+            return left;
 
-        /// <summary>
-        /// Adds two <#=gen.See()#> objects and returns the result.
-        /// </summary>
-        /// <param name="left">The first object to add.</param>
-        /// <param name="right">The second object to add.</param>
-        /// <returns>The value of the two objects added together.</returns>
-        public static <#=d.Name#> Add(ref <#=d.Name#> left, ref <#=d.Name#> right)
-        {
-            return new <#=d.Name#>(left.Radians + right.Radians, AngleType.Radian);
-        }
+        return right;
+    }
 
-        /// <summary>
-        /// Subtracts two <#=gen.See()#> objects and returns the result.
-        /// </summary>
-        /// <param name="left">The first object to subtract.</param>
-        /// <param name="right">The second object to subtract.</param>
-        /// <returns>The value of the two objects subtracted.</returns>
-        public static <#=d.Name#> Subtract(ref <#=d.Name#> left, ref <#=d.Name#> right)
-        {
-            return new <#=d.Name#>(left.Radians - right.Radians, AngleType.Radian);
-        }
+    /// <summary>
+    /// Adds two <#=gen.See()#> objects and returns the result.
+    /// </summary>
+    /// <param name="left">The first object to add.</param>
+    /// <param name="right">The second object to add.</param>
+    /// <returns>The value of the two objects added together.</returns>
+    public static <#=d.Name#> Add(ref <#=d.Name#> left, ref <#=d.Name#> right)
+    {
+        return new <#=d.Name#>(left.Radians + right.Radians, AngleType.Radian);
+    }
 
-        /// <summary>
-        /// Multiplies two <#=gen.See()#> objects and returns the result.
-        /// </summary>
-        /// <param name="left">The first object to multiply.</param>
-        /// <param name="right">The second object to multiply.</param>
-        /// <returns>The value of the two objects multiplied together.</returns>
-        public static <#=d.Name#> Multiply(ref <#=d.Name#> left, ref <#=d.Name#> right)
-        {
-            return new <#=d.Name#>(left.Radians * right.Radians, AngleType.Radian);
-        }
+    /// <summary>
+    /// Subtracts two <#=gen.See()#> objects and returns the result.
+    /// </summary>
+    /// <param name="left">The first object to subtract.</param>
+    /// <param name="right">The second object to subtract.</param>
+    /// <returns>The value of the two objects subtracted.</returns>
+    public static <#=d.Name#> Subtract(ref <#=d.Name#> left, ref <#=d.Name#> right)
+    {
+        return new <#=d.Name#>(left.Radians - right.Radians, AngleType.Radian);
+    }
 
-        /// <summary>
-        /// Divides two <#=gen.See()#> objects and returns the result.
-        /// </summary>
-        /// <param name="left">The numerator object.</param>
-        /// <param name="right">The denominator object.</param>
-        /// <returns>The value of the two objects divided.</returns>
-        public static <#=d.Name#> Divide(ref <#=d.Name#> left, ref <#=d.Name#> right)
-        {
-            return new <#=d.Name#>(left.Radians / right.Radians, AngleType.Radian);
-        }
+    /// <summary>
+    /// Multiplies two <#=gen.See()#> objects and returns the result.
+    /// </summary>
+    /// <param name="left">The first object to multiply.</param>
+    /// <param name="right">The second object to multiply.</param>
+    /// <returns>The value of the two objects multiplied together.</returns>
+    public static <#=d.Name#> Multiply(ref <#=d.Name#> left, ref <#=d.Name#> right)
+    {
+        return new <#=d.Name#>(left.Radians * right.Radians, AngleType.Radian);
+    }
 
-        /// <summary>
-        /// Gets a new <#=gen.See()#> instance that represents the zero angle (i.e. 0°).
-        /// </summary>
-        public static <#=d.Name#> ZeroAngle => new <#=d.Name#>(0.0<#=d.FP.Literal#>, AngleType.Radian); 
+    /// <summary>
+    /// Divides two <#=gen.See()#> objects and returns the result.
+    /// </summary>
+    /// <param name="left">The numerator object.</param>
+    /// <param name="right">The denominator object.</param>
+    /// <returns>The value of the two objects divided.</returns>
+    public static <#=d.Name#> Divide(ref <#=d.Name#> left, ref <#=d.Name#> right)
+    {
+        return new <#=d.Name#>(left.Radians / right.Radians, AngleType.Radian);
+    }
 
-        /// <summary>
-        /// Gets a new <#=gen.See()#> instance that represents the right angle (i.e. 90° or π/2).
-        /// </summary>
-        public static <#=d.Name#> RightAngle => new <#=d.Name#>(MathHelper.Constants<<#=d.DT#>>.PiOverTwo, AngleType.Radian);
+    /// <summary>
+    /// Gets a new <#=gen.See()#> instance that represents the zero angle (i.e. 0°).
+    /// </summary>
+    public static <#=d.Name#> ZeroAngle => new <#=d.Name#>(0.0<#=d.FP.Literal#>, AngleType.Radian); 
 
-        /// <summary>
-        /// Gets a new <#=gen.See()#> instance that represents the straight angle (i.e. 180° or π).
-        /// </summary>
-        public static <#=d.Name#> StraightAngle => new <#=d.Name#>(<#=d.DT#>.Pi, AngleType.Radian);
+    /// <summary>
+    /// Gets a new <#=gen.See()#> instance that represents the right angle (i.e. 90° or π/2).
+    /// </summary>
+    public static <#=d.Name#> RightAngle => new <#=d.Name#>(MathHelper.Constants<<#=d.DT#>>.PiOverTwo, AngleType.Radian);
 
-        /// <summary>
-        /// Gets a new <#=gen.See()#> instance that represents the full rotation angle (i.e. 360° or 2π).
-        /// </summary>
-        public static <#=d.Name#> FullRotationAngle => new <#=d.Name#>(<#=d.DT#>.Tau, AngleType.Radian);
+    /// <summary>
+    /// Gets a new <#=gen.See()#> instance that represents the straight angle (i.e. 180° or π).
+    /// </summary>
+    public static <#=d.Name#> StraightAngle => new <#=d.Name#>(<#=d.DT#>.Pi, AngleType.Radian);
 
-        /// <summary>
-        /// Returns a System.Boolean that indicates whether the values of two <#=gen.See()#>
-        /// objects are equal.
-        /// </summary>
-        /// <param name="left">The first object to compare.</param>
-        /// <param name="right">The second object to compare.</param>
-        /// <returns>True if the left and right parameters have the same value; otherwise, false.</returns>
-        public static bool operator ==(<#=d.Name#> left, <#=d.Name#> right)
-        {
-            return left.Radians == right.Radians;
-        }
+    /// <summary>
+    /// Gets a new <#=gen.See()#> instance that represents the full rotation angle (i.e. 360° or 2π).
+    /// </summary>
+    public static <#=d.Name#> FullRotationAngle => new <#=d.Name#>(<#=d.DT#>.Tau, AngleType.Radian);
 
-        /// <summary>
-        /// Returns a System.Boolean that indicates whether the values of two <#=gen.See()#>
-        /// objects are not equal.
-        /// </summary>
-        /// <param name="left">The first object to compare.</param>
-        /// <param name="right">The second object to compare.</param>
-        /// <returns>True if the left and right parameters do not have the same value; otherwise, false.</returns>
-        public static bool operator !=(<#=d.Name#> left, <#=d.Name#> right)
-        {
-            return left.Radians != right.Radians;
-        }
+    /// <summary>
+    /// Returns a System.Boolean that indicates whether the values of two <#=gen.See()#>
+    /// objects are equal.
+    /// </summary>
+    /// <param name="left">The first object to compare.</param>
+    /// <param name="right">The second object to compare.</param>
+    /// <returns>True if the left and right parameters have the same value; otherwise, false.</returns>
+    public static bool operator ==(<#=d.Name#> left, <#=d.Name#> right)
+    {
+        return left.Radians == right.Radians;
+    }
 
-        /// <summary>
-        /// Returns a System.Boolean that indicates whether a <#=gen.See()#>
-        /// object is less than another <#=gen.See()#> object.
-        /// </summary>
-        /// <param name="left">The first object to compare.</param>
-        /// <param name="right">The second object to compare.</param>
-        /// <returns>True if left is less than right; otherwise, false.</returns>
-        public static bool operator <(<#=d.Name#> left, <#=d.Name#> right)
-        {
-            return left.Radians < right.Radians;
-        }
+    /// <summary>
+    /// Returns a System.Boolean that indicates whether the values of two <#=gen.See()#>
+    /// objects are not equal.
+    /// </summary>
+    /// <param name="left">The first object to compare.</param>
+    /// <param name="right">The second object to compare.</param>
+    /// <returns>True if the left and right parameters do not have the same value; otherwise, false.</returns>
+    public static bool operator !=(<#=d.Name#> left, <#=d.Name#> right)
+    {
+        return left.Radians != right.Radians;
+    }
 
-        /// <summary>
-        /// Returns a System.Boolean that indicates whether a <#=gen.See()#>
-        /// object is greater than another <#=gen.See()#> object.
-        /// </summary>
-        /// <param name="left">The first object to compare.</param>
-        /// <param name="right">The second object to compare.</param>
-        /// <returns>True if left is greater than right; otherwise, false.</returns>
-        public static bool operator >(<#=d.Name#> left, <#=d.Name#> right)
-        {
-            return left.Radians > right.Radians;
-        }
+    /// <summary>
+    /// Returns a System.Boolean that indicates whether a <#=gen.See()#>
+    /// object is less than another <#=gen.See()#> object.
+    /// </summary>
+    /// <param name="left">The first object to compare.</param>
+    /// <param name="right">The second object to compare.</param>
+    /// <returns>True if left is less than right; otherwise, false.</returns>
+    public static bool operator <(<#=d.Name#> left, <#=d.Name#> right)
+    {
+        return left.Radians < right.Radians;
+    }
 
-        /// <summary>
-        /// Returns a System.Boolean that indicates whether a <#=gen.See()#>
-        /// object is less than or equal to another <#=gen.See()#> object.
-        /// </summary>
-        /// <param name="left">The first object to compare.</param>
-        /// <param name="right">The second object to compare.</param>
-        /// <returns>True if left is less than or equal to right; otherwise, false.</returns>
-        public static bool operator <=(<#=d.Name#> left, <#=d.Name#> right)
-        {
-            return left.Radians <= right.Radians;
-        }
+    /// <summary>
+    /// Returns a System.Boolean that indicates whether a <#=gen.See()#>
+    /// object is greater than another <#=gen.See()#> object.
+    /// </summary>
+    /// <param name="left">The first object to compare.</param>
+    /// <param name="right">The second object to compare.</param>
+    /// <returns>True if left is greater than right; otherwise, false.</returns>
+    public static bool operator >(<#=d.Name#> left, <#=d.Name#> right)
+    {
+        return left.Radians > right.Radians;
+    }
 
-        /// <summary>
-        /// Returns a System.Boolean that indicates whether a <#=gen.See()#>
-        /// object is greater than or equal to another <#=gen.See()#> object.
-        /// </summary>
-        /// <param name="left">The first object to compare.</param>
-        /// <param name="right">The second object to compare.</param>
-        /// <returns>True if left is greater than or equal to right; otherwise, false.</returns>
-        public static bool operator >=(<#=d.Name#> left, <#=d.Name#> right)
-        {
-            return left.Radians >= right.Radians;
-        }
+    /// <summary>
+    /// Returns a System.Boolean that indicates whether a <#=gen.See()#>
+    /// object is less than or equal to another <#=gen.See()#> object.
+    /// </summary>
+    /// <param name="left">The first object to compare.</param>
+    /// <param name="right">The second object to compare.</param>
+    /// <returns>True if left is less than or equal to right; otherwise, false.</returns>
+    public static bool operator <=(<#=d.Name#> left, <#=d.Name#> right)
+    {
+        return left.Radians <= right.Radians;
+    }
 
-        /// <summary>
-        /// Returns the value of the <#=gen.See()#> operand. (The sign of
-        /// the operand is unchanged.)
-        /// </summary>
-        /// <param name="value">A <#=gen.See()#> object.</param>
-        /// <returns>The value of the value parameter.</returns>
-        public static <#=d.Name#> operator +(<#=d.Name#> value)
-        {
-            return value;
-        }
+    /// <summary>
+    /// Returns a System.Boolean that indicates whether a <#=gen.See()#>
+    /// object is greater than or equal to another <#=gen.See()#> object.
+    /// </summary>
+    /// <param name="left">The first object to compare.</param>
+    /// <param name="right">The second object to compare.</param>
+    /// <returns>True if left is greater than or equal to right; otherwise, false.</returns>
+    public static bool operator >=(<#=d.Name#> left, <#=d.Name#> right)
+    {
+        return left.Radians >= right.Radians;
+    }
 
-        /// <summary>
-        /// Returns the the negated value of the <#=gen.See()#> operand.
-        /// </summary>
-        /// <param name="value">A <#=gen.See()#> object.</param>
-        /// <returns>The negated value of the value parameter.</returns>
-        public static <#=d.Name#> operator -(<#=d.Name#> value)
-        {
-            return new <#=d.Name#>(-value.Radians, AngleType.Radian);
-        }
+    /// <summary>
+    /// Returns the value of the <#=gen.See()#> operand. (The sign of
+    /// the operand is unchanged.)
+    /// </summary>
+    /// <param name="value">A <#=gen.See()#> object.</param>
+    /// <returns>The value of the value parameter.</returns>
+    public static <#=d.Name#> operator +(<#=d.Name#> value)
+    {
+        return value;
+    }
 
-        /// <summary>
-        /// Adds two <#=gen.See()#> objects and returns the result.
-        /// </summary>
-        /// <param name="left">The first object to add.</param>
-        /// <param name="right">The second object to add.</param>
-        /// <returns>The value of the two objects added together.</returns>
-        public static <#=d.Name#> operator +(<#=d.Name#> left, <#=d.Name#> right)
-        {
-            return new <#=d.Name#>(left.Radians + right.Radians, AngleType.Radian);
-        }
+    /// <summary>
+    /// Returns the the negated value of the <#=gen.See()#> operand.
+    /// </summary>
+    /// <param name="value">A <#=gen.See()#> object.</param>
+    /// <returns>The negated value of the value parameter.</returns>
+    public static <#=d.Name#> operator -(<#=d.Name#> value)
+    {
+        return new <#=d.Name#>(-value.Radians, AngleType.Radian);
+    }
 
-        /// <summary>
-        /// Subtracts two <#=gen.See()#> objects and returns the result.
-        /// </summary>
-        /// <param name="left">The first object to subtract</param>
-        /// <param name="right">The second object to subtract.</param>
-        /// <returns>The value of the two objects subtracted.</returns>
-        public static <#=d.Name#> operator -(<#=d.Name#> left, <#=d.Name#> right)
-        {
-            return new <#=d.Name#>(left.Radians - right.Radians, AngleType.Radian);
-        }
+    /// <summary>
+    /// Adds two <#=gen.See()#> objects and returns the result.
+    /// </summary>
+    /// <param name="left">The first object to add.</param>
+    /// <param name="right">The second object to add.</param>
+    /// <returns>The value of the two objects added together.</returns>
+    public static <#=d.Name#> operator +(<#=d.Name#> left, <#=d.Name#> right)
+    {
+        return new <#=d.Name#>(left.Radians + right.Radians, AngleType.Radian);
+    }
 
-        /// <summary>
-        /// Multiplies two <#=gen.See()#> objects and returns the result.
-        /// </summary>
-        /// <param name="left">The first object to multiply.</param>
-        /// <param name="right">The second object to multiply.</param>
-        /// <returns>The value of the two objects multiplied together.</returns>
-        public static <#=d.Name#> operator *(<#=d.Name#> left, <#=d.Name#> right)
-        {
-            return new <#=d.Name#>(left.Radians * right.Radians, AngleType.Radian);
-        }
+    /// <summary>
+    /// Subtracts two <#=gen.See()#> objects and returns the result.
+    /// </summary>
+    /// <param name="left">The first object to subtract</param>
+    /// <param name="right">The second object to subtract.</param>
+    /// <returns>The value of the two objects subtracted.</returns>
+    public static <#=d.Name#> operator -(<#=d.Name#> left, <#=d.Name#> right)
+    {
+        return new <#=d.Name#>(left.Radians - right.Radians, AngleType.Radian);
+    }
 
-        /// <summary>
-        /// Divides two <#=gen.See()#> objects and returns the result.
-        /// </summary>
-        /// <param name="left">The numerator object.</param>
-        /// <param name="right">The denominator object.</param>
-        /// <returns>The value of the two objects divided.</returns>
-        public static <#=d.Name#> operator /(<#=d.Name#> left, <#=d.Name#> right)
-        {
-            return new <#=d.Name#>(left.Radians / right.Radians, AngleType.Radian);
-        }
+    /// <summary>
+    /// Multiplies two <#=gen.See()#> objects and returns the result.
+    /// </summary>
+    /// <param name="left">The first object to multiply.</param>
+    /// <param name="right">The second object to multiply.</param>
+    /// <returns>The value of the two objects multiplied together.</returns>
+    public static <#=d.Name#> operator *(<#=d.Name#> left, <#=d.Name#> right)
+    {
+        return new <#=d.Name#>(left.Radians * right.Radians, AngleType.Radian);
+    }
 
-        /// <summary>
-        /// Compares this instance to a specified object and returns an integer that
-        /// indicates whether the value of this instance is less than, equal to, or greater
-        /// than the value of the specified object.
-        /// </summary>
-        /// <param name="other">The object to compare.</param>
-        /// <returns>
-        /// A signed integer that indicates the relationship of the current instance
-        /// to the obj parameter. If the value is less than zero, the current instance
-        /// is less than the other. If the value is zero, the current instance is equal
-        /// to the other. If the value is greater than zero, the current instance is
-        /// greater than the other.
-        /// </returns>
-        public int CompareTo(object other)
-        {
-            if (other == null)
-                return 1;
+    /// <summary>
+    /// Divides two <#=gen.See()#> objects and returns the result.
+    /// </summary>
+    /// <param name="left">The numerator object.</param>
+    /// <param name="right">The denominator object.</param>
+    /// <returns>The value of the two objects divided.</returns>
+    public static <#=d.Name#> operator /(<#=d.Name#> left, <#=d.Name#> right)
+    {
+        return new <#=d.Name#>(left.Radians / right.Radians, AngleType.Radian);
+    }
 
-            if (!(other is <#=d.Name#>))
-                throw new ArgumentException("Argument must be of type Angle.", "other");
+    /// <summary>
+    /// Compares this instance to a specified object and returns an integer that
+    /// indicates whether the value of this instance is less than, equal to, or greater
+    /// than the value of the specified object.
+    /// </summary>
+    /// <param name="other">The object to compare.</param>
+    /// <returns>
+    /// A signed integer that indicates the relationship of the current instance
+    /// to the obj parameter. If the value is less than zero, the current instance
+    /// is less than the other. If the value is zero, the current instance is equal
+    /// to the other. If the value is greater than zero, the current instance is
+    /// greater than the other.
+    /// </returns>
+    public int CompareTo(object other)
+    {
+        if (other == null)
+            return 1;
 
-            <#=d.DT#> rad = ((<#=d.Name#>)other).Radians;
+        if (!(other is <#=d.Name#>))
+            throw new ArgumentException("Argument must be of type Angle.", "other");
 
-            if (this.Radians > rad)
-                return 1;
+        <#=d.DT#> rad = ((<#=d.Name#>)other).Radians;
 
-            if (this.Radians < rad)
-                return -1;
+        if (this.Radians > rad)
+            return 1;
 
-            return 0;
-        }
+        if (this.Radians < rad)
+            return -1;
 
-        /// <summary>
-        /// Compares this instance to a second <#=gen.See()#> and returns
-        /// an integer that indicates whether the value of this instance is less than,
-        /// equal to, or greater than the value of the specified object.
-        /// </summary>
-        /// <param name="other">The object to compare.</param>
-        /// <returns>
-        /// A signed integer that indicates the relationship of the current instance
-        /// to the obj parameter. If the value is less than zero, the current instance
-        /// is less than the other. If the value is zero, the current instance is equal
-        /// to the other. If the value is greater than zero, the current instance is
-        /// greater than the other.
-        /// </returns>
-        public int CompareTo(<#=d.Name#> other)
-        {
-            if (this.Radians > other.Radians)
-                return 1;
+        return 0;
+    }
 
-            if (this.Radians < other.Radians)
-                return -1;
+    /// <summary>
+    /// Compares this instance to a second <#=gen.See()#> and returns
+    /// an integer that indicates whether the value of this instance is less than,
+    /// equal to, or greater than the value of the specified object.
+    /// </summary>
+    /// <param name="other">The object to compare.</param>
+    /// <returns>
+    /// A signed integer that indicates the relationship of the current instance
+    /// to the obj parameter. If the value is less than zero, the current instance
+    /// is less than the other. If the value is zero, the current instance is equal
+    /// to the other. If the value is greater than zero, the current instance is
+    /// greater than the other.
+    /// </returns>
+    public int CompareTo(<#=d.Name#> other)
+    {
+        if (this.Radians > other.Radians)
+            return 1;
 
-            return 0;
-        }
+        if (this.Radians < other.Radians)
+            return -1;
 
-        /// <summary>
-        /// Returns a value that indicates whether the current instance and a specified
-        /// <#=gen.See()#> object have the same value.
-        /// </summary>
-        /// <param name="other">The object to compare.</param>
-        /// <returns>
-        /// Returns true if this <#=gen.See()#> object and another have the same value;
-        /// otherwise, false.
-        /// </returns>
-        public bool Equals(<#=d.Name#> other)
-        {
-            return this == other;
-        }
+        return 0;
+    }
 
-        /// <summary>
-        /// Returns a <see cref="string"/> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="string"/> that represents this instance.
-        /// </returns>
-        public override string ToString()
-        {
-            return string.Format(CultureInfo.CurrentCulture, MathHelper.RadiansToDegrees(Radians).ToString("0.##°"));
-        }
+    /// <summary>
+    /// Returns a value that indicates whether the current instance and a specified
+    /// <#=gen.See()#> object have the same value.
+    /// </summary>
+    /// <param name="other">The object to compare.</param>
+    /// <returns>
+    /// Returns true if this <#=gen.See()#> object and another have the same value;
+    /// otherwise, false.
+    /// </returns>
+    public bool Equals(<#=d.Name#> other)
+    {
+        return this == other;
+    }
 
-        /// <summary>
-        /// Returns a <see cref="string"/> that represents this instance.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <returns>
-        /// A <see cref="string"/> that represents this instance.
-        /// </returns>
-        public string ToString(string format)
-        {
-            if (format == null)
-                return ToString();
+    /// <summary>
+    /// Returns a <see cref="string"/> that represents this instance.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="string"/> that represents this instance.
+    /// </returns>
+    public override string ToString()
+    {
+        return string.Format(CultureInfo.CurrentCulture, MathHelper.RadiansToDegrees(Radians).ToString("0.##°"));
+    }
 
-            return string.Format(CultureInfo.CurrentCulture, "{0}°", MathHelper.RadiansToDegrees(Radians).ToString(format, CultureInfo.CurrentCulture));
-        }
+    /// <summary>
+    /// Returns a <see cref="string"/> that represents this instance.
+    /// </summary>
+    /// <param name="format">The format.</param>
+    /// <returns>
+    /// A <see cref="string"/> that represents this instance.
+    /// </returns>
+    public string ToString(string format)
+    {
+        if (format == null)
+            return ToString();
 
-        /// <summary>
-        /// Returns a <see cref="string"/> that represents this instance.
-        /// </summary>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <returns>
-        /// A <see cref="string"/> that represents this instance.
-        /// </returns>
-        public string ToString(IFormatProvider formatProvider)
-        {
-            return string.Format(formatProvider, MathHelper.RadiansToDegrees(Radians).ToString("0.##°"));
-        }
+        return string.Format(CultureInfo.CurrentCulture, "{0}°", MathHelper.RadiansToDegrees(Radians).ToString(format, CultureInfo.CurrentCulture));
+    }
 
-        /// <summary>
-        /// Returns a <see cref="string"/> that represents this instance.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <returns>
-        /// A <see cref="string"/> that represents this instance.
-        /// </returns>
-        public string ToString(string format, IFormatProvider formatProvider)
-        {
-            if (format == null)
-                return ToString(formatProvider);
+    /// <summary>
+    /// Returns a <see cref="string"/> that represents this instance.
+    /// </summary>
+    /// <param name="formatProvider">The format provider.</param>
+    /// <returns>
+    /// A <see cref="string"/> that represents this instance.
+    /// </returns>
+    public string ToString(IFormatProvider formatProvider)
+    {
+        return string.Format(formatProvider, MathHelper.RadiansToDegrees(Radians).ToString("0.##°"));
+    }
 
-            return string.Format(formatProvider, "{0}°", MathHelper.RadiansToDegrees(Radians).ToString(format, CultureInfo.CurrentCulture));
-        }
+    /// <summary>
+    /// Returns a <see cref="string"/> that represents this instance.
+    /// </summary>
+    /// <param name="format">The format.</param>
+    /// <param name="formatProvider">The format provider.</param>
+    /// <returns>
+    /// A <see cref="string"/> that represents this instance.
+    /// </returns>
+    public string ToString(string format, IFormatProvider formatProvider)
+    {
+        if (format == null)
+            return ToString(formatProvider);
 
-        /// <summary>
-        /// Returns a hash code for this <#=gen.See()#> instance.
-        /// </summary>
-        /// <returns>A 32-bit signed integer hash code.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override int GetHashCode()
-        {
-            return Radians.GetHashCode();
-        }
+        return string.Format(formatProvider, "{0}°", MathHelper.RadiansToDegrees(Radians).ToString(format, CultureInfo.CurrentCulture));
+    }
 
-        /// <summary>
-        /// Returns a value that indicates whether the current instance and a specified
-        /// object have the same value.
-        /// </summary>
-        /// <param name="obj">The object to compare.</param>
-        /// <returns>
-        /// Returns true if the obj parameter is a <#=gen.See()#> object or a type
-        /// capable of implicit conversion to a <#=gen.See()#> value, and
-        /// its value is equal to the value of the current <#=gen.See()#>
-        /// object; otherwise, false.
-        /// </returns>
-        public override bool Equals(object obj)
-        {
-            return (obj is <#=d.Name#>) && (this == (<#=d.Name#>)obj);
-        }
-	}
+    /// <summary>
+    /// Returns a hash code for this <#=gen.See()#> instance.
+    /// </summary>
+    /// <returns>A 32-bit signed integer hash code.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public override int GetHashCode()
+    {
+        return Radians.GetHashCode();
+    }
+
+    /// <summary>
+    /// Returns a value that indicates whether the current instance and a specified
+    /// object have the same value.
+    /// </summary>
+    /// <param name="obj">The object to compare.</param>
+    /// <returns>
+    /// Returns true if the obj parameter is a <#=gen.See()#> object or a type
+    /// capable of implicit conversion to a <#=gen.See()#> value, and
+    /// its value is equal to the value of the current <#=gen.See()#>
+    /// object; otherwise, false.
+    /// </returns>
+    public override bool Equals(object obj)
+    {
+        return (obj is <#=d.Name#>) && (this == (<#=d.Name#>)obj);
+    }
 }
 <#
 });
