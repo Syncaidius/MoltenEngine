@@ -300,7 +300,7 @@ namespace Molten.Graphics
         /// <param name="resource"></param>
         /// <param name="op"></param>
         public void PushTask<T>(GraphicsPriority priority, GraphicsResource resource, T op)
-            where T : IGraphicsResourceTask
+            where T : IGraphicsResourceTask, new()
         {
             switch (priority)
             {

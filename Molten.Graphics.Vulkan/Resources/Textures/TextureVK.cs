@@ -224,11 +224,6 @@ namespace Molten.Graphics.Vulkan
             }
         }
 
-        protected override void OnGenerateMipMaps(GraphicsQueue queue)
-        {
-            throw new NotImplementedException();
-        }
-
         protected abstract void SetCreateInfo(DeviceVK device, ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo);
 
         protected override void OnGraphicsRelease()

@@ -9,11 +9,7 @@ public interface ITexture : IGraphicsResource
     /// </summary>
     event TextureHandler OnResize;
 
-    /// <summary>
-    /// Generates any missing mip-maps for a texture, if allowed.
-    /// </summary>
-    /// <param name="priority">The priority of the copy operation.</param>
-    /// <param name="completeCallback">A callback to run once the operation has completed.</param>
+
     void GenerateMipMaps(GraphicsPriority priority, Action<GraphicsResource> completeCallback = null);
 
     /// <summary>Copies data fom the provided <see cref="TextureData"/> instance into the current texture.</summary>

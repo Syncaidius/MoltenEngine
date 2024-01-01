@@ -269,19 +269,19 @@ public void Resize(GraphicsPriority priority, uint newWidth)
 
     protected abstract void OnResizeTexture(in TextureDimensions dimensions, GraphicsFormat format, uint frameBufferSize, uint frameBufferIndex, ulong frameID);
 
-    /// <summary>Generates mip maps for the texture via the provided <see cref="GraphicsTexture"/>.</summary>
-    public void GenerateMipMaps(GraphicsPriority priority, Action<GraphicsResource> completionCallback = null)
+    /// <summary>Generates mip maps for the texture via the current <see cref="GraphicsTexture"/>, if allowed.</summary>
+    /// <param name="priority">The priority of the copy operation.</param>
+    /// <param name="callback">A callback to run once the operation has completed.</param>
+    public void GenerateMipMaps(GraphicsPriority priority, Action<GraphicsResource> callback = null)
     {
         if (!IsMipMapGenAllowed)
             throw new Exception("Cannot generate mip-maps for texture. Must have flag: TextureFlags.AllowMipMapGeneration.");
 
         Device.Renderer.PushTask(priority, this, new GenerateMipMapsTask()
         {
-            OnCompleted = completionCallback
+            OnCompleted = callback
         });
     }
-
-    protected internal abstract void OnGenerateMipMaps(GraphicsQueue queue);
 
     /// <summary>Gets whether or not the texture is using a supported block-compressed format.</summary>
     public bool IsBlockCompressed { get; protected set; }

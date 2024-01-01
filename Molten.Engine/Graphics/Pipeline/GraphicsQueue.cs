@@ -257,6 +257,10 @@
 
         protected abstract GraphicsBindResult DoComputePass(HlslPass pass);
 
+        /// <summary>Generates mip maps for the texture via the provided <see cref="GraphicsTexture"/>, if allowed.</summary>
+        /// <param name="texture">The target texture for mip-map generation.</param>
+        protected internal abstract void GenerateMipMaps(GraphicsResource texture);
+
         /// <summary>Draw non-indexed, non-instanced primitives. 
         /// All queued compute shader dispatch requests are also processed</summary>
         /// <param name="shader">The <see cref="HlslShader"/> to apply when drawing.</param>

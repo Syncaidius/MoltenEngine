@@ -6,7 +6,7 @@
 
         public unsafe bool Process(GraphicsQueue cmd, GraphicsResource resource)
         {
-            (resource as GraphicsTexture).OnGenerateMipMaps(cmd);
+            cmd.GenerateMipMaps(resource);
             OnCompleted?.Invoke(resource);
 
             return true;

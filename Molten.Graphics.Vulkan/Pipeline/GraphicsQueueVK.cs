@@ -165,6 +165,11 @@ namespace Molten.Graphics.Vulkan
             throw new NotImplementedException();
         }
 
+        protected override void GenerateMipMaps(GraphicsResource texture)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Queues a texture memory barrier.
         /// </summary>

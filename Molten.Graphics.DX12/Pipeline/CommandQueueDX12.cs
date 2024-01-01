@@ -37,6 +37,11 @@ namespace Molten.Graphics.DX12
             _ptr = (ID3D12CommandQueue*)cmdQueue;
         }
 
+        protected override void GenerateMipMaps(GraphicsResource texture)
+        {
+            throw new NotImplementedException();
+        }
+
         protected override void OnResetState()
         {
             throw new NotImplementedException();

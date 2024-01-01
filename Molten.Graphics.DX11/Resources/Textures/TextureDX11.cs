@@ -175,12 +175,6 @@ public unsafe abstract partial class TextureDX11 : GraphicsTexture
             _handles[i].Dispose();
     }
 
-    protected override void OnGenerateMipMaps(GraphicsQueue cmd)
-    {
-        if (_curHandle.Ptr != null)
-            (cmd as GraphicsQueueDX11).Ptr->GenerateMips(_curHandle.SRV);
-    }
-
     protected abstract void UpdateDescription(TextureDimensions dimensions, GraphicsFormat newFormat);
 
     /// <summary>Gets the format of the texture.</summary>
