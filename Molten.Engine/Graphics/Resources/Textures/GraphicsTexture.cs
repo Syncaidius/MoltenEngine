@@ -269,50 +269,6 @@ public void Resize(GraphicsPriority priority, uint newWidth)
 
     protected abstract void OnResizeTexture(in TextureDimensions dimensions, GraphicsFormat format, uint frameBufferSize, uint frameBufferIndex, ulong frameID);
 
-    public void CopyTo(GraphicsPriority priority,
-        uint sourceLevel, uint sourceSlice,
-        GraphicsTexture destination, uint destLevel, uint destSlice,
-        Action<GraphicsResource> completeCallback = null)
-    {
-        if (!Flags.Has(GraphicsResourceFlags.GpuRead))
-            throw new ResourceCopyException(this, destination, "The current texture cannot be copied from because the GraphicsResourceFlags.GpuRead flag was not set.");
-
-        if (!destination.Flags.Has(GraphicsResourceFlags.GpuWrite))
-            throw new ResourceCopyException(this, destination, "The destination texture cannot be copied to because the GraphicsResourceFlags.GpuWrite flag was not set.");
-
-        if (ResourceFormat != destination.ResourceFormat)
-            throw new ResourceCopyException(this, destination, "The source and destination texture formats do not match.");
-
-        // Validate dimensions.
-        // TODO this should only test the source and destination level dimensions, not the textures themselves.
-        if (destination.Width != Width ||
-            destination.Height != Height ||
-            destination.Depth != Depth)
-            throw new ResourceCopyException(this, destination, "The source and destination textures must have the same dimensions.");
-
-        if (sourceLevel >= MipMapCount)
-            throw new ResourceCopyException(this, destination, "The source mip-map level exceeds the total number of levels in the source texture.");
-
-        if (sourceSlice >= ArraySize)
-            throw new ResourceCopyException(this, destination, "The source array slice exceeds the total number of slices in the source texture.");
-
-        if (destLevel >= destination.MipMapCount)
-            throw new ResourceCopyException(this, destination, "The destination mip-map level exceeds the total number of levels in the destination texture.");
-
-        if (destSlice >= destination.ArraySize)
-            throw new ResourceCopyException(this, destination, "The destination array slice exceeds the total number of slices in the destination texture.");
-
-        Device.Renderer.PushTask(priority, this, new SubResourceCopyTask()
-        {
-            SrcRegion = null,
-            SrcSubResource = (sourceSlice * MipMapCount) + sourceLevel,
-            DestResource = destination,
-            DestStart = Vector3UI.Zero,
-            DestSubResource = (destSlice * destination.MipMapCount) + destLevel,
-            CompletionCallback = completeCallback,
-        });
-    }
-
     /// <summary>Generates mip maps for the texture via the provided <see cref="GraphicsTexture"/>.</summary>
     public void GenerateMipMaps(GraphicsPriority priority, Action<GraphicsResource> completionCallback = null)
     {

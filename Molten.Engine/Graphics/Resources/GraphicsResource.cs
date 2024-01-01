@@ -1,6 +1,6 @@
 ﻿using Molten.Collections;
 
-namespace Molten.Graphics
+namespace Molten.Graphics;
 {
     public abstract class GraphicsResource : GraphicsObject, IGraphicsResource
     {
@@ -146,16 +146,23 @@ namespace Molten.Graphics
                 throw new ResourceCopyException(this, destination, "Destination resource must have the GraphicsResourceFlags.GpuWrite flag set.");
 
             // If copying between two images, do a format and bounds check
-            if (this is GraphicsTexture srcTex && destination is GraphicsTexture destTex)
+            if (this is GraphicsTexture srcTex)
             {
-                // Validate dimensions.
-                if (destTex.Width != srcTex.Width ||
-                    destTex.Height != srcTex.Height ||
-                    destTex.Depth != srcTex.Depth)
-                    throw new ResourceCopyException(this, destination, "The source and destination textures must have the same dimensions.");
+                if (destination is GraphicsTexture destTex)
+                {
+                    if (ResourceFormat != destination.ResourceFormat)
+                        throw new ResourceCopyException(this, destination, "The source and destination texture formats do not match.");
 
-                if (ResourceFormat != destination.ResourceFormat)
-                    throw new ResourceCopyException(this, destination, "The source and destination texture formats do not match.");
+                    // Validate dimensions.
+                    if (destTex.Width != srcTex.Width ||
+                        destTex.Height != srcTex.Height ||
+                        destTex.Depth != srcTex.Depth)
+                        throw new ResourceCopyException(this, destination, "The source and destination textures must have the same dimensions.");
+                }
+                else
+                {
+                    throw new NotImplementedException("Copying a texture to a non-texture is currently unsupported.");
+                }
             }
             else if (this is GraphicsBuffer && destination is GraphicsBuffer)
             {
@@ -168,6 +175,71 @@ namespace Molten.Graphics
                 Destination = destination,
                 CompletionCallback = completeCallback,
             });
+        }
+
+        /// <summary>
+        /// Copies a sub-resource from the current <see cref="GraphicsResource"/> to the sub-resource of the destination <see cref="GraphicsResource"/>.
+        /// </summary>
+        /// <param name="priority"></param>
+        /// <param name="sourceLevel"></param>
+        /// <param name="sourceSlice"></param>
+        /// <param name="destination"></param>
+        /// <param name="destLevel"></param>
+        /// <param name="destSlice"></param>
+        /// <param name="completeCallback"></param>
+        /// <exception cref="ResourceCopyException"></exception>
+        public void CopyTo(GraphicsPriority priority,
+        uint sourceLevel, uint sourceSlice,
+        GraphicsResource destination, uint destLevel, uint destSlice,
+        Action<GraphicsResource> completeCallback = null)
+        {
+            if (!Flags.Has(GraphicsResourceFlags.GpuRead))
+                throw new ResourceCopyException(this, destination, "The current texture cannot be copied from because the GraphicsResourceFlags.GpuRead flag was not set.");
+
+            if (!destination.Flags.Has(GraphicsResourceFlags.GpuWrite))
+                throw new ResourceCopyException(this, destination, "The destination texture cannot be copied to because the GraphicsResourceFlags.GpuWrite flag was not set.");
+
+            // Validate dimensions.
+            // TODO this should only test the source and destination level dimensions, not the textures themselves.
+            if (this is GraphicsTexture srcTex)
+            {
+                if (destination is GraphicsTexture destTex)
+                {
+                    if (ResourceFormat != destination.ResourceFormat)
+                        throw new ResourceCopyException(this, destination, "The source and destination texture formats do not match.");
+
+                    if (destTex.Width != srcTex.Width ||
+                        destTex.Height != srcTex.Height ||
+                        destTex.Depth != srcTex.Depth)
+                        throw new ResourceCopyException(this, destination, "The source and destination textures must have the same dimensions.");
+
+                    if (sourceLevel >= srcTex.MipMapCount)
+                        throw new ResourceCopyException(this, destination, "The source mip-map level exceeds the total number of levels in the source texture.");
+
+                    if (sourceSlice >= srcTex.ArraySize)
+                        throw new ResourceCopyException(this, destination, "The source array slice exceeds the total number of slices in the source texture.");
+
+                    if (destLevel >= destTex.MipMapCount)
+                        throw new ResourceCopyException(this, destination, "The destination mip-map level exceeds the total number of levels in the destination texture.");
+
+                    if (destSlice >= destTex.ArraySize)
+                        throw new ResourceCopyException(this, destination, "The destination array slice exceeds the total number of slices in the destination texture.");
+
+                    Device.Renderer.PushTask(priority, this, new SubResourceCopyTask()
+                    {
+                        SrcRegion = null,
+                        SrcSubResource = (sourceSlice * srcTex.MipMapCount) + sourceLevel,
+                        DestResource = destination,
+                        DestStart = Vector3UI.Zero,
+                        DestSubResource = (destSlice * destTex.MipMapCount) + destLevel,
+                        CompletionCallback = completeCallback,
+                    });
+                }
+                else
+                {
+                    throw new NotImplementedException("Copying a texture to a non-texture is currently unsupported.");
+                }
+            }
         }
 
         internal void Clear()
