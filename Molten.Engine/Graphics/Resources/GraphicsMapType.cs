@@ -1,11 +1,10 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics;
+
+public enum GraphicsMapType
 {
-    public enum GraphicsMapType
-    {
-        Read = 0,
+    Read = 0,
 
-        Write = 1,
+    Write = 1,
 
-        Discard = 2,
-    }
+    Discard = 2,
 }

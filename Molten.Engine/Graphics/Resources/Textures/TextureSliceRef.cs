@@ -1,40 +1,39 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics;
+
+public abstract unsafe class TextureSliceRef
 {
-    public abstract unsafe class TextureSliceRef
+    internal abstract void UpdateReference();
+}
+
+public unsafe class TextureSliceRef<T> : TextureSliceRef
+    where T : unmanaged
+{
+    T* _refData;
+
+    internal TextureSliceRef(TextureSlice slice)
     {
-        internal abstract void UpdateReference();
+        Slice = slice;
+        UpdateReference();
     }
 
-    public unsafe class TextureSliceRef<T> : TextureSliceRef
-        where T : unmanaged
+    internal override void UpdateReference()
     {
-        T* _refData;
-
-        internal TextureSliceRef(TextureSlice slice)
-        {
-            Slice = slice;
-            UpdateReference();
-        }
-
-        internal override void UpdateReference()
-        {
-            _refData = (T*)Slice.Data;
-        }
-
-        public ref T this[uint p] => ref _refData[p];
-
-        public ref T this[int p] => ref _refData[p];
-
-        public T* this[uint x, uint y] => _refData + (Slice.Width * y + x);
-
-        public T* this[int x, int y] => _refData + (Slice.Width * y + x);
-
-        public T* Data => _refData;
-
-        public uint Width => Slice.Width;
-
-        public uint Height => Slice.Height;
-
-        public TextureSlice Slice { get; }
+        _refData = (T*)Slice.Data;
     }
+
+    public ref T this[uint p] => ref _refData[p];
+
+    public ref T this[int p] => ref _refData[p];
+
+    public T* this[uint x, uint y] => _refData + (Slice.Width * y + x);
+
+    public T* this[int x, int y] => _refData + (Slice.Width * y + x);
+
+    public T* Data => _refData;
+
+    public uint Width => Slice.Width;
+
+    public uint Height => Slice.Height;
+
+    public TextureSlice Slice { get; }
 }

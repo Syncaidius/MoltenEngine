@@ -1,22 +1,21 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics;
+
+public unsafe abstract class GraphicsResourceHandle : IDisposable
 {
-    public unsafe abstract class GraphicsResourceHandle : IDisposable
+    public abstract void Dispose();
+
+    protected GraphicsResourceHandle(GraphicsResource resource)
     {
-        public abstract void Dispose();
-
-        protected GraphicsResourceHandle(GraphicsResource resource)
-        {
-            Resource = resource;
-        }
-
-        /// <summary>
-        /// Gets the <see cref="GraphicsResource"/> that this handle is associated with.
-        /// </summary>
-        public GraphicsResource Resource { get; }
-
-        /// <summary>
-        /// Gets a pointer to the underlying native resource.
-        /// </summary>
-        public abstract void* Ptr { get; }
+        Resource = resource;
     }
+
+    /// <summary>
+    /// Gets the <see cref="GraphicsResource"/> that this handle is associated with.
+    /// </summary>
+    public GraphicsResource Resource { get; }
+
+    /// <summary>
+    /// Gets a pointer to the underlying native resource.
+    /// </summary>
+    public abstract void* Ptr { get; }
 }

@@ -1,18 +1,17 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics;
+
+public struct ResourceMap
 {
-    public struct ResourceMap
+    public unsafe void* Ptr;
+
+    public uint RowPitch;
+
+    public uint DepthPitch;
+
+    public unsafe ResourceMap(void* ptr, uint rowPitch, uint depthPitch)
     {
-        public unsafe void* Ptr;
-
-        public uint RowPitch;
-
-        public uint DepthPitch;
-
-        public unsafe ResourceMap(void* ptr, uint rowPitch, uint depthPitch)
-        {
-            Ptr = ptr;
-            RowPitch = rowPitch;
-            DepthPitch = depthPitch;
-        }
+        Ptr = ptr;
+        RowPitch = rowPitch;
+        DepthPitch = depthPitch;
     }
 }
