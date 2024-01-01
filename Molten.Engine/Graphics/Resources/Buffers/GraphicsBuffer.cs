@@ -109,17 +109,6 @@
             });
         }
 
-        public void GetStream(GraphicsPriority priority, GraphicsMapType mapType, Action<GraphicsBuffer, GraphicsStream> callback, GraphicsBuffer staging = null)
-        {
-            Device.Renderer.PushTask(priority, this, new BufferGetStreamTask()
-            {
-                ByteOffset = 0,
-                Staging = staging,
-                StreamCallback = callback,
-                MapType = mapType,
-            });
-        }
-
         /// <summary>
         /// Gets the stride (byte size) of each element within the current <see cref="GraphicsBuffer"/>.
         /// </summary>
