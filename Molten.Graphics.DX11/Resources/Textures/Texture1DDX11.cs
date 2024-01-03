@@ -15,10 +15,9 @@ namespace Molten.Graphics.DX11
             GraphicsFormat format = GraphicsFormat.R8G8B8A8_UNorm, 
             uint mipCount = 1, 
             uint arraySize = 1,
-            bool allowMipMapGen = false,
             string name = null)
             : base(device, GraphicsTextureType.Texture1D, new TextureDimensions(width, 1, 1, mipCount, arraySize), 
-                  AntiAliasLevel.None, MSAAQuality.Default, format, flags, allowMipMapGen, name)
+                  AntiAliasLevel.None, MSAAQuality.Default, format, flags, name)
         {
             if (IsBlockCompressed)
                 throw new NotSupportedException("1D textures do not supports block-compressed formats.");
@@ -32,7 +31,7 @@ namespace Molten.Graphics.DX11
                 BindFlags = (uint)GetBindFlags(),
                 CPUAccessFlags = (uint)Flags.ToCpuFlags(),
                 Usage = Flags.ToUsageFlags(),
-                MiscFlags = (uint)Flags.ToMiscFlags(allowMipMapGen),
+                MiscFlags = (uint)Flags.ToMiscFlags(),
             };
         }
 

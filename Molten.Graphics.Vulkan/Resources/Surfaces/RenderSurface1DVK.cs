@@ -14,9 +14,8 @@
         /// <param name="allowMipMapGen">If true, the generation of mip-maps will be allowed on the current <see cref="RenderSurface2DVK"/> instance.</param>
         /// <param name="name"></param>
         public RenderSurface1DVK(DeviceVK device, uint width, uint mipCount, uint arraySize, 
-            GraphicsFormat format, GraphicsResourceFlags flags, 
-            bool allowMipMapGen, string name) : 
-            base(device, width, mipCount, arraySize, format, flags, allowMipMapGen, name, true)
+            GraphicsFormat format, GraphicsResourceFlags flags, string name) : 
+            base(device, width, mipCount, arraySize, format, flags, name, true)
         {
             Viewport = new ViewportF(0, 0, Width, 1);
         }

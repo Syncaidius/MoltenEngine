@@ -18,9 +18,8 @@ namespace Molten.Graphics.DX11
             uint arraySize = 1,
             AntiAliasLevel aaLevel = AntiAliasLevel.None,
             MSAAQuality msaa = MSAAQuality.Default,
-            bool allowMipMapGen = false,
             string name = null)
-            : base(device, GraphicsTextureType.Texture2D, new TextureDimensions(width, height, 1, mipCount, arraySize), aaLevel, msaa, format, flags, allowMipMapGen, name)
+            : base(device, GraphicsTextureType.Texture2D, new TextureDimensions(width, height, 1, mipCount, arraySize), aaLevel, msaa, format, flags, name)
         {
             Desc = new Texture2DDesc1()
             {
@@ -33,7 +32,7 @@ namespace Molten.Graphics.DX11
                 CPUAccessFlags = (uint)Flags.ToCpuFlags(),
                 SampleDesc = new SampleDesc((uint)aaLevel, (uint)msaa),
                 Usage = Flags.ToUsageFlags(),
-                MiscFlags = (uint)Flags.ToMiscFlags(allowMipMapGen),
+                MiscFlags = (uint)Flags.ToMiscFlags(),
                 TextureLayout = TextureLayout.LayoutUndefined,
             };
         }

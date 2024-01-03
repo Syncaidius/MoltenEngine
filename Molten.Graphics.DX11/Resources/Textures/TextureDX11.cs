@@ -25,9 +25,8 @@ public unsafe abstract partial class TextureDX11 : GraphicsTexture
         MSAAQuality sampleQuality, 
         GraphicsFormat format, 
         GraphicsResourceFlags flags, 
-        bool allowMipMapGen, 
         string name) :
-        base(device, type, dimensions, aaLevel, sampleQuality, format, flags | GraphicsResourceFlags.GpuRead, allowMipMapGen, name)
+        base(device, type, dimensions, aaLevel, sampleQuality, format, flags | GraphicsResourceFlags.GpuRead, name)
     {
         Device = device;
         _oldHandles = new List<ResourceHandleDX11<ID3D11Resource>>();

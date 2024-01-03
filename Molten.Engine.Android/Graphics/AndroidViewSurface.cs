@@ -245,6 +245,11 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
+        public void CopyTo(GraphicsPriority priority, uint sourceLevel, uint sourceSlice, GraphicsResource destination, uint destLevel, uint destSlice, Action<GraphicsResource> completeCallback = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public string Title
         {
             get => TargetActivity.UnderlyingActivity.Title;

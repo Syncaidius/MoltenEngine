@@ -19,11 +19,10 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
     GraphicsFormat _format;
 
     protected GraphicsTexture(GraphicsDevice device, GraphicsTextureType type, TextureDimensions dimensions, AntiAliasLevel aaLevel, 
-        MSAAQuality sampleQuality, GraphicsFormat format, GraphicsResourceFlags flags, bool allowMipMapGen, string name) 
+        MSAAQuality sampleQuality, GraphicsFormat format, GraphicsResourceFlags flags, string name) 
         : base(device, flags)
     {
         LastFrameResizedID = device.Renderer.FrameID;
-        IsMipMapGenAllowed = allowMipMapGen;
         ValidateFlags();
 
         MSAASupport msaaSupport = MSAASupport.NotSupported; // TODO re-support. _renderer.Device.Features.GetMSAASupport(format, aaLevel);
@@ -45,7 +44,7 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
     protected override void ValidateFlags()
     {
         // Validate RT mip-maps
-        if (IsMipMapGenAllowed)
+        if (Flags.Has(GraphicsResourceFlags.MipMapGeneration))
         {
             if (Flags.Has(GraphicsResourceFlags.NoShaderAccess) || !(this is IRenderSurface2D))
                 throw new GraphicsResourceException(this, "Mip-map generation is only available on render-surface shader resources.");
@@ -274,7 +273,7 @@ public void Resize(GraphicsPriority priority, uint newWidth)
     /// <param name="callback">A callback to run once the operation has completed.</param>
     public void GenerateMipMaps(GraphicsPriority priority, Action<GraphicsResource> callback = null)
     {
-        if (!IsMipMapGenAllowed)
+        if (!Flags.Has(GraphicsResourceFlags.MipMapGeneration))
             throw new Exception("Cannot generate mip-maps for texture. Must have flag: TextureFlags.AllowMipMapGeneration.");
 
         Device.Renderer.PushTask(priority, this, new GenerateMipMapsTask()
@@ -323,8 +322,6 @@ public void Resize(GraphicsPriority priority, uint newWidth)
     public bool IsMultisampled => MultiSampleLevel >= AntiAliasLevel.X2;
 
     public MSAAQuality SampleQuality { get; protected set; }
-
-    public bool IsMipMapGenAllowed { get; }
 
     /// <inheritdoc/>
     public override GraphicsFormat ResourceFormat

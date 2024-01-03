@@ -31,10 +31,9 @@ namespace Molten.Graphics.DX11
             GraphicsResourceFlags flags,
             GraphicsFormat format = GraphicsFormat.R8G8B8A8_UNorm,
             uint mipCount = 1,
-            bool allowMipMapGen = false,
             string name = null)
             : base(device, GraphicsTextureType.Texture3D, new TextureDimensions(width, height, depth, mipCount, 1), 
-                  AntiAliasLevel.None, MSAAQuality.Default, format, flags, allowMipMapGen, name)
+                  AntiAliasLevel.None, MSAAQuality.Default, format, flags, name)
         {
             _desc = new Texture3DDesc1()
             {
@@ -46,7 +45,7 @@ namespace Molten.Graphics.DX11
                 BindFlags = (uint)GetBindFlags(),
                 CPUAccessFlags = (uint)Flags.ToCpuFlags(),
                 Usage = Flags.ToUsageFlags(),
-                MiscFlags = (uint)Flags.ToMiscFlags(allowMipMapGen),
+                MiscFlags = (uint)Flags.ToMiscFlags(),
             };
         }
 

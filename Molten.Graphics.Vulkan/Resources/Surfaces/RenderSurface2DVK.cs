@@ -15,15 +15,13 @@
         /// <param name="name"></param>
         public RenderSurface2DVK(DeviceVK device, uint width, uint height, uint mipCount, uint arraySize, 
             AntiAliasLevel aaLevel, MSAAQuality sampleQuality, 
-            GraphicsFormat format, GraphicsResourceFlags flags, 
-            bool allowMipMapGen, string name) : 
+            GraphicsFormat format, GraphicsResourceFlags flags, string name) : 
             base(device, GraphicsTextureType.Surface2D, 
                 width, height, mipCount, arraySize,
                 aaLevel, 
                 sampleQuality, 
                 format, 
                 flags, 
-                allowMipMapGen, 
                 name)
         {
             Viewport = new ViewportF(0, 0, Width, Height);

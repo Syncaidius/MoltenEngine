@@ -35,14 +35,14 @@ namespace Molten.Graphics.DX11
             return access;
         }
 
-        internal static ResourceMiscFlag ToMiscFlags(this GraphicsResourceFlags flags, bool allowMipMapGen)
+        internal static ResourceMiscFlag ToMiscFlags(this GraphicsResourceFlags flags)
         {
             ResourceMiscFlag result = 0;
 
             if (flags.Has(GraphicsResourceFlags.Shared))
                 result |= ResourceMiscFlag.Shared;
 
-            if (allowMipMapGen)
+            if (flags.Has(GraphicsResourceFlags.MipMapGeneration))
                 result |= ResourceMiscFlag.GenerateMips;
 
             return result;

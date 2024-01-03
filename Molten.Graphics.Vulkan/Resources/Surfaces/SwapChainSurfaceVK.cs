@@ -31,7 +31,7 @@ namespace Molten.Graphics.Vulkan
             GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm,
             PresentModeKHR presentMode = PresentModeKHR.ImmediateKhr,
             string name = null) :
-            base(device, width, height, mipCount, 1, AntiAliasLevel.None, MSAAQuality.Default, format, flags, false, name)
+            base(device, width, height, mipCount, 1, AntiAliasLevel.None, MSAAQuality.Default, format, flags, name)
         {
             _mode = presentMode;
             FrameFence = device.GetFence();

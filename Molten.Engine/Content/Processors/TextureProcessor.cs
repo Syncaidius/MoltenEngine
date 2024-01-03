@@ -231,7 +231,6 @@ namespace Molten.Content
                             texCube.CubeCount,
                             tex.ArraySize,
                             tex.Flags, 
-                            false, 
                             tex.Name + "_staging");
                         break;
 
@@ -243,7 +242,6 @@ namespace Molten.Content
                             tex.MipMapCount,
                             tex.ResourceFormat,
                             tex.Flags,
-                            false,
                             tex.Name + "_staging");
                         break;
 
@@ -265,7 +263,6 @@ namespace Molten.Content
                             tex.ArraySize,
                             tex.ResourceFormat,
                             tex.Flags,
-                            false,
                             tex.Name + "_staging");
                         break;
                 }

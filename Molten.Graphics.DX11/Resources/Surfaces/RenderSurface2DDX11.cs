@@ -15,10 +15,9 @@ namespace Molten.Graphics.DX11
             uint mipCount = 1,
             uint arraySize = 1,
             AntiAliasLevel aaLevel = AntiAliasLevel.None,
-            MSAAQuality msaa = MSAAQuality.Default,
-            bool allowMipMapGen = false, 
+            MSAAQuality msaa = MSAAQuality.Default, 
             string name = null)
-            : base(device, width, height, flags, format, mipCount, arraySize, aaLevel, msaa, allowMipMapGen, name)
+            : base(device, width, height, flags, format, mipCount, arraySize, aaLevel, msaa, name)
         {
             Viewport = new ViewportF(0, 0, width, height);
             Name = $"Surface_{name ?? GetType().Name}";

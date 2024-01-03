@@ -192,10 +192,10 @@ namespace Molten.Graphics.DX11
         public override IDepthStencilSurface CreateDepthSurface(uint width, uint height, 
             DepthFormat format = DepthFormat.R24G8_Typeless, 
             GraphicsResourceFlags flags = GraphicsResourceFlags.GpuWrite, 
-            uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, bool allowMipMapGen = false, string name = null)
+            uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, string name = null)
         {
             MSAAQuality msaa = MSAAQuality.CenterPattern;
-            return new DepthSurfaceDX11(this, width, height, flags, format, mipCount, arraySize, aaLevel, msaa, allowMipMapGen, name);
+            return new DepthSurfaceDX11(this, width, height, flags, format, mipCount, arraySize, aaLevel, msaa, name);
         }
 
         protected override HlslPass OnCreateShaderPass(HlslShader shader, string name = null)
@@ -219,37 +219,35 @@ namespace Molten.Graphics.DX11
             GraphicsResourceFlags flags = GraphicsResourceFlags.GpuWrite, 
             uint mipCount = 1, 
             uint arraySize = 1, 
-            AntiAliasLevel aaLevel = AntiAliasLevel.None, 
-            bool allowMipMapGen = false, string name = null)
+            AntiAliasLevel aaLevel = AntiAliasLevel.None, string name = null)
         {
             MSAAQuality msaa = MSAAQuality.CenterPattern;
-            return new RenderSurface2DDX11(this, width, height, flags, format, mipCount, arraySize, aaLevel, msaa, allowMipMapGen, name);
+            return new RenderSurface2DDX11(this, width, height, flags, format, mipCount, arraySize, aaLevel, msaa, name);
         }
 
         public override ITexture1D CreateTexture1D(uint width, uint mipCount, uint arraySize, 
-            GraphicsFormat format, GraphicsResourceFlags flags,
-            bool allowMipMapGen = false, string name = null)
+            GraphicsFormat format, GraphicsResourceFlags flags, string name = null)
         {
-            return new Texture1DDX11(this, width, flags, format, mipCount, arraySize, allowMipMapGen, name);
+            return new Texture1DDX11(this, width, flags, format, mipCount, arraySize, name);
         }
 
         public override ITexture2D CreateTexture2D(uint width, uint height, uint mipCount, uint arraySize, 
             GraphicsFormat format, GraphicsResourceFlags flags,
             AntiAliasLevel aaLevel = AntiAliasLevel.None,
-            MSAAQuality aaQuality = MSAAQuality.Default,
-            bool allowMipMapGen = false, string name = null)
+            MSAAQuality aaQuality = MSAAQuality.Default, string name = null)
         {
-            return new Texture2DDX11(this, width, height, flags, format, mipCount, arraySize, aaLevel, aaQuality, allowMipMapGen, name);
+            return new Texture2DDX11(this, width, height, flags, format, mipCount, arraySize, aaLevel, aaQuality, name);
         }
 
-        public override ITexture3D CreateTexture3D(uint width, uint height, uint depth, uint mipCount, GraphicsFormat format, GraphicsResourceFlags flags, bool allowMipMapGen = false, string name = null)
+        public override ITexture3D CreateTexture3D(uint width, uint height, uint depth, uint mipCount, GraphicsFormat format, GraphicsResourceFlags flags, string name = null)
         {
-            return new Texture3DDX11(this, width, height, depth, flags, format, mipCount, allowMipMapGen, name);
+            return new Texture3DDX11(this, width, height, depth, flags, format, mipCount, name);
         }
 
-        public override ITextureCube CreateTextureCube(uint width, uint height, uint mipCount, GraphicsFormat format, uint cubeCount = 1, uint arraySize = 1, GraphicsResourceFlags flags = GraphicsResourceFlags.None, bool allowMipMapGen = false, string name = null)
+        public override ITextureCube CreateTextureCube(uint width, uint height, uint mipCount, GraphicsFormat format, 
+            uint cubeCount = 1, uint arraySize = 1, GraphicsResourceFlags flags = GraphicsResourceFlags.None, string name = null)
         {
-            return new TextureCubeDX11(this, width, height, flags, format, mipCount, cubeCount, allowMipMapGen, name);
+            return new TextureCubeDX11(this, width, height, flags, format, mipCount, cubeCount, name);
         }
 
         /// <summary>

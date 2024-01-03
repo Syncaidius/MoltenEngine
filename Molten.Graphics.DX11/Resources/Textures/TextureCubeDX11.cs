@@ -7,9 +7,8 @@ namespace Molten.Graphics.DX11
     public unsafe class TextureCubeDX11 : Texture2DDX11, ITextureCube
     {
         internal TextureCubeDX11(DeviceDX11 device, uint width, uint height, GraphicsResourceFlags flags, 
-            GraphicsFormat format = GraphicsFormat.R8G8B8A8_UNorm, uint mipCount = 1, uint cubeCount = 1,
-            bool allowMipMapGen = false, string name = null)
-            : base(device, width, height, flags, format, mipCount, 6 * cubeCount, AntiAliasLevel.None, MSAAQuality.Default, allowMipMapGen, name)
+            GraphicsFormat format = GraphicsFormat.R8G8B8A8_UNorm, uint mipCount = 1, uint cubeCount = 1, string name = null)
+            : base(device, width, height, flags, format, mipCount, 6 * cubeCount, AntiAliasLevel.None, MSAAQuality.Default, name)
         {
             CubeCount = cubeCount;
 
@@ -24,7 +23,7 @@ namespace Molten.Graphics.DX11
                 CPUAccessFlags = (uint)Flags.ToCpuFlags(),
                 SampleDesc = new SampleDesc(1, 0),
                 Usage = Flags.ToUsageFlags(),
-                MiscFlags = (uint)(Flags.ToMiscFlags(allowMipMapGen) | ResourceMiscFlag.Texturecube),
+                MiscFlags = (uint)(Flags.ToMiscFlags() | ResourceMiscFlag.Texturecube),
                 TextureLayout = 0U, // TextureLayout.None
             };
         }

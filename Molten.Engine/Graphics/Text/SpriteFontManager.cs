@@ -63,7 +63,10 @@ namespace Molten.Graphics
         private void CreateSurface(uint arraySize)
         {
             _camera.Surface?.Dispose();
-            _camera.Surface = _renderer.Device.CreateSurface((uint)PageSize, (uint)PageSize, arraySize: arraySize, allowMipMapGen: true, name: "Sprite Font Sheet");
+            _camera.Surface = _renderer.Device.CreateSurface((uint)PageSize, (uint)PageSize, 
+                flags: GraphicsResourceFlags.GpuWrite | GraphicsResourceFlags.MipMapGeneration, 
+                arraySize: arraySize, 
+                name: "Sprite Font Sheet");
             _camera.Surface.Clear(GraphicsPriority.Apply, Color.Transparent);
         }
 

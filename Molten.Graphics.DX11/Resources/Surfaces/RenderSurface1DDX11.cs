@@ -12,10 +12,9 @@ namespace Molten.Graphics.DX11
             GraphicsResourceFlags flags = GraphicsResourceFlags.None,
             GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm,
             uint mipCount = 1,
-            uint arraySize = 1,
-            bool allowMipMapGen = false, 
+            uint arraySize = 1, 
             string name = null)
-            : base(device, width, flags, format, mipCount, arraySize, allowMipMapGen, name)
+            : base(device, width, flags, format, mipCount, arraySize, name)
         {
             Viewport = new ViewportF(0, 0, width, 1);
             Name = $"Surface_{name ?? GetType().Name}";

@@ -33,9 +33,8 @@ namespace Molten.Graphics.DX11
             uint arraySize = 1, 
             AntiAliasLevel aaLevel = AntiAliasLevel.None,
             MSAAQuality msaa = MSAAQuality.Default,
-            bool allowMipMapGen = false,
             string name = "surface")
-            : base(device, width, height, flags, format.ToGraphicsFormat(), mipCount, arraySize, aaLevel, msaa, allowMipMapGen, name)
+            : base(device, width, height, flags, format.ToGraphicsFormat(), mipCount, arraySize, aaLevel, msaa, name)
         {
             _depthFormat = format;
             Desc.ArraySize = arraySize;

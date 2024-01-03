@@ -10,23 +10,23 @@
             {
                 case GraphicsTextureType.Texture1D:
                     result = CreateTexture1D(src.Width, src.MipMapCount, src.ArraySize, src.ResourceFormat, 
-                        GraphicsResourceFlags.AllReadWrite, false, Name + "_staging");
+                        GraphicsResourceFlags.AllReadWrite, Name + "_staging");
                     break;
 
                 case GraphicsTextureType.Texture2D:
                     result = CreateTexture2D(src.Width, src.Height, src.MipMapCount, src.ArraySize, src.ResourceFormat, 
-                        GraphicsResourceFlags.AllReadWrite, src.MultiSampleLevel, src.SampleQuality, false, Name + "_staging");
+                        GraphicsResourceFlags.AllReadWrite, src.MultiSampleLevel, src.SampleQuality, Name + "_staging");
                     break;
 
                 case GraphicsTextureType.Texture3D:
                     result = CreateTexture3D(src.Width, src.Height, src.Depth, src.MipMapCount, src.ResourceFormat, 
-                        GraphicsResourceFlags.AllReadWrite, false, Name + "_staging");
+                        GraphicsResourceFlags.AllReadWrite, Name + "_staging");
                     break;
 
                 case GraphicsTextureType.TextureCube:
                     ITextureCube cube = this as ITextureCube;
                     result = CreateTextureCube(src.Width, src.Height, src.MipMapCount, src.ResourceFormat, cube.CubeCount, src.ArraySize, 
-                        GraphicsResourceFlags.AllReadWrite, false, Name + "_staging");
+                        GraphicsResourceFlags.AllReadWrite, Name + "_staging");
                     break;
 
                 default:
@@ -44,20 +44,18 @@
         /// <param name="arraySize">The number of array slices.</param>
         /// <param name="format">The <see cref="GraphicsFormat"/>.</param>
         /// <param name="flags">Resource creation flags.</param>
-        /// <param name="allowMipMapGen">If true, <see cref="ITexture.GenerateMipMaps(GraphicsPriority, Action{GraphicsResource})"/> is allowed.</param>
         /// <param name="name">A custom name for the texture resource, if any.</param>
         /// <returns></returns>
         /// <returns></returns>
         public abstract ITexture1D CreateTexture1D(uint width, uint mipCount, uint arraySize, 
-            GraphicsFormat format, GraphicsResourceFlags flags, bool allowMipMapGen = false, string name = null);
+            GraphicsFormat format, GraphicsResourceFlags flags, string name = null);
 
         /// <summary>Creates a new 1D texture and returns it.</summary>
         /// <param name="data">The data from which to create the texture.</param>
-        /// <param name="allowMipMapGen">If true, <see cref="ITexture.GenerateMipMaps(GraphicsPriority, Action{GraphicsResource})"/> is allowed.</param>
         /// <param name="name">A custom name for the texture resource, if any.</param>
-        public ITexture1D CreateTexture1D(TextureData data, bool allowMipMapGen = false, string name = null)
+        public ITexture1D CreateTexture1D(TextureData data, string name = null)
         {
-            ITexture1D tex = CreateTexture1D(data.Width, data.MipMapLevels, data.ArraySize, data.Format, data.Flags, allowMipMapGen, name);
+            ITexture1D tex = CreateTexture1D(data.Width, data.MipMapLevels, data.ArraySize, data.Format, data.Flags, name);
             tex.SetData(GraphicsPriority.Apply, data, 0, 0, data.MipMapLevels, data.ArraySize);
             return tex;
         }
@@ -73,28 +71,24 @@
         /// <param name="flags">Resource creation flags.</param>
         /// <param name="aaLevel">The number of samples to perform for multi-sampled anti-aliasing (MSAA).</param>
         /// <param name="aaQuality">The quality preset to use for multi-sampled anti-aliasing (MSAA).</param>
-        /// <param name="allowMipMapGen">If true, <see cref="ITexture.GenerateMipMaps(GraphicsPriority, Action{GraphicsResource})"/> is allowed.</param>
         /// <param name="name">A custom name for the texture resource, if any.</param>
         /// <returns></returns>
         public abstract ITexture2D CreateTexture2D(uint width, uint height, uint mipCount, uint arraySize,
                 GraphicsFormat format, 
                 GraphicsResourceFlags flags,
                 AntiAliasLevel aaLevel = AntiAliasLevel.None,
-                MSAAQuality aaQuality = MSAAQuality.Default, 
-                bool allowMipMapGen = false, string name = null);
+                MSAAQuality aaQuality = MSAAQuality.Default, string name = null);
 
         /// <summary>Creates a new 2D texture and returns it.</summary>
         /// <param name="data">The data from which to create the texture.</param>
-        /// <param name="allowMipMapGen">If true, <see cref="ITexture.GenerateMipMaps(GraphicsPriority, Action{GraphicsResource})"/> is allowed.</param>
         /// <param name="name">A custom name for the texture resource, if any.</param>
-        public ITexture2D CreateTexture2D(TextureData data, bool allowMipMapGen = false, string name = null)
+        public ITexture2D CreateTexture2D(TextureData data, string name = null)
         {
             ITexture2D tex = CreateTexture2D(data.Width, data.Height, data.MipMapLevels, data.ArraySize, 
                 data.Format,
                 data.Flags, 
                 data.MultiSampleLevel,
-                data.MultiSampleQuality, 
-                allowMipMapGen, 
+                data.MultiSampleQuality,
                 name);
 
             tex.SetData(GraphicsPriority.Apply, data, 0, 0, data.MipMapLevels, data.ArraySize);
@@ -110,19 +104,17 @@
         /// <param name="mipCount">The number of mip-map levels.</param>
         /// <param name="format">The <see cref="GraphicsFormat"/>.</param>
         /// <param name="flags">Resource creation flags.</param>
-        /// <param name="allowMipMapGen">If true, <see cref="ITexture.GenerateMipMaps(GraphicsPriority, Action{GraphicsResource})"/> is allowed.</param>
         /// <param name="name">A custom name for the texture resource, if any.</param>
         /// <returns></returns>
         public abstract ITexture3D CreateTexture3D(uint width, uint height, uint depth, uint mipCount,
-                       GraphicsFormat format, GraphicsResourceFlags flags, bool allowMipMapGen = false, string name = null);
+                       GraphicsFormat format, GraphicsResourceFlags flags, string name = null);
 
         /// <summary>Creates a new 3D texture and returns it.</summary>
         /// <param name="data">The data from which to create the texture.</param>
-        /// <param name="allowMipMapGen">If true, <see cref="ITexture.GenerateMipMaps(GraphicsPriority, Action{GraphicsResource})"/> is allowed.</param>
         /// <param name="name">A custom name for the texture resource, if any.</param>
-        public ITexture3D CreateTexture3D(TextureData data, bool allowMipMapGen = false, string name = null)
+        public ITexture3D CreateTexture3D(TextureData data, string name = null)
         {
-            ITexture3D tex = CreateTexture3D(data.Width, data.Height, data.Depth, data.MipMapLevels, data.Format, data.Flags, allowMipMapGen, name);
+            ITexture3D tex = CreateTexture3D(data.Width, data.Height, data.Depth, data.MipMapLevels, data.Format, data.Flags, name);
             tex.SetData(GraphicsPriority.Apply, data, 0, 0, data.MipMapLevels, data.ArraySize);
             return tex;
         }
@@ -137,20 +129,18 @@
         /// <param name="format">The <see cref="GraphicsFormat"/>.</param>
         /// <param name="flags">Resource creation flags.</param>
         /// <param name="arraySize">The number of array slices.</param>
-        /// <param name="allowMipMapGen">If true, <see cref="ITexture.GenerateMipMaps(GraphicsPriority, Action{GraphicsResource})"/> is allowed.</param>
         /// <param name="name">A custom name for the texture resource, if any.</param>
         /// <returns></returns>
         public abstract ITextureCube CreateTextureCube(uint width, uint height, uint mipCount, GraphicsFormat format,
-            uint cubeCount = 1, uint arraySize = 1, GraphicsResourceFlags flags = GraphicsResourceFlags.None, bool allowMipMapGen = false, string name = null);
+            uint cubeCount = 1, uint arraySize = 1, GraphicsResourceFlags flags = GraphicsResourceFlags.None, string name = null);
 
         /// <summary>Creates a new cube texture (cube-map) and returns it.</summary>
         /// <param name="data">The data from which to create the texture.</param>
         /// <param name="cubeCount">The number of cubes to be represented in the texture. The <see cref="ITexture.ArraySize"/> will be <paramref name="cubeCount"/> * 6.</param>
-        /// <param name="allowMipMapGen">If true, <see cref="ITexture.GenerateMipMaps(GraphicsPriority, Action{GraphicsResource})"/> is allowed.</param>
         /// <param name="name">A custom name for the texture resource, if any.</param>
-        public ITextureCube CreateTextureCube(TextureData data, uint cubeCount = 1, bool allowMipMapGen = false, string name = null)
+        public ITextureCube CreateTextureCube(TextureData data, uint cubeCount = 1, string name = null)
         {
-            ITextureCube tex = CreateTextureCube(data.Width, data.Height, data.MipMapLevels, data.Format, cubeCount, data.ArraySize, data.Flags, allowMipMapGen, name);
+            ITextureCube tex = CreateTextureCube(data.Width, data.Height, data.MipMapLevels, data.Format, cubeCount, data.ArraySize, data.Flags, name);
             tex.SetData(GraphicsPriority.Apply, data, 0, 0, data.MipMapLevels, data.ArraySize);
             return tex;
         }

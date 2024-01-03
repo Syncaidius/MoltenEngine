@@ -54,6 +54,11 @@ public enum GraphicsResourceFlags
     Buffered = 1 << 7,
 
     /// <summary>
+    /// Allow mi-pmap generation for the resource.
+    /// </summary>
+    MipMapGeneration = 1 << 8,
+
+    /// <summary>
     /// All of the GPU and CPU read/write flags. Generally used by staging resources.
     /// </summary>
     AllReadWrite = (CpuRead | CpuWrite | GpuRead | GpuWrite),

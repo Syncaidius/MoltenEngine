@@ -9,9 +9,8 @@ namespace Molten.Graphics.Vulkan
             MSAAQuality sampleQuality, 
             DepthFormat format, 
             GraphicsResourceFlags flags, 
-            bool allowMipMapGen, 
             string name) : 
-            base(device, GraphicsTextureType.Surface2D, width, height, mipCount, arraySize, aaLevel, sampleQuality, format.ToGraphicsFormat(), flags, allowMipMapGen, name)
+            base(device, GraphicsTextureType.Surface2D, width, height, mipCount, arraySize, aaLevel, sampleQuality, format.ToGraphicsFormat(), flags, name)
         {
             DepthFormat = format;
             Viewport = new ViewportF(0, 0, Width, Height);

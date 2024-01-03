@@ -1,43 +1,42 @@
 ﻿using System.Runtime.CompilerServices;
 using Silk.NET.Vulkan;
 
-namespace Molten.Graphics.Vulkan
+namespace Molten.Graphics.Vulkan;
+
+internal static class ResultExtensions
 {
-    internal static class ResultExtensions
+    public static bool Check(this Result r, RenderService renderer, Func<string> getMessageCallback = null)
     {
-        public static bool Check(this Result r, RenderService renderer, Func<string> getMessageCallback = null)
+        if (r != Result.Success)
         {
-            if (r != Result.Success)
-            {
-                if (getMessageCallback == null)
-                    renderer.Log.Error($"Vulkan error: {r}");
-                else
-                    renderer.Log.Error($"Vulkan error: {r} -- {getMessageCallback()}");
+            if (getMessageCallback == null)
+                renderer.Log.Error($"Vulkan error: {r}");
+            else
+                renderer.Log.Error($"Vulkan error: {r} -- {getMessageCallback()}");
 
-                return false;
-            }
-
-            return true;
+            return false;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool Check(this Result r, DeviceVK device, Func<string> getMessageCallback = null)
-        {
-            return Check(r, device.Renderer, getMessageCallback);
-        }
+        return true;
+    }
 
-        public static void Throw(this Result r, DeviceVK device, Func<string> getMessageCallback = null)
-        {
-            if (r != Result.Success)
-            {
-                string msg;
-                if (getMessageCallback == null)
-                    msg = "API operation failed";
-                else
-                    msg = getMessageCallback();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool Check(this Result r, DeviceVK device, Func<string> getMessageCallback = null)
+    {
+        return Check(r, device.Renderer, getMessageCallback);
+    }
 
-                throw new Exception(msg);
-            }
+    public static void Throw(this Result r, DeviceVK device, Func<string> getMessageCallback = null)
+    {
+        if (r != Result.Success)
+        {
+            string msg;
+            if (getMessageCallback == null)
+                msg = "API operation failed";
+            else
+                msg = getMessageCallback();
+
+            throw new Exception(msg);
         }
     }
 }
