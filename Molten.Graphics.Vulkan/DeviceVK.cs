@@ -516,7 +516,7 @@ public unsafe class DeviceVK : GraphicsDevice
         MSAAQuality aaQuality = MSAAQuality.Default,
         string name = null)
     {
-        return new Texture2DVK(this, GraphicsTextureType.Texture2D, width, height, mipCount, arraySize, 
+        return new Texture2DVK(this, width, height, mipCount, arraySize, 
             aaLevel, aaQuality, 
             format, 
             flags,  

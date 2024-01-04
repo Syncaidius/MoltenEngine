@@ -16,7 +16,7 @@
         public RenderSurface2DVK(DeviceVK device, uint width, uint height, uint mipCount, uint arraySize, 
             AntiAliasLevel aaLevel, MSAAQuality sampleQuality, 
             GraphicsFormat format, GraphicsResourceFlags flags, string name) : 
-            base(device, GraphicsTextureType.Surface2D, 
+            base(device, 
                 width, height, mipCount, arraySize,
                 aaLevel, 
                 sampleQuality, 

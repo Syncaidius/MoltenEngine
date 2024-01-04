@@ -6,9 +6,8 @@ public class Texture3DVK : TextureVK, ITexture3D
 {
     public Texture3DVK(DeviceVK device, 
         TextureDimensions dimensions, GraphicsFormat format, 
-        GraphicsResourceFlags flags, string name, bool isSurface = false) : 
+        GraphicsResourceFlags flags, string name) : 
         base(device, 
-            isSurface ? GraphicsTextureType.Texture3D : GraphicsTextureType.Surface3D, 
             dimensions, 
             AntiAliasLevel.None, 
             MSAAQuality.Default, 

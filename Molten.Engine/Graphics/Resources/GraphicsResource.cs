@@ -248,7 +248,8 @@ public abstract class GraphicsResource : GraphicsObject, IGraphicsResource
     }
 
     /// <summary>
-    /// The total size of the resource, in bytes for the current frame.
+    /// Gets the size of the resource, in bytes. 
+    /// <para>This is the total size of all sub-resources within the resource, such as mip-map levels and array slices.</para>
     /// </summary>
     public abstract uint SizeInBytes { get; protected set; }
 

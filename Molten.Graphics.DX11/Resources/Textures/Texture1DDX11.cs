@@ -16,7 +16,7 @@ namespace Molten.Graphics.DX11
             uint mipCount = 1, 
             uint arraySize = 1,
             string name = null)
-            : base(device, GraphicsTextureType.Texture1D, new TextureDimensions(width, 1, 1, mipCount, arraySize), 
+            : base(device, new TextureDimensions(width, 1, 1, mipCount, arraySize), 
                   AntiAliasLevel.None, MSAAQuality.Default, format, flags, name)
         {
             if (IsBlockCompressed)

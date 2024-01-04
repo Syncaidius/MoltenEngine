@@ -18,7 +18,7 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
     TextureDimensions _dimensions;
     GraphicsFormat _format;
 
-    protected GraphicsTexture(GraphicsDevice device, GraphicsTextureType type, TextureDimensions dimensions, AntiAliasLevel aaLevel, 
+    protected GraphicsTexture(GraphicsDevice device, TextureDimensions dimensions, AntiAliasLevel aaLevel, 
         MSAAQuality sampleQuality, GraphicsFormat format, GraphicsResourceFlags flags, string name) 
         : base(device, flags)
     {
@@ -27,7 +27,6 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
 
         MSAASupport msaaSupport = MSAASupport.NotSupported; // TODO re-support. _renderer.Device.Features.GetMSAASupport(format, aaLevel);
         _dimensions = dimensions;
-        TextureType = type;
 
         Name = string.IsNullOrWhiteSpace(name) ? $"{GetType().Name}_{Width}x{Height}" : name;
 
@@ -95,10 +94,10 @@ public void Resize(GraphicsPriority priority, uint newWidth)
     /// <param name="newFormat">The new format. If set to <see cref="GraphicsFormat.Unknown"/>, the existing format will be used.</param>
     public void Resize(GraphicsPriority priority, uint width, uint height, uint arraySize = 0, uint mipMapCount = 0, uint depth = 0, GraphicsFormat newFormat = GraphicsFormat.Unknown)
     {
-        if (TextureType == GraphicsTextureType.Texture1D)
+        if (this is ITexture1D)
             height = 1;
 
-        if (TextureType != GraphicsTextureType.Texture3D || TextureType != GraphicsTextureType.Surface3D)
+        if (this is not ITexture3D)
             depth = 1;
 
         Device.Renderer.PushTask(priority, this, new TextureResizeTask()
@@ -309,6 +308,7 @@ public void Resize(GraphicsPriority priority, uint newWidth)
         protected set => _dimensions = value;
     }
 
+    /// <inheritdoc/>
     public override uint SizeInBytes { get; protected set; }
 
     /// <summary>
@@ -321,6 +321,7 @@ public void Resize(GraphicsPriority priority, uint newWidth)
     /// </summary>
     public bool IsMultisampled => MultiSampleLevel >= AntiAliasLevel.X2;
 
+    /// <inheritdoc/>
     public MSAAQuality SampleQuality { get; protected set; }
 
     /// <inheritdoc/>
@@ -341,6 +342,4 @@ public void Resize(GraphicsPriority priority, uint newWidth)
             }
         }
     }
-
-    public GraphicsTextureType TextureType { get; }
 }

@@ -19,7 +19,7 @@ namespace Molten.Graphics.DX11
             AntiAliasLevel aaLevel = AntiAliasLevel.None,
             MSAAQuality msaa = MSAAQuality.Default,
             string name = null)
-            : base(device, GraphicsTextureType.Texture2D, new TextureDimensions(width, height, 1, mipCount, arraySize), aaLevel, msaa, format, flags, name)
+            : base(device, new TextureDimensions(width, height, 1, mipCount, arraySize), aaLevel, msaa, format, flags, name)
         {
             Desc = new Texture2DDesc1()
             {

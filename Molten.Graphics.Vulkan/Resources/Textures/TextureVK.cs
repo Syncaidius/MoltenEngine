@@ -10,9 +10,9 @@ public unsafe abstract class TextureVK : GraphicsTexture
     ResourceHandleVK<Image, ImageHandleVK>[] _handles;
     ResourceHandleVK<Image, ImageHandleVK> _curHandle;
 
-    protected TextureVK(DeviceVK device, GraphicsTextureType type, TextureDimensions dimensions,
+    protected TextureVK(DeviceVK device, TextureDimensions dimensions,
         AntiAliasLevel aaLevel, MSAAQuality sampleQuality, GraphicsFormat format, GraphicsResourceFlags flags, string name) :
-        base(device, type, dimensions, aaLevel, sampleQuality, format, flags, name)
+        base(device, dimensions, aaLevel, sampleQuality, format, flags, name)
     {
         Device = device;
     }

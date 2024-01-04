@@ -6,26 +6,25 @@
         {
             ITexture result = null;
 
-            switch (src.TextureType)
+            switch (src)
             {
-                case GraphicsTextureType.Texture1D:
+                case ITexture1D:
                     result = CreateTexture1D(src.Width, src.MipMapCount, src.ArraySize, src.ResourceFormat, 
                         GraphicsResourceFlags.AllReadWrite, Name + "_staging");
                     break;
 
-                case GraphicsTextureType.Texture2D:
+                case ITextureCube cube:
+                    result = CreateTextureCube(src.Width, src.Height, src.MipMapCount, src.ResourceFormat, cube.CubeCount, src.ArraySize,
+                        GraphicsResourceFlags.AllReadWrite, Name + "_staging");
+                    break;
+
+                case ITexture2D:
                     result = CreateTexture2D(src.Width, src.Height, src.MipMapCount, src.ArraySize, src.ResourceFormat, 
                         GraphicsResourceFlags.AllReadWrite, src.MultiSampleLevel, src.SampleQuality, Name + "_staging");
                     break;
 
-                case GraphicsTextureType.Texture3D:
+                case ITexture3D:
                     result = CreateTexture3D(src.Width, src.Height, src.Depth, src.MipMapCount, src.ResourceFormat, 
-                        GraphicsResourceFlags.AllReadWrite, Name + "_staging");
-                    break;
-
-                case GraphicsTextureType.TextureCube:
-                    ITextureCube cube = this as ITextureCube;
-                    result = CreateTextureCube(src.Width, src.Height, src.MipMapCount, src.ResourceFormat, cube.CubeCount, src.ArraySize, 
                         GraphicsResourceFlags.AllReadWrite, Name + "_staging");
                     break;
 

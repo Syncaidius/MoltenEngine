@@ -15,7 +15,7 @@
         /// <param name="name"></param>
         public RenderSurface1DVK(DeviceVK device, uint width, uint mipCount, uint arraySize, 
             GraphicsFormat format, GraphicsResourceFlags flags, string name) : 
-            base(device, width, mipCount, arraySize, format, flags, name, true)
+            base(device, width, mipCount, arraySize, format, flags, name)
         {
             Viewport = new ViewportF(0, 0, Width, 1);
         }

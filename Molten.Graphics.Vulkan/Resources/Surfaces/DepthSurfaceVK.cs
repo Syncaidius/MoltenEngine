@@ -10,7 +10,7 @@ namespace Molten.Graphics.Vulkan
             DepthFormat format, 
             GraphicsResourceFlags flags, 
             string name) : 
-            base(device, GraphicsTextureType.Surface2D, width, height, mipCount, arraySize, aaLevel, sampleQuality, format.ToGraphicsFormat(), flags, name)
+            base(device, width, height, mipCount, arraySize, aaLevel, sampleQuality, format.ToGraphicsFormat(), flags, name)
         {
             DepthFormat = format;
             Viewport = new ViewportF(0, 0, Width, Height);

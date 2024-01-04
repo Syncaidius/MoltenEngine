@@ -109,11 +109,6 @@ public interface ITexture : IGraphicsResource
     bool IsMultisampled { get; }
 
     /// <summary>
-    /// Gets the texture type.
-    /// </summary>
-    GraphicsTextureType TextureType { get; }
-
-    /// <summary>
     /// Gets the dimensions of the texture.
     /// </summary>
     TextureDimensions Dimensions { get; }

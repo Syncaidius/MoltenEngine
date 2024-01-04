@@ -32,7 +32,7 @@ namespace Molten.Graphics.DX11
             GraphicsFormat format = GraphicsFormat.R8G8B8A8_UNorm,
             uint mipCount = 1,
             string name = null)
-            : base(device, GraphicsTextureType.Texture3D, new TextureDimensions(width, height, depth, mipCount, 1), 
+            : base(device, new TextureDimensions(width, height, depth, mipCount, 1), 
                   AntiAliasLevel.None, MSAAQuality.Default, format, flags, name)
         {
             _desc = new Texture3DDesc1()

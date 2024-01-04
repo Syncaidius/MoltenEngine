@@ -19,14 +19,14 @@ public unsafe abstract partial class TextureDX11 : GraphicsTexture
     /// </summary>
     List<ResourceHandleDX11<ID3D11Resource>> _oldHandles;
 
-    internal TextureDX11(DeviceDX11 device, GraphicsTextureType type, 
+    internal TextureDX11(DeviceDX11 device, 
         TextureDimensions dimensions, 
         AntiAliasLevel aaLevel, 
         MSAAQuality sampleQuality, 
         GraphicsFormat format, 
         GraphicsResourceFlags flags, 
         string name) :
-        base(device, type, dimensions, aaLevel, sampleQuality, format, flags | GraphicsResourceFlags.GpuRead, name)
+        base(device, dimensions, aaLevel, sampleQuality, format, flags | GraphicsResourceFlags.GpuRead, name)
     {
         Device = device;
         _oldHandles = new List<ResourceHandleDX11<ID3D11Resource>>();
@@ -136,7 +136,7 @@ public unsafe abstract partial class TextureDX11 : GraphicsTexture
 
         // Check if we're passing initial data to the texture.
         // Render surfaces and depth-stencil buffers cannot be initialized with data.
-        if (TextureType < GraphicsTextureType.Surface2D)
+        if (this is not IRenderSurface)
         {
             // We can only pass data for immutable textures.
             if (usage == Usage.Immutable)
