@@ -19,9 +19,9 @@
 
         public override void Process(RenderService renderer)
         {
-            renderer.Device.Queue.Begin();
+            //renderer.Device.Queue.Begin();
             renderer.Device.Queue.Dispatch(Shader, Groups);
-            renderer.Device.Queue.End();
+            //renderer.Device.Queue.End();
             CompletionCallback?.Invoke();
             Recycle(this);
         }
