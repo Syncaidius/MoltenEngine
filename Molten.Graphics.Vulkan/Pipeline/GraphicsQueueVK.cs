@@ -237,7 +237,7 @@ namespace Molten.Graphics.Vulkan
         {
             RendererVK renderer = Device.Renderer as RendererVK;
             byte* ptrString = EngineUtil.StringToPtr(label, Encoding.UTF8);
-            DebugUtilsLabelEXT lbl = new DebugUtilsLabelEXT(pLabelName: ptrString);
+            DebugUtilsLabelEXT lbl = new (pLabelName: ptrString);
             float* ptrColor = stackalloc float[] { 1f, 1f, 1f, 1f };
 
             NativeMemory.Copy(&ptrColor, lbl.Color, sizeof(float) * 4);
@@ -323,9 +323,9 @@ namespace Molten.Graphics.Vulkan
                 if (dest is BufferVK dstBuffer)
                 {
                     Buffer dstHandle = *dstBuffer.Handle.NativePtr;
-                    Span<BufferCopy> copy = stackalloc BufferCopy[] {
+                    Span<BufferCopy> copy = [
                         new BufferCopy(0, 0, src.SizeInBytes)
-                    };
+                    ];
 
                     _vk.CmdCopyBuffer(_cmd, srcHandle, dstHandle, copy);
                 }
@@ -338,9 +338,9 @@ namespace Molten.Graphics.Vulkan
                     // TODO set the image aspect flags based on texture type. e.g. is DepthTextureVK or standard TextureVK/surface.
 
                     ImageSubresourceLayers layers = new ImageSubresourceLayers(ImageAspectFlags.ColorBit, 0, 0, 1);
-                    Span<BufferImageCopy> regions = stackalloc BufferImageCopy[] {
+                    Span<BufferImageCopy> regions = [
                         new BufferImageCopy(0, 0, src.SizeInBytes, layers, offset, extent)
-                    };
+                    ];
 
                     _vk.CmdCopyBufferToImage(_cmd, srcHandle, dstHandle, ImageLayout.TransferDstOptimal, regions);
                 }
@@ -357,9 +357,9 @@ namespace Molten.Graphics.Vulkan
                 if (dest is BufferVK dstBuffer)
                 {
                     Buffer dstHandle = *dstBuffer.Handle.NativePtr;
-                    Span<BufferImageCopy> regions = stackalloc BufferImageCopy[] {
+                    Span<BufferImageCopy> regions = [
                         new BufferImageCopy(0, 0, src.SizeInBytes, srcLayers, srcOffset, srcExtent)
-                    };
+                    ];
 
                     _vk.CmdCopyImageToBuffer(_cmd, srcHandle, ImageLayout.TransferSrcOptimal, dstHandle, regions);
                 }
@@ -371,9 +371,9 @@ namespace Molten.Graphics.Vulkan
                     // TODO set the image aspect flags based on texture type. e.g. is DepthTextureVK or standard TextureVK/surface.
 
                     ImageSubresourceLayers destLayers = new ImageSubresourceLayers(ImageAspectFlags.ColorBit, 0, 0, 1);
-                    Span<ImageCopy> regions = stackalloc ImageCopy[] {
+                    Span<ImageCopy> regions = [
                         new ImageCopy(srcLayers, srcOffset, destLayers, destOffset, srcExtent),
-                    };
+                    ];
 
                     _vk.CmdCopyImage(_cmd, srcHandle, ImageLayout.TransferSrcOptimal, dstHandle, ImageLayout.TransferDstOptimal, regions);
                 }

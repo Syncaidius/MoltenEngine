@@ -111,6 +111,12 @@ namespace Molten.Graphics
 
         private void ProcessTasks(RenderTaskPriority priority)
         {
+            // TODO Implement "AllowBatching" property on RenderTask to allow multiple tasks to be processed in a single Begin()-End() command block
+            //      Tasks that don't allow batching will:
+            //       - Be executed in individual Begin()-End() command blocks
+            //       - Be executed on the next available compute device queue
+            //       - May not finish in the order they were requested due to task size, queue size and device performance.
+
             ThreadedQueue<RenderTask> queue = _tasks[priority];
             Device.Queue.Begin();
             Device.Queue.BeginEvent($"Process '{priority}' tasks");

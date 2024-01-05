@@ -1,155 +1,154 @@
 ﻿using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
 
-namespace Molten.Graphics.DX12
+namespace Molten.Graphics.DX12;
+
+public unsafe class CommandQueueDX12 : GraphicsQueue
 {
-    internal unsafe class CommandQueueDX12 : GraphicsQueue
+    CommandQueueDesc _desc;
+    ID3D12CommandQueue* _ptr;
+
+    internal CommandQueueDX12(Logger log, DeviceDX12 device, DeviceBuilderDX12 builder, ref CommandQueueDesc desc) : 
+        base(device)
     {
-        CommandQueueDesc _desc;
-        ID3D12CommandQueue* _ptr;
+        _desc = desc;
+        Log = log;
 
-        internal CommandQueueDX12(Logger log, DeviceDX12 device, DeviceBuilderDX12 builder, ref CommandQueueDesc desc) : 
-            base(device)
+        Initialize(builder);
+    }
+
+    private void Initialize(DeviceBuilderDX12 builder)
+    {
+        Guid cmdGuid = ID3D12CommandQueue.Guid;
+        void* cmdQueue = null;
+
+        DeviceDX12 device = Device as DeviceDX12; 
+        HResult r = device.Ptr->CreateCommandQueue(_desc, &cmdGuid, &cmdQueue);
+        if (!device.Log.CheckResult(r))
         {
-            _desc = desc;
-            Log = log;
-
-            Initialize(builder);
+            Log.Error($"Failed to initialize '{_desc.Type}' command queue");
+            return;
+        }
+        else
+        {
+            Log.WriteLine($"Initialized '{_desc.Type}' command queue");
         }
 
-        private void Initialize(DeviceBuilderDX12 builder)
-        {
-            Guid cmdGuid = ID3D12CommandQueue.Guid;
-            void* cmdQueue = null;
+        _ptr = (ID3D12CommandQueue*)cmdQueue;
+    }
 
-            DeviceDX12 device = Device as DeviceDX12; 
-            HResult r = device.Ptr->CreateCommandQueue(_desc, &cmdGuid, &cmdQueue);
-            if (!device.Log.CheckResult(r))
-            {
-                Log.Error($"Failed to initialize '{_desc.Type}' command queue");
-                return;
-            }
-            else
-            {
-                Log.WriteLine($"Initialized '{_desc.Type}' command queue");
-            }
+    protected override void GenerateMipMaps(GraphicsResource texture)
+    {
+        throw new NotImplementedException();
+    }
 
-            _ptr = (ID3D12CommandQueue*)cmdQueue;
-        }
+    protected override void OnResetState()
+    {
+        throw new NotImplementedException();
+    }
 
-        protected override void GenerateMipMaps(GraphicsResource texture)
-        {
-            throw new NotImplementedException();
-        }
+    public override void Execute(GraphicsCommandList list)
+    {
+        throw new NotImplementedException();
+    }
 
-        protected override void OnResetState()
-        {
-            throw new NotImplementedException();
-        }
+    public override void Sync(GraphicsCommandListFlags flags)
+    {
+        throw new NotImplementedException();
+    }
 
-        public override void Execute(GraphicsCommandList list)
-        {
-            throw new NotImplementedException();
-        }
+    public override GraphicsBindResult Draw(HlslShader shader, uint vertexCount, uint vertexStartIndex = 0)
+    {
+        throw new NotImplementedException();
+    }
 
-        public override void Sync(GraphicsCommandListFlags flags)
-        {
-            throw new NotImplementedException();
-        }
+    public override GraphicsBindResult DrawInstanced(HlslShader shader, uint vertexCountPerInstance, uint instanceCount, uint vertexStartIndex = 0, uint instanceStartIndex = 0)
+    {
+        throw new NotImplementedException();
+    }
 
-        public override GraphicsBindResult Draw(HlslShader shader, uint vertexCount, uint vertexStartIndex = 0)
-        {
-            throw new NotImplementedException();
-        }
+    public override GraphicsBindResult DrawIndexed(HlslShader shader, uint indexCount, int vertexIndexOffset = 0, uint startIndex = 0)
+    {
+        throw new NotImplementedException();
+    }
 
-        public override GraphicsBindResult DrawInstanced(HlslShader shader, uint vertexCountPerInstance, uint instanceCount, uint vertexStartIndex = 0, uint instanceStartIndex = 0)
-        {
-            throw new NotImplementedException();
-        }
+    public override GraphicsBindResult DrawIndexedInstanced(HlslShader shader, uint indexCountPerInstance, uint instanceCount, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
+    {
+        throw new NotImplementedException();
+    }
 
-        public override GraphicsBindResult DrawIndexed(HlslShader shader, uint indexCount, int vertexIndexOffset = 0, uint startIndex = 0)
-        {
-            throw new NotImplementedException();
-        }
+    public override void BeginEvent(string label)
+    {
+        throw new NotImplementedException();
+    }
 
-        public override GraphicsBindResult DrawIndexedInstanced(HlslShader shader, uint indexCountPerInstance, uint instanceCount, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
-        {
-            throw new NotImplementedException();
-        }
+    public override void EndEvent()
+    {
+        throw new NotImplementedException();
+    }
 
-        public override void BeginEvent(string label)
-        {
-            throw new NotImplementedException();
-        }
+    public override void SetMarker(string label)
+    {
+        throw new NotImplementedException();
+    }
 
-        public override void EndEvent()
-        {
-            throw new NotImplementedException();
-        }
+    protected override GraphicsBindResult DoRenderPass(HlslPass pass, QueueValidationMode mode, Action callback)
+    {
+        throw new NotImplementedException();
+    }
 
-        public override void SetMarker(string label)
-        {
-            throw new NotImplementedException();
-        }
+    protected override GraphicsBindResult DoComputePass(HlslPass pass)
+    {
+        throw new NotImplementedException();
+    }
 
-        protected override GraphicsBindResult DoRenderPass(HlslPass pass, QueueValidationMode mode, Action callback)
-        {
-            throw new NotImplementedException();
-        }
+    protected override ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, GraphicsMapType mapType)
+    {
+        throw new NotImplementedException();
+    }
 
-        protected override GraphicsBindResult DoComputePass(HlslPass pass)
-        {
-            throw new NotImplementedException();
-        }
+    protected override void OnUnmapResource(GraphicsResource resource, uint subresource)
+    {
+        throw new NotImplementedException();
+    }
 
-        protected override ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, GraphicsMapType mapType)
-        {
-            throw new NotImplementedException();
-        }
+    protected override unsafe void UpdateResource(GraphicsResource resource, uint subresource, ResourceRegion? region, void* ptrData, uint rowPitch, uint slicePitch)
+    {
+        throw new NotImplementedException();
+    }
 
-        protected override void OnUnmapResource(GraphicsResource resource, uint subresource)
-        {
-            throw new NotImplementedException();
-        }
+    protected override void CopyResource(GraphicsResource src, GraphicsResource dest)
+    {
+        throw new NotImplementedException();
+    }
 
-        protected override unsafe void UpdateResource(GraphicsResource resource, uint subresource, ResourceRegion? region, void* ptrData, uint rowPitch, uint slicePitch)
-        {
-            throw new NotImplementedException();
-        }
+    public override unsafe void CopyResourceRegion(GraphicsResource source, uint srcSubresource, ResourceRegion* sourceRegion, GraphicsResource dest, uint destSubresource, Vector3UI destStart)
+    {
+        throw new NotImplementedException();
+    }
 
-        protected override void CopyResource(GraphicsResource src, GraphicsResource dest)
-        {
-            throw new NotImplementedException();
-        }
+    protected override void OnDispose()
+    {
+        NativeUtil.ReleasePtr(ref _ptr);
+    }
 
-        public override unsafe void CopyResourceRegion(GraphicsResource source, uint srcSubresource, ResourceRegion* sourceRegion, GraphicsResource dest, uint destSubresource, Vector3UI destStart)
-        {
-            throw new NotImplementedException();
-        }
+    public override GraphicsBindResult Dispatch(HlslShader shader, Vector3UI groups)
+    {
+        throw new NotImplementedException();
+    }
 
-        protected override void OnDispose()
-        {
-            NativeUtil.ReleasePtr(ref _ptr);
-        }
+    protected override GraphicsBindResult CheckInstancing()
+    {
+        throw new NotImplementedException();
+    }
 
-        public override GraphicsBindResult Dispatch(HlslShader shader, Vector3UI groups)
-        {
-            throw new NotImplementedException();
-        }
+    internal ID3D12CommandQueue* Ptr => _ptr;
 
-        protected override GraphicsBindResult CheckInstancing()
-        {
-            throw new NotImplementedException();
-        }
+    internal Logger Log { get; }
 
-        internal ID3D12CommandQueue* Ptr => _ptr;
-
-        internal Logger Log { get; }
-
-        protected override GraphicsCommandList Cmd
-        {
-            get => throw new NotImplementedException();
-            set => throw new NotImplementedException();
-        }
+    protected override GraphicsCommandList Cmd
+    {
+        get => throw new NotImplementedException();
+        set => throw new NotImplementedException();
     }
 }
