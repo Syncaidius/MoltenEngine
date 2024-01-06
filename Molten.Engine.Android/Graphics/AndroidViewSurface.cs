@@ -80,107 +80,7 @@ public class AndroidViewSurface : INativeSurface
         OnHandleChanged?.Invoke(this);
     }
 
-    public void Close()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Present()
-    {
-        throw new NotImplementedException();
-    }
-
     public void Dispatch(Action callback)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Clear(Color color, GraphicsPriority priority)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Resize(uint newWidth, uint newHeight, uint newMipMapCount)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Resize(uint newWidth, uint newHeight, uint newMipMapCount, uint newArraySize, GraphicsFormat newFormat)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Resize(uint newWidth, uint newHeight)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Resize(uint newWidth, uint newMipMapCount, GraphicsFormat format)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Resize(uint newWidth)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void GenerateMipMaps()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void CopyTo(GraphicsPriority priority, GraphicsResource destination, Action<GraphicsResource> completeCallback)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void CopyTo(GraphicsPriority priority, uint sourceLevel, uint sourceSlice, GraphicsTexture destination, uint destLevel, uint destSlice, Action<GraphicsResource> completeCallback)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetData(TextureData data, uint srcMipIndex, uint srcArraySlice, uint mipCount, uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetData<T>(uint level, T[] data, uint startIndex, uint count, uint pitch, uint arraySlice = 0) where T : unmanaged
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetData(TextureSlice data, uint mipLevel, uint arraySlice)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetData<T>(RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0) where T : unmanaged
-    {
-        throw new NotImplementedException();
-    }
-
-    public void GetData(GraphicsTexture stagingTexture, Action<TextureData> callback)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void GetData(GraphicsTexture stagingTexture, uint level, uint arrayIndex, Action<TextureSlice> callback)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Dispose()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Apply(GraphicsQueue cmd)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void GraphicsRelease()
     {
         throw new NotImplementedException();
     }
@@ -195,7 +95,12 @@ public class AndroidViewSurface : INativeSurface
         throw new NotImplementedException();
     }
 
-    public void GenerateMipMaps(GraphicsPriority priority)
+    public void Clear(GraphicsPriority priority, Color color)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void GenerateMipMaps(GraphicsPriority priority, Action<GraphicsResource> completeCallback = null)
     {
         throw new NotImplementedException();
     }
@@ -215,37 +120,42 @@ public class AndroidViewSurface : INativeSurface
         throw new NotImplementedException();
     }
 
-    public void SetData<T>(GraphicsPriority priority, RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0, Action<GraphicsResource> completeCallback = null) where T : unmanaged
-    {
-        throw new NotImplementedException();
-    }
-
-    public void GetData(GraphicsPriority priority, GraphicsTexture stagingTexture, Action<TextureData> completeCallback = null)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void GetData(GraphicsPriority priority, GraphicsTexture stagingTexture, uint level, uint arrayIndex, Action<TextureSlice> completeCallback = null)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Clear(GraphicsPriority priority, Color color)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void GenerateMipMaps(GraphicsPriority priority, Action<GraphicsResource> completionCallback = null)
-    {
-        throw new NotImplementedException();
-    }
-
     public void SetData<T>(GraphicsPriority priority, ResourceRegion area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0, Action<GraphicsResource> completeCallback = null) where T : unmanaged
     {
         throw new NotImplementedException();
     }
 
+    public void GetData(GraphicsPriority priority, Action<TextureData> completeCallback = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void GetData(GraphicsPriority priority, uint level, uint arrayIndex, Action<TextureSlice> completeCallback = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void CopyTo(GraphicsPriority priority, GraphicsResource destination, Action<GraphicsResource> completeCallback = null)
+    {
+        throw new NotImplementedException();
+    }
+
     public void CopyTo(GraphicsPriority priority, uint sourceLevel, uint sourceSlice, GraphicsResource destination, uint destLevel, uint destSlice, Action<GraphicsResource> completeCallback = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Apply(GraphicsQueue cmd)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Dispose()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Close()
     {
         throw new NotImplementedException();
     }
@@ -258,12 +168,6 @@ public class AndroidViewSurface : INativeSurface
             TargetActivity.UnderlyingActivity.Title = value;
             TargetActivity.UnderlyingActivity.Window?.SetTitle(value);
         }
-    }
-
-    public string Name
-    {
-        get => throw new NotImplementedException();
-        set => throw new NotImplementedException();
     }
 
     public bool IsFocused
@@ -321,8 +225,6 @@ public class AndroidViewSurface : INativeSurface
 
     public MSAAQuality SampleQuality => throw new NotImplementedException();
 
-    public GraphicsTextureType TextureType => throw new NotImplementedException();
-
     public TextureDimensions Dimensions => throw new NotImplementedException();
 
     public bool IsReleased => throw new NotImplementedException();
@@ -332,4 +234,6 @@ public class AndroidViewSurface : INativeSurface
     GraphicsResourceHandle IGraphicsResource.Handle => throw new NotImplementedException();
 
     public ulong EOID => throw new NotImplementedException();
+
+    public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 }

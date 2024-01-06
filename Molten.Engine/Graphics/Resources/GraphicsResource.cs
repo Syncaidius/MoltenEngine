@@ -242,6 +242,24 @@ public abstract class GraphicsResource : GraphicsObject, IGraphicsResource
         }
     }
 
+    /// <summary>Copies all the data in the current <see cref="GraphicsResource"/> to the destination <see cref="GraphicsResource"/>.</summary>
+    /// <param name="priority">The priority of the operation</param>
+    /// <param name="destination">The <see cref="GraphicsResource"/> to copy to.</param>
+    /// <param name="sourceRegion"></param>
+    /// <param name="destByteOffset"></param>
+    /// <param name="completionCallback">A callback to invoke once the operation is completed.</param>
+    public void CopyTo(GraphicsPriority priority, GraphicsResource destination, ResourceRegion sourceRegion, uint destByteOffset = 0,
+        Action<GraphicsResource> completionCallback = null)
+    {
+        Device.Renderer.PushTask(priority, this, new SubResourceCopyTask()
+        {
+            CompletionCallback = completionCallback,
+            DestResource = destination,
+            DestStart = new Vector3UI(destByteOffset, 0, 0),
+            SrcRegion = sourceRegion,
+        });
+    }
+
     internal void Clear()
     {
         ApplyQueue.Clear();

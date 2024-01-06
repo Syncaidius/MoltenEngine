@@ -17,9 +17,10 @@ public abstract class GraphicsBuffer : GraphicsResource
     /// <typeparam name="T"></typeparam>
     /// <param name="priority"></param>
     /// <param name="data"></param>
+    /// <param name="discard">Discard the data currently in the buffer and allocate fresh memory for the provided data.</param>
     /// <param name="completeCallback"></param>
     public void SetData<T>(GraphicsPriority priority, T[] data, bool discard, Action completeCallback = null)
-where T : unmanaged
+        where T : unmanaged
     {
         SetData(priority, data, 0, (uint)data.Length, discard, 0, completeCallback);
     }
@@ -60,7 +61,7 @@ where T : unmanaged
             op.Data = new T[data.Length];
             op.DataStartIndex = 0;
             Array.Copy(data, (int)startIndex, op.Data, 0, elementCount);
-            Device.Renderer.PushTask(priority, this, op);
+            Device.Renderer.PushTask(priority, this, ref op);
         }
     }
 
@@ -88,24 +89,6 @@ where T : unmanaged
             Count = count,
             MapType = GraphicsMapType.Read,
             CompletionCallback = completionCallback,
-        });
-    }
-
-    /// <summary>Copies all the data in the current <see cref="GraphicsBuffer"/> to the destination <see cref="GraphicsBuffer"/>.</summary>
-    /// <param name="priority">The priority of the operation</param>
-    /// <param name="destination">The <see cref="GraphicsBuffer"/> to copy to.</param>
-    /// <param name="sourceRegion"></param>
-    /// <param name="destByteOffset"></param>
-    /// <param name="completionCallback">A callback to invoke once the operation is completed.</param>
-    public void CopyTo(GraphicsPriority priority, GraphicsBuffer destination, ResourceRegion sourceRegion, uint destByteOffset = 0,
-        Action<GraphicsResource> completionCallback = null)
-    {
-        Device.Renderer.PushTask(priority, this, new SubResourceCopyTask()
-        {
-            CompletionCallback = completionCallback,
-            DestResource = destination,
-            DestStart = new Vector3UI(destByteOffset, 0, 0),
-            SrcRegion = sourceRegion,
         });
     }
 

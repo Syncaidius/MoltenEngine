@@ -302,11 +302,23 @@ public abstract class RenderService : EngineService
     /// <summary>
     /// Queues a <see cref="IGraphicsResourceTask"/> on the current <see cref="GraphicsResource"/>.
     /// </summary>
-    /// <param name="priority"></param>
-    /// <param name="resource"></param>
-    /// <param name="op"></param>
+    /// <param name="priority">The priority of the task.</param>
+    /// <param name="resource">The <see cref="GraphicsResource"/>.</param>
+    /// <param name="op">The <see cref="IGraphicsResourceTask"/> to be pushed.</param>
     public void PushTask<T>(GraphicsPriority priority, GraphicsResource resource, T op)
-        where T : IGraphicsResourceTask, new()
+        where T : struct, IGraphicsResourceTask
+    {
+        PushTask(priority, resource, ref op);
+    }
+
+    /// <summary>
+    /// Queues a <see cref="IGraphicsResourceTask"/> on the current <see cref="GraphicsResource"/>.
+    /// </summary>
+    /// <param name="priority">The priority of the task.</param>
+    /// <param name="resource">The <see cref="GraphicsResource"/>.</param>
+    /// <param name="op">The <see cref="IGraphicsResourceTask"/> to be pushed.</param>
+    public void PushTask<T>(GraphicsPriority priority, GraphicsResource resource, ref T op)
+        where T : struct, IGraphicsResourceTask
     {
         switch (priority)
         {
@@ -322,7 +334,7 @@ public abstract class RenderService : EngineService
 
             case GraphicsPriority.StartOfFrame:
                 {
-                    RunResourceTask task = RunResourceTask.Get();
+                    RunResourceTask<T> task = RunResourceTask<T>.Get();
                     task.Task = op;
                     task.Resource = resource;
                     PushTask(RenderTaskPriority.StartOfFrame, task);
@@ -331,7 +343,7 @@ public abstract class RenderService : EngineService
 
             case GraphicsPriority.EndOfFrame:
                 {
-                    RunResourceTask task = RunResourceTask.Get();
+                    RunResourceTask<T> task = RunResourceTask<T>.Get();
                     task.Task = op;
                     task.Resource = resource;
                     PushTask(RenderTaskPriority.EndOfFrame, task);
@@ -340,6 +352,12 @@ public abstract class RenderService : EngineService
         }
     }
 
+    /// <summary>
+    /// Queues a <see cref="RenderTask"/> on the current <see cref="GraphicsResource"/>.
+    /// </summary>
+    /// <param name="priority">The priority of the task.</param>
+    /// <param name="resource">The <see cref="GraphicsResource"/>.</param>
+    /// <param name="op">The <see cref="IGraphicsResourceTask"/> to be pushed.</param>
     public void PushTask(RenderTaskPriority priority, RenderTask task)
     {
         _tasks[priority].Enqueue(task);

@@ -1,15 +1,16 @@
 ﻿namespace Molten.Graphics;
 
-internal class RunResourceTask : RenderTask<RunResourceTask>
+internal class RunResourceTask<T> : RenderTask<RunResourceTask<T>>
+    where T : struct, IGraphicsResourceTask
 {
-    internal IGraphicsResourceTask Task;
+    internal T Task;
 
     internal GraphicsResource Resource;
 
     public override void ClearForPool()
     {
         Resource = null;
-        Task = null;
+        Task = default;
     }
 
     public override void Process(RenderService renderer)
