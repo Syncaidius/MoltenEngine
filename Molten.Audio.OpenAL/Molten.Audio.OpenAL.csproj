@@ -18,7 +18,7 @@
     <PackageTags>game engine;cross platform;openal;audio;sound;sfx;</PackageTags>
     <PackageReleaseNotes>Initial release of Molten Engine.</PackageReleaseNotes>
     <PackageIcon>logo_128.png</PackageIcon>
-    <Version>0.7.4</Version>
+    <Version>0.8.0</Version>
     <Company>James Yarwood</Company>
   </PropertyGroup>
 	
