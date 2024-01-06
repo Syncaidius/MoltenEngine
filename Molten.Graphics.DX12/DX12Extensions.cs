@@ -1,14 +1,13 @@
-﻿using System.Runtime.CompilerServices;
-using Silk.NET.Direct3D12;
+﻿using Silk.NET.Direct3D12;
+using System.Runtime.CompilerServices;
 
-namespace Molten.Graphics.DX12
+namespace Molten.Graphics.DX12;
+
+internal static class DX12Extensions
 {
-    internal static class DX12Extensions
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool HasFlag(this DescriptorHeapFlags flags, DescriptorHeapFlags flag)
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool HasFlag(this DescriptorHeapFlags flags, DescriptorHeapFlags flag)
-        {
-            return (flags & flag) == flag;
-        }
+        return (flags & flag) == flag;
     }
 }

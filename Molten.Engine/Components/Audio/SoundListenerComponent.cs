@@ -1,15 +1,14 @@
-﻿namespace Molten.Audio
-{
-    public class SoundListenerComponent : SceneComponent
-    {
-        protected override void OnDispose()
-        {
-            throw new NotImplementedException();
-        }
+﻿namespace Molten.Audio;
 
-        public override void OnUpdate(Timing time)
-        {
-            base.OnUpdate(time);
-        }
+public class SoundListenerComponent : SceneComponent
+{
+    protected override void OnDispose()
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void OnUpdate(Timing time)
+    {
+        base.OnUpdate(time);
     }
 }

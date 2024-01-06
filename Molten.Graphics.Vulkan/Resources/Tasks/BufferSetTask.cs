@@ -1,10 +1,9 @@
-﻿namespace Molten.Graphics.Vulkan
+﻿namespace Molten.Graphics.Vulkan;
+
+internal struct BufferSetTask : IGraphicsResourceTask
 {
-    internal struct BufferSetTask : IGraphicsResourceTask
+    public bool Process(GraphicsQueue queue, GraphicsResource resource)
     {
-        public bool Process(GraphicsQueue queue, GraphicsResource resource)
-        {
-            throw new NotImplementedException();
-        }
+        throw new NotImplementedException();
     }
 }

@@ -1,25 +1,24 @@
-﻿namespace Molten
+﻿namespace Molten;
+
+public enum LogCategory
 {
-    public enum LogCategory
-    {
-        /// <summary>
-        /// A general message.
-        /// </summary>
-        Message = 0,
+    /// <summary>
+    /// A general message.
+    /// </summary>
+    Message = 0,
 
-        /// <summary>
-        /// A warning message.
-        /// </summary>
-        Warning = 1,
+    /// <summary>
+    /// A warning message.
+    /// </summary>
+    Warning = 1,
 
-        /// <summary>
-        /// An error message.
-        /// </summary>
-        Error = 2,
+    /// <summary>
+    /// An error message.
+    /// </summary>
+    Error = 2,
 
-        /// <summary>
-        /// A debug message.
-        /// </summary>
-        Debug = 3,
-    }
+    /// <summary>
+    /// A debug message.
+    /// </summary>
+    Debug = 3,
 }

@@ -1,137 +1,136 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics;
+
+/// <summary>
+/// Based on the D3D shader variable type enum: D3D_SHADER_VARIABLE_TYPE .
+/// <param>See: https://learn.microsoft.com/en-us/windows/win32/api/d3dcommon/ne-d3dcommon-d3d_shader_variable_type</param>
+/// </summary>
+public enum ShaderVariableType
 {
-    /// <summary>
-    /// Based on the D3D shader variable type enum: D3D_SHADER_VARIABLE_TYPE .
-    /// <param>See: https://learn.microsoft.com/en-us/windows/win32/api/d3dcommon/ne-d3dcommon-d3d_shader_variable_type</param>
-    /// </summary>
-    public enum ShaderVariableType
-    {
-        Void = 0,
+    Void = 0,
 
-        Bool = 1,
+    Bool = 1,
 
-        Int = 2,
+    Int = 2,
 
-        Float = 3,
+    Float = 3,
 
-        String = 4,
+    String = 4,
 
-        Texture = 5,
+    Texture = 5,
 
-        Texture1D = 6,
+    Texture1D = 6,
 
-        Texture2D = 7,
+    Texture2D = 7,
 
-        Texture3D = 8,
+    Texture3D = 8,
 
-        TextureCube = 9,
+    TextureCube = 9,
 
-        Sampler = 10,
+    Sampler = 10,
 
-        Sampler1D = 11,
+    Sampler1D = 11,
 
-        Sampler2D = 12,
+    Sampler2D = 12,
 
-        Sampler3D = 13,
+    Sampler3D = 13,
 
-        SamplerCube = 14,
+    SamplerCube = 14,
 
-        PixelShader = 0xF,
+    PixelShader = 0xF,
 
-        VertexShader = 0x10,
+    VertexShader = 0x10,
 
-        PixelFragment = 17,
+    PixelFragment = 17,
 
-        VertexFragment = 18,
+    VertexFragment = 18,
 
-        UInt = 19,
+    UInt = 19,
 
-        UInt8 = 20,
+    UInt8 = 20,
 
-        GeometryShader = 21,
+    GeometryShader = 21,
 
-        Rasterizer = 22,
+    Rasterizer = 22,
 
-        DepthStencil = 23,
+    DepthStencil = 23,
 
-        Blend = 24,
+    Blend = 24,
 
-        Buffer = 25,
+    Buffer = 25,
 
-        ConstantBuffer = 26,
+    ConstantBuffer = 26,
 
-        TextureBuffer = 27,
+    TextureBuffer = 27,
 
-        Texture1DArray = 28,
+    Texture1DArray = 28,
 
-        Texture2DArray = 29,
+    Texture2DArray = 29,
 
-        RenderTargetView = 30,
+    RenderTargetView = 30,
 
-        DepthStencilView = 0x1F,
+    DepthStencilView = 0x1F,
 
-        Texture2DMS = 0x20,
+    Texture2DMS = 0x20,
 
-        Texture2DMSArray = 33,
+    Texture2DMSArray = 33,
 
-        TextureCubeArray = 34,
+    TextureCubeArray = 34,
 
-        HullShader = 35,
+    HullShader = 35,
 
-        DomainShader = 36,
+    DomainShader = 36,
 
-        InterfacePointer = 37,
+    InterfacePointer = 37,
 
-        ComputeShader = 38,
+    ComputeShader = 38,
 
-        Double = 39,
+    Double = 39,
 
-        RWTexture1D = 40,
+    RWTexture1D = 40,
 
-        RWTexture1DArray = 41,
+    RWTexture1DArray = 41,
 
-        RWTexture2D = 42,
+    RWTexture2D = 42,
 
-        RWTexture2DArray = 43,
+    RWTexture2DArray = 43,
 
-        RWTexture3D = 44,
+    RWTexture3D = 44,
 
-        RWBuffer = 45,
+    RWBuffer = 45,
 
-        ByteAddressBuffer = 46,
+    ByteAddressBuffer = 46,
 
-        RWByteAddressBuffer = 47,
+    RWByteAddressBuffer = 47,
 
-        StructuredBuffer = 48,
+    StructuredBuffer = 48,
 
-        RWStructuredBuffer = 49,
+    RWStructuredBuffer = 49,
 
-        AppendStructuredBuffer = 50,
+    AppendStructuredBuffer = 50,
 
-        ConsumeStructuredBuffer = 51,
+    ConsumeStructuredBuffer = 51,
 
-        Min8Float = 52,
+    Min8Float = 52,
 
-        Min10Float = 53,
+    Min10Float = 53,
 
-        Min16Float = 54,
+    Min16Float = 54,
 
-        Min12Int = 55,
+    Min12Int = 55,
 
-        Min16Int = 56,
+    Min16Int = 56,
 
-        Min16UInt = 57,
+    Min16UInt = 57,
 
-        Int16 = 58,
+    Int16 = 58,
 
-        UInt16 = 59,
+    UInt16 = 59,
 
-        Float16 = 60,
+    Float16 = 60,
 
-        Int64 = 61,
+    Int64 = 61,
 
-        UInt64 = 62,
+    UInt64 = 62,
 
-        ForceDWord = 0x7fffffff,
-    }
+    ForceDWord = 0x7fffffff,
 }

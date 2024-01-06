@@ -1,124 +1,123 @@
-﻿namespace Molten.Graphics.Dxc
+﻿namespace Molten.Graphics.Dxc;
+
+/// <summary>
+/// See for info: https://github.com/microsoft/DirectXShaderCompiler/blob/dc7789738c51994559424c67629acc90f4ba69ad/include/dxc/dxcapi.h#L135
+/// </summary>
+public enum DxcCompilerArg
 {
+    None = 0,
+
+    DebugNameForBinary = 1,
+
+    DebugNameForSource = 2,
+
+    AllResourcesBound = 3,
+
+    ResourcesMayAlias = 4,
+
+    WarningsAreErrors = 5,
+
+    OptimizationLevel3 = 6,
+
+    OptimizationLevel2 = 7,
+
+    OptimizationLevel1 = 8,
+
+    OptimizationLevel0 = 9,
+
+    IeeeStrictness = 10,
+
+    EnableBackwardsCompatibility = 11,
+
+    EnableStrictness = 12,
+
+    PreferFlowControl = 13,
+
+    AvoidFlowControl = 14,
+
+    PackMatrixRowMajor = 15,
+
+    PackMatrixColumnMajor = 16,
+
+    Debug = 17,
+
+    SkipValidation = 18,
+
+    SkipOptimizations = 19,
+
+    EntryPoint = 20,
+
+    TargetProfile = 21,
+
+    NoLogo = 22,
+
     /// <summary>
-    /// See for info: https://github.com/microsoft/DirectXShaderCompiler/blob/dc7789738c51994559424c67629acc90f4ba69ad/include/dxc/dxcapi.h#L135
+    /// Don't emit warnings for unused driver arguments
     /// </summary>
-    public enum DxcCompilerArg
-    {
-        None = 0,
+    IgnoreUnusedArgs = 23,
 
-        DebugNameForBinary = 1,
+    OutputAssemblyFile = 24,
 
-        DebugNameForSource = 2,
+    OutputDebugFile = 25,
 
-        AllResourcesBound = 3,
+    OutputErrorFile = 26,
 
-        ResourcesMayAlias = 4,
+    OutputHeaderFile = 27,
 
-        WarningsAreErrors = 5,
+    OutputObjectFile = 28,
 
-        OptimizationLevel3 = 6,
+    /// <summary>
+    /// Output hexadecimal literals
+    /// </summary>
+    OutputHexLiterals = 29,
 
-        OptimizationLevel2 = 7,
+    /// <summary>
+    /// Output instruction numbers in assembly listings
+    /// </summary>
+    OutputInstructionNumbers = 30,
 
-        OptimizationLevel1 = 8,
+    NoWarnings = 31,
 
-        OptimizationLevel0 = 9,
+    /// <summary>
+    /// Output instruction byte offsets in assembly listings
+    /// </summary>
+    OutputInstructionOffsets = 32,
 
-        IeeeStrictness = 10,
+    StripDebug = 33,
 
-        EnableBackwardsCompatibility = 11,
+    StripPrivate = 34,
 
-        EnableStrictness = 12,
+    StripReflection = 35,
 
-        PreferFlowControl = 13,
+    StripRootSignature = 36,
 
-        AvoidFlowControl = 14,
+    /// <summary>
+    /// Send pre-processing results to file. This argument must be used alone.
+    /// </summary>
+    PreProcessToFile = 37,
 
-        PackMatrixRowMajor = 15,
+    /// <summary>
+    /// Tells DXC to compile HLSL to Spr-V bytecode.
+    /// </summary>
+    SpirV = 38,
 
-        PackMatrixColumnMajor = 16,
+    /// <summary>
+    /// Tells DXC what version of HLSL we are compiling. e.g. "2021".
+    /// </summary>
+    HlslVersion = 39,
 
-        Debug = 17,
+    /// <summary>
+    /// The version of vulkan to target. e.g. "vulkan1.0", "vulkan1.1", "vulkan1.1spirv1.4", "vulkan1.2", "vulkan1.3" or "universal1.5".
+    /// </summary>
+    VulkanVersion = 40,
 
-        SkipValidation = 18,
+    /// <summary>
+    /// Emit additional SPIR-V instructions to aid reflection. Only works if <see cref="DxcCompilerArg.SpirV"/> is set.
+    /// </summary>
+    SpirVReflection = 41,
 
-        SkipOptimizations = 19,
-
-        EntryPoint = 20,
-
-        TargetProfile = 21,
-
-        NoLogo = 22,
-
-        /// <summary>
-        /// Don't emit warnings for unused driver arguments
-        /// </summary>
-        IgnoreUnusedArgs = 23,
-
-        OutputAssemblyFile = 24,
-
-        OutputDebugFile = 25,
-
-        OutputErrorFile = 26,
-
-        OutputHeaderFile = 27,
-
-        OutputObjectFile = 28,
-
-        /// <summary>
-        /// Output hexadecimal literals
-        /// </summary>
-        OutputHexLiterals = 29,
-
-        /// <summary>
-        /// Output instruction numbers in assembly listings
-        /// </summary>
-        OutputInstructionNumbers = 30,
-
-        NoWarnings = 31,
-
-        /// <summary>
-        /// Output instruction byte offsets in assembly listings
-        /// </summary>
-        OutputInstructionOffsets = 32,
-
-        StripDebug = 33,
-
-        StripPrivate = 34,
-
-        StripReflection = 35,
-
-        StripRootSignature = 36,
-
-        /// <summary>
-        /// Send pre-processing results to file. This argument must be used alone.
-        /// </summary>
-        PreProcessToFile = 37,
-
-        /// <summary>
-        /// Tells DXC to compile HLSL to Spr-V bytecode.
-        /// </summary>
-        SpirV = 38,
-
-        /// <summary>
-        /// Tells DXC what version of HLSL we are compiling. e.g. "2021".
-        /// </summary>
-        HlslVersion = 39,
-
-        /// <summary>
-        /// The version of vulkan to target. e.g. "vulkan1.0", "vulkan1.1", "vulkan1.1spirv1.4", "vulkan1.2", "vulkan1.3" or "universal1.5".
-        /// </summary>
-        VulkanVersion = 40,
-
-        /// <summary>
-        /// Emit additional SPIR-V instructions to aid reflection. Only works if <see cref="DxcCompilerArg.SpirV"/> is set.
-        /// </summary>
-        SpirVReflection = 41,
-
-        /// <summary>
-        /// Use DirectX memory layout for Vulkan resources
-        /// </summary>
-        SpriVDirectXLayout = 42,
-    }
+    /// <summary>
+    /// Use DirectX memory layout for Vulkan resources
+    /// </summary>
+    SpriVDirectXLayout = 42,
 }

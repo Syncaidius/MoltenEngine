@@ -1,25 +1,24 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics;
+
+/// <summary>
+/// Based on the D3D shader input flags enum: D3D_SHADER_INPUT_FLAGS.
+/// <param>See: https://learn.microsoft.com/en-us/windows/win32/api/d3dcommon/ne-d3dcommon-d3d_shader_input_flags</param>
+/// </summary>
+public enum ShaderInputFlags
 {
-    /// <summary>
-    /// Based on the D3D shader input flags enum: D3D_SHADER_INPUT_FLAGS.
-    /// <param>See: https://learn.microsoft.com/en-us/windows/win32/api/d3dcommon/ne-d3dcommon-d3d_shader_input_flags</param>
-    /// </summary>
-    public enum ShaderInputFlags
-    {
-        None = 0x0,
+    None = 0x0,
 
-        Userpacked = 0x1,
+    Userpacked = 0x1,
 
-        ComparisonSampler = 0x2,
+    ComparisonSampler = 0x2,
 
-        TextureComponent0 = 0x4,
+    TextureComponent0 = 0x4,
 
-        TextureComponent1 = 0x8,
+    TextureComponent1 = 0x8,
 
-        TextureComponents = 0xC,
+    TextureComponents = 0xC,
 
-        Unused = 0x10,
+    Unused = 0x10,
 
-        ForceDword = int.MaxValue
-    }
+    ForceDword = int.MaxValue
 }

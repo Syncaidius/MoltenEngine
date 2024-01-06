@@ -1,12 +1,11 @@
-﻿namespace Molten.Graphics
-{
-    public class GraphicsDeviceException : Exception
-    {
-        public GraphicsDeviceException(GraphicsDevice device, string message) : base(message)
-        {
-            Device = device;
-        }
+﻿namespace Molten.Graphics;
 
-        public GraphicsDevice Device { get; private set; }
+public class GraphicsDeviceException : Exception
+{
+    public GraphicsDeviceException(GraphicsDevice device, string message) : base(message)
+    {
+        Device = device;
     }
+
+    public GraphicsDevice Device { get; private set; }
 }

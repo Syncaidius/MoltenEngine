@@ -1,9 +1,8 @@
-﻿namespace Molten.Graphics
-{
-    public enum VertexInputType
-    {
-        PerVertexData = 0,
+﻿namespace Molten.Graphics;
 
-        PerInstanceData = 1,
-    }
+public enum VertexInputType
+{
+    PerVertexData = 0,
+
+    PerInstanceData = 1,
 }

@@ -1,11 +1,10 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics;
+
+public enum TypedBufferFormat
 {
-    public enum TypedBufferFormat
-    {
-        UInt32 = 0,
+    UInt32 = 0,
 
-        Int32 = 1,
+    Int32 = 1,
 
-        Float = 2,
-    }
+    Float = 2,
 }

@@ -1,37 +1,36 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics;
+
+[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+public class ShaderNodeAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public class ShaderNodeAttribute : Attribute
+    public ShaderNodeAttribute(ShaderNodeParseType parseType)
     {
-        public ShaderNodeAttribute(ShaderNodeParseType parseType)
-        {
-            ParseType = parseType;
-        }
-
-        public ShaderNodeParseType ParseType { get; }
+        ParseType = parseType;
     }
 
-    public enum ShaderNodeParseType
-    {
-        Enum = 0,
+    public ShaderNodeParseType ParseType { get; }
+}
 
-        Byte = 1,
+public enum ShaderNodeParseType
+{
+    Enum = 0,
 
-        Int32 = 2,
+    Byte = 1,
 
-        UInt32 = 3,
+    Int32 = 2,
 
-        Float = 4,
+    UInt32 = 3,
 
-        Bool = 5,
+    Float = 4,
 
-        String = 6,
+    Bool = 5,
 
-        Object = 7,
+    String = 6,
 
-        /// <summary>
-        /// RGBA color. For example "255 255 255 255" for white.
-        /// </summary>
-        Color = 8,
-    }
+    Object = 7,
+
+    /// <summary>
+    /// RGBA color. For example "255 255 255 255" for white.
+    /// </summary>
+    Color = 8,
 }

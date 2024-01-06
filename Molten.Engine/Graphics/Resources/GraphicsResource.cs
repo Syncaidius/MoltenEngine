@@ -21,7 +21,7 @@ public abstract class GraphicsResource : GraphicsObject, IGraphicsResource
                 throw new GraphicsResourceException(this, "Staging textures cannot allow shader access. Add GraphicsResourceFlags.NoShaderAccess flag.");
 
             // Staging buffers cannot have any other flags aside from 
-            if (Flags != (GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.CpuRead | GraphicsResourceFlags.None | GraphicsResourceFlags.GpuWrite))
+            if (!Flags.Has(GraphicsResourceFlags.AllReadWrite))
                 throw new GraphicsResourceException(this, "Staging textures must have all CPU/GPU read and write flags.");
         }
     }

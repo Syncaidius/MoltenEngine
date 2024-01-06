@@ -1,9 +1,8 @@
-﻿namespace Molten.Net.Message
+﻿namespace Molten.Net.Message;
+
+public interface INetworkMessage
 {
-    public interface INetworkMessage
-    {
-        byte[] Data { get; }
-        int Sequence { get; }
-        DeliveryMethod DeliveryMethod { get; }
-    }
+    byte[] Data { get; }
+    int Sequence { get; }
+    DeliveryMethod DeliveryMethod { get; }
 }

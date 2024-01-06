@@ -1,7 +1,6 @@
-﻿namespace Molten.UI
+﻿namespace Molten.UI;
+
+public class UICancelEventArgs : EventArgs
 {
-    public class UICancelEventArgs : EventArgs
-    {
-        public bool Cancel { get; set; }
-    }
+    public bool Cancel { get; set; }
 }

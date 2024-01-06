@@ -1,11 +1,10 @@
-﻿namespace Molten.UI
-{
-    public enum UIHorizonalAlignment
-    {
-        Left = 0,
+﻿namespace Molten.UI;
 
-        Center = 1,
-        
-        Right = 2,
-    }
+public enum UIHorizonalAlignment
+{
+    Left = 0,
+
+    Center = 1,
+    
+    Right = 2,
 }

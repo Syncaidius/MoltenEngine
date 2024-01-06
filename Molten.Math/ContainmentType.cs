@@ -1,23 +1,22 @@
-﻿namespace Molten
+﻿namespace Molten;
+
+/// <summary>
+/// Describes how one bounding volume contains another.
+/// </summary>
+public enum ContainmentType
 {
     /// <summary>
-    /// Describes how one bounding volume contains another.
+    /// The two bounding volumes don't intersect at all.
     /// </summary>
-    public enum ContainmentType
-    {
-        /// <summary>
-        /// The two bounding volumes don't intersect at all.
-        /// </summary>
-        Disjoint,
+    Disjoint,
 
-        /// <summary>
-        /// One bounding volume completely contains another.
-        /// </summary>
-        Contains,
+    /// <summary>
+    /// One bounding volume completely contains another.
+    /// </summary>
+    Contains,
 
-        /// <summary>
-        /// The two bounding volumes overlap.
-        /// </summary>
-        Intersects
-    }
+    /// <summary>
+    /// The two bounding volumes overlap.
+    /// </summary>
+    Intersects
 }

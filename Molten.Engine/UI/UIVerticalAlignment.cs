@@ -1,11 +1,10 @@
-﻿namespace Molten.UI
+﻿namespace Molten.UI;
+
+public enum UIVerticalAlignment
 {
-    public enum UIVerticalAlignment
-    {
-        Top = 0,
+    Top = 0,
 
-        Center = 1,
+    Center = 1,
 
-        Bottom = 2,
-    }
+    Bottom = 2,
 }

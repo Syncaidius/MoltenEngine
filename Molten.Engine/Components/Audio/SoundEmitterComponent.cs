@@ -1,37 +1,36 @@
-﻿namespace Molten.Audio
+﻿namespace Molten.Audio;
+
+public class SoundEmitterComponent : SceneComponent
 {
-    public class SoundEmitterComponent : SceneComponent
+    ISoundSource _sound;
+
+    protected override void OnDispose()
     {
-        ISoundSource _sound;
+        throw new NotImplementedException();
+    }
 
-        protected override void OnDispose()
-        {
-            throw new NotImplementedException();
-        }
+    public override void OnUpdate(Timing time)
+    {
+        base.OnUpdate(time);
+    }
 
-        public override void OnUpdate(Timing time)
+    public ISoundSource Sound
+    {
+        get => _sound;
+        set
         {
-            base.OnUpdate(time);
-        }
-
-        public ISoundSource Sound
-        {
-            get => _sound;
-            set
+            if (_sound != value)
             {
-                if (_sound != value)
+                if (_sound != null)
                 {
-                    if (_sound != null)
-                    {
-                        // TODO unbind old _sound
-                    }
+                    // TODO unbind old _sound
+                }
 
-                    _sound = value;
+                _sound = value;
 
-                    if (_sound != null)
-                    {
-                        // TODO bind new _sound
-                    }
+                if (_sound != null)
+                {
+                    // TODO bind new _sound
                 }
             }
         }

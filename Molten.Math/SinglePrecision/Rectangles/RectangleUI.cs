@@ -1,8 +1,8 @@
+using Molten.DoublePrecision;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
-using Molten.DoublePrecision;
 
 namespace Molten;
 

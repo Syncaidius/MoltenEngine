@@ -1,38 +1,37 @@
 ﻿using Molten.IO;
 
-namespace Molten.Font
-{
-    public partial class GPOS
-    {
-        public class Class1Record
-        {
-            public Class2Record[] Records { get; private set; }
+namespace Molten.Font;
 
-            internal Class1Record(EnhancedBinaryReader reader, ushort class2Count, ValueFormat format1, ValueFormat format2)
+public partial class GPOS
+{
+    public class Class1Record
+    {
+        public Class2Record[] Records { get; private set; }
+
+        internal Class1Record(EnhancedBinaryReader reader, ushort class2Count, ValueFormat format1, ValueFormat format2)
+        {
+            Records = new Class2Record[class2Count];
+            for (int i = 0; i < class2Count; i++)
             {
-                Records = new Class2Record[class2Count];
-                for (int i = 0; i < class2Count; i++)
+                Records[i] = new Class2Record()
                 {
-                    Records[i] = new Class2Record()
-                    {
-                        Record1 = new ValueRecord(reader, format1),
-                        Record2 = new ValueRecord(reader, format2),
-                    };
-                }
+                    Record1 = new ValueRecord(reader, format1),
+                    Record2 = new ValueRecord(reader, format2),
+                };
             }
         }
+    }
 
-        public class Class2Record
-        {
-            /// <summary>
-            /// Gets the positioning data for the first glyph.
-            /// </summary>
-            public ValueRecord Record1 { get; internal set; }
+    public class Class2Record
+    {
+        /// <summary>
+        /// Gets the positioning data for the first glyph.
+        /// </summary>
+        public ValueRecord Record1 { get; internal set; }
 
-            /// <summary>
-            /// Gets the positioning data for the second glyph.
-            /// </summary>
-            public ValueRecord Record2 { get; internal set; }
-        }
+        /// <summary>
+        /// Gets the positioning data for the second glyph.
+        /// </summary>
+        public ValueRecord Record2 { get; internal set; }
     }
 }

@@ -1,7 +1,7 @@
-﻿using System.Reflection;
-using Silk.NET.Core.Attributes;
+﻿using Silk.NET.Core.Attributes;
 using Silk.NET.Core.Native;
 using Silk.NET.Vulkan;
+using System.Reflection;
 
 namespace Molten.Graphics.Vulkan;
 

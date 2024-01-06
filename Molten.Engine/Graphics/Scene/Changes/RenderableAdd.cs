@@ -1,32 +1,31 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics;
+
+/// <summary>A <see cref="RenderSceneChange"/> for adding a <see cref="IRenderable"/> to the root of a scene.</summary>
+internal class RenderableAdd : RenderSceneChange<RenderableAdd>
 {
-    /// <summary>A <see cref="RenderSceneChange"/> for adding a <see cref="IRenderable"/> to the root of a scene.</summary>
-    internal class RenderableAdd : RenderSceneChange<RenderableAdd>
+    public Renderable Renderable;
+
+    public ObjectRenderData Data;
+
+    public LayerRenderData LayerData;
+
+    public override void ClearForPool()
     {
-        public Renderable Renderable;
+        Renderable = default;
+        Data = null;
+        LayerData = null;
+    }
 
-        public ObjectRenderData Data;
-
-        public LayerRenderData LayerData;
-
-        public override void ClearForPool()
+    public override void Process()
+    {
+        RenderDataBatch batch;
+        if (!LayerData.Renderables.TryGetValue(Renderable, out batch))
         {
-            Renderable = default;
-            Data = null;
-            LayerData = null;
+            batch = new RenderDataBatch();
+            LayerData.Renderables.Add(Renderable, batch);
         }
 
-        public override void Process()
-        {
-            RenderDataBatch batch;
-            if (!LayerData.Renderables.TryGetValue(Renderable, out batch))
-            {
-                batch = new RenderDataBatch();
-                LayerData.Renderables.Add(Renderable, batch);
-            }
-
-            batch.Add(Data);
-            Recycle(this);
-        }
+        batch.Add(Data);
+        Recycle(this);
     }
 }

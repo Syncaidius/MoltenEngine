@@ -1,19 +1,18 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics;
+
+/// <summary>A <see cref="RenderSceneChange"/> for adding a <see cref="SceneObject"/> to the root of a scene.</summary>
+internal class EngineRemoveScene : EngineTask<EngineRemoveScene>
 {
-    /// <summary>A <see cref="RenderSceneChange"/> for adding a <see cref="SceneObject"/> to the root of a scene.</summary>
-    internal class EngineRemoveScene : EngineTask<EngineRemoveScene>
+    public Scene Scene;
+
+    public override void ClearForPool()
     {
-        public Scene Scene;
+        Scene = null;
+    }
 
-        public override void ClearForPool()
-        {
-            Scene = null;
-        }
-
-        public override void Process(Engine engine, Timing time)
-        {
-            engine.Scenes.Remove(Scene);
-            Recycle(this);
-        }
+    public override void Process(Engine engine, Timing time)
+    {
+        engine.Scenes.Remove(Scene);
+        Recycle(this);
     }
 }

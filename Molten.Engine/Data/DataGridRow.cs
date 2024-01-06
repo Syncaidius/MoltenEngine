@@ -1,36 +1,35 @@
-﻿namespace Molten.Data
+﻿namespace Molten.Data;
+
+public class DataGridRow
 {
-    public class DataGridRow
+    DataGrid _grid;
+
+    internal DataGridRow(DataGrid grid)
     {
-        DataGrid _grid;
+        _grid = grid;
+    }
 
-        internal DataGridRow(DataGrid grid)
+    public int RowID { get; internal set; }
+
+    /// <summary>
+    /// Gets or sets a value in the current <see cref="DataGridRow"/>, at the specified column index.
+    /// </summary>
+    /// <param name="columnIndex"></param>
+    /// <returns></returns>
+    /// <exception cref="IndexOutOfRangeException"></exception>
+    public object this[int columnIndex]
+    {
+        get
         {
-            _grid = grid;
+            IDataSet column = _grid.Columns[columnIndex];
+            return RowID < column.Count ? column[RowID] : null;
         }
-
-        public int RowID { get; internal set; }
-
-        /// <summary>
-        /// Gets or sets a value in the current <see cref="DataGridRow"/>, at the specified column index.
-        /// </summary>
-        /// <param name="columnIndex"></param>
-        /// <returns></returns>
-        /// <exception cref="IndexOutOfRangeException"></exception>
-        public object this[int columnIndex]
+        set
         {
-            get
-            {
-                IDataSet column = _grid.Columns[columnIndex];
-                return RowID < column.Count ? column[RowID] : null;
-            }
-            set
-            {
-                if (columnIndex > _grid.Columns.Count)
-                    throw new IndexOutOfRangeException("The column index exceeds the number of columns in the data-grid.");
+            if (columnIndex > _grid.Columns.Count)
+                throw new IndexOutOfRangeException("The column index exceeds the number of columns in the data-grid.");
 
-                _grid.Columns[columnIndex][RowID] = value;
-            }
+            _grid.Columns[columnIndex][RowID] = value;
         }
     }
 }

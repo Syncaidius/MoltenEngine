@@ -1,50 +1,49 @@
 ﻿using Silk.NET.Vulkan;
 
-namespace Molten.Graphics.Vulkan
+namespace Molten.Graphics.Vulkan;
+
+internal struct DepthClearTaskVK : IGraphicsResourceTask
 {
-    internal struct DepthClearTaskVK : IGraphicsResourceTask
+    public float DepthValue;
+
+    public uint StencilValue;
+
+    public unsafe bool Process(GraphicsQueue queue, GraphicsResource resource)
     {
-        public float DepthValue;
+        // TODO Implement proper handling of barrier transitions.
+        //  -- Transition from the current layout to the one we need.
+        //  -- Transition back to the original layout once we're done.
 
-        public uint StencilValue;
+        DepthSurfaceVK surface = resource as DepthSurfaceVK;
 
-        public unsafe bool Process(GraphicsQueue queue, GraphicsResource resource)
+        if (surface.ApplyQueue.Count > 0)
         {
-            // TODO Implement proper handling of barrier transitions.
-            //  -- Transition from the current layout to the one we need.
-            //  -- Transition back to the original layout once we're done.
+            surface.ClearValue = null;
 
-            DepthSurfaceVK surface = resource as DepthSurfaceVK;
+            GraphicsQueueVK vkCmd = queue as GraphicsQueueVK;
+            surface.Ensure(queue);
 
-            if (surface.ApplyQueue.Count > 0)
+            vkCmd.Sync(GraphicsCommandListFlags.SingleSubmit);
+            surface.Transition(vkCmd, ImageLayout.Undefined, ImageLayout.TransferDstOptimal);
+
+            ImageSubresourceRange range = new ImageSubresourceRange
             {
-                surface.ClearValue = null;
+                AspectMask = ImageAspectFlags.ColorBit,
+                BaseArrayLayer = 0,
+                LayerCount = surface.ArraySize,
+                BaseMipLevel = 0,
+                LevelCount = surface.MipMapCount,
+            };
 
-                GraphicsQueueVK vkCmd = queue as GraphicsQueueVK;
-                surface.Ensure(queue);
-
-                vkCmd.Sync(GraphicsCommandListFlags.SingleSubmit);
-                surface.Transition(vkCmd, ImageLayout.Undefined, ImageLayout.TransferDstOptimal);
-
-                ImageSubresourceRange range = new ImageSubresourceRange
-                {
-                    AspectMask = ImageAspectFlags.ColorBit,
-                    BaseArrayLayer = 0,
-                    LayerCount = surface.ArraySize,
-                    BaseMipLevel = 0,
-                    LevelCount = surface.MipMapCount,
-                };
-
-                vkCmd.ClearDepthImage(*surface.Handle.NativePtr, ImageLayout.TransferDstOptimal, DepthValue, StencilValue, &range, 1);
-                surface.Transition(vkCmd, ImageLayout.TransferDstOptimal, ImageLayout.DepthAttachmentOptimal);
-                vkCmd.Sync();
-            }
-            else
-            {
-                surface.ClearValue = new ClearDepthStencilValue(DepthValue, StencilValue);
-            }
-
-            return true;
+            vkCmd.ClearDepthImage(*surface.Handle.NativePtr, ImageLayout.TransferDstOptimal, DepthValue, StencilValue, &range, 1);
+            surface.Transition(vkCmd, ImageLayout.TransferDstOptimal, ImageLayout.DepthAttachmentOptimal);
+            vkCmd.Sync();
         }
+        else
+        {
+            surface.ClearValue = new ClearDepthStencilValue(DepthValue, StencilValue);
+        }
+
+        return true;
     }
 }

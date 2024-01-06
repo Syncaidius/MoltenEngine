@@ -1,22 +1,21 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics;
+
+/// <summary>
+/// A base class for render steps.
+/// </summary>
+internal abstract class RenderStep : IDisposable
 {
-    /// <summary>
-    /// A base class for render steps.
-    /// </summary>
-    internal abstract class RenderStep : IDisposable
+    internal void Initialize(RenderService renderer)
     {
-        internal void Initialize(RenderService renderer)
-        {
-            Renderer = renderer;
-            OnInitialize(renderer);
-        }
-
-        protected abstract void OnInitialize(RenderService service);
-
-        internal abstract void Render(GraphicsQueue queue, RenderCamera camera, RenderChainContext context, Timing time);
-
-        public abstract void Dispose();
-
-        internal RenderService Renderer { get; private set; }
+        Renderer = renderer;
+        OnInitialize(renderer);
     }
+
+    protected abstract void OnInitialize(RenderService service);
+
+    internal abstract void Render(GraphicsQueue queue, RenderCamera camera, RenderChainContext context, Timing time);
+
+    public abstract void Dispose();
+
+    internal RenderService Renderer { get; private set; }
 }

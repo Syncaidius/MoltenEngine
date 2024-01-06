@@ -1,9 +1,9 @@
-﻿using System.Reflection;
-using Molten.Graphics.Dxc;
+﻿using Molten.Graphics.Dxc;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D.Compilers;
 using Silk.NET.Vulkan;
 using SpirvReflector;
+using System.Reflection;
 using DxcBuffer = Silk.NET.Direct3D.Compilers.Buffer;
 
 namespace Molten.Graphics.Vulkan;

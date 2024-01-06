@@ -1,5 +1,5 @@
-﻿using System.Text;
-using Silk.NET.Vulkan;
+﻿using Silk.NET.Vulkan;
+using System.Text;
 
 namespace Molten.Graphics.Vulkan;
 

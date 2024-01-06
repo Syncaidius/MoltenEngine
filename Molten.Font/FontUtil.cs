@@ -1,149 +1,148 @@
-﻿using System.Text;
-using Molten.IO;
+﻿using Molten.IO;
+using System.Text;
 
-namespace Molten.Font
+namespace Molten.Font;
+
+public static class FontUtil
 {
-    public static class FontUtil
+    public static readonly DateTime BaseTime = new DateTime(1904, 1, 1, 0, 0, 0);
+
+    /// <summary>Helper for when we're checking if table offsets are meant to be equivilent to C++ NULL (0).</summary>
+    public const int NULL = 0;
+
+    public const int POINTS_PER_INCH = 72;
+
+    public static bool IsNull(ushort offset)
     {
-        public static readonly DateTime BaseTime = new DateTime(1904, 1, 1, 0, 0, 0);
+        return offset == NULL;
+    }
 
-        /// <summary>Helper for when we're checking if table offsets are meant to be equivilent to C++ NULL (0).</summary>
-        public const int NULL = 0;
+    public static bool IsNull(uint offset)
+    {
+        return offset == NULL;
+    }
 
-        public const int POINTS_PER_INCH = 72;
+    /// <summary>Gets an offset from the start position to the current position.</summary>
+    /// <param name="startPos">The starting position.</param>
+    /// <param name="curPos">The current position.</param>
+    /// <returns></returns>
+    public static long GetOffset(long startPos, long curPos)
+    {
+        return curPos - startPos;
+    }
 
-        public static bool IsNull(ushort offset)
+    /// <summary>Unpacks a 16-bit signed fixed number with the low 14 bits of fraction (2.14), into a float.</summary>
+    /// <param name="packed">The packed 16-bit signed value.</param>
+    /// <returns></returns>
+    public static float FromF2DOT14(int packed)
+    {
+        return (short)packed / 16384.0f;
+    }
+
+    /// <summary>Converts a 32-bit signed integer into a fixed-point float with a 16-bit integral and 16-bit fraction (16.16).</summary>
+    /// <param name="fixedValue"></param>
+    /// <returns></returns>
+    public static float FixedToDouble(int fixedValue)
+    {
+        int integer = (fixedValue >> 16);
+        int fraction = (fixedValue << 16) >> 16;
+        float i = fraction / 65536.0f;
+
+        return integer + i;
+    }
+
+    /// <summary>Converts a long-date (64 bit times, seconds since 00:00:00, 1-Jan-1904) in to a <see cref="DateTime"/></summary>
+    /// <param name="secondsFromBase">The number of seconds since <see cref="BaseTime"/>.</param>
+    /// <returns></returns>
+    public static DateTime FromLongDate(long secondsFromBase)
+    {
+        return BaseTime + TimeSpan.FromSeconds(secondsFromBase);
+    }
+
+    internal static void TransformGlyph(Glyph glyph, Matrix2F matrix)
+    {
+        RectangleF bounds = RectangleF.Empty;
+
+        GlyphPoint[] glyphPoints = glyph.pointsPerCurve;
+        for (int i = glyphPoints.Length - 1; i >= 0; --i)
         {
-            return offset == NULL;
+            GlyphPoint p = glyphPoints[i];
+
+            // Use a Vector2 transform-normal calculation here
+            Vector2F pNew = Vector2F.TransformNormal(p.Point, matrix);
+            glyphPoints[i] = new GlyphPoint(pNew, p.IsOnCurve);
+
+            // Check if transformed point goes outside of the glyph's current bounds.
+            if (pNew.X < bounds.X)
+                bounds.X = pNew.X;
+
+            if (pNew.X > bounds.Right)
+                bounds.Right = pNew.X;
+
+            if (pNew.Y < bounds.Y)
+                bounds.Y = pNew.Y;
+
+            if (pNew.Y > bounds.Bottom)
+                bounds.Bottom = pNew.Y;
         }
 
-        public static bool IsNull(uint offset)
-        {
-            return offset == NULL;
-        }
+        glyph.Bounds = (Rectangle)bounds;
+    }
 
-        /// <summary>Gets an offset from the start position to the current position.</summary>
-        /// <param name="startPos">The starting position.</param>
-        /// <param name="curPos">The current position.</param>
-        /// <returns></returns>
-        public static long GetOffset(long startPos, long curPos)
-        {
-            return curPos - startPos;
-        }
+    internal static void OffsetGlyph(Glyph glyph, int dx, int dy)
+    {
+        GlyphPoint[] points = glyph.pointsPerCurve;
+        for (int i = points.Length - 1; i >= 0; --i)
+            points[i] = new GlyphPoint(points[i].Point + new Vector2F(dx, dy), points[i].IsOnCurve);
 
-        /// <summary>Unpacks a 16-bit signed fixed number with the low 14 bits of fraction (2.14), into a float.</summary>
-        /// <param name="packed">The packed 16-bit signed value.</param>
-        /// <returns></returns>
-        public static float FromF2DOT14(int packed)
-        {
-            return (short)packed / 16384.0f;
-        }
+        // Update bounds
+        Rectangle curBounds = glyph.Bounds;
+        glyph.Bounds = new Rectangle(
+           (curBounds.X + dx),
+           (curBounds.Y + dy),
+           (curBounds.Right + dx),
+           (curBounds.Bottom + dy));
+    }
 
-        /// <summary>Converts a 32-bit signed integer into a fixed-point float with a 16-bit integral and 16-bit fraction (16.16).</summary>
-        /// <param name="fixedValue"></param>
-        /// <returns></returns>
-        public static float FixedToDouble(int fixedValue)
-        {
-            int integer = (fixedValue >> 16);
-            int fraction = (fixedValue << 16) >> 16;
-            float i = fraction / 65536.0f;
+    /// <summary>
+    /// Reads a 4-byte tag and converts it into a string.</para>
+    /// From MS Docs: Array of four uint8s (length = 32 bits) used to identify a script, language system, feature, or baseline. <para/>
+    /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/font-file
+    /// </summary>
+    /// <param name="reader"></param>
+    /// <returns></returns>
+    public static string ReadTag(EnhancedBinaryReader reader)
+    {
+        byte[] bytes = reader.ReadBytes(4);
+        return Encoding.ASCII.GetString(bytes);
+    }
 
-            return integer + i;
-        }
+    /// <summary>
+    /// Creates a new array with the specified number of extra elements, then fills it with the elements from the original array.
+    /// </summary>
+    /// <typeparam name="T">The type of the array.</typeparam>
+    /// <param name="original">The original array from which to create an extended clone.</param>
+    /// <param name="lengthToAdd">The number of extra elements to add to the clone's length.</param>
+    /// <returns></returns>
+    public static T[] CloneAndExtendArray<T>(T[] original, int lengthToAdd = 0)
+    {
+        T[] cloned = new T[original.Length + lengthToAdd];
+        Array.Copy(original, cloned, original.Length);
+        return cloned;
+    }
 
-        /// <summary>Converts a long-date (64 bit times, seconds since 00:00:00, 1-Jan-1904) in to a <see cref="DateTime"/></summary>
-        /// <param name="secondsFromBase">The number of seconds since <see cref="BaseTime"/>.</param>
-        /// <returns></returns>
-        public static DateTime FromLongDate(long secondsFromBase)
-        {
-            return BaseTime + TimeSpan.FromSeconds(secondsFromBase);
-        }
-
-        internal static void TransformGlyph(Glyph glyph, Matrix2F matrix)
-        {
-            RectangleF bounds = RectangleF.Empty;
-
-            GlyphPoint[] glyphPoints = glyph.pointsPerCurve;
-            for (int i = glyphPoints.Length - 1; i >= 0; --i)
-            {
-                GlyphPoint p = glyphPoints[i];
-
-                // Use a Vector2 transform-normal calculation here
-                Vector2F pNew = Vector2F.TransformNormal(p.Point, matrix);
-                glyphPoints[i] = new GlyphPoint(pNew, p.IsOnCurve);
-
-                // Check if transformed point goes outside of the glyph's current bounds.
-                if (pNew.X < bounds.X)
-                    bounds.X = pNew.X;
-
-                if (pNew.X > bounds.Right)
-                    bounds.Right = pNew.X;
-
-                if (pNew.Y < bounds.Y)
-                    bounds.Y = pNew.Y;
-
-                if (pNew.Y > bounds.Bottom)
-                    bounds.Bottom = pNew.Y;
-            }
-
-            glyph.Bounds = (Rectangle)bounds;
-        }
-
-        internal static void OffsetGlyph(Glyph glyph, int dx, int dy)
-        {
-            GlyphPoint[] points = glyph.pointsPerCurve;
-            for (int i = points.Length - 1; i >= 0; --i)
-                points[i] = new GlyphPoint(points[i].Point + new Vector2F(dx, dy), points[i].IsOnCurve);
-
-            // Update bounds
-            Rectangle curBounds = glyph.Bounds;
-            glyph.Bounds = new Rectangle(
-               (curBounds.X + dx),
-               (curBounds.Y + dy),
-               (curBounds.Right + dx),
-               (curBounds.Bottom + dy));
-        }
-
-        /// <summary>
-        /// Reads a 4-byte tag and converts it into a string.</para>
-        /// From MS Docs: Array of four uint8s (length = 32 bits) used to identify a script, language system, feature, or baseline. <para/>
-        /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/font-file
-        /// </summary>
-        /// <param name="reader"></param>
-        /// <returns></returns>
-        public static string ReadTag(EnhancedBinaryReader reader)
-        {
-            byte[] bytes = reader.ReadBytes(4);
-            return Encoding.ASCII.GetString(bytes);
-        }
-
-        /// <summary>
-        /// Creates a new array with the specified number of extra elements, then fills it with the elements from the original array.
-        /// </summary>
-        /// <typeparam name="T">The type of the array.</typeparam>
-        /// <param name="original">The original array from which to create an extended clone.</param>
-        /// <param name="lengthToAdd">The number of extra elements to add to the clone's length.</param>
-        /// <returns></returns>
-        public static T[] CloneAndExtendArray<T>(T[] original, int lengthToAdd = 0)
-        {
-            T[] cloned = new T[original.Length + lengthToAdd];
-            Array.Copy(original, cloned, original.Length);
-            return cloned;
-        }
-
-        /// <summary>
-        /// Convert from a point-unit value to a pixel value
-        /// </summary>
-        /// <param name="targetPointSize">The target font point size.</param>
-        /// <param name="pixelsPerInch">The number of pixels per inch.</param>
-        /// <returns></returns>
-        public static float FontPointsToPixels(float targetPointSize, int pixelsPerInch = 96)
-        {
-            // Points = pixels * 72 / 96
-            // Pixels = targetPointSize * 96 /72
-            // Pixels = targetPointSize * resolution / pointPerInch
-            // See: http://stackoverflow.com/questions/139655/convert-pixels-to-points
-            return targetPointSize * pixelsPerInch / POINTS_PER_INCH;
-        }
+    /// <summary>
+    /// Convert from a point-unit value to a pixel value
+    /// </summary>
+    /// <param name="targetPointSize">The target font point size.</param>
+    /// <param name="pixelsPerInch">The number of pixels per inch.</param>
+    /// <returns></returns>
+    public static float FontPointsToPixels(float targetPointSize, int pixelsPerInch = 96)
+    {
+        // Points = pixels * 72 / 96
+        // Pixels = targetPointSize * 96 /72
+        // Pixels = targetPointSize * resolution / pointPerInch
+        // See: http://stackoverflow.com/questions/139655/convert-pixels-to-points
+        return targetPointSize * pixelsPerInch / POINTS_PER_INCH;
     }
 }

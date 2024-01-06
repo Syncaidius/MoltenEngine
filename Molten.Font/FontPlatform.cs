@@ -1,15 +1,14 @@
-﻿namespace Molten.Font
+﻿namespace Molten.Font;
+
+public enum FontPlatform : ushort
 {
-    public enum FontPlatform : ushort
-    {
-        Unicode = 0,
+    Unicode = 0,
 
-        Macintosh = 1,
+    Macintosh = 1,
 
-        ISO = 2,
+    ISO = 2,
 
-        Windows = 3,
+    Windows = 3,
 
-        Custom = 4,
-    }
+    Custom = 4,
 }

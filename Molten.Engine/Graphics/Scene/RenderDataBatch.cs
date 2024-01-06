@@ -1,51 +1,50 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics;
+
+public class RenderDataBatch
 {
-    public class RenderDataBatch
+    public IReadOnlyList<ObjectRenderData> Data { get; }
+
+    List<ObjectRenderData> _data;
+    ObjectRenderData _last;
+
+
+    internal RenderDataBatch()
     {
-        public IReadOnlyList<ObjectRenderData> Data { get; }
+        _data = new List<ObjectRenderData>();
+        Data = _data.AsReadOnly();
+    }
 
-        List<ObjectRenderData> _data;
-        ObjectRenderData _last;
+    public void Add(ObjectRenderData data)
+    {
+        _data.Add(data);
+        _last = data;
+        DirtyFlags |= RenderBatchDirtyFlags.End;
+    }
 
+    public void Remove(ObjectRenderData data)
+    {
+        DirtyFlags |= RenderBatchDirtyFlags.Removed;
 
-        internal RenderDataBatch()
-        {
-            _data = new List<ObjectRenderData>();
-            Data = _data.AsReadOnly();
-        }
-
-        public void Add(ObjectRenderData data)
-        {
-            _data.Add(data);
-            _last = data;
+        if (data == _last)
             DirtyFlags |= RenderBatchDirtyFlags.End;
-        }
 
-        public void Remove(ObjectRenderData data)
-        {
-            DirtyFlags |= RenderBatchDirtyFlags.Removed;
-
-            if (data == _last)
-                DirtyFlags |= RenderBatchDirtyFlags.End;
-
-            _data.Remove(data);
-        }
-
-        public bool HasFlags(RenderBatchDirtyFlags flags)
-        {
-            return (DirtyFlags & flags) == flags;
-        }
-
-        internal RenderBatchDirtyFlags DirtyFlags { get; set; }
+        _data.Remove(data);
     }
 
-    [Flags]
-    public enum RenderBatchDirtyFlags
+    public bool HasFlags(RenderBatchDirtyFlags flags)
     {
-        None = 0,
-
-        End = 1,
-
-        Removed = 2,
+        return (DirtyFlags & flags) == flags;
     }
+
+    internal RenderBatchDirtyFlags DirtyFlags { get; set; }
+}
+
+[Flags]
+public enum RenderBatchDirtyFlags
+{
+    None = 0,
+
+    End = 1,
+
+    Removed = 2,
 }

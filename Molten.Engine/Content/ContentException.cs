@@ -1,7 +1,6 @@
-﻿namespace Molten
+﻿namespace Molten;
+
+public class ContentException : Exception
 {
-    public class ContentException : Exception
-    {
-        internal ContentException(string message) : base(message) { }
-    }
+    internal ContentException(string message) : base(message) { }
 }

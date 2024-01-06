@@ -1,11 +1,10 @@
 ﻿using Molten.UI;
 
-namespace Molten.Examples
-{
-    public class UIExampleListItem : UIListViewItem
-    {
-        public Type ExampleType { get; set; }
+namespace Molten.Examples;
 
-        public string Description { get; set; }
-    }
+public class UIExampleListItem : UIListViewItem
+{
+    public Type ExampleType { get; set; }
+
+    public string Description { get; set; }
 }

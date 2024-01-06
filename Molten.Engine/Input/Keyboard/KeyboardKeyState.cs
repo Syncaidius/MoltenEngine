@@ -1,23 +1,22 @@
-﻿namespace Molten.Input
+﻿namespace Molten.Input;
+
+public struct KeyboardKeyState : IInputState
 {
-    public struct KeyboardKeyState : IInputState
-    {
-        public KeyCode Key;
+    public KeyCode Key;
 
-        public KeyboardKeyType KeyType;
+    public KeyboardKeyType KeyType;
 
-        public InputActionType ActionType { get; set; }
+    public InputActionType ActionType { get; set; }
 
-        public DateTime PressTimestamp { get; set; }
+    public DateTime PressTimestamp { get; set; }
 
-        public InputAction Action { get; set; }
+    public InputAction Action { get; set; }
 
-        public int SetID { get; set; }
+    public int SetID { get; set; }
 
-        public ulong UpdateID { get; set; }
+    public ulong UpdateID { get; set; }
 
-        /// <summary>Gets the character value of the key. 
-        /// This is only populated if <see cref="KeyType"/> is equal to <see cref="KeyboardKeyType.Character"/></summary>
-        public char Character;
-    }
+    /// <summary>Gets the character value of the key. 
+    /// This is only populated if <see cref="KeyType"/> is equal to <see cref="KeyboardKeyType.Character"/></summary>
+    public char Character;
 }

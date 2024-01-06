@@ -1,5 +1,3 @@
-using System;
-
 namespace Molten.DoublePrecision;
 
 ///<summary>A <see cref = "double"/> vector comprised of 2 components.</summary>

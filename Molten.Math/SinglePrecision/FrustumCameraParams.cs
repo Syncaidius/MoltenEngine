@@ -21,55 +21,54 @@
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
-namespace Molten
+namespace Molten;
+
+/// <summary>
+/// Frustum camera parameters.
+/// </summary>
+[StructLayout(LayoutKind.Sequential, Pack = 4)]
+[Serializable]
+public struct FrustumCameraParams
 {
     /// <summary>
-    /// Frustum camera parameters.
+    /// Position of the camera.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    [Serializable]
-    public struct FrustumCameraParams
-    {
-        /// <summary>
-        /// Position of the camera.
-        /// </summary>
-        [DataMember]
-        public Vector3F Position;
+    [DataMember]
+    public Vector3F Position;
 
-        /// <summary>
-        /// Looking at direction of the camera.
-        /// </summary>
-        [DataMember]
-        public Vector3F LookAtDir;
+    /// <summary>
+    /// Looking at direction of the camera.
+    /// </summary>
+    [DataMember]
+    public Vector3F LookAtDir;
 
-        /// <summary>
-        /// Up direction.
-        /// </summary>
-        [DataMember]
-        public Vector3F UpDir;
+    /// <summary>
+    /// Up direction.
+    /// </summary>
+    [DataMember]
+    public Vector3F UpDir;
 
-        /// <summary>
-        /// Field of view.
-        /// </summary>
-        [DataMember]
-        public float FOV;
+    /// <summary>
+    /// Field of view.
+    /// </summary>
+    [DataMember]
+    public float FOV;
 
-        /// <summary>
-        /// Z near distance.
-        /// </summary>
-        [DataMember]
-        public float ZNear;
+    /// <summary>
+    /// Z near distance.
+    /// </summary>
+    [DataMember]
+    public float ZNear;
 
-        /// <summary>
-        /// Z far distance.
-        /// </summary>
-        [DataMember]
-        public float ZFar;
+    /// <summary>
+    /// Z far distance.
+    /// </summary>
+    [DataMember]
+    public float ZFar;
 
-        /// <summary>
-        /// Aspect ratio.
-        /// </summary>
-        [DataMember]
-        public float AspectRatio;
-    }
+    /// <summary>
+    /// Aspect ratio.
+    /// </summary>
+    [DataMember]
+    public float AspectRatio;
 }

@@ -1,9 +1,8 @@
-﻿namespace Molten.Net
-{
-    public enum NetworkMode
-    {
-        Client = 1,
+﻿namespace Molten.Net;
 
-        Server = 2,
-    }
+public enum NetworkMode
+{
+    Client = 1,
+
+    Server = 2,
 }

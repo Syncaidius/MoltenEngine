@@ -1,6 +1,5 @@
-﻿namespace Molten.UI
+﻿namespace Molten.UI;
+
+internal class UIConstants
 {
-    internal class UIConstants
-    {
-    }
 }

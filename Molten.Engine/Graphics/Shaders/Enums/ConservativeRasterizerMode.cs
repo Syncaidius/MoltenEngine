@@ -1,18 +1,17 @@
-﻿namespace Molten
+﻿namespace Molten;
+
+/// <summary>
+/// Specifies the mode of conservative rasterization.
+/// </summary>
+public enum ConservativeRasterizerMode
 {
     /// <summary>
-    /// Specifies the mode of conservative rasterization.
+    /// Conservative rasterization is off.
     /// </summary>
-    public enum ConservativeRasterizerMode
-    {
-        /// <summary>
-        /// Conservative rasterization is off.
-        /// </summary>
-        Off = 0x0,
+    Off = 0x0,
 
-        /// <summary>
-        /// Conservative rasterization is on.
-        /// </summary>
-        On = 0x1
-    }
+    /// <summary>
+    /// Conservative rasterization is on.
+    /// </summary>
+    On = 0x1
 }

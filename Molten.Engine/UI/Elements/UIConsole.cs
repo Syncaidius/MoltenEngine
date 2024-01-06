@@ -1,7 +1,6 @@
-﻿namespace Molten.UI
-{
-    public class UIConsole : UIElement
-    {
+﻿namespace Molten.UI;
 
-    }
+public class UIConsole : UIElement
+{
+
 }

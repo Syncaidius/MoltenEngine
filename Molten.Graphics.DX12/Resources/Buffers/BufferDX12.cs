@@ -61,6 +61,11 @@ public class BufferDX12 : GraphicsBuffer
 
     protected override void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
     {
+        // TODO This should be left up to the renderer to handle. E.g. initializing 3 render targets for 3 swapchain buffers.
+        //   - Device.Map() should handle memory and resource allocation based on the resoruce flags.
+        //     -- E.g. if a resource is dynamic, it should be allocated a new area of memory for each map call.
+        //     -- 
+
         throw new NotImplementedException();
     }
 

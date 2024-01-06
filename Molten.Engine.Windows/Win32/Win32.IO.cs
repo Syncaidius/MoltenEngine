@@ -1,25 +1,24 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Molten.Windows32
+namespace Molten.Windows32;
+
+public class Win32IO
 {
-    public class Win32IO
+    internal Win32IO() { }
+
+    public string GetShortPathName(string longPath)
     {
-        internal Win32IO() { }
+        StringBuilder shortPath = new StringBuilder(longPath.Length + 1);
 
-        public string GetShortPathName(string longPath)
+        if (0 == GetShortPathName(longPath, shortPath, shortPath.Capacity))
         {
-            StringBuilder shortPath = new StringBuilder(longPath.Length + 1);
-
-            if (0 == GetShortPathName(longPath, shortPath, shortPath.Capacity))
-            {
-                return longPath;
-            }
-
-            return shortPath.ToString();
+            return longPath;
         }
 
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        private static extern int GetShortPathName(string path, StringBuilder shortPath, int shortPathLength);
+        return shortPath.ToString();
     }
+
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+    private static extern int GetShortPathName(string path, StringBuilder shortPath, int shortPathLength);
 }

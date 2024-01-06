@@ -1,5 +1,3 @@
-using System.Runtime.InteropServices;
-
 namespace Molten;
 
 ///<summary>A <see cref = "uint"/> vector comprised of 3 components.</summary>

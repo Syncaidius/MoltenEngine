@@ -1,18 +1,17 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics;
+
+public class SpriteRenderer : Renderable
 {
-    public class SpriteRenderer : Renderable
+    internal SpriteRenderer(RenderService renderer, Action<SpriteBatcher> callback) : base(renderer)
     {
-        internal SpriteRenderer(RenderService renderer, Action<SpriteBatcher> callback) : base(renderer)
-        {
-            Callback = callback;
-        }
+        Callback = callback;
+    }
 
-        public Action<SpriteBatcher> Callback { get; set; }
+    public Action<SpriteBatcher> Callback { get; set; }
 
-        protected override void OnRender(GraphicsQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
-        {
-            Callback?.Invoke(renderer.SpriteBatch);
-            renderer.SpriteBatch.Flush(cmd, camera, data);
-        }
+    protected override void OnRender(GraphicsQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
+    {
+        Callback?.Invoke(renderer.SpriteBatch);
+        renderer.SpriteBatch.Flush(cmd, camera, data);
     }
 }

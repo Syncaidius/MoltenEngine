@@ -1,10 +1,9 @@
-﻿namespace Molten.Graphics.Vulkan
+﻿namespace Molten.Graphics.Vulkan;
+
+internal interface IRenderSurfaceVK : IRenderSurface
 {
-    internal interface IRenderSurfaceVK : IRenderSurface
-    {
-        /// <summary>
-        /// Gets surface clear color, if any.
-        /// </summary>
-        Color? ClearColor { get; set; }
-    }
+    /// <summary>
+    /// Gets surface clear color, if any.
+    /// </summary>
+    Color? ClearColor { get; set; }
 }

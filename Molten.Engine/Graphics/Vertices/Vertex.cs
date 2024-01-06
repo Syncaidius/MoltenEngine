@@ -1,52 +1,51 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Molten.Graphics
+namespace Molten.Graphics;
+
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+/// <summary>A vertex type containing just position and color data.</summary>
+public struct Vertex : IVertexType
 {
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    /// <summary>A vertex type containing just position and color data.</summary>
-    public struct Vertex : IVertexType
+    [VertexElement(VertexElementType.Vector3, VertexElementUsage.Position, 0)]
+    /// <summary>Gets or sets the position as a Vector4</summary>
+    public Vector3F Position;
+
+
+    public Vertex(float x, float y, float z)
     {
-        [VertexElement(VertexElementType.Vector3, VertexElementUsage.Position, 0)]
-        /// <summary>Gets or sets the position as a Vector4</summary>
-        public Vector3F Position;
+        Position = new Vector3F(x, y, z);
+    }
 
+    public Vertex(Vector3F position)
+    {
+        Position = position;
+    }
 
-        public Vertex(float x, float y, float z)
+    public override bool Equals(object obj)
+    {
+        if (obj == null)
         {
-            Position = new Vector3F(x, y, z);
+            return false;
         }
-
-        public Vertex(Vector3F position)
+        if (obj.GetType() != base.GetType())
         {
-            Position = position;
+            return false;
         }
+        return (this == ((Vertex)obj));
+    }
 
-        public override bool Equals(object obj)
-        {
-            if (obj == null)
-            {
-                return false;
-            }
-            if (obj.GetType() != base.GetType())
-            {
-                return false;
-            }
-            return (this == ((Vertex)obj));
-        }
+    public static bool operator ==(Vertex left, Vertex right)
+    {
+        return ((left.Position == right.Position));
+    }
 
-        public static bool operator ==(Vertex left, Vertex right)
-        {
-            return ((left.Position == right.Position));
-        }
+    public static bool operator !=(Vertex left, Vertex right)
+    {
+        return !(left == right);
+    }
 
-        public static bool operator !=(Vertex left, Vertex right)
-        {
-            return !(left == right);
-        }
-
-        public override string ToString()
-        {
-            return $"Vertex -- {Position.X}, {Position.Y}, {Position.Z}";
-        }
+    public override string ToString()
+    {
+        return $"Vertex -- {Position.X}, {Position.Y}, {Position.Z}";
     }
 }

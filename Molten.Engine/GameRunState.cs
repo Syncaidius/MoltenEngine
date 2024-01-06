@@ -1,15 +1,14 @@
-﻿namespace Molten
+﻿namespace Molten;
+
+public enum GameRunState
 {
-    public enum GameRunState
-    {
-        Started = 0,
+    Started = 0,
 
-        Paused = 1,
+    Paused = 1,
 
-        Running = 2,
+    Running = 2,
 
-        Exiting = 4,
+    Exiting = 4,
 
-        Exited = 5,
-    }
+    Exited = 5,
 }

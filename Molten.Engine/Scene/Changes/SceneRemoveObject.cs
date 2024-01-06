@@ -1,26 +1,25 @@
-﻿namespace Molten
+﻿namespace Molten;
+
+internal class SceneRemoveObject : SceneChange<SceneRemoveObject>
 {
-    internal class SceneRemoveObject : SceneChange<SceneRemoveObject>
+    internal SceneObject Object;
+
+    internal SceneLayer Layer;
+
+    public override void ClearForPool()
     {
-        internal SceneObject Object;
+        Object = null;
+        Layer = null;
+    }
 
-        internal SceneLayer Layer;
-
-        public override void ClearForPool()
+    internal override void Process()
+    {
+        if (Object.Layer == Layer)
         {
-            Object = null;
-            Layer = null;
+            Layer.Objects.Remove(Object);
+            Object.Layer = null;
         }
 
-        internal override void Process()
-        {
-            if (Object.Layer == Layer)
-            {
-                Layer.Objects.Remove(Object);
-                Object.Layer = null;
-            }
-
-            Recycle(this);
-        }
+        Recycle(this);
     }
 }

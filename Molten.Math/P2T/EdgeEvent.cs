@@ -1,9 +1,8 @@
-﻿namespace Molten
-{
-    internal class EdgeEvent
-    {
-        public TriEdge ConstrainedEdge;
+﻿namespace Molten;
 
-        public bool Right;
-    }
+internal class EdgeEvent
+{
+    public TriEdge ConstrainedEdge;
+
+    public bool Right;
 }

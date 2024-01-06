@@ -1,16 +1,15 @@
-﻿namespace Molten
-{
-    public class SpriteFontParameters : ContentParameters
-    {
-        public float FontSize { get; set; } = 16;
+﻿namespace Molten;
 
-        public override object Clone()
+public class SpriteFontParameters : ContentParameters
+{
+    public float FontSize { get; set; } = 16;
+
+    public override object Clone()
+    {
+        return new SpriteFontParameters()
         {
-            return new SpriteFontParameters()
-            {
-                FontSize = FontSize,
-                PartCount = PartCount
-            };
-        }
+            FontSize = FontSize,
+            PartCount = PartCount
+        };
     }
 }

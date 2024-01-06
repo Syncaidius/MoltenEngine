@@ -1,16 +1,15 @@
-﻿namespace Molten
-{
-    public class ShaderParameters : ContentParameters
-    {
-        public string MaterialName = "";
+﻿namespace Molten;
 
-        public override object Clone()
+public class ShaderParameters : ContentParameters
+{
+    public string MaterialName = "";
+
+    public override object Clone()
+    {
+        return new ShaderParameters()
         {
-            return new ShaderParameters()
-            {
-                MaterialName = MaterialName,
-                PartCount = PartCount
-            };
-        }
+            MaterialName = MaterialName,
+            PartCount = PartCount
+        };
     }
 }

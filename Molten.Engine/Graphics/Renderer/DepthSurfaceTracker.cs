@@ -1,79 +1,78 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics;
+
+internal class DepthSurfaceTracker : IDisposable
 {
-    internal class DepthSurfaceTracker : IDisposable
+    SurfaceSizeMode _mode;
+    Dictionary<AntiAliasLevel, IDepthStencilSurface> _surfaces;
+    GraphicsDevice _device;
+
+    uint _width;
+    uint _height;
+    DepthFormat _format;
+
+    internal DepthSurfaceTracker(
+        GraphicsDevice device,
+        AntiAliasLevel[] aaLevels,
+        uint width,
+        uint height,
+        DepthFormat format,
+        SurfaceSizeMode mode = SurfaceSizeMode.Full)
     {
-        SurfaceSizeMode _mode;
-        Dictionary<AntiAliasLevel, IDepthStencilSurface> _surfaces;
-        GraphicsDevice _device;
+        _width = width;
+        _height = height;
+        _format = format;
+        _mode = mode;
+        _device = device;
+        _surfaces = new Dictionary<AntiAliasLevel, IDepthStencilSurface>();
+    }
 
-        uint _width;
-        uint _height;
-        DepthFormat _format;
+    internal void RefreshSize(uint minWidth, uint minHeight)
+    {
+        _width = minWidth;
+        _height = minHeight;
 
-        internal DepthSurfaceTracker(
-            GraphicsDevice device,
-            AntiAliasLevel[] aaLevels,
-            uint width,
-            uint height,
-            DepthFormat format,
-            SurfaceSizeMode mode = SurfaceSizeMode.Full)
+        switch (_mode)
         {
-            _width = width;
-            _height = height;
-            _format = format;
-            _mode = mode;
-            _device = device;
-            _surfaces = new Dictionary<AntiAliasLevel, IDepthStencilSurface>();
+            case SurfaceSizeMode.Full:
+                foreach(IDepthStencilSurface rs in _surfaces.Values)
+                    rs?.Resize(GraphicsPriority.Apply, minWidth, minHeight);
+                break;
+
+            case SurfaceSizeMode.Half:
+                foreach (IDepthStencilSurface rs in _surfaces.Values)
+                    rs?.Resize(GraphicsPriority.Apply, (minWidth / 2) + 1, (minHeight / 2) + 1);
+                break;
         }
+    }
 
-        internal void RefreshSize(uint minWidth, uint minHeight)
+    internal IDepthStencilSurface Create(AntiAliasLevel aa)
+    {
+        IDepthStencilSurface ds = _device.CreateDepthSurface(_width, _height, _format, aaLevel:aa, name:$"depth_{aa}aa");
+        _surfaces[aa] = ds;
+        return ds;
+    }
+
+    public void Dispose()
+    {
+        foreach(IDepthStencilSurface rs in _surfaces.Values)
+            rs.Dispose();
+    }
+
+    internal IDepthStencilSurface this[AntiAliasLevel aaLevel]
+    {
+        get
         {
-            _width = minWidth;
-            _height = minHeight;
-
-            switch (_mode)
+            if (!_surfaces.TryGetValue(aaLevel, out IDepthStencilSurface rs))
             {
-                case SurfaceSizeMode.Full:
-                    foreach(IDepthStencilSurface rs in _surfaces.Values)
-                        rs?.Resize(GraphicsPriority.Apply, minWidth, minHeight);
-                    break;
-
-                case SurfaceSizeMode.Half:
-                    foreach (IDepthStencilSurface rs in _surfaces.Values)
-                        rs?.Resize(GraphicsPriority.Apply, (minWidth / 2) + 1, (minHeight / 2) + 1);
-                    break;
+                rs = Create(aaLevel);
+                _surfaces[aaLevel] = rs;
             }
-        }
-
-        internal IDepthStencilSurface Create(AntiAliasLevel aa)
-        {
-            IDepthStencilSurface ds = _device.CreateDepthSurface(_width, _height, _format, aaLevel:aa, name:$"depth_{aa}aa");
-            _surfaces[aa] = ds;
-            return ds;
-        }
-
-        public void Dispose()
-        {
-            foreach(IDepthStencilSurface rs in _surfaces.Values)
-                rs.Dispose();
-        }
-
-        internal IDepthStencilSurface this[AntiAliasLevel aaLevel]
-        {
-            get
+            else if (rs.Width != _width || rs.Height != _height)
             {
-                if (!_surfaces.TryGetValue(aaLevel, out IDepthStencilSurface rs))
-                {
-                    rs = Create(aaLevel);
-                    _surfaces[aaLevel] = rs;
-                }
-                else if (rs.Width != _width || rs.Height != _height)
-                {
-                    rs.Resize(GraphicsPriority.Apply, _width, _height);
-                }
-
-                return rs;
+                rs.Resize(GraphicsPriority.Apply, _width, _height);
             }
+
+            return rs;
         }
     }
 }

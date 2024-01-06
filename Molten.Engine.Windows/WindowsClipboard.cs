@@ -1,66 +1,65 @@
 ﻿using Molten.Threading;
 
-namespace Molten.Input
+namespace Molten.Input;
+
+public class WindowsClipboard : IClipboard
 {
-    public class WindowsClipboard : IClipboard
+    WorkerGroup _workers;
+
+    internal WindowsClipboard() { }
+
+    internal void Start(ThreadManager thread)
     {
-        WorkerGroup _workers;
+        _workers = thread.CreateWorkerGroup("Clipboard", 1);
+    }
 
-        internal WindowsClipboard() { }
+    internal void Stop()
+    {
+        _workers?.Dispose();
+        _workers = null;
+    }
 
-        internal void Start(ThreadManager thread)
+    public void SetText(string txt)
+    {
+        WorkerCallbackTask task = _workers?.QueueCallback(() =>
         {
-            _workers = thread.CreateWorkerGroup("Clipboard", 1);
-        }
+            if (!string.IsNullOrWhiteSpace(txt))
+                Clipboard.SetText(txt);
 
-        internal void Stop()
+            return true;
+        });
+
+        task.Wait();
+    }
+
+    public bool ContainsText()
+    {
+        bool result = false;
+        WorkerCallbackTask task = _workers?.QueueCallback(() =>
         {
-            _workers?.Dispose();
-            _workers = null;
-        }
+            result = Clipboard.ContainsText();
+            return true;
+        });
 
-        public void SetText(string txt)
+        task.Wait();
+        return result;
+    }
+
+    public string GetText()
+    {
+        string result = null;
+        WorkerCallbackTask task = _workers?.QueueCallback(() =>
         {
-            WorkerCallbackTask task = _workers?.QueueCallback(() =>
-            {
-                if (!string.IsNullOrWhiteSpace(txt))
-                    Clipboard.SetText(txt);
+            result = Clipboard.GetText();
+            return true;
+        });
 
-                return true;
-            });
+        task.Wait();
+        return result;
+    }
 
-            task.Wait();
-        }
-
-        public bool ContainsText()
-        {
-            bool result = false;
-            WorkerCallbackTask task = _workers?.QueueCallback(() =>
-            {
-                result = Clipboard.ContainsText();
-                return true;
-            });
-
-            task.Wait();
-            return result;
-        }
-
-        public string GetText()
-        {
-            string result = null;
-            WorkerCallbackTask task = _workers?.QueueCallback(() =>
-            {
-                result = Clipboard.GetText();
-                return true;
-            });
-
-            task.Wait();
-            return result;
-        }
-
-        public void Dispose()
-        {
-            _workers?.Dispose();
-        }
+    public void Dispose()
+    {
+        _workers?.Dispose();
     }
 }

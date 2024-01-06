@@ -1,5 +1,5 @@
-﻿using System.Runtime.CompilerServices;
-using Silk.NET.Vulkan;
+﻿using Silk.NET.Vulkan;
+using System.Runtime.CompilerServices;
 
 namespace Molten.Graphics.Vulkan;
 

@@ -1,23 +1,22 @@
 ﻿using System.Text;
 
-namespace Molten
+namespace Molten;
+
+public class StringParameters : ContentParameters
 {
-    public class StringParameters : ContentParameters
+    public bool IsBinary { get; set; } = false;
+
+    public Encoding Encoding { get; set; } = Encoding.UTF8;
+
+    public string MultipartDelimiter { get; set; } = " ";
+
+    public override object Clone()
     {
-        public bool IsBinary { get; set; } = false;
-
-        public Encoding Encoding { get; set; } = Encoding.UTF8;
-
-        public string MultipartDelimiter { get; set; } = " ";
-
-        public override object Clone()
+        return new StringParameters()
         {
-            return new StringParameters()
-            {
-                MultipartDelimiter = MultipartDelimiter,
-                Encoding = Encoding,
-                PartCount = PartCount
-            };
-        }
+            MultipartDelimiter = MultipartDelimiter,
+            Encoding = Encoding,
+            PartCount = PartCount
+        };
     }
 }

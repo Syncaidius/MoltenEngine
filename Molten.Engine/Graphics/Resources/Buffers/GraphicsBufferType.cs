@@ -1,22 +1,21 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics;
+
+public enum GraphicsBufferType
 {
-    public enum GraphicsBufferType
-    {
-        Unknown = 0,
+    Unknown = 0,
 
-        Vertex = 1,
+    Vertex = 1,
 
-        Index = 2,
+    Index = 2,
 
-        ByteAddress = 3,
+    ByteAddress = 3,
 
-        Structured = 4,
+    Structured = 4,
 
-        Staging = 5,
+    Staging = 5,
 
-        /// <summary>
-        /// Constant or uniform buffer
-        /// </summary>
-        Constant = 6,
-    }
+    /// <summary>
+    /// Constant or uniform buffer
+    /// </summary>
+    Constant = 6,
 }

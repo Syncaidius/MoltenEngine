@@ -1,19 +1,18 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics;
+
+public class ShaderTypeInfo
 {
-    public class ShaderTypeInfo
-    {
-        public uint RowCount;
+    public uint RowCount;
 
-        public uint ColumnCount;
+    public uint ColumnCount;
 
-        public ShaderVariableType Type;
+    public ShaderVariableType Type;
 
-        public ShaderVariableClass Class;
+    public ShaderVariableClass Class;
 
-        public uint Offset;
+    public uint Offset;
 
-        public string Name;
+    public string Name;
 
-        public uint Elements;
-    }
+    public uint Elements;
 }

@@ -12,41 +12,40 @@
 // http://go.microsoft.com/fwlink/?LinkId=248926
 //-------------------------------------------------------------------------------------
 
-namespace Molten.Graphics.Textures
+namespace Molten.Graphics.Textures;
+
+internal class BC5_UNORM
 {
-    internal class BC5_UNORM
+    public BC4_UNORM Red = new BC4_UNORM();
+    public BC4_UNORM Green = new BC4_UNORM();
+
+    internal void Read(BinaryReader reader)
     {
-        public BC4_UNORM Red = new BC4_UNORM();
-        public BC4_UNORM Green = new BC4_UNORM();
-
-        internal void Read(BinaryReader reader)
-        {
-            Red.Read(reader);
-            Green.Read(reader);
-        }
-
-        internal void Write(BinaryWriter writer)
-        {
-            Red.Write(writer);
-            Green.Write(writer);
-        }
+        Red.Read(reader);
+        Green.Read(reader);
     }
 
-    internal class BC5_SNORM
+    internal void Write(BinaryWriter writer)
     {
-        public BC4_SNORM Red = new BC4_SNORM();
-        public BC4_SNORM Green = new BC4_SNORM();
+        Red.Write(writer);
+        Green.Write(writer);
+    }
+}
 
-        internal void Read(BinaryReader reader)
-        {
-            Red.Read(reader);
-            Green.Read(reader);
-        }
+internal class BC5_SNORM
+{
+    public BC4_SNORM Red = new BC4_SNORM();
+    public BC4_SNORM Green = new BC4_SNORM();
 
-        internal void Write(BinaryWriter writer)
-        {
-            Red.Write(writer);
-            Green.Write(writer);
-        }
+    internal void Read(BinaryReader reader)
+    {
+        Red.Read(reader);
+        Green.Read(reader);
+    }
+
+    internal void Write(BinaryWriter writer)
+    {
+        Red.Write(writer);
+        Green.Write(writer);
     }
 }

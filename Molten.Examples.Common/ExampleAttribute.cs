@@ -1,15 +1,14 @@
-﻿namespace Molten.Examples
+﻿namespace Molten.Examples;
+
+public class ExampleAttribute : Attribute
 {
-    public class ExampleAttribute : Attribute
+    public ExampleAttribute(string title, string description)
     {
-        public ExampleAttribute(string title, string description)
-        {
-            Title = title;
-            Description = description;
-        }
-
-        public string Title { get; }
-
-        public string Description { get; }
+        Title = title;
+        Description = description;
     }
+
+    public string Title { get; }
+
+    public string Description { get; }
 }

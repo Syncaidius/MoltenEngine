@@ -1,134 +1,133 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics;
+
+public struct CornerInfo
 {
-    public struct CornerInfo
+    public float TopLeft;
+
+    public float TopRight;
+
+    public float BottomRight;
+
+    public float BottomLeft;
+
+    public CornerInfo(float tl, float tr, float br, float bl)
     {
-        public float TopLeft;
+        TopLeft = tl;
+        TopRight = tr;
+        BottomRight = br;
+        BottomLeft = bl;
+    }
 
-        public float TopRight;
+    public void Zero()
+    {
+        Set(0);
+    }
 
-        public float BottomRight;
+    public void Set(float radius)
+    {
+        TopLeft = TopRight = BottomRight = BottomLeft = radius;
+    }
 
-        public float BottomLeft;
+    public void Set(float topLeft, float topRight, float bottomRight, float bottomLeft)
+    {
+        TopLeft = topLeft;
+        TopRight = topRight;
+        BottomRight = bottomRight;
+        BottomLeft = bottomLeft;
+    }
 
-        public CornerInfo(float tl, float tr, float br, float bl)
+    public void SetTopBottom(float top, float bottom)
+    {
+        TopLeft = TopRight = top;
+        BottomLeft = BottomRight = bottom;
+    }
+
+    public void SetLeftRight(float left, float right)
+    {
+        TopLeft = BottomLeft = left;
+        TopRight = BottomRight = right;
+    }
+
+    public CornerInfo(float radius)
+    {
+        TopLeft = radius;
+        TopRight = radius;
+        BottomLeft = radius;
+        BottomRight = radius;
+    }
+
+    public CornerInfo Restrict(float max)
+    {
+        return new CornerInfo()
         {
-            TopLeft = tl;
-            TopRight = tr;
-            BottomRight = br;
-            BottomLeft = bl;
-        }
+            TopLeft = TopLeft > max ? max : TopLeft,
+            TopRight = TopRight > max ? max : TopRight,
+            BottomLeft = BottomLeft > max ? max : BottomLeft,
+            BottomRight = BottomRight > max ? max : BottomRight,
+        };
+    }
 
-        public void Zero()
-        {
-            Set(0);
-        }
+    /// <summary>
+    /// Returns true if at least one corner has a radius greater than 0.
+    /// </summary>
+    /// <returns></returns>
+    public bool HasRounded()
+    {
+        return TopLeft > 0 || TopRight > 0 || BottomRight > 0 || BottomLeft > 0;
+    }
 
-        public void Set(float radius)
-        {
-            TopLeft = TopRight = BottomRight = BottomLeft = radius;
-        }
+    /// <summary>
+    /// Returns true if all corners have the same radius.
+    /// </summary>
+    /// <returns></returns>
+    public bool OneRadius()
+    {
+        return TopLeft == TopRight && TopRight == BottomRight && BottomRight == BottomLeft;
+    }
 
-        public void Set(float topLeft, float topRight, float bottomRight, float bottomLeft)
-        {
-            TopLeft = topLeft;
-            TopRight = topRight;
-            BottomRight = bottomRight;
-            BottomLeft = bottomLeft;
-        }
+    /// <summary>
+    /// Returns true if the left edge has the same radius for top-left and bottom-left corners.
+    /// </summary>
+    /// <returns></returns>
+    public bool LeftSameRadius()
+    {
+        return TopLeft == BottomLeft;
+    }
 
-        public void SetTopBottom(float top, float bottom)
-        {
-            TopLeft = TopRight = top;
-            BottomLeft = BottomRight = bottom;
-        }
+    /// <summary>
+    /// Returns true if the right edge has the same radius for top-right and bottom-right corners.
+    /// </summary>
+    /// <returns></returns>
+    public bool RightSameRadius()
+    {
+        return TopRight == BottomRight;
+    }
 
-        public void SetLeftRight(float left, float right)
-        {
-            TopLeft = BottomLeft = left;
-            TopRight = BottomRight = right;
-        }
+    /// <summary>
+    /// Returns true if the bottom edge has the same radius for bottom-left and bottom-right corners.
+    /// </summary>
+    /// <returns></returns>
+    public bool BottomSameRadius()
+    {
+        return BottomLeft == BottomRight;
+    }
 
-        public CornerInfo(float radius)
-        {
-            TopLeft = radius;
-            TopRight = radius;
-            BottomLeft = radius;
-            BottomRight = radius;
-        }
+    /// <summary>
+    /// Returns true if the top edge has the same radius for top-left and top-right corners.
+    /// </summary>
+    /// <returns></returns>
+    public bool TopSameRadius()
+    {
+        return TopLeft == TopRight;
+    }
 
-        public CornerInfo Restrict(float max)
-        {
-            return new CornerInfo()
-            {
-                TopLeft = TopLeft > max ? max : TopLeft,
-                TopRight = TopRight > max ? max : TopRight,
-                BottomLeft = BottomLeft > max ? max : BottomLeft,
-                BottomRight = BottomRight > max ? max : BottomRight,
-            };
-        }
+    public bool LeftHasRadius()
+    {
+        return TopLeft > 0 || BottomLeft > 0;
+    }
 
-        /// <summary>
-        /// Returns true if at least one corner has a radius greater than 0.
-        /// </summary>
-        /// <returns></returns>
-        public bool HasRounded()
-        {
-            return TopLeft > 0 || TopRight > 0 || BottomRight > 0 || BottomLeft > 0;
-        }
-
-        /// <summary>
-        /// Returns true if all corners have the same radius.
-        /// </summary>
-        /// <returns></returns>
-        public bool OneRadius()
-        {
-            return TopLeft == TopRight && TopRight == BottomRight && BottomRight == BottomLeft;
-        }
-
-        /// <summary>
-        /// Returns true if the left edge has the same radius for top-left and bottom-left corners.
-        /// </summary>
-        /// <returns></returns>
-        public bool LeftSameRadius()
-        {
-            return TopLeft == BottomLeft;
-        }
-
-        /// <summary>
-        /// Returns true if the right edge has the same radius for top-right and bottom-right corners.
-        /// </summary>
-        /// <returns></returns>
-        public bool RightSameRadius()
-        {
-            return TopRight == BottomRight;
-        }
-
-        /// <summary>
-        /// Returns true if the bottom edge has the same radius for bottom-left and bottom-right corners.
-        /// </summary>
-        /// <returns></returns>
-        public bool BottomSameRadius()
-        {
-            return BottomLeft == BottomRight;
-        }
-
-        /// <summary>
-        /// Returns true if the top edge has the same radius for top-left and top-right corners.
-        /// </summary>
-        /// <returns></returns>
-        public bool TopSameRadius()
-        {
-            return TopLeft == TopRight;
-        }
-
-        public bool LeftHasRadius()
-        {
-            return TopLeft > 0 || BottomLeft > 0;
-        }
-
-        public bool RightHasRadius()
-        {
-            return TopRight > 0 || BottomRight > 0;
-        }
+    public bool RightHasRadius()
+    {
+        return TopRight > 0 || BottomRight > 0;
     }
 }

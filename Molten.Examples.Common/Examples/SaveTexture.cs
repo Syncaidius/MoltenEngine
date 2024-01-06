@@ -1,72 +1,74 @@
 ﻿using Molten.Graphics;
 using Molten.Input;
 
-namespace Molten.Examples
+namespace Molten.Examples;
+
+[Example("Save Texture", "Demonstrates saving a texture to file ")]
+public class SaveTexture : MoltenExample
 {
-    [Example("Save Texture", "Demonstrates saving a texture to file ")]
-    public class SaveTexture : MoltenExample
+    ContentLoadHandle _hShader;
+    ContentLoadHandle _hTexture;
+    ContentLoadHandle _hTexData;
+
+    protected override void OnLoadContent(ContentLoadBatch loader)
     {
-        ContentLoadHandle _hShader;
-        ContentLoadHandle _hTexture;
-        ContentLoadHandle _hTexData;
+        base.OnLoadContent(loader);
 
-        protected override void OnLoadContent(ContentLoadBatch loader)
+        _hShader = loader.Load<HlslShader>("assets/BasicTexture.mfx");
+        _hTexture = loader.Load<ITexture2D>("assets/dds_dxt5.dds");
+        _hTexData = loader.Load<TextureData>("assets/dds_dxt5.dds");
+        loader.OnCompleted += Loader_OnCompleted;
+    }
+
+    private void Loader_OnCompleted(ContentLoadBatch loader)
+    {
+        if (!_hShader.HasAsset())
         {
-            base.OnLoadContent(loader);
-
-            _hShader = loader.Load<HlslShader>("assets/BasicTexture.mfx");
-            _hTexture = loader.Load<ITexture2D>("assets/dds_dxt5.dds");
-            _hTexData = loader.Load<TextureData>("assets/dds_dxt5.dds");
-            loader.OnCompleted += Loader_OnCompleted;
+            Close();
+            return;
         }
 
-        private void Loader_OnCompleted(ContentLoadBatch loader)
+        HlslShader mat = _hShader.Get<HlslShader>();
+
+        // Manually construct a 2D texture array from the 3 textures we requested earlier
+        ITexture2D tex = _hTexture.Get<ITexture2D>();
+        mat.SetDefaultResource(tex, 0);
+        TestMesh.Shader = mat;
+
+        GraphicsTexture texStaging = Engine.Renderer.Device.CreateStagingTexture(tex);
+        TextureData loadedData = _hTexData.Get<TextureData>();
+        loadedData.Decompress(Log);
+
+        TextureParameters texParams = new TextureParameters()
         {
-            if (!_hShader.HasAsset())
-            {
-                Close();
-                return;
-            }
+            BlockCompressionFormat = DDSFormat.DXT5,
+        };
 
-            HlslShader mat = _hShader.Get<HlslShader>();
-
-            // Manually construct a 2D texture array from the 3 textures we requested earlier
-            ITexture2D tex = _hTexture.Get<ITexture2D>();
-            mat.SetDefaultResource(tex, 0);
-            TestMesh.Shader = mat;
-
-            GraphicsTexture staging = Engine.Renderer.Device.CreateStagingTexture(tex);
-            TextureData loadedData = _hTexData.Get<TextureData>();
-            loadedData.Decompress(Log);
-
-            TextureParameters texParams = new TextureParameters()
-            {
-                BlockCompressionFormat = DDSFormat.DXT5,
-            };
-
-            Engine.Content.SaveToFile("assets/saved_recompressed_texture_raw.dds", loadedData, parameters: texParams);
-            tex.GetData(GraphicsPriority.EndOfFrame, staging, (data) =>
+        Engine.Content.SaveToFile("assets/saved_recompressed_texture_raw.dds", loadedData, parameters: texParams);
+        tex.CopyTo(GraphicsPriority.EndOfFrame, texStaging, (resource) =>
+        {
+            texStaging.GetData(GraphicsPriority.EndOfFrame, null, (data) =>
             {
                 ContentSaveHandle saveHandle = Engine.Content.SaveToFile("assets/saved_texture.dds", data, parameters: texParams);
             });
-        }
+        });
+    }
 
-        protected override Mesh GetTestCubeMesh()
+    protected override Mesh GetTestCubeMesh()
+    {
+        Mesh<CubeArrayVertex> cube = Engine.Renderer.Device.CreateMesh(SampleVertexData.TextureArrayCubeVertices);
+        return cube;
+    }
+
+    protected override void OnUpdate(Timing time)
+    {
+        base.OnUpdate(time);
+
+        // Save a screenhot of the window surface when space is pressed!
+        if (Keyboard.IsTapped(KeyCode.Space))
         {
-            Mesh<CubeArrayVertex> cube = Engine.Renderer.Device.CreateMesh(SampleVertexData.TextureArrayCubeVertices);
-            return cube;
-        }
-
-        protected override void OnUpdate(Timing time)
-        {
-            base.OnUpdate(time);
-
-            // Save a screenhot of the window surface when space is pressed!
-            if (Keyboard.IsTapped(KeyCode.Space))
-            {
-                ContentSaveHandle saveHandle = Engine.Content.SaveToFile("assets/screenshot.png", Surface);
-                // TODO Add some loading/saving UI
-            }
+            ContentSaveHandle saveHandle = Engine.Content.SaveToFile("assets/screenshot.png", Surface);
+            // TODO Add some loading/saving UI
         }
     }
 }

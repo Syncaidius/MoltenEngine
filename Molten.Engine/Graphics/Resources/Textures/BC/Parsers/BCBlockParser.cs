@@ -1,12 +1,11 @@
-﻿namespace Molten.Graphics.Textures
+﻿namespace Molten.Graphics.Textures;
+
+/// <summary>A base class for DDS block readers.</summary>
+internal abstract class BCBlockParser
 {
-    /// <summary>A base class for DDS block readers.</summary>
-    internal abstract class BCBlockParser
-    {
-        public abstract GraphicsFormat ExpectedFormat { get; }
+    public abstract GraphicsFormat ExpectedFormat { get; }
 
-        internal abstract Color4[] Decode(BinaryReader imageReader, Logger log);
+    internal abstract Color4[] Decode(BinaryReader imageReader, Logger log);
 
-        internal abstract void Encode(BinaryWriter writer, Color4[] uncompressed, Logger log);
-    }
+    internal abstract void Encode(BinaryWriter writer, Color4[] uncompressed, Logger log);
 }

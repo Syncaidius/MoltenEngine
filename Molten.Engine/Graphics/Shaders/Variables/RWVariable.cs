@@ -1,23 +1,22 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics;
+
+public abstract class RWVariable : ShaderResourceVariable
 {
-    public abstract class RWVariable : ShaderResourceVariable
+    protected override bool ValidateResource(GraphicsResource res)
     {
-        protected override bool ValidateResource(GraphicsResource res)
-        {
-            if (res.Flags.Has(GraphicsResourceFlags.UnorderedAccess) && !(res is ISwapChainSurface))
-                return true;
-            else
-                Parent.Device.Log.Warning($"Cannot use non-unordered-access or non-storage resource in ${nameof(RWVariable)}");
+        if (res.Flags.Has(GraphicsResourceFlags.UnorderedAccess) && !(res is ISwapChainSurface))
+            return true;
+        else
+            Parent.Device.Log.Warning($"Cannot use non-unordered-access or non-storage resource in ${nameof(RWVariable)}");
 
-            return false;
-        }
+        return false;
     }
+}
 
-    public class RWVariable<T> : RWVariable
+public class RWVariable<T> : RWVariable
+{
+    protected override bool ValidateResource(GraphicsResource res)
     {
-        protected override bool ValidateResource(GraphicsResource res)
-        {
-            return res is T && base.ValidateResource(res);
-        }
+        return res is T && base.ValidateResource(res);
     }
 }

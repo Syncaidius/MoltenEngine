@@ -1,20 +1,19 @@
-﻿namespace Molten.Graphics.DX11
+﻿namespace Molten.Graphics.DX11;
+
+internal struct DepthClearTask : IGraphicsResourceTask
 {
-    internal struct DepthClearTask : IGraphicsResourceTask
+    public DepthSurfaceDX11 Surface;
+
+    public DepthClearFlags Flags;
+
+    public float DepthClearValue;
+
+    public byte StencilClearValue;
+
+    public bool Process(GraphicsQueue cmd, GraphicsResource resource)
     {
-        public DepthSurfaceDX11 Surface;
-
-        public DepthClearFlags Flags;
-
-        public float DepthClearValue;
-
-        public byte StencilClearValue;
-
-        public bool Process(GraphicsQueue cmd, GraphicsResource resource)
-        {
-            Surface.Ensure(cmd);
-            Surface.OnClear(cmd as GraphicsQueueDX11, ref this);
-            return false;
-        }
+        Surface.Ensure(cmd);
+        Surface.OnClear(cmd as GraphicsQueueDX11, ref this);
+        return false;
     }
 }

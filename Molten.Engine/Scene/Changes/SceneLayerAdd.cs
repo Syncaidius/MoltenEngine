@@ -1,22 +1,21 @@
-﻿namespace Molten
+﻿namespace Molten;
+
+internal class SceneLayerAdd : SceneChange<SceneLayerAdd>
 {
-    internal class SceneLayerAdd : SceneChange<SceneLayerAdd>
+    public Scene ParentScene;
+
+    public SceneLayer Layer;
+
+    public override void ClearForPool()
     {
-        public Scene ParentScene;
+        Layer = null;
+        ParentScene = null;
+    }
 
-        public SceneLayer Layer;
-
-        public override void ClearForPool()
-        {
-            Layer = null;
-            ParentScene = null;
-        }
-
-        internal override void Process()
-        {
-            Layer.LayerID = ParentScene.Layers.Count;
-            ParentScene.Layers.Add(Layer);
-            Recycle(this);
-        }
+    internal override void Process()
+    {
+        Layer.LayerID = ParentScene.Layers.Count;
+        ParentScene.Layers.Add(Layer);
+        Recycle(this);
     }
 }

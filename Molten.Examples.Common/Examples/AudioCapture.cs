@@ -3,179 +3,178 @@ using Molten.Data;
 using Molten.Graphics;
 using Molten.UI;
 
-namespace Molten.Examples
+namespace Molten.Examples;
+
+[Example("Audio Capture", "Showcases Molten's audio capture capabilities.")]
+public class AudioCapture : MoltenExample
 {
-    [Example("Audio Capture", "Showcases Molten's audio capture capabilities.")]
-    public class AudioCapture : MoltenExample
+    const int READ_SAMPLES_PER_FRAME = 1000;
+    const int FREQUENCY = 6635;
+
+    ContentLoadHandle _hShader;
+    ContentLoadHandle _hTexture;
+
+    UILabel _lblCapDevice;
+    UILabel _lblSamples;
+    UILabel _lblPlayState;
+
+    UIWindow _window1;
+    UIWindow _window2;
+    UILineGraph _lineGraph;
+    UIButton _btnStartCap;
+    UIButton _btnStopCap;
+    UIButton _btnPlay;
+    UICheckBox _chkLoopSound;
+
+    GraphDataSet _graphSet;
+
+    AudioBuffer _buffer;
+    ISoundSource _source;
+    ISoundInstance _instance;
+
+    protected override void OnLoadContent(ContentLoadBatch loader)
     {
-        const int READ_SAMPLES_PER_FRAME = 1000;
-        const int FREQUENCY = 6635;
+        base.OnLoadContent(loader);
 
-        ContentLoadHandle _hShader;
-        ContentLoadHandle _hTexture;
-
-        UILabel _lblCapDevice;
-        UILabel _lblSamples;
-        UILabel _lblPlayState;
-
-        UIWindow _window1;
-        UIWindow _window2;
-        UILineGraph _lineGraph;
-        UIButton _btnStartCap;
-        UIButton _btnStopCap;
-        UIButton _btnPlay;
-        UICheckBox _chkLoopSound;
-
-        GraphDataSet _graphSet;
-
-        AudioBuffer _buffer;
-        ISoundSource _source;
-        ISoundInstance _instance;
-
-        protected override void OnLoadContent(ContentLoadBatch loader)
+        _hShader = loader.Load<HlslShader>("assets/BasicTexture.mfx");
+        _hTexture = loader.Load<ITexture2D>("assets/logo_512_bc7.dds", parameters: new TextureParameters()
         {
-            base.OnLoadContent(loader);
+            GenerateMipmaps = true,
+        });
+            
+        loader.Deserialize<UITheme>("assets/test_theme.json", (theme, isReload, handle) =>
+        {
+            UI.Root.Theme = theme;
+        });
 
-            _hShader = loader.Load<HlslShader>("assets/BasicTexture.mfx");
-            _hTexture = loader.Load<ITexture2D>("assets/logo_512_bc7.dds", parameters: new TextureParameters()
-            {
-                GenerateMipmaps = true,
-            });
-                
-            loader.Deserialize<UITheme>("assets/test_theme.json", (theme, isReload, handle) =>
-            {
-                UI.Root.Theme = theme;
-            });
+        loader.OnCompleted += Loader_OnCompleted;
+    }
 
-            loader.OnCompleted += Loader_OnCompleted;
+    private void Loader_OnCompleted(ContentLoadBatch loader)
+    {
+        if (!_hShader.HasAsset())
+        {
+            Close();
+            return;
         }
 
-        private void Loader_OnCompleted(ContentLoadBatch loader)
+        HlslShader shader = _hShader.Get<HlslShader>();
+        ITexture2D texture = _hTexture.Get<ITexture2D>();
+
+        shader.SetDefaultResource(texture, 0);
+        TestMesh.Shader = shader;
+
+        _buffer = Engine.Audio.CreateBuffer(FREQUENCY, AudioFormat.Mono8, FREQUENCY);
+        _source = Engine.Audio.Output.CreateSoundSource(null);
+        _instance = _source.CreateInstance();
+
+        _lblCapDevice = UI.Children.Add<UILabel>(new Rectangle(300, 5, 500, 25));
+        _lblCapDevice.Text = $"Audio Capture Device: {Engine.Audio.Input?.Name}";
+
+        _lblSamples = UI.Children.Add<UILabel>(new Rectangle(300, 30, 500, 25));
+        _lblSamples.Text = $"Captured Samples Available: 0";
+
+        _lblPlayState = UI.Children.Add<UILabel>(new Rectangle(300, 50, 500, 25));
+        _lblPlayState.Text = $"Play State: 0";
+
+        _window1 = new UIWindow()
         {
-            if (!_hShader.HasAsset())
-            {
-                Close();
-                return;
-            }
+            LocalBounds = new Rectangle(50, 150, 900, 470),
+            Title = "Capture Waveform",
+        };
+        {
+            _lineGraph = _window1.Children.Add<UILineGraph>(new Rectangle(0, 0, 900, 430));
+            _graphSet = new GraphDataSet(200000);
+            _graphSet.KeyColor = Color.Lime;
 
-            HlslShader shader = _hShader.Get<HlslShader>();
-            ITexture2D texture = _hTexture.Get<ITexture2D>();
-
-            shader.SetDefaultResource(texture, 0);
-            TestMesh.Shader = shader;
-
-            _buffer = Engine.Audio.CreateBuffer(FREQUENCY, AudioFormat.Mono8, FREQUENCY);
-            _source = Engine.Audio.Output.CreateSoundSource(null);
-            _instance = _source.CreateInstance();
-
-            _lblCapDevice = UI.Children.Add<UILabel>(new Rectangle(300, 5, 500, 25));
-            _lblCapDevice.Text = $"Audio Capture Device: {Engine.Audio.Input?.Name}";
-
-            _lblSamples = UI.Children.Add<UILabel>(new Rectangle(300, 30, 500, 25));
-            _lblSamples.Text = $"Captured Samples Available: 0";
-
-            _lblPlayState = UI.Children.Add<UILabel>(new Rectangle(300, 50, 500, 25));
-            _lblPlayState.Text = $"Play State: 0";
-
-            _window1 = new UIWindow()
-            {
-                LocalBounds = new Rectangle(50, 150, 900, 470),
-                Title = "Capture Waveform",
-            };
-            {
-                _lineGraph = _window1.Children.Add<UILineGraph>(new Rectangle(0, 0, 900, 430));
-                _graphSet = new GraphDataSet(200000);
-                _graphSet.KeyColor = Color.Lime;
-
-                _lineGraph.AddDataSet(_graphSet);
-            }
-
-            _window2 = new UIWindow()
-            {
-                LocalBounds = new Rectangle(960, 250, 440, 300),
-                Title = "Audio Capture Controls",
-            };
-            {
-                _btnStartCap = _window2.Children.Add<UIButton>(new Rectangle(100, 100, 130, 30));
-                _btnStartCap.Text = "Start Capture";
-
-                _btnStopCap = _window2.Children.Add<UIButton>(new Rectangle(100, 140, 130, 30));
-                _btnStopCap.Text = "Stop Capture";
-
-                _btnPlay = _window2.Children.Add<UIButton>(new Rectangle(100, 180, 180, 30));
-                _btnPlay.Text = "Play Captured Audio";
-
-                _btnStartCap.Pressed += btnStart_Pressed;
-                _btnStopCap.Pressed += btnStop_Pressed;
-                _btnPlay.Pressed += _btnPlay_Pressed;
-
-                _chkLoopSound = _window2.Children.Add<UICheckBox>(new Rectangle(100, 220, 180, 30));
-                _chkLoopSound.Text = "Loop Playback";
-                _chkLoopSound.Toggled += _chkLoopSound_Toggled;
-            }
-
-            UI.Children.Add(_window1);
-            UI.Children.Add(_window2);
+            _lineGraph.AddDataSet(_graphSet);
         }
 
-        private void _chkLoopSound_Toggled(UICheckBox element)
+        _window2 = new UIWindow()
         {
-            _instance.IsLooping = _chkLoopSound.IsChecked;
+            LocalBounds = new Rectangle(960, 250, 440, 300),
+            Title = "Audio Capture Controls",
+        };
+        {
+            _btnStartCap = _window2.Children.Add<UIButton>(new Rectangle(100, 100, 130, 30));
+            _btnStartCap.Text = "Start Capture";
+
+            _btnStopCap = _window2.Children.Add<UIButton>(new Rectangle(100, 140, 130, 30));
+            _btnStopCap.Text = "Stop Capture";
+
+            _btnPlay = _window2.Children.Add<UIButton>(new Rectangle(100, 180, 180, 30));
+            _btnPlay.Text = "Play Captured Audio";
+
+            _btnStartCap.Pressed += btnStart_Pressed;
+            _btnStopCap.Pressed += btnStop_Pressed;
+            _btnPlay.Pressed += _btnPlay_Pressed;
+
+            _chkLoopSound = _window2.Children.Add<UICheckBox>(new Rectangle(100, 220, 180, 30));
+            _chkLoopSound.Text = "Loop Playback";
+            _chkLoopSound.Toggled += _chkLoopSound_Toggled;
         }
 
-        private void _btnPlay_Pressed(UIElement element, CameraInputTracker tracker)
-        {
-            _source.CommitBuffer(_buffer);
-            _instance.Stop();
-            _instance.Play();
-        }
+        UI.Children.Add(_window1);
+        UI.Children.Add(_window2);
+    }
 
-        private void btnStart_Pressed(UIElement element, CameraInputTracker tracker)
-        {
-            Engine.Audio.Input?.StartCapture();
-        }
+    private void _chkLoopSound_Toggled(UICheckBox element)
+    {
+        _instance.IsLooping = _chkLoopSound.IsChecked;
+    }
 
-        private void btnStop_Pressed(UIElement element, CameraInputTracker tracker)
-        {
-            Engine.Audio.Input?.StopCapture();
-        }
+    private void _btnPlay_Pressed(UIElement element, CameraInputTracker tracker)
+    {
+        _source.CommitBuffer(_buffer);
+        _instance.Stop();
+        _instance.Play();
+    }
 
-        protected override Mesh GetTestCubeMesh()
-        {
-            Mesh<CubeArrayVertex> cube = Engine.Renderer.Device.CreateMesh<CubeArrayVertex>(SampleVertexData.TextureArrayCubeVertices);
-            return cube;
-        }
+    private void btnStart_Pressed(UIElement element, CameraInputTracker tracker)
+    {
+        Engine.Audio.Input?.StartCapture();
+    }
 
-        protected override void OnUpdate(Timing time)
-        {
-            base.OnUpdate(time);
+    private void btnStop_Pressed(UIElement element, CameraInputTracker tracker)
+    {
+        Engine.Audio.Input?.StopCapture();
+    }
 
-            if (Engine.Audio.Input != null && _buffer != null)
+    protected override Mesh GetTestCubeMesh()
+    {
+        Mesh<CubeArrayVertex> cube = Engine.Renderer.Device.CreateMesh<CubeArrayVertex>(SampleVertexData.TextureArrayCubeVertices);
+        return cube;
+    }
+
+    protected override void OnUpdate(Timing time)
+    {
+        base.OnUpdate(time);
+
+        if (Engine.Audio.Input != null && _buffer != null)
+        {
+            int numSamples = Engine.Audio.Input.ReadSamples(_buffer, READ_SAMPLES_PER_FRAME);
+
+            //TODO implement way to copy data to a dataset in 1 call
+            for (int i = 0; i < numSamples; i++)
             {
-                int numSamples = Engine.Audio.Input.ReadSamples(_buffer, READ_SAMPLES_PER_FRAME);
-
-                //TODO implement way to copy data to a dataset in 1 call
-                for (int i = 0; i < numSamples; i++)
-                {
-                    _graphSet.Plot(_buffer[_buffer.ReadPosition++]);
-                    if (_buffer.ReadPosition == _buffer.Size)
-                        _buffer.ReadPosition = 0;
-                }
+                _graphSet.Plot(_buffer[_buffer.ReadPosition++]);
+                if (_buffer.ReadPosition == _buffer.Size)
+                    _buffer.ReadPosition = 0;
             }
         }
+    }
 
-        protected override void OnDrawSprites(SpriteBatcher sb)
+    protected override void OnDrawSprites(SpriteBatcher sb)
+    {
+        base.OnDrawSprites(sb);
+
+        if (!Engine.Audio.IsDisposed && _lblSamples != null)
         {
-            base.OnDrawSprites(sb);
+            int samples = Engine.Audio.Input.GetAvailableSamples();
+            _lblSamples.Text = $"Captured Samples Available: {samples}";
 
-            if (!Engine.Audio.IsDisposed && _lblSamples != null)
-            {
-                int samples = Engine.Audio.Input.GetAvailableSamples();
-                _lblSamples.Text = $"Captured Samples Available: {samples}";
-
-                if (_instance != null)
-                    _lblPlayState.Text = $"Play State: {_instance.State}";
-            }
+            if (_instance != null)
+                _lblPlayState.Text = $"Play State: {_instance.State}";
         }
     }
 }

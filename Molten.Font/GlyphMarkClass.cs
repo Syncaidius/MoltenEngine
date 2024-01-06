@@ -1,11 +1,10 @@
-﻿namespace Molten.Font
+﻿namespace Molten.Font;
+
+public enum GlyphMarkClass : ushort
 {
-    public enum GlyphMarkClass : ushort
-    {
-        Zero = 0,
+    Zero = 0,
 
-        Top = 1,
+    Top = 1,
 
-        Bottom = 2,
-    }
+    Bottom = 2,
 }

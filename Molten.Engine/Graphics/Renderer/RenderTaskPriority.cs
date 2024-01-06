@@ -1,9 +1,8 @@
-﻿namespace Molten.Graphics
-{
-    public enum RenderTaskPriority
-    {
-        StartOfFrame = 0,
+﻿namespace Molten.Graphics;
 
-        EndOfFrame = 1,
-    }
+public enum RenderTaskPriority
+{
+    StartOfFrame = 0,
+
+    EndOfFrame = 1,
 }

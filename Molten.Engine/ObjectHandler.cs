@@ -1,4 +1,3 @@
-﻿namespace Molten
-{
-    public delegate void ObjectHandler<T>(T obj);
-}
+﻿namespace Molten;
+
+public delegate void ObjectHandler<T>(T obj);

@@ -1,23 +1,22 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics;
+
+internal class RunResourceTask : RenderTask<RunResourceTask>
 {
-    internal class RunResourceTask : RenderTask<RunResourceTask>
+    internal IGraphicsResourceTask Task;
+
+    internal GraphicsResource Resource;
+
+    public override void ClearForPool()
     {
-        internal IGraphicsResourceTask Task;
+        Resource = null;
+        Task = null;
+    }
 
-        internal GraphicsResource Resource;
+    public override void Process(RenderService renderer)
+    {
+        if (Task.Process(renderer.Device.Queue, Resource))
+            Resource.Version++;
 
-        public override void ClearForPool()
-        {
-            Resource = null;
-            Task = null;
-        }
-
-        public override void Process(RenderService renderer)
-        {
-            if (Task.Process(renderer.Device.Queue, Resource))
-                Resource.Version++;
-
-            Recycle(this);
-        }
+        Recycle(this);
     }
 }

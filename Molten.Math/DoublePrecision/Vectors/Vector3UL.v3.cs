@@ -1,5 +1,3 @@
-using System.Runtime.InteropServices;
-
 namespace Molten.DoublePrecision;
 
 ///<summary>A <see cref = "ulong"/> vector comprised of 3 components.</summary>

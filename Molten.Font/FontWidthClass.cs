@@ -1,28 +1,27 @@
-﻿namespace Molten.Font
+﻿namespace Molten.Font;
+
+/// <summary>
+/// Indicates a relative change from the normal aspect ratio (width to height ratio) as specified by a font designer for the glyphs in a font.
+/// </summary>
+public enum FontWidthClass : ushort
 {
-    /// <summary>
-    /// Indicates a relative change from the normal aspect ratio (width to height ratio) as specified by a font designer for the glyphs in a font.
-    /// </summary>
-    public enum FontWidthClass : ushort
-    {
-        None = 0,
+    None = 0,
 
-        UltraCondensed = 1,
+    UltraCondensed = 1,
 
-        ExtraCondensed = 2,
+    ExtraCondensed = 2,
 
-        Condensed = 3,
+    Condensed = 3,
 
-        SemiCondensed = 4,
+    SemiCondensed = 4,
 
-        Medium = 5,
+    Medium = 5,
 
-        SemiExpanded = 6,
+    SemiExpanded = 6,
 
-        Expanded = 7,
+    Expanded = 7,
 
-        ExtraExpanded = 8,
+    ExtraExpanded = 8,
 
-        UltraExpanded = 9,
-    }
+    UltraExpanded = 9,
 }

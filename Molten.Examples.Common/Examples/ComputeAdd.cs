@@ -1,5 +1,5 @@
-﻿using System.Runtime.InteropServices;
-using Molten.Graphics;
+﻿using Molten.Graphics;
+using System.Runtime.InteropServices;
 
 namespace Molten.Examples;
 

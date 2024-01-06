@@ -1,36 +1,35 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Molten.Graphics
+namespace Molten.Graphics;
+
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public struct GridStyle
 {
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct GridStyle
+    public Color CellColor;
+
+    public Color LineColor;
+
+    public Vector2F LineThickness;
+
+    public GridStyle()
     {
-        public Color CellColor;
+        CellColor = Color.White;
+        LineColor = Color.White * 0.8f;
+        LineThickness = Vector2F.One;
+    }
 
-        public Color LineColor;
-
-        public Vector2F LineThickness;
-
-        public GridStyle()
+    public static implicit operator GridStyle(Color color)
+    {
+        return new GridStyle()
         {
-            CellColor = Color.White;
-            LineColor = Color.White * 0.8f;
-            LineThickness = Vector2F.One;
-        }
+            CellColor = color * 0.8f, // Make the cell slightly darker than the line color
+            LineColor = color,
+            LineThickness = Vector2F.One
+        };
+    }
 
-        public static implicit operator GridStyle(Color color)
-        {
-            return new GridStyle()
-            {
-                CellColor = color * 0.8f, // Make the cell slightly darker than the line color
-                LineColor = color,
-                LineThickness = Vector2F.One
-            };
-        }
-
-        public static implicit operator Color(GridStyle style)
-        {
-            return style.CellColor;
-        }
+    public static implicit operator Color(GridStyle style)
+    {
+        return style.CellColor;
     }
 }

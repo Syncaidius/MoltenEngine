@@ -1,613 +1,612 @@
-﻿using System.Reflection;
-using System.Text;
-using Silk.NET.Core.Native;
+﻿using Silk.NET.Core.Native;
 using Silk.NET.Direct3D.Compilers;
 using Silk.NET.Direct3D11;
+using System.Reflection;
+using System.Text;
 
-namespace Molten.Graphics.DX11
+namespace Molten.Graphics.DX11;
+
+public unsafe class FxcCompiler : ShaderCompiler
 {
-    public unsafe class FxcCompiler : ShaderCompiler
+    D3DCompiler _d3dCompiler;
+
+    /// <summary>
+    /// Creates a new instance of <see cref="FxcCompiler"/>.
+    /// </summary>
+    /// <param name="renderer">The renderer which owns the compiler.</param>
+    /// <param name="log"></param>
+    /// <param name="includePath">The default path for engine/game HLSL include files.</param>
+    /// <param name="includeAssembly"></param>
+    internal FxcCompiler(RendererDX11 renderer, Logger log, string includePath, Assembly includeAssembly) :
+        base(renderer, includePath, includeAssembly)
     {
-        D3DCompiler _d3dCompiler;
+        _d3dCompiler = D3DCompiler.GetApi();
+    }
 
-        /// <summary>
-        /// Creates a new instance of <see cref="FxcCompiler"/>.
-        /// </summary>
-        /// <param name="renderer">The renderer which owns the compiler.</param>
-        /// <param name="log"></param>
-        /// <param name="includePath">The default path for engine/game HLSL include files.</param>
-        /// <param name="includeAssembly"></param>
-        internal FxcCompiler(RendererDX11 renderer, Logger log, string includePath, Assembly includeAssembly) :
-            base(renderer, includePath, includeAssembly)
+    protected override void OnDispose()
+    {
+        _d3dCompiler.Dispose();
+    }
+
+    protected override bool Validate(HlslPass pass, ShaderCompilerContext context, ShaderCodeResult result)
+    {
+        return true;
+    }
+
+    private unsafe ShaderReflection BuildReflection(ShaderCompilerContext context, ID3D10Blob* byteCode)
+    {
+        Guid guidReflect = ID3D11ShaderReflection.Guid;
+        void* ppReflection = null;
+
+        void* ppByteCode = byteCode->GetBufferPointer();
+        nuint numBytes = byteCode->GetBufferSize();
+
+        _d3dCompiler.Reflect(ppByteCode, numBytes, &guidReflect, &ppReflection);
+        FxcReflection fxcReflection = new FxcReflection((ID3D11ShaderReflection*)ppReflection);
+        ShaderReflection r = new ShaderReflection()
         {
-            _d3dCompiler = D3DCompiler.GetApi();
-        }
+            GSInputPrimitive = fxcReflection.Ptr->GetGSInputPrimitive().FromApi(),
+        };
 
-        protected override void OnDispose()
+        // Get shader resource input bindings
+        for (uint i = 0; i < fxcReflection.Desc.BoundResources; i++)
         {
-            _d3dCompiler.Dispose();
-        }
+            ShaderInputBindDesc rDesc = new ShaderInputBindDesc();
+            fxcReflection.Ptr->GetResourceBindingDesc(i, &rDesc);
 
-        protected override bool Validate(HlslPass pass, ShaderCompilerContext context, ShaderCodeResult result)
-        {
-            return true;
-        }
-
-        private unsafe ShaderReflection BuildReflection(ShaderCompilerContext context, ID3D10Blob* byteCode)
-        {
-            Guid guidReflect = ID3D11ShaderReflection.Guid;
-            void* ppReflection = null;
-
-            void* ppByteCode = byteCode->GetBufferPointer();
-            nuint numBytes = byteCode->GetBufferSize();
-
-            _d3dCompiler.Reflect(ppByteCode, numBytes, &guidReflect, &ppReflection);
-            FxcReflection fxcReflection = new FxcReflection((ID3D11ShaderReflection*)ppReflection);
-            ShaderReflection r = new ShaderReflection()
+            ShaderResourceInfo bindInfo = new ShaderResourceInfo()
             {
-                GSInputPrimitive = fxcReflection.Ptr->GetGSInputPrimitive().FromApi(),
+                Name = SilkMarshal.PtrToString((nint)rDesc.Name),
+                BindCount = rDesc.BindCount,
+                BindPoint = rDesc.BindPoint,
+                Dimension = rDesc.Dimension.FromApi(),
+                Type = rDesc.Type.FromApi(),
+                NumSamples = rDesc.NumSamples,
+                ResourceReturnType = rDesc.ReturnType.FromApi(),
+                Flags = ((D3DShaderInputFlags)rDesc.UFlags).FromApi()
             };
 
-            // Get shader resource input bindings
-            for (uint i = 0; i < fxcReflection.Desc.BoundResources; i++)
+            r.BoundResources.Add(bindInfo);
+
+            switch (bindInfo.Type)
             {
-                ShaderInputBindDesc rDesc = new ShaderInputBindDesc();
-                fxcReflection.Ptr->GetResourceBindingDesc(i, &rDesc);
+                case ShaderInputType.CBuffer:
+                    ID3D11ShaderReflectionConstantBuffer* buffer = fxcReflection.Ptr->GetConstantBufferByName(bindInfo.Name);
+                    ShaderBufferDesc bufferDesc = new ShaderBufferDesc();
+                    buffer->GetDesc(ref bufferDesc);
 
-                ShaderResourceInfo bindInfo = new ShaderResourceInfo()
-                {
-                    Name = SilkMarshal.PtrToString((nint)rDesc.Name),
-                    BindCount = rDesc.BindCount,
-                    BindPoint = rDesc.BindPoint,
-                    Dimension = rDesc.Dimension.FromApi(),
-                    Type = rDesc.Type.FromApi(),
-                    NumSamples = rDesc.NumSamples,
-                    ResourceReturnType = rDesc.ReturnType.FromApi(),
-                    Flags = ((D3DShaderInputFlags)rDesc.UFlags).FromApi()
-                };
+                    // Skip binding info buffers
+                    if (bufferDesc.Type == D3DCBufferType.D3DCTResourceBindInfo)
+                        continue;
 
-                r.BoundResources.Add(bindInfo);
+                    ConstantBufferInfo cBufferInfo = new ConstantBufferInfo()
+                    {
+                        Name = bindInfo.Name,
+                        Type = bufferDesc.Type.FromApi(),
+                        Flags = (ConstantBufferFlags)bufferDesc.UFlags,
+                        Size = bufferDesc.Size,
+                    };
 
-                switch (bindInfo.Type)
-                {
-                    case ShaderInputType.CBuffer:
-                        ID3D11ShaderReflectionConstantBuffer* buffer = fxcReflection.Ptr->GetConstantBufferByName(bindInfo.Name);
-                        ShaderBufferDesc bufferDesc = new ShaderBufferDesc();
-                        buffer->GetDesc(ref bufferDesc);
+                    r.ConstantBuffers.Add(bindInfo.Name, cBufferInfo);
 
-                        // Skip binding info buffers
-                        if (bufferDesc.Type == D3DCBufferType.D3DCTResourceBindInfo)
-                            continue;
+                    for (uint v = 0; v < bufferDesc.Variables; v++)
+                    {
+                        ID3D11ShaderReflectionVariable* variable = buffer->GetVariableByIndex(v);
+                        ShaderVariableDesc desc = new ShaderVariableDesc();
+                        variable->GetDesc(&desc);
 
-                        ConstantBufferInfo cBufferInfo = new ConstantBufferInfo()
+                        ID3D11ShaderReflectionType* rType = variable->GetType();
+                        ShaderTypeDesc typeDesc = new ShaderTypeDesc();
+                        rType->GetDesc(&typeDesc);
+
+                        ShaderReflection.ReflectionPtr ptrDefault = null;
+                        if (desc.DefaultValue != null)
                         {
-                            Name = bindInfo.Name,
-                            Type = bufferDesc.Type.FromApi(),
-                            Flags = (ConstantBufferFlags)bufferDesc.UFlags,
-                            Size = bufferDesc.Size,
+                            ptrDefault = r.NewPtr(desc.Size);
+                            System.Buffer.MemoryCopy(desc.DefaultValue, ptrDefault, desc.Size, desc.Size);
+                        }
+
+                        ConstantBufferVariableInfo cVarInfo = new ConstantBufferVariableInfo()
+                        {
+                            DefaultValue = ptrDefault,
+                            Name = SilkMarshal.PtrToString((nint)desc.Name),
+                            Size = desc.Size,
+                            StartOffset = desc.StartOffset,
+                            SamplerSize = desc.SamplerSize,
+                            StartSampler = desc.StartSampler,
+                            StartTexture = desc.StartTexture,
+                            TextureSize = desc.TextureSize,
+                            Flags = (ShaderVariableFlags)desc.UFlags,
                         };
 
-                        r.ConstantBuffers.Add(bindInfo.Name, cBufferInfo);
-
-                        for (uint v = 0; v < bufferDesc.Variables; v++)
-                        {
-                            ID3D11ShaderReflectionVariable* variable = buffer->GetVariableByIndex(v);
-                            ShaderVariableDesc desc = new ShaderVariableDesc();
-                            variable->GetDesc(&desc);
-
-                            ID3D11ShaderReflectionType* rType = variable->GetType();
-                            ShaderTypeDesc typeDesc = new ShaderTypeDesc();
-                            rType->GetDesc(&typeDesc);
-
-                            ShaderReflection.ReflectionPtr ptrDefault = null;
-                            if (desc.DefaultValue != null)
-                            {
-                                ptrDefault = r.NewPtr(desc.Size);
-                                System.Buffer.MemoryCopy(desc.DefaultValue, ptrDefault, desc.Size, desc.Size);
-                            }
-
-                            ConstantBufferVariableInfo cVarInfo = new ConstantBufferVariableInfo()
-                            {
-                                DefaultValue = ptrDefault,
-                                Name = SilkMarshal.PtrToString((nint)desc.Name),
-                                Size = desc.Size,
-                                StartOffset = desc.StartOffset,
-                                SamplerSize = desc.SamplerSize,
-                                StartSampler = desc.StartSampler,
-                                StartTexture = desc.StartTexture,
-                                TextureSize = desc.TextureSize,
-                                Flags = (ShaderVariableFlags)desc.UFlags,
-                            };
-
-                            cBufferInfo.Variables.Add(cVarInfo);
-                            cVarInfo.Type.Name = SilkMarshal.PtrToString((nint)typeDesc.Name);
-                            cVarInfo.Type.Offset = typeDesc.Offset;
-                            cVarInfo.Type.Type = (ShaderVariableType)typeDesc.Type;
-                            cVarInfo.Type.Class = (ShaderVariableClass)typeDesc.Class;
-                            cVarInfo.Type.ColumnCount = typeDesc.Columns;
-                            cVarInfo.Type.RowCount = typeDesc.Rows;
-                            cVarInfo.Type.Elements = typeDesc.Elements;
-                        }
-                        break;
-                }
+                        cBufferInfo.Variables.Add(cVarInfo);
+                        cVarInfo.Type.Name = SilkMarshal.PtrToString((nint)typeDesc.Name);
+                        cVarInfo.Type.Offset = typeDesc.Offset;
+                        cVarInfo.Type.Type = (ShaderVariableType)typeDesc.Type;
+                        cVarInfo.Type.Class = (ShaderVariableClass)typeDesc.Class;
+                        cVarInfo.Type.ColumnCount = typeDesc.Columns;
+                        cVarInfo.Type.RowCount = typeDesc.Rows;
+                        cVarInfo.Type.Elements = typeDesc.Elements;
+                    }
+                    break;
             }
-
-            PopulateReflectionParamters(r, fxcReflection, ShaderIOLayoutType.Input);
-            PopulateReflectionParamters(r, fxcReflection, ShaderIOLayoutType.Output);
-
-            fxcReflection.Dispose();
-            return r;
         }
 
-        private void PopulateReflectionParamters(ShaderReflection reflection, FxcReflection fxcReflection, ShaderIOLayoutType type)
+        PopulateReflectionParamters(r, fxcReflection, ShaderIOLayoutType.Input);
+        PopulateReflectionParamters(r, fxcReflection, ShaderIOLayoutType.Output);
+
+        fxcReflection.Dispose();
+        return r;
+    }
+
+    private void PopulateReflectionParamters(ShaderReflection reflection, FxcReflection fxcReflection, ShaderIOLayoutType type)
+    {
+        uint count = 0;
+        List<ShaderParameterInfo> parameters;
+
+        switch (type)
         {
-            uint count = 0;
-            List<ShaderParameterInfo> parameters;
+            case ShaderIOLayoutType.Input:
+                count = fxcReflection.Desc.InputParameters;
+                parameters = reflection.InputParameters;
+                break;
+
+            case ShaderIOLayoutType.Output:
+                count = fxcReflection.Desc.OutputParameters;
+                parameters = reflection.OutputParameters;
+                break;
+
+            default:
+                return;
+        }
+
+        for (uint i = 0; i < count; i++)
+        {
+            SignatureParameterDesc pDesc = new SignatureParameterDesc();
 
             switch (type)
             {
                 case ShaderIOLayoutType.Input:
-                    count = fxcReflection.Desc.InputParameters;
-                    parameters = reflection.InputParameters;
+                    fxcReflection.Ptr->GetInputParameterDesc(i, ref pDesc);
                     break;
 
                 case ShaderIOLayoutType.Output:
-                    count = fxcReflection.Desc.OutputParameters;
-                    parameters = reflection.OutputParameters;
+                    fxcReflection.Ptr->GetOutputParameterDesc(i, ref pDesc);
                     break;
-
-                default:
-                    return;
             }
 
-            for (uint i = 0; i < count; i++)
+            parameters.Add(new ShaderParameterInfo()
             {
-                SignatureParameterDesc pDesc = new SignatureParameterDesc();
-
-                switch (type)
-                {
-                    case ShaderIOLayoutType.Input:
-                        fxcReflection.Ptr->GetInputParameterDesc(i, ref pDesc);
-                        break;
-
-                    case ShaderIOLayoutType.Output:
-                        fxcReflection.Ptr->GetOutputParameterDesc(i, ref pDesc);
-                        break;
-                }
-
-                parameters.Add(new ShaderParameterInfo()
-                {
-                    ComponentType = (ShaderRegisterType)pDesc.ComponentType,
-                    Mask = (ShaderComponentMaskFlags)pDesc.Mask,
-                    ReadWriteMask = pDesc.ReadWriteMask,
-                    MinPrecision = (ShaderMinPrecision)pDesc.MinPrecision,
-                    Register = pDesc.Register,
-                    SemanticIndex = pDesc.SemanticIndex,
-                    SemanticName = SilkMarshal.PtrToString((nint)pDesc.SemanticName).ToUpper(),
-                    SemanticNamePtr = pDesc.SemanticName,
-                    Stream = pDesc.Stream,
-                    SystemValueType = (ShaderSVType)pDesc.SystemValueType
-                });
-            }
+                ComponentType = (ShaderRegisterType)pDesc.ComponentType,
+                Mask = (ShaderComponentMaskFlags)pDesc.Mask,
+                ReadWriteMask = pDesc.ReadWriteMask,
+                MinPrecision = (ShaderMinPrecision)pDesc.MinPrecision,
+                Register = pDesc.Register,
+                SemanticIndex = pDesc.SemanticIndex,
+                SemanticName = SilkMarshal.PtrToString((nint)pDesc.SemanticName).ToUpper(),
+                SemanticNamePtr = pDesc.SemanticName,
+                Stream = pDesc.Stream,
+                SystemValueType = (ShaderSVType)pDesc.SystemValueType
+            });
         }
+    }
 
-        /// <summary>Compiles HLSL source code and outputs the result. Returns true if successful, or false if there were errors.</summary>
-        /// <param name="entryPoint"></param>
-        /// <param name="type"></param>
-        /// <param name="context"></param>
-        /// <param name="result"></param>
-        /// <returns></returns>
-        public override bool CompileSource(string entryPoint, ShaderType type, 
-            ShaderCompilerContext context, out ShaderCodeResult result)
+    /// <summary>Compiles HLSL source code and outputs the result. Returns true if successful, or false if there were errors.</summary>
+    /// <param name="entryPoint"></param>
+    /// <param name="type"></param>
+    /// <param name="context"></param>
+    /// <param name="result"></param>
+    /// <returns></returns>
+    public override bool CompileSource(string entryPoint, ShaderType type, 
+        ShaderCompilerContext context, out ShaderCodeResult result)
+    {
+        Encoding encoding = CodePagesEncodingProvider.Instance.GetEncoding(1252); // Ansi codepage
+        NativeStringEncoding nativeEncoding = NativeStringEncoding.LPStr;
+        
+        // Since it's not possible to have two functions in the same file with the same name, we'll just check if
+        // a shader with the same entry-point name is already loaded in the context.
+        if (!context.Shaders.TryGetValue(entryPoint, out result))
         {
-            Encoding encoding = CodePagesEncodingProvider.Instance.GetEncoding(1252); // Ansi codepage
-            NativeStringEncoding nativeEncoding = NativeStringEncoding.LPStr;
-            
-            // Since it's not possible to have two functions in the same file with the same name, we'll just check if
-            // a shader with the same entry-point name is already loaded in the context.
-            if (!context.Shaders.TryGetValue(entryPoint, out result))
+            ulong numBytes = 0;
+            string shaderProfile = ShaderModel.Model5_0.ToProfile(type);
+            byte* pSourceName = EngineUtil.StringToPtr(context.Source.Filename, encoding);
+            byte* pEntryPoint = (byte*)SilkMarshal.StringToPtr(entryPoint, nativeEncoding);
+            byte* pTarget = (byte*)SilkMarshal.StringToPtr(shaderProfile, nativeEncoding);
+            void* pSrc = EngineUtil.StringToPtr(context.Source.SourceCode, encoding, out numBytes);
+            FxcCompileFlags compileFlags = context.Flags.Translate();
+
+            ID3D10Blob* pByteCode = null;
+            ID3D10Blob* pErrors = null;
+            ID3D10Blob* pProcessedSrc = null;
+
+            // Preprocess and check for errors
+            HResult hr = _d3dCompiler.Preprocess(pSrc, (nuint)numBytes, pSourceName, null, null, &pProcessedSrc, &pErrors);
+            ParseErrors(context, hr, pErrors);
+
+            // Compile source and check for errors
+            if (hr.IsSuccess)
             {
-                ulong numBytes = 0;
-                string shaderProfile = ShaderModel.Model5_0.ToProfile(type);
-                byte* pSourceName = EngineUtil.StringToPtr(context.Source.Filename, encoding);
-                byte* pEntryPoint = (byte*)SilkMarshal.StringToPtr(entryPoint, nativeEncoding);
-                byte* pTarget = (byte*)SilkMarshal.StringToPtr(shaderProfile, nativeEncoding);
-                void* pSrc = EngineUtil.StringToPtr(context.Source.SourceCode, encoding, out numBytes);
-                FxcCompileFlags compileFlags = context.Flags.Translate();
+                void* postProcessedSrc = pProcessedSrc->GetBufferPointer();
+                nuint postProcessedSize = pProcessedSrc->GetBufferSize();
 
-                ID3D10Blob* pByteCode = null;
-                ID3D10Blob* pErrors = null;
-                ID3D10Blob* pProcessedSrc = null;
-
-                // Preprocess and check for errors
-                HResult hr = _d3dCompiler.Preprocess(pSrc, (nuint)numBytes, pSourceName, null, null, &pProcessedSrc, &pErrors);
+                hr = _d3dCompiler.Compile(postProcessedSrc, postProcessedSize, pSourceName, null, null, pEntryPoint, pTarget, (uint)compileFlags, 0, &pByteCode, &pErrors);
                 ParseErrors(context, hr, pErrors);
-
-                // Compile source and check for errors
-                if (hr.IsSuccess)
-                {
-                    void* postProcessedSrc = pProcessedSrc->GetBufferPointer();
-                    nuint postProcessedSize = pProcessedSrc->GetBufferSize();
-
-                    hr = _d3dCompiler.Compile(postProcessedSrc, postProcessedSize, pSourceName, null, null, pEntryPoint, pTarget, (uint)compileFlags, 0, &pByteCode, &pErrors);
-                    ParseErrors(context, hr, pErrors);
-                }
-
-                //Store shader result
-                if (!context.HasErrors)
-                {
-                    ShaderReflection reflection = BuildReflection(context, pByteCode);
-                    result = new ShaderCodeResult(reflection, pByteCode, pByteCode->GetBufferSize(), null);
-                    context.Shaders.Add(entryPoint, result);
-                }
-
-                NativeUtil.ReleasePtr(ref pProcessedSrc);
-                NativeUtil.ReleasePtr(ref pErrors);
-                EngineUtil.Free(ref pSrc);
-                EngineUtil.Free(ref pSourceName);
-                SilkMarshal.Free((nint)pEntryPoint);
-                SilkMarshal.Free((nint) pTarget);
             }
 
-            return !context.HasErrors;
-        }
-
-        public override ShaderIOLayout BuildIO(ShaderCodeResult result, ShaderType sType, ShaderIOLayoutType type)
-        {
-            return new ShaderIOLayoutDX11(result, sType, type);
-        }
-
-        public override bool BuildStructure(ShaderCompilerContext context,
-            HlslShader shader, ShaderCodeResult result, ShaderComposition composition)
-        {
-            for (int r = 0; r < result.Reflection.BoundResources.Count; r++)
+            //Store shader result
+            if (!context.HasErrors)
             {
-                ShaderResourceInfo bindInfo = result.Reflection.BoundResources[r];
-                uint bindPoint = bindInfo.BindPoint;
-
-                switch (bindInfo.Type)
-                {
-                    case ShaderInputType.CBuffer:
-                        ConstantBufferInfo bufferInfo = result.Reflection.ConstantBuffers[bindInfo.Name];
-
-                        // Skip binding info buffers
-                        if (bufferInfo.Type != ConstantBufferType.ResourceBindInfo)
-                        {
-                            if (bindPoint >= shader.ConstBuffers.Length)
-                                Array.Resize(ref shader.ConstBuffers, (int)bindPoint + 1);
-
-                            if (shader.ConstBuffers[bindPoint] != null && shader.ConstBuffers[bindPoint].BufferName != bindInfo.Name)
-                                context.AddMessage($"Shader constant buffer '{shader.ConstBuffers[bindPoint].BufferName}' was overwritten by buffer '{bindInfo.Name}' at the same register (b{bindPoint}).",
-                                    ShaderCompilerMessage.Kind.Warning);
-
-                            shader.ConstBuffers[bindPoint] = GetConstantBuffer(context, shader, bufferInfo);
-                            composition.ConstBufferIds.Add(bindPoint);
-                        }
-
-                        break;
-
-                    case ShaderInputType.Texture:
-                        OnBuildTextureVariable(context, shader, bindInfo);
-                        composition.ResourceIds.Add(bindInfo.BindPoint);
-                        break;
-
-                    case ShaderInputType.Sampler:
-                        bool isComparison = bindInfo.HasInputFlags(ShaderInputFlags.ComparisonSampler);
-                        ShaderSamplerVariable sampler = GetVariableResource<ShaderSamplerVariable>(context, shader, bindInfo);
-
-                        if (bindPoint >= shader.SamplerVariables.Length)
-                        {
-                            int oldLength = shader.SamplerVariables.Length;
-                            EngineUtil.ArrayResize(ref shader.SamplerVariables, bindPoint + 1);
-                            for (int i = oldLength; i < shader.SamplerVariables.Length; i++)
-                                shader.SamplerVariables[i] = (i == bindPoint ? sampler : ShaderVariable.Create<ShaderSamplerVariable>(shader, bindInfo.Name));
-                        }
-                        else
-                        {
-                            shader.SamplerVariables[bindPoint] = sampler;
-                        }
-                        composition.SamplerIds.Add(bindPoint);
-                        break;
-
-                    case ShaderInputType.Structured:
-                        ShaderResourceVariable bVar = GetVariableResource<ShaderResourceVariable<GraphicsBuffer>>(context, shader, bindInfo);
-                        if (bindPoint >= shader.Resources.Length)
-                            EngineUtil.ArrayResize(ref shader.Resources, bindPoint + 1);
-
-                        shader.Resources[bindPoint] = bVar;
-                        composition.ResourceIds.Add(bindPoint);
-                        break;
-
-                    case ShaderInputType.UavRWStructured:
-                        OnBuildRWStructuredVariable(context, shader, bindInfo);
-                        composition.UnorderedAccessIds.Add(bindPoint);
-                        break;
-
-                    case ShaderInputType.UavRWTyped:
-                        OnBuildRWTypedVariable(context, shader, bindInfo);
-                        composition.UnorderedAccessIds.Add(bindPoint);
-                        break;
-                }
+                ShaderReflection reflection = BuildReflection(context, pByteCode);
+                result = new ShaderCodeResult(reflection, pByteCode, pByteCode->GetBufferSize(), null);
+                context.Shaders.Add(entryPoint, result);
             }
 
-            return true;
+            NativeUtil.ReleasePtr(ref pProcessedSrc);
+            NativeUtil.ReleasePtr(ref pErrors);
+            EngineUtil.Free(ref pSrc);
+            EngineUtil.Free(ref pSourceName);
+            SilkMarshal.Free((nint)pEntryPoint);
+            SilkMarshal.Free((nint) pTarget);
         }
 
-        protected bool HasConstantBuffer(ShaderCompilerContext context,
-    HlslShader shader, string bufferName, string[] varNames)
-        {
-            foreach (ConstantBufferDX11 buffer in shader.ConstBuffers)
-            {
-                if (buffer == null)
-                    continue;
+        return !context.HasErrors;
+    }
 
-                if (buffer.BufferName == bufferName)
-                {
-                    if (buffer.Variables.Length != varNames.Length)
+    public override ShaderIOLayout BuildIO(ShaderCodeResult result, ShaderType sType, ShaderIOLayoutType type)
+    {
+        return new ShaderIOLayoutDX11(result, sType, type);
+    }
+
+    public override bool BuildStructure(ShaderCompilerContext context,
+        HlslShader shader, ShaderCodeResult result, ShaderComposition composition)
+    {
+        for (int r = 0; r < result.Reflection.BoundResources.Count; r++)
+        {
+            ShaderResourceInfo bindInfo = result.Reflection.BoundResources[r];
+            uint bindPoint = bindInfo.BindPoint;
+
+            switch (bindInfo.Type)
+            {
+                case ShaderInputType.CBuffer:
+                    ConstantBufferInfo bufferInfo = result.Reflection.ConstantBuffers[bindInfo.Name];
+
+                    // Skip binding info buffers
+                    if (bufferInfo.Type != ConstantBufferType.ResourceBindInfo)
                     {
-                        context.AddMessage($"Shader '{bufferName}' constant buffer does not have the correct number of variables ({varNames.Length})",
-                            ShaderCompilerMessage.Kind.Error);
-                        return false;
+                        if (bindPoint >= shader.ConstBuffers.Length)
+                            Array.Resize(ref shader.ConstBuffers, (int)bindPoint + 1);
+
+                        if (shader.ConstBuffers[bindPoint] != null && shader.ConstBuffers[bindPoint].BufferName != bindInfo.Name)
+                            context.AddMessage($"Shader constant buffer '{shader.ConstBuffers[bindPoint].BufferName}' was overwritten by buffer '{bindInfo.Name}' at the same register (b{bindPoint}).",
+                                ShaderCompilerMessage.Kind.Warning);
+
+                        shader.ConstBuffers[bindPoint] = GetConstantBuffer(context, shader, bufferInfo);
+                        composition.ConstBufferIds.Add(bindPoint);
                     }
 
-                    for (int i = 0; i < buffer.Variables.Length; i++)
+                    break;
+
+                case ShaderInputType.Texture:
+                    OnBuildTextureVariable(context, shader, bindInfo);
+                    composition.ResourceIds.Add(bindInfo.BindPoint);
+                    break;
+
+                case ShaderInputType.Sampler:
+                    bool isComparison = bindInfo.HasInputFlags(ShaderInputFlags.ComparisonSampler);
+                    ShaderSamplerVariable sampler = GetVariableResource<ShaderSamplerVariable>(context, shader, bindInfo);
+
+                    if (bindPoint >= shader.SamplerVariables.Length)
                     {
-                        GraphicsConstantVariable variable = buffer.Variables[i];
-                        string expectedName = varNames[i];
-
-                        if (variable.Name != expectedName)
-                        {
-                            context.AddMessage($"Shader '{bufferName}' constant variable #{i + 1} is incorrect: Named '{variable.Name}' instead of '{expectedName}'",
-                                ShaderCompilerMessage.Kind.Error);
-                            return false;
-                        }
-                    }
-
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private void OnBuildRWStructuredVariable
-            (ShaderCompilerContext context,
-            HlslShader shader, ShaderResourceInfo info)
-        {
-            RWVariable rwBuffer = GetVariableResource<RWVariable<BufferDX11>>(context, shader, info);
-            uint bindPoint = info.BindPoint;
-
-            if (bindPoint >= shader.UAVs.Length)
-                EngineUtil.ArrayResize(ref shader.UAVs, bindPoint + 1);
-
-            shader.UAVs[bindPoint] = rwBuffer;
-        }
-
-        private void OnBuildRWTypedVariable(
-            ShaderCompilerContext context,
-            HlslShader shader, ShaderResourceInfo info)
-        {
-            RWVariable resource = null;
-            uint bindPoint = info.BindPoint;
-
-            switch (info.Dimension)
-            {
-                case ShaderResourceDimension.Texture1DArray:
-                case ShaderResourceDimension.Texture1D:
-                    resource = GetVariableResource<RWVariable<ITexture1D>>(context, shader, info);
-                    break;
-
-                case ShaderResourceDimension.Texture2DMS:
-                case ShaderResourceDimension.Texture2DMSArray:
-                case ShaderResourceDimension.Texture2DArray:
-                case ShaderResourceDimension.Texture2D:
-                    resource = GetVariableResource<RWVariable<ITexture2D>>(context, shader, info);
-                    break;
-
-                case ShaderResourceDimension.Texture3D:
-                    resource = GetVariableResource<RWVariable<ITexture3D>>(context, shader, info);
-                    break;
-
-                case ShaderResourceDimension.TextureCube:
-                case ShaderResourceDimension.TextureCubeArray:
-                    resource = GetVariableResource<RWVariable<ITextureCube>>(context, shader, info);
-                    break;
-            }
-
-            if (bindPoint >= shader.UAVs.Length)
-                EngineUtil.ArrayResize(ref shader.UAVs, bindPoint + 1);
-
-            // Store the resource variable
-            shader.UAVs[bindPoint] = resource;
-        }
-
-        private void OnBuildTextureVariable(ShaderCompilerContext context,
-            HlslShader shader, ShaderResourceInfo info)
-        {
-            ShaderResourceVariable obj = null;
-
-            switch (info.Dimension)
-            {
-                case ShaderResourceDimension.Texture1DArray:
-                case ShaderResourceDimension.Texture1D:
-                    obj = GetVariableResource<ShaderResourceVariable<ITexture1D>>(context, shader, info);
-                    break;
-
-                case ShaderResourceDimension.Texture2DMS:
-                case ShaderResourceDimension.Texture2DMSArray:
-                case ShaderResourceDimension.Texture2DArray:
-                case ShaderResourceDimension.Texture2D:
-                    obj = GetVariableResource<ShaderResourceVariable<ITexture2D>>(context, shader, info);
-                    break;
-
-                case ShaderResourceDimension.Texture3D:
-                    obj = GetVariableResource<ShaderResourceVariable<ITexture3D>>(context, shader, info);
-                    break;
-
-                case ShaderResourceDimension.TextureCube:
-                    obj = GetVariableResource<ShaderResourceVariable<ITextureCube>>(context, shader, info);
-                    break;
-            }
-
-            if (info.BindPoint >= shader.Resources.Length)
-                EngineUtil.ArrayResize(ref shader.Resources, info.BindPoint + 1);
-
-            //store the resource variable
-            shader.Resources[info.BindPoint] = obj;
-        }
-
-        private unsafe ConstantBufferDX11 GetConstantBuffer(ShaderCompilerContext context,
-            HlslShader shader, ConstantBufferInfo info)
-        {
-            ConstantBufferDX11 cBuffer = new ConstantBufferDX11(shader.Device as DeviceDX11, info);
-            string localName = cBuffer.BufferName;
-
-            if (cBuffer.BufferName == "$Globals")
-                localName += $"_{shader.Name}";
-
-            // Duplication checks.
-            if (context.TryGetResource(localName, out ConstantBufferDX11 existing))
-            {
-                // Check for duplicates
-                if (existing != null)
-                {
-                    // Compare buffers. If identical, 
-                    if (existing.Equals(cBuffer))
-                    {
-                        // Dispose of new buffer, use existing.
-                        cBuffer.Dispose();
-                        cBuffer = existing;
+                        int oldLength = shader.SamplerVariables.Length;
+                        EngineUtil.ArrayResize(ref shader.SamplerVariables, bindPoint + 1);
+                        for (int i = oldLength; i < shader.SamplerVariables.Length; i++)
+                            shader.SamplerVariables[i] = (i == bindPoint ? sampler : ShaderVariable.Create<ShaderSamplerVariable>(shader, bindInfo.Name));
                     }
                     else
                     {
-                        context.AddMessage($"Constant buffers with the same name ('{localName}') do not match. Differing layouts.");
+                        shader.SamplerVariables[bindPoint] = sampler;
                     }
-                }
-                else
-                {
-                    context.AddMessage($"Constant buffer creation failed. A resource with the name '{localName}' already exists!");
-                }
+                    composition.SamplerIds.Add(bindPoint);
+                    break;
+
+                case ShaderInputType.Structured:
+                    ShaderResourceVariable bVar = GetVariableResource<ShaderResourceVariable<GraphicsBuffer>>(context, shader, bindInfo);
+                    if (bindPoint >= shader.Resources.Length)
+                        EngineUtil.ArrayResize(ref shader.Resources, bindPoint + 1);
+
+                    shader.Resources[bindPoint] = bVar;
+                    composition.ResourceIds.Add(bindPoint);
+                    break;
+
+                case ShaderInputType.UavRWStructured:
+                    OnBuildRWStructuredVariable(context, shader, bindInfo);
+                    composition.UnorderedAccessIds.Add(bindPoint);
+                    break;
+
+                case ShaderInputType.UavRWTyped:
+                    OnBuildRWTypedVariable(context, shader, bindInfo);
+                    composition.UnorderedAccessIds.Add(bindPoint);
+                    break;
             }
-            else
+        }
+
+        return true;
+    }
+
+    protected bool HasConstantBuffer(ShaderCompilerContext context,
+HlslShader shader, string bufferName, string[] varNames)
+    {
+        foreach (ConstantBufferDX11 buffer in shader.ConstBuffers)
+        {
+            if (buffer == null)
+                continue;
+
+            if (buffer.BufferName == bufferName)
             {
-                // Register all of the new buffer's variables
-                foreach (GraphicsConstantVariable v in cBuffer.Variables)
+                if (buffer.Variables.Length != varNames.Length)
                 {
-                    // Check for duplicate variables
-                    if (shader.Variables.ContainsKey(v.Name))
+                    context.AddMessage($"Shader '{bufferName}' constant buffer does not have the correct number of variables ({varNames.Length})",
+                        ShaderCompilerMessage.Kind.Error);
+                    return false;
+                }
+
+                for (int i = 0; i < buffer.Variables.Length; i++)
+                {
+                    GraphicsConstantVariable variable = buffer.Variables[i];
+                    string expectedName = varNames[i];
+
+                    if (variable.Name != expectedName)
                     {
-                        context.AddMessage($"Duplicate variable detected: {v.Name}");
-                        continue;
+                        context.AddMessage($"Shader '{bufferName}' constant variable #{i + 1} is incorrect: Named '{variable.Name}' instead of '{expectedName}'",
+                            ShaderCompilerMessage.Kind.Error);
+                        return false;
                     }
-
-                    shader.Variables.Add(v.Name, v);
                 }
 
-                // Register the new buffer
-                context.AddResource(localName, cBuffer);
+                return true;
             }
-
-            return cBuffer;
         }
 
-        protected T GetVariableResource<T>(ShaderCompilerContext context, HlslShader shader, ShaderResourceInfo info)
-            where T : ShaderVariable, new()
+        return false;
+    }
+
+    private void OnBuildRWStructuredVariable
+        (ShaderCompilerContext context,
+        HlslShader shader, ShaderResourceInfo info)
+    {
+        RWVariable rwBuffer = GetVariableResource<RWVariable<BufferDX11>>(context, shader, info);
+        uint bindPoint = info.BindPoint;
+
+        if (bindPoint >= shader.UAVs.Length)
+            EngineUtil.ArrayResize(ref shader.UAVs, bindPoint + 1);
+
+        shader.UAVs[bindPoint] = rwBuffer;
+    }
+
+    private void OnBuildRWTypedVariable(
+        ShaderCompilerContext context,
+        HlslShader shader, ShaderResourceInfo info)
+    {
+        RWVariable resource = null;
+        uint bindPoint = info.BindPoint;
+
+        switch (info.Dimension)
         {
-            ShaderVariable existing = null;
-            T bVar = null;
-            Type t = typeof(T);
+            case ShaderResourceDimension.Texture1DArray:
+            case ShaderResourceDimension.Texture1D:
+                resource = GetVariableResource<RWVariable<ITexture1D>>(context, shader, info);
+                break;
 
-            if (shader.Variables.TryGetValue(info.Name, out existing))
+            case ShaderResourceDimension.Texture2DMS:
+            case ShaderResourceDimension.Texture2DMSArray:
+            case ShaderResourceDimension.Texture2DArray:
+            case ShaderResourceDimension.Texture2D:
+                resource = GetVariableResource<RWVariable<ITexture2D>>(context, shader, info);
+                break;
+
+            case ShaderResourceDimension.Texture3D:
+                resource = GetVariableResource<RWVariable<ITexture3D>>(context, shader, info);
+                break;
+
+            case ShaderResourceDimension.TextureCube:
+            case ShaderResourceDimension.TextureCubeArray:
+                resource = GetVariableResource<RWVariable<ITextureCube>>(context, shader, info);
+                break;
+        }
+
+        if (bindPoint >= shader.UAVs.Length)
+            EngineUtil.ArrayResize(ref shader.UAVs, bindPoint + 1);
+
+        // Store the resource variable
+        shader.UAVs[bindPoint] = resource;
+    }
+
+    private void OnBuildTextureVariable(ShaderCompilerContext context,
+        HlslShader shader, ShaderResourceInfo info)
+    {
+        ShaderResourceVariable obj = null;
+
+        switch (info.Dimension)
+        {
+            case ShaderResourceDimension.Texture1DArray:
+            case ShaderResourceDimension.Texture1D:
+                obj = GetVariableResource<ShaderResourceVariable<ITexture1D>>(context, shader, info);
+                break;
+
+            case ShaderResourceDimension.Texture2DMS:
+            case ShaderResourceDimension.Texture2DMSArray:
+            case ShaderResourceDimension.Texture2DArray:
+            case ShaderResourceDimension.Texture2D:
+                obj = GetVariableResource<ShaderResourceVariable<ITexture2D>>(context, shader, info);
+                break;
+
+            case ShaderResourceDimension.Texture3D:
+                obj = GetVariableResource<ShaderResourceVariable<ITexture3D>>(context, shader, info);
+                break;
+
+            case ShaderResourceDimension.TextureCube:
+                obj = GetVariableResource<ShaderResourceVariable<ITextureCube>>(context, shader, info);
+                break;
+        }
+
+        if (info.BindPoint >= shader.Resources.Length)
+            EngineUtil.ArrayResize(ref shader.Resources, info.BindPoint + 1);
+
+        //store the resource variable
+        shader.Resources[info.BindPoint] = obj;
+    }
+
+    private unsafe ConstantBufferDX11 GetConstantBuffer(ShaderCompilerContext context,
+        HlslShader shader, ConstantBufferInfo info)
+    {
+        ConstantBufferDX11 cBuffer = new ConstantBufferDX11(shader.Device as DeviceDX11, info);
+        string localName = cBuffer.BufferName;
+
+        if (cBuffer.BufferName == "$Globals")
+            localName += $"_{shader.Name}";
+
+        // Duplication checks.
+        if (context.TryGetResource(localName, out ConstantBufferDX11 existing))
+        {
+            // Check for duplicates
+            if (existing != null)
             {
-                T other = existing as T;
-
-                if (other != null)
+                // Compare buffers. If identical, 
+                if (existing.Equals(cBuffer))
                 {
-                    // If valid, use existing buffer variable.
-                    if (other.GetType() == t)
-                        bVar = other;
+                    // Dispose of new buffer, use existing.
+                    cBuffer.Dispose();
+                    cBuffer = existing;
                 }
                 else
                 {
-                    context.AddMessage($"Resource '{t.Name}' creation failed. A resource with the name '{info.Name}' already exists!");
+                    context.AddMessage($"Constant buffers with the same name ('{localName}') do not match. Differing layouts.");
                 }
             }
             else
             {
-                bVar = ShaderVariable.Create<T>(shader, info.Name);
-                shader.Variables.Add(bVar.Name, bVar);
+                context.AddMessage($"Constant buffer creation failed. A resource with the name '{localName}' already exists!");
+            }
+        }
+        else
+        {
+            // Register all of the new buffer's variables
+            foreach (GraphicsConstantVariable v in cBuffer.Variables)
+            {
+                // Check for duplicate variables
+                if (shader.Variables.ContainsKey(v.Name))
+                {
+                    context.AddMessage($"Duplicate variable detected: {v.Name}");
+                    continue;
+                }
+
+                shader.Variables.Add(v.Name, v);
             }
 
-            return bVar;
+            // Register the new buffer
+            context.AddResource(localName, cBuffer);
         }
 
-        protected override unsafe void* BuildShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes)
+        return cBuffer;
+    }
+
+    protected T GetVariableResource<T>(ShaderCompilerContext context, HlslShader shader, ShaderResourceInfo info)
+        where T : ShaderVariable, new()
+    {
+        ShaderVariable existing = null;
+        T bVar = null;
+        Type t = typeof(T);
+
+        if (shader.Variables.TryGetValue(info.Name, out existing))
         {
-            ID3D10Blob* dx11ByteCode = (ID3D10Blob*)byteCode;
-            void* ptrBytecode = dx11ByteCode->GetBufferPointer();
-            numBytes = dx11ByteCode->GetBufferSize();
-            DeviceDX11 device = Renderer.Device as DeviceDX11;
+            T other = existing as T;
 
-            switch (type)
+            if (other != null)
             {
-                case ShaderType.Compute:
-                    parent.InputByteCode = byteCode;
-
-                    ID3D11ComputeShader* csShader = null;
-                    device.Ptr->CreateComputeShader(ptrBytecode, numBytes, null, &csShader);
-                    return csShader;
-
-                case ShaderType.Vertex:
-                    parent.InputByteCode = byteCode;
-
-                    ID3D11VertexShader* vsShader = null;
-                    device.Ptr->CreateVertexShader(ptrBytecode, numBytes, null, &vsShader);
-                    return vsShader;
-
-                case ShaderType.Hull:
-                    ID3D11HullShader* hsShader = null;
-                    device.Ptr->CreateHullShader(ptrBytecode, numBytes, null, &hsShader);
-                    return hsShader;
-
-                case ShaderType.Domain:
-                    ID3D11DomainShader* dsShader = null;
-                    device.Ptr->CreateDomainShader(ptrBytecode, numBytes, null, &dsShader);
-                    return dsShader;
-
-                case ShaderType.Geometry:
-                    ID3D11GeometryShader* gsShader = null;
-                    device.Ptr->CreateGeometryShader(ptrBytecode, numBytes, null, &gsShader);
-                    return gsShader;
-
-                case ShaderType.Pixel:
-                    ID3D11PixelShader* psShader = null;
-                    device.Ptr->CreatePixelShader(ptrBytecode, numBytes, null, &psShader);
-                    return psShader;
-            }
-
-            return null;
-        }
-
-        private void ParseErrors(ShaderCompilerContext context, HResult hr, ID3D10Blob* errors)
-        {
-            if (errors == null)
-                return;
-
-            void* ptrErrors = errors->GetBufferPointer();
-            nuint numBytes = errors->GetBufferSize();
-            string strErrors = SilkMarshal.PtrToString((nint)ptrErrors, NativeStringEncoding.UTF8);
-            string[] errorList = strErrors.Split('\r', '\n');
-
-            if (hr.IsSuccess)
-            {
-                for (int i = 0; i < errorList.Length; i++)
-                    context.AddWarning(errorList[i]);
+                // If valid, use existing buffer variable.
+                if (other.GetType() == t)
+                    bVar = other;
             }
             else
             {
-                for (int i = 0; i < errorList.Length; i++)
-                    context.AddError(errorList[i]);
+                context.AddMessage($"Resource '{t.Name}' creation failed. A resource with the name '{info.Name}' already exists!");
             }
+        }
+        else
+        {
+            bVar = ShaderVariable.Create<T>(shader, info.Name);
+            shader.Variables.Add(bVar.Name, bVar);
+        }
+
+        return bVar;
+    }
+
+    protected override unsafe void* BuildShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes)
+    {
+        ID3D10Blob* dx11ByteCode = (ID3D10Blob*)byteCode;
+        void* ptrBytecode = dx11ByteCode->GetBufferPointer();
+        numBytes = dx11ByteCode->GetBufferSize();
+        DeviceDX11 device = Renderer.Device as DeviceDX11;
+
+        switch (type)
+        {
+            case ShaderType.Compute:
+                parent.InputByteCode = byteCode;
+
+                ID3D11ComputeShader* csShader = null;
+                device.Ptr->CreateComputeShader(ptrBytecode, numBytes, null, &csShader);
+                return csShader;
+
+            case ShaderType.Vertex:
+                parent.InputByteCode = byteCode;
+
+                ID3D11VertexShader* vsShader = null;
+                device.Ptr->CreateVertexShader(ptrBytecode, numBytes, null, &vsShader);
+                return vsShader;
+
+            case ShaderType.Hull:
+                ID3D11HullShader* hsShader = null;
+                device.Ptr->CreateHullShader(ptrBytecode, numBytes, null, &hsShader);
+                return hsShader;
+
+            case ShaderType.Domain:
+                ID3D11DomainShader* dsShader = null;
+                device.Ptr->CreateDomainShader(ptrBytecode, numBytes, null, &dsShader);
+                return dsShader;
+
+            case ShaderType.Geometry:
+                ID3D11GeometryShader* gsShader = null;
+                device.Ptr->CreateGeometryShader(ptrBytecode, numBytes, null, &gsShader);
+                return gsShader;
+
+            case ShaderType.Pixel:
+                ID3D11PixelShader* psShader = null;
+                device.Ptr->CreatePixelShader(ptrBytecode, numBytes, null, &psShader);
+                return psShader;
+        }
+
+        return null;
+    }
+
+    private void ParseErrors(ShaderCompilerContext context, HResult hr, ID3D10Blob* errors)
+    {
+        if (errors == null)
+            return;
+
+        void* ptrErrors = errors->GetBufferPointer();
+        nuint numBytes = errors->GetBufferSize();
+        string strErrors = SilkMarshal.PtrToString((nint)ptrErrors, NativeStringEncoding.UTF8);
+        string[] errorList = strErrors.Split('\r', '\n');
+
+        if (hr.IsSuccess)
+        {
+            for (int i = 0; i < errorList.Length; i++)
+                context.AddWarning(errorList[i]);
+        }
+        else
+        {
+            for (int i = 0; i < errorList.Length; i++)
+                context.AddError(errorList[i]);
         }
     }
 }

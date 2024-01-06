@@ -1,13 +1,12 @@
-﻿namespace Molten.Input
+﻿namespace Molten.Input;
+
+public enum PointingDeviceType
 {
-    public enum PointingDeviceType
-    {
-        Unknown = 0,
+    Unknown = 0,
 
-        Mouse = 1,
+    Mouse = 1,
 
-        Touchpanel = 3,
+    Touchpanel = 3,
 
-        Sylus = 4,
-    }
+    Sylus = 4,
 }

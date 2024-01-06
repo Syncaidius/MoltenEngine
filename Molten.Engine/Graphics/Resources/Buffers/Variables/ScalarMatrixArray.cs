@@ -1,65 +1,64 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics;
+
+public unsafe class ScalarMatrixArray<T> : GraphicsConstantVariable where T : unmanaged
 {
-    public unsafe class ScalarMatrixArray<T> : GraphicsConstantVariable where T : unmanaged
+    static Type _elementType = typeof(T);
+    static uint _stride = (uint)sizeof(T);
+
+    uint _components;
+    uint _valueBytes;
+    uint _expectedElements;
+    Array _value;
+
+    internal ScalarMatrixArray(IConstantBuffer parent, uint rows, uint columns, uint expectedElements, string name) : 
+        base(parent, name)
     {
-        static Type _elementType = typeof(T);
-        static uint _stride = (uint)sizeof(T);
+        _components = columns * rows;
+        _expectedElements = expectedElements;
+        SizeOf = (_stride * _components) * _expectedElements;
 
-        uint _components;
-        uint _valueBytes;
-        uint _expectedElements;
-        Array _value;
+        T[] tempVal = new T[_components];
+        _value = tempVal;
+    }
 
-        internal ScalarMatrixArray(IConstantBuffer parent, uint rows, uint columns, uint expectedElements, string name) : 
-            base(parent, name)
+    public override unsafe void ValueFromPtr(void* ptr) { }
+
+    public override void Dispose() { }
+
+    public override void Write(byte* pDest)
+    {
+        if (_value != null)
+            EngineUtil.PinObject(_value, (ptr) => Buffer.MemoryCopy(ptr.ToPointer(), pDest, SizeOf, SizeOf));
+        else
+            EngineUtil.MemSet(pDest, 0, SizeOf);
+    }
+
+    public override object Value
+    {
+        get => _value;
+
+        set
         {
-            _components = columns * rows;
-            _expectedElements = expectedElements;
-            SizeOf = (_stride * _components) * _expectedElements;
+            Type vType = value.GetType();
 
-            T[] tempVal = new T[_components];
-            _value = tempVal;
-        }
-
-        public override unsafe void ValueFromPtr(void* ptr) { }
-
-        public override void Dispose() { }
-
-        public override void Write(byte* pDest)
-        {
-            if (_value != null)
-                EngineUtil.PinObject(_value, (ptr) => Buffer.MemoryCopy(ptr.ToPointer(), pDest, SizeOf, SizeOf));
-            else
-                EngineUtil.MemSet(pDest, 0, SizeOf);
-        }
-
-        public override object Value
-        {
-            get => _value;
-
-            set
+            if (vType.IsArray)
             {
-                Type vType = value.GetType();
+                Type eType = vType.GetElementType();
 
-                if (vType.IsArray)
+                if (eType == _elementType)
                 {
-                    Type eType = vType.GetElementType();
+                    _value = (Array)value;
 
-                    if (eType == _elementType)
-                    {
-                        _value = (Array)value;
+                    _valueBytes = (uint)_value.Length * _stride;
 
-                        _valueBytes = (uint)_value.Length * _stride;
-
-                        if (_valueBytes != SizeOf)
-                            throw new InvalidOperationException("Value that was set is not of the expected size (" + SizeOf + " bytes)");
-                    }
-                    DirtyParent();
+                    if (_valueBytes != SizeOf)
+                        throw new InvalidOperationException("Value that was set is not of the expected size (" + SizeOf + " bytes)");
                 }
-                else
-                {
-                    throw new InvalidOperationException("Cannot set a non-array object to a HLSL array constant.");
-                }
+                DirtyParent();
+            }
+            else
+            {
+                throw new InvalidOperationException("Cannot set a non-array object to a HLSL array constant.");
             }
         }
     }

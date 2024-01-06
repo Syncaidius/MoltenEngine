@@ -1,35 +1,34 @@
-﻿namespace Molten
+﻿namespace Molten;
+
+public enum ContentHandleStatus
 {
-    public enum ContentHandleStatus
-    {
-        /// <summary>
-        /// The content handle has not started processing yet. 
-        /// </summary>
-        NotProcessed = 0,
+    /// <summary>
+    /// The content handle has not started processing yet. 
+    /// </summary>
+    NotProcessed = 0,
 
-        /// <summary>
-        /// The content handle is currently being processed.
-        /// </summary>
-        Processing = 1,
+    /// <summary>
+    /// The content handle is currently being processed.
+    /// </summary>
+    Processing = 1,
 
-        /// <summary>
-        /// The multi-part content handle is waiting for parts handles to finish processing.
-        /// </summary>
-        AwaitingParts = 2,
+    /// <summary>
+    /// The multi-part content handle is waiting for parts handles to finish processing.
+    /// </summary>
+    AwaitingParts = 2,
 
-        /// <summary>
-        /// The content handle has completed processing.
-        /// </summary>
-        Completed = 3,
+    /// <summary>
+    /// The content handle has completed processing.
+    /// </summary>
+    Completed = 3,
 
-        /// <summary>
-        /// The content was unloaded by a <see cref="ContentManager"/>.
-        /// </summary>
-        Unloaded = 4,
+    /// <summary>
+    /// The content was unloaded by a <see cref="ContentManager"/>.
+    /// </summary>
+    Unloaded = 4,
 
-        /// <summary>
-        /// The content handle failed to process.
-        /// </summary>
-        Failed = 5,
-    }
+    /// <summary>
+    /// The content handle failed to process.
+    /// </summary>
+    Failed = 5,
 }

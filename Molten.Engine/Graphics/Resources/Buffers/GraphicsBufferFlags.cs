@@ -1,18 +1,17 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics;
+
+[Flags]
+public enum GraphicsBufferFlags
 {
-    [Flags]
-    public enum GraphicsBufferFlags
-    {
-        None = 0,
+    None = 0,
 
-        Vertex = 1,
+    Vertex = 1,
 
-        Index = 1 << 1,
+    Index = 1 << 1,
 
-        Structured = 1 << 2,
+    Structured = 1 << 2,
 
-        UnorderedAccess = 1 << 3,
+    UnorderedAccess = 1 << 3,
 
-        ShaderResource = 1 << 4,
-    }
+    ShaderResource = 1 << 4,
 }

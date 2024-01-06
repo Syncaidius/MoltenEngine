@@ -1,21 +1,20 @@
-﻿namespace Molten.Net
+﻿namespace Molten.Net;
+
+public enum ConnectionStatus : Byte
 {
-    public enum ConnectionStatus : Byte
-    {
-        None = 0,
+    None = 0,
 
-        InitiatedConnect = 1,
+    InitiatedConnect = 1,
 
-        ReceivedInitiation = 2,
+    ReceivedInitiation = 2,
 
-        RespondedAwaitingApproval = 3,
+    RespondedAwaitingApproval = 3,
 
-        RespondedConnect = 4,
+    RespondedConnect = 4,
 
-        Connected = 5,
+    Connected = 5,
 
-        Disconnecting = 6,
+    Disconnecting = 6,
 
-        Disconnected = 7
-    }
+    Disconnected = 7
 }

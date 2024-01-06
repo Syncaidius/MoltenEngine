@@ -1,15 +1,14 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics;
+
+public enum QueueValidationMode
 {
-    public enum QueueValidationMode
-    {
-        Unindexed = 0,
+    Unindexed = 0,
 
-        Indexed = 1,
+    Indexed = 1,
 
-        Instanced = 2,
+    Instanced = 2,
 
-        InstancedIndexed = 3,
+    InstancedIndexed = 3,
 
-        Compute = 4,
-    }
+    Compute = 4,
 }

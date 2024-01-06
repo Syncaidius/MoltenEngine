@@ -1,9 +1,8 @@
-﻿namespace Molten.Graphics
-{
-    public interface IConstantBuffer : IGraphicsResource
-    {
-        string BufferName { get; }
+﻿namespace Molten.Graphics;
 
-        bool IsDirty { get; set; }
-    }
+public interface IConstantBuffer : IGraphicsResource
+{
+    string BufferName { get; }
+
+    bool IsDirty { get; set; }
 }

@@ -1,12 +1,11 @@
-﻿namespace Molten.Graphics
-{
-    public class GraphicsObjectException : Exception
-    {
-        public GraphicsObjectException(GraphicsObject obj, string message) : base(message)
-        {
-            Object = obj;
-        }
+﻿namespace Molten.Graphics;
 
-        public GraphicsObject Object { get; private set; }
+public class GraphicsObjectException : Exception
+{
+    public GraphicsObjectException(GraphicsObject obj, string message) : base(message)
+    {
+        Object = obj;
     }
+
+    public GraphicsObject Object { get; private set; }
 }

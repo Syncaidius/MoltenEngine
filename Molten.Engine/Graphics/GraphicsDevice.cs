@@ -1,6 +1,6 @@
-﻿using System.Reflection;
-using Molten.Collections;
+﻿using Molten.Collections;
 using Molten.IO;
+using System.Reflection;
 
 namespace Molten.Graphics;
 

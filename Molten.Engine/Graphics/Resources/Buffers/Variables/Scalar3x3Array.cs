@@ -1,87 +1,86 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics;
+
+/// <summary>A shader matrix variable.</summary>
+public unsafe class ScalarFloat3x3ArrayVariable : GraphicsConstantVariable
 {
-    /// <summary>A shader matrix variable.</summary>
-    public unsafe class ScalarFloat3x3ArrayVariable : GraphicsConstantVariable
+    static Type _elementType = typeof(Matrix3F);
+    static uint _stride = (uint)sizeof(Matrix3F);
+
+    Matrix3F[] _value;
+    uint _expectedElements;
+    bool _isDirty = false;
+
+    internal ScalarFloat3x3ArrayVariable(IConstantBuffer parent, uint expectedElements, string name)
+        : base(parent, name)
     {
-        static Type _elementType = typeof(Matrix3F);
-        static uint _stride = (uint)sizeof(Matrix3F);
+        _expectedElements = expectedElements;
+        SizeOf = _expectedElements * _stride;
 
-        Matrix3F[] _value;
-        uint _expectedElements;
-        bool _isDirty = false;
+        for (int i = 0; i < _value.Length; i++)
+            _value[i] = Matrix3F.Identity;
 
-        internal ScalarFloat3x3ArrayVariable(IConstantBuffer parent, uint expectedElements, string name)
-            : base(parent, name)
+        _isDirty = true;
+    }
+
+    public override unsafe void ValueFromPtr(void* ptr) { }
+
+    public override void Dispose() { }
+
+    public override unsafe void Write(byte* pDest)
+    {
+        if (_isDirty)
         {
-            _expectedElements = expectedElements;
-            SizeOf = _expectedElements * _stride;
+            if (_value != null)
+            {
 
-            for (int i = 0; i < _value.Length; i++)
-                _value[i] = Matrix3F.Identity;
+                for (int i = 0; i < _value.Length; i++)
+                    _value[i].Transpose();
 
-            _isDirty = true;
+                _isDirty = false;
+            }
+
+            fixed (Matrix3F* ptr = _value)
+                Buffer.MemoryCopy(ptr, pDest, SizeOf, SizeOf);
         }
-
-        public override unsafe void ValueFromPtr(void* ptr) { }
-
-        public override void Dispose() { }
-
-        public override unsafe void Write(byte* pDest)
+        else
         {
-            if (_isDirty)
-            {
-                if (_value != null)
-                {
-
-                    for (int i = 0; i < _value.Length; i++)
-                        _value[i].Transpose();
-
-                    _isDirty = false;
-                }
-
-                fixed (Matrix3F* ptr = _value)
-                    Buffer.MemoryCopy(ptr, pDest, SizeOf, SizeOf);
-            }
-            else
-            {
-                EngineUtil.MemSet(pDest, 0, SizeOf);
-            }
+            EngineUtil.MemSet(pDest, 0, SizeOf);
         }
+    }
 
-        public override object Value
+    public override object Value
+    {
+        get
         {
-            get
-            {
-                return _value;
-            }
-            set
-            {
-                Type vType = value.GetType();
+            return _value;
+        }
+        set
+        {
+            Type vType = value.GetType();
 
-                if (vType.IsArray)
+            if (vType.IsArray)
+            {
+                Type eType = vType.GetElementType();
+
+                if (eType == _elementType)
                 {
-                    Type eType = vType.GetElementType();
+                    Matrix3F[] val = (Matrix3F[])value;
 
-                    if (eType == _elementType)
-                    {
-                        Matrix3F[] val = (Matrix3F[])value;
+                    if (_value.Length != val.Length)
+                        throw new InvalidOperationException($"Value that was set is not of the expected size ({_value.Length} elements).");
 
-                        if (_value.Length != val.Length)
-                            throw new InvalidOperationException($"Value that was set is not of the expected size ({_value.Length} elements).");
-
-                        Buffer.BlockCopy(val, 0, _value, 0, (int)SizeOf);
-                        _isDirty = true;
-                        DirtyParent();
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException("Attempt to set incorrect matrix type to a Matrix4x4 (float4x4) array constant.");
-                    }
+                    Buffer.BlockCopy(val, 0, _value, 0, (int)SizeOf);
+                    _isDirty = true;
+                    DirtyParent();
                 }
                 else
                 {
-                    throw new InvalidOperationException("Cannot set a non-array object to a HLSL array constant.");
+                    throw new InvalidOperationException("Attempt to set incorrect matrix type to a Matrix4x4 (float4x4) array constant.");
                 }
+            }
+            else
+            {
+                throw new InvalidOperationException("Cannot set a non-array object to a HLSL array constant.");
             }
         }
     }

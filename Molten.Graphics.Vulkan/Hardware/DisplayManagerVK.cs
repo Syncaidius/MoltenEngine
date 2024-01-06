@@ -2,164 +2,163 @@
 using Silk.NET.Vulkan;
 using Monitor = Silk.NET.GLFW.Monitor;
 
-namespace Molten.Graphics.Vulkan
+namespace Molten.Graphics.Vulkan;
+
+internal unsafe class DisplayManagerVK : GraphicsManager
 {
-    internal unsafe class DisplayManagerVK : GraphicsManager
+    List<DeviceVK> _devices;
+    DeviceVK _defaultAdapter;
+    DeviceVK _selectedAdapter;
+
+    internal DisplayManagerVK(RendererVK renderer)
     {
-        List<DeviceVK> _devices;
-        DeviceVK _defaultAdapter;
-        DeviceVK _selectedAdapter;
+        Renderer = renderer;
+        CapBuilder = new CapabilityBuilder();
+        _devices = new List<DeviceVK>();
+        Outputs = new List<DisplayOutputVK>();
+    }
 
-        internal DisplayManagerVK(RendererVK renderer)
+    protected override void OnInitialize(GraphicsSettings settings)
+    {
+        uint deviceCount = 0;
+        Result r = Renderer.VK.EnumeratePhysicalDevices(*Renderer.Instance, &deviceCount, null);
+
+        if (r.Check(Renderer))
         {
-            Renderer = renderer;
-            CapBuilder = new CapabilityBuilder();
-            _devices = new List<DeviceVK>();
-            Outputs = new List<DisplayOutputVK>();
-        }
-
-        protected override void OnInitialize(GraphicsSettings settings)
-        {
-            uint deviceCount = 0;
-            Result r = Renderer.VK.EnumeratePhysicalDevices(*Renderer.Instance, &deviceCount, null);
-
+            PhysicalDevice* devices = EngineUtil.AllocArray<PhysicalDevice>(deviceCount);
+            r = Renderer.VK.EnumeratePhysicalDevices(*Renderer.Instance, &deviceCount, devices); 
+            
             if (r.Check(Renderer))
             {
-                PhysicalDevice* devices = EngineUtil.AllocArray<PhysicalDevice>(deviceCount);
-                r = Renderer.VK.EnumeratePhysicalDevices(*Renderer.Instance, &deviceCount, devices); 
-                
-                if (r.Check(Renderer))
+                // Vulkan sometimes returns duplicate devices with the same ID.
+                // For now we work around this by using a hashset to test device IDs.
+                HashSet<DeviceID> deviceIDs = new HashSet<DeviceID>();
+
+                for (int i = 0; i < deviceCount; i++)
                 {
-                    // Vulkan sometimes returns duplicate devices with the same ID.
-                    // For now we work around this by using a hashset to test device IDs.
-                    HashSet<DeviceID> deviceIDs = new HashSet<DeviceID>();
+                    DeviceVK adapter = new DeviceVK(Renderer, this, devices[i], Renderer.Instance);
 
-                    for (int i = 0; i < deviceCount; i++)
+                    if(deviceIDs.Contains(adapter.ID))
                     {
-                        DeviceVK adapter = new DeviceVK(Renderer, this, devices[i], Renderer.Instance);
-
-                        if(deviceIDs.Contains(adapter.ID))
-                        {
-                            adapter.Dispose();
-                            continue;
-                        }
-                        
-                        deviceIDs.Add(adapter.ID);
-                        _devices.Add(adapter);
+                        adapter.Dispose();
+                        continue;
                     }
-                }
-
-                EngineUtil.Free(ref devices);
-            }
-
-            Renderer.GLFW.SetMonitorCallback(MonitorConnectionCallback);
-            DetectOutputs();
-
-            if (_devices.Count > 0)
-            {
-                _defaultAdapter = _devices[0];
-
-                // TODO improve this.
-                // For now, associate all detected outputs with the default adapter.
-                foreach (DisplayOutputVK output in Outputs)
-                    _defaultAdapter.AssociateOutput(output);
-            }
-        }
-
-        private void DetectOutputs()
-        {
-            int monitorCount = 0;
-            Monitor** monitors = Renderer.GLFW.GetMonitors(out monitorCount);
-            Monitor* primaryMonitor = Renderer.GLFW.GetPrimaryMonitor();
-
-            for(int i = 0; i < monitorCount; i++)
-            {
-                Monitor* monitor = monitors[i];
-                DisplayOutputVK vkOutput = new DisplayOutputVK(this, monitor);
-
-                if (monitor == primaryMonitor)
-                    PrimaryOutput = vkOutput;
-
-                Outputs.Add(vkOutput);
-            }
-        }
-
-        private void MonitorConnectionCallback(Monitor* monitor, ConnectedState state)
-        {
-            switch (state)
-            {
-                case ConnectedState.Connected:
-                    {
-                        DisplayOutputVK vkOutput = new DisplayOutputVK(this, monitor);
-                        Outputs.Add(vkOutput);
-
-                        // Associate with the selected adapter by default.
-                        _selectedAdapter?.AssociateOutput(vkOutput);
-                        Renderer.Log.WriteLine($"Display output '{vkOutput.Name}' connected");
-                    }
-                    break;
-
-                case ConnectedState.Disconnected:
-                    {
-                        foreach (DisplayOutputVK vkOutput in Outputs)
-                        {
-                            if (vkOutput.Ptr == monitor)
-                            {
-                                vkOutput.AssociatedDevice?.UnassociateOutput(vkOutput);
-                                Outputs.Remove(vkOutput);
-                                Renderer.Log.WriteLine($"Display output '{vkOutput.Name}' disconnected");
-                            }
-                        }
-                    }
-                    break;
-            }
-        }
-
-        protected override void OnDispose()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void GetCompatibleAdapters(GraphicsCapabilities capabilities, List<GraphicsDevice> adapters)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public override GraphicsDevice DefaultDevice => _defaultAdapter;
-
-        /// <inheritdoc/>
-        public override GraphicsDevice PrimaryDevice
-        {
-            get => _selectedAdapter;
-            set
-            {
-                if (value != null)
-                {
-                    if (value is not DeviceVK vkDevice)
-                        throw new GraphicsDeviceException(value, "The adapter is not a valid Vulkan device.");
-
-                    if (value.Manager != this)
-                        throw new GraphicsDeviceException(value, "The adapter not owned by the current display manager.");
-
-                    _selectedAdapter = vkDevice;
-                }
-                else
-                {
-                    _selectedAdapter = null;
+                    
+                    deviceIDs.Add(adapter.ID);
+                    _devices.Add(adapter);
                 }
             }
+
+            EngineUtil.Free(ref devices);
         }
 
-        internal List<DisplayOutputVK> Outputs { get; }
+        Renderer.GLFW.SetMonitorCallback(MonitorConnectionCallback);
+        DetectOutputs();
 
-        internal DisplayOutputVK PrimaryOutput { get; private set; }
+        if (_devices.Count > 0)
+        {
+            _defaultAdapter = _devices[0];
 
-        /// <inheritdoc/>
-        public override IReadOnlyList<GraphicsDevice> Devices => _devices;
-
-        internal RendererVK Renderer { get; }
-
-        internal CapabilityBuilder CapBuilder { get; }
+            // TODO improve this.
+            // For now, associate all detected outputs with the default adapter.
+            foreach (DisplayOutputVK output in Outputs)
+                _defaultAdapter.AssociateOutput(output);
+        }
     }
+
+    private void DetectOutputs()
+    {
+        int monitorCount = 0;
+        Monitor** monitors = Renderer.GLFW.GetMonitors(out monitorCount);
+        Monitor* primaryMonitor = Renderer.GLFW.GetPrimaryMonitor();
+
+        for(int i = 0; i < monitorCount; i++)
+        {
+            Monitor* monitor = monitors[i];
+            DisplayOutputVK vkOutput = new DisplayOutputVK(this, monitor);
+
+            if (monitor == primaryMonitor)
+                PrimaryOutput = vkOutput;
+
+            Outputs.Add(vkOutput);
+        }
+    }
+
+    private void MonitorConnectionCallback(Monitor* monitor, ConnectedState state)
+    {
+        switch (state)
+        {
+            case ConnectedState.Connected:
+                {
+                    DisplayOutputVK vkOutput = new DisplayOutputVK(this, monitor);
+                    Outputs.Add(vkOutput);
+
+                    // Associate with the selected adapter by default.
+                    _selectedAdapter?.AssociateOutput(vkOutput);
+                    Renderer.Log.WriteLine($"Display output '{vkOutput.Name}' connected");
+                }
+                break;
+
+            case ConnectedState.Disconnected:
+                {
+                    foreach (DisplayOutputVK vkOutput in Outputs)
+                    {
+                        if (vkOutput.Ptr == monitor)
+                        {
+                            vkOutput.AssociatedDevice?.UnassociateOutput(vkOutput);
+                            Outputs.Remove(vkOutput);
+                            Renderer.Log.WriteLine($"Display output '{vkOutput.Name}' disconnected");
+                        }
+                    }
+                }
+                break;
+        }
+    }
+
+    protected override void OnDispose()
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void GetCompatibleAdapters(GraphicsCapabilities capabilities, List<GraphicsDevice> adapters)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc/>
+    public override GraphicsDevice DefaultDevice => _defaultAdapter;
+
+    /// <inheritdoc/>
+    public override GraphicsDevice PrimaryDevice
+    {
+        get => _selectedAdapter;
+        set
+        {
+            if (value != null)
+            {
+                if (value is not DeviceVK vkDevice)
+                    throw new GraphicsDeviceException(value, "The adapter is not a valid Vulkan device.");
+
+                if (value.Manager != this)
+                    throw new GraphicsDeviceException(value, "The adapter not owned by the current display manager.");
+
+                _selectedAdapter = vkDevice;
+            }
+            else
+            {
+                _selectedAdapter = null;
+            }
+        }
+    }
+
+    internal List<DisplayOutputVK> Outputs { get; }
+
+    internal DisplayOutputVK PrimaryOutput { get; private set; }
+
+    /// <inheritdoc/>
+    public override IReadOnlyList<GraphicsDevice> Devices => _devices;
+
+    internal RendererVK Renderer { get; }
+
+    internal CapabilityBuilder CapBuilder { get; }
 }

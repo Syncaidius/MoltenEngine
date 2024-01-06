@@ -1,29 +1,28 @@
-﻿namespace Molten.Graphics
+﻿namespace Molten.Graphics;
+
+public class ShaderSamplerVariable : ShaderVariable
 {
-    public class ShaderSamplerVariable : ShaderVariable
+    public ShaderSampler Sampler { get; private set; }
+
+    protected override void Initialize()
     {
-        public ShaderSampler Sampler { get; private set; }
+        ShaderSamplerParameters defaultParams = new ShaderSamplerParameters(SamplerPreset.Default);
+        Sampler = Parent.Device.CreateSampler(ref defaultParams);
+    }
 
-        protected override void Initialize()
+    /// <inheritdoc/>
+    public override object Value
+    {
+        get => Sampler;
+        set
         {
-            ShaderSamplerParameters defaultParams = new ShaderSamplerParameters(SamplerPreset.Default);
-            Sampler = Parent.Device.CreateSampler(ref defaultParams);
-        }
-
-        /// <inheritdoc/>
-        public override object Value
-        {
-            get => Sampler;
-            set
+            if (value != Sampler)
             {
-                if (value != Sampler)
-                {
-                    ShaderSampler newSampler = value as ShaderSampler;
-                    if (value != null && newSampler == null)
-                        throw new InvalidOperationException("Cannot set non-sampler object on a sampler variable.");
-                    else
-                        Sampler = newSampler;
-                }
+                ShaderSampler newSampler = value as ShaderSampler;
+                if (value != null && newSampler == null)
+                    throw new InvalidOperationException("Cannot set non-sampler object on a sampler variable.");
+                else
+                    Sampler = newSampler;
             }
         }
     }

@@ -1,180 +1,179 @@
 ﻿using System.Diagnostics;
 
-namespace Molten
+namespace Molten;
+
+public class Timing
 {
-    public class Timing
+    static TimeSpan SLEEP_THRESHOLD = TimeSpan.FromMilliseconds(5.0);
+
+    int _targetUps;
+    float _deltaTime;
+    TimeSpan _accumulated;
+    TimeSpan _upsTime;
+    int _upsCurrent;
+    int _ups;
+    ulong _frame;
+
+    Stopwatch _timer;
+    TimeSpan _elapsed;
+    TimeSpan _total;
+    TimeSpan _target;
+    Action<Timing> _callback;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Timing"/> class.
+    /// </summary>
+    /// <param name="callback">The callback to be run on each update invocation.</param>
+    /// <param name="targetUPS">The target frame/update rate.</param>
+    public Timing(Action<Timing> callback, int targetUPS = 60)
     {
-        static TimeSpan SLEEP_THRESHOLD = TimeSpan.FromMilliseconds(5.0);
+        _timer = new Stopwatch();
+        _callback = callback;
+        TargetUPS = targetUPS;
+    }
 
-        int _targetUps;
-        float _deltaTime;
-        TimeSpan _accumulated;
-        TimeSpan _upsTime;
-        int _upsCurrent;
-        int _ups;
-        ulong _frame;
+    /// <summary>Starts the <see cref="Timing"/> instance.</summary>
+    public void Start()
+    {
+        _timer.Start();
+    }
 
-        Stopwatch _timer;
-        TimeSpan _elapsed;
-        TimeSpan _total;
-        TimeSpan _target;
-        Action<Timing> _callback;
+    /// <summary>Stops the <see cref="Timing"/> instance.</summary>
+    public void Pause()
+    {
+        _timer.Stop();
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Timing"/> class.
-        /// </summary>
-        /// <param name="callback">The callback to be run on each update invocation.</param>
-        /// <param name="targetUPS">The target frame/update rate.</param>
-        public Timing(Action<Timing> callback, int targetUPS = 60)
+    /// <summary>Resets the <see cref="Timing"/> instance.</summary>
+    public void Reset()
+    {
+        _timer.Reset();
+        _ups = 0;
+        _upsCurrent = 0;
+        _total = new TimeSpan();
+        _elapsed = new TimeSpan();
+        _upsTime = new TimeSpan();
+        _accumulated = new TimeSpan();
+    }
+
+    /// <summary>Runs a timing update. Returns the number of updates needed to advance. If it falls behind, a value of more than 1 will be returned.</summary>
+    public void Update()
+    {
+        // SEE: https://github.com/MonoGame/MonoGame/blob/develop/MonoGame.Framework/Game.cs
+
+        if (_timer.IsRunning)
         {
-            _timer = new Stopwatch();
-            _callback = callback;
-            TargetUPS = targetUPS;
-        }
-
-        /// <summary>Starts the <see cref="Timing"/> instance.</summary>
-        public void Start()
-        {
-            _timer.Start();
-        }
-
-        /// <summary>Stops the <see cref="Timing"/> instance.</summary>
-        public void Pause()
-        {
-            _timer.Stop();
-        }
-
-        /// <summary>Resets the <see cref="Timing"/> instance.</summary>
-        public void Reset()
-        {
-            _timer.Reset();
-            _ups = 0;
-            _upsCurrent = 0;
-            _total = new TimeSpan();
-            _elapsed = new TimeSpan();
-            _upsTime = new TimeSpan();
-            _accumulated = new TimeSpan();
-        }
-
-        /// <summary>Runs a timing update. Returns the number of updates needed to advance. If it falls behind, a value of more than 1 will be returned.</summary>
-        public void Update()
-        {
-            // SEE: https://github.com/MonoGame/MonoGame/blob/develop/MonoGame.Framework/Game.cs
-
-            if (_timer.IsRunning)
+            if (IsFixedTimestep)
             {
-                if (IsFixedTimestep)
+                if (_timer.Elapsed >= _target)
                 {
-                    if (_timer.Elapsed >= _target)
-                    {
-                        // Accumulate time
-                        _timer.Stop();
-                        _accumulated += _timer.Elapsed;
-
-                        // Set the elapsed and time-delta to what 1-frame would usually take.
-                        _elapsed = _target;
-                        _deltaTime = (float)(_elapsed.TotalMilliseconds / _target.TotalMilliseconds);
-                        _timer.Restart();
-
-                        // Do as many updates as we can within the accumulated time.
-                        while (_accumulated >= _target)
-                        {
-                            _accumulated -= _target;
-                            _total += _target;
-                            DoUpdate();
-                        }
-                    }
-                    else
-                    {
-                        // Check if it's worth sleeping to save CPU/battery.
-                        TimeSpan remaining = _target - _accumulated;
-                        if (remaining >= SLEEP_THRESHOLD)
-                            Thread.Sleep(remaining);
-                    }
-                }
-                else // .. Not fixed time-step. Run as fast as possible.
-                {
+                    // Accumulate time
                     _timer.Stop();
-                    _elapsed = _timer.Elapsed;
-                    _total += _elapsed;
+                    _accumulated += _timer.Elapsed;
+
+                    // Set the elapsed and time-delta to what 1-frame would usually take.
+                    _elapsed = _target;
                     _deltaTime = (float)(_elapsed.TotalMilliseconds / _target.TotalMilliseconds);
                     _timer.Restart();
 
-                    DoUpdate();
+                    // Do as many updates as we can within the accumulated time.
+                    while (_accumulated >= _target)
+                    {
+                        _accumulated -= _target;
+                        _total += _target;
+                        DoUpdate();
+                    }
+                }
+                else
+                {
+                    // Check if it's worth sleeping to save CPU/battery.
+                    TimeSpan remaining = _target - _accumulated;
+                    if (remaining >= SLEEP_THRESHOLD)
+                        Thread.Sleep(remaining);
                 }
             }
-            else
+            else // .. Not fixed time-step. Run as fast as possible.
             {
-                // Sleep for the length of one frame. 
-                // Inaccuracy does not matter here since the timer isn't running. It should catch up easily once its running again.
-                Thread.Sleep(_target);
+                _timer.Stop();
+                _elapsed = _timer.Elapsed;
+                _total += _elapsed;
+                _deltaTime = (float)(_elapsed.TotalMilliseconds / _target.TotalMilliseconds);
+                _timer.Restart();
+
+                DoUpdate();
             }
         }
-
-        private void DoUpdate()
+        else
         {
-            // Calculate UPS
-            _upsTime += _elapsed;
-            _upsCurrent++;
-            _frame++;
-
-            if (_upsTime.TotalMilliseconds >= 1000)
-            {
-                _ups = _upsCurrent;
-                _upsTime -= TimeSpan.FromMilliseconds(1000);
-                _upsCurrent = 0;
-            }
-
-            _callback(this);
+            // Sleep for the length of one frame. 
+            // Inaccuracy does not matter here since the timer isn't running. It should catch up easily once its running again.
+            Thread.Sleep(_target);
         }
-
-        /// <summary>
-        /// Gets the time taken to complete the previous frame.
-        /// </summary>
-        public TimeSpan ElapsedTime => _elapsed;
-
-        /// <summary>Gets the total elapsed time since the thread or application started.</summary>
-        public TimeSpan TotalTime => _total;
-
-        /// <summary>
-        /// Gets the delta time.
-        /// </summary>
-        public float Delta => _deltaTime;
-
-        /// <summary>
-        /// Gets the current frame.
-        /// </summary>
-        public ulong FrameID => _frame;
-
-        /// <summary>Gets or sets whether the timer will maintain a fixed time-step equal to <see cref="TargetFrameTime"/>.</summary>
-        public bool IsFixedTimestep { get; set; } = true;
-
-        /// <summary>Gets the target frame time.</summary>
-        public TimeSpan TargetFrameTime => _target;
-
-        /// <summary>
-        /// Gets or sets the target UPS/FPS.
-        /// </summary>
-        public int TargetUPS
-        {
-            get => _targetUps;
-            set
-            {
-                _targetUps = value;
-                _target = TimeSpan.FromMilliseconds(1000.0 / _targetUps);
-            }
-        }
-
-        /// <summary>Gets the UPS within the snapshot of the last second. This is the same as <see cref="FPS"/></summary>
-        public int UPS => _ups;
-
-        /// <summary>Gets the FPS within the snapshot of the last second. This is the same as <see cref="UPS"/></summary>
-        public int FPS => _ups;
-
-        /// <summary>Gets whether the timing object is running.</summary>
-        public bool IsRunning => _timer.IsRunning;
-
-        /// <summary>Gets the amount of time lag the update cycles have accumulated. Each frame that takes longer than <see cref="TargetFrameTime"/> will increase lag.</summary>
-        public TimeSpan AccumulatedLag => _accumulated;
     }
+
+    private void DoUpdate()
+    {
+        // Calculate UPS
+        _upsTime += _elapsed;
+        _upsCurrent++;
+        _frame++;
+
+        if (_upsTime.TotalMilliseconds >= 1000)
+        {
+            _ups = _upsCurrent;
+            _upsTime -= TimeSpan.FromMilliseconds(1000);
+            _upsCurrent = 0;
+        }
+
+        _callback(this);
+    }
+
+    /// <summary>
+    /// Gets the time taken to complete the previous frame.
+    /// </summary>
+    public TimeSpan ElapsedTime => _elapsed;
+
+    /// <summary>Gets the total elapsed time since the thread or application started.</summary>
+    public TimeSpan TotalTime => _total;
+
+    /// <summary>
+    /// Gets the delta time.
+    /// </summary>
+    public float Delta => _deltaTime;
+
+    /// <summary>
+    /// Gets the current frame.
+    /// </summary>
+    public ulong FrameID => _frame;
+
+    /// <summary>Gets or sets whether the timer will maintain a fixed time-step equal to <see cref="TargetFrameTime"/>.</summary>
+    public bool IsFixedTimestep { get; set; } = true;
+
+    /// <summary>Gets the target frame time.</summary>
+    public TimeSpan TargetFrameTime => _target;
+
+    /// <summary>
+    /// Gets or sets the target UPS/FPS.
+    /// </summary>
+    public int TargetUPS
+    {
+        get => _targetUps;
+        set
+        {
+            _targetUps = value;
+            _target = TimeSpan.FromMilliseconds(1000.0 / _targetUps);
+        }
+    }
+
+    /// <summary>Gets the UPS within the snapshot of the last second. This is the same as <see cref="FPS"/></summary>
+    public int UPS => _ups;
+
+    /// <summary>Gets the FPS within the snapshot of the last second. This is the same as <see cref="UPS"/></summary>
+    public int FPS => _ups;
+
+    /// <summary>Gets whether the timing object is running.</summary>
+    public bool IsRunning => _timer.IsRunning;
+
+    /// <summary>Gets the amount of time lag the update cycles have accumulated. Each frame that takes longer than <see cref="TargetFrameTime"/> will increase lag.</summary>
+    public TimeSpan AccumulatedLag => _accumulated;
 }
