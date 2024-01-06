@@ -16,10 +16,11 @@ public struct TextureGetTask : IGraphicsResourceTask
         GraphicsTexture texStaging = Staging as GraphicsTexture;
 
         bool isStaging = tex.Flags.Has(GraphicsResourceFlags.AllReadWrite);
-        bool stagingValid = Staging.Flags.Has(GraphicsResourceFlags.AllReadWrite);
 
         if (Staging != null)
         {
+            bool stagingValid = Staging.Flags.Has(GraphicsResourceFlags.AllReadWrite);
+
             if (!stagingValid)
                 throw new GraphicsResourceException(Staging, "Provided staging texture does not have the staging flag set.");
 
