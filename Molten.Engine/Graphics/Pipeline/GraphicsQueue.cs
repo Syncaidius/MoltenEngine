@@ -189,7 +189,7 @@ public abstract class GraphicsQueue : EngineObject
 
     protected internal abstract void CopyResource(GraphicsResource src, GraphicsResource dest);
 
-    public abstract unsafe void CopyResourceRegion(GraphicsResource source, uint srcSubresource, ResourceRegion* sourceRegion,
+    public abstract unsafe void CopyResourceRegion(GraphicsResource source, uint srcSubresource, ResourceRegion? sourceRegion,
         GraphicsResource dest, uint destSubresource, Vector3UI destStart);
 
     protected abstract void OnResetState();

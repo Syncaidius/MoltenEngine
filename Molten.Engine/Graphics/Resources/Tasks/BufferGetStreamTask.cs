@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics;
 
-internal struct BufferGetStreamTask : IGraphicsResourceTask
+internal class BufferGetStreamTask : GraphicsResourceTask<GraphicsBuffer, BufferGetStreamTask>
 {
     internal uint ByteOffset;
 
@@ -11,10 +11,25 @@ internal struct BufferGetStreamTask : IGraphicsResourceTask
     /// <summary>A callback to interact with the retrieved stream.</summary>
     internal Action<GraphicsBuffer, GraphicsStream> StreamCallback;
 
-    public bool Process(GraphicsQueue cmd, GraphicsResource resource)
+    public override void ClearForPool()
     {
-        using (GraphicsStream stream = cmd.MapResource(resource, 0, ByteOffset, MapType))
-            StreamCallback?.Invoke(resource as GraphicsBuffer, stream);
+        Staging = null;
+        StreamCallback = null;
+    }
+
+    public override void Validate()
+    {
+        if(MapType.Has(GraphicsMapType.Read) && !Resource.Flags.Has(GraphicsResourceFlags.CpuRead))
+            throw new GraphicsResourceException(Resource, "The resource must have CPU read access for reading the mapped data.");
+
+        if (MapType.Has(GraphicsMapType.Write) && !Resource.Flags.Has(GraphicsResourceFlags.CpuWrite))
+            throw new GraphicsResourceException(Resource, "The resource must have CPU write access for writing the mapped data.");
+    }
+
+    protected override bool OnProcess(GraphicsQueue queue)
+    {
+        using (GraphicsStream stream = queue.MapResource(Resource, 0, ByteOffset, MapType))
+            StreamCallback?.Invoke(Resource, stream);
 
         return false;
     }

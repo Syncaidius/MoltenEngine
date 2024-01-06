@@ -1,16 +1,26 @@
 ﻿
 namespace Molten.Graphics;
 
-public struct TextureResizeTask : IGraphicsResourceTask
+public class TextureResizeTask : GraphicsResourceTask<GraphicsTexture, TextureResizeTask>
 {
     public TextureDimensions NewDimensions;
 
     public GraphicsFormat NewFormat;
 
-    public bool Process(GraphicsQueue cmd, GraphicsResource resource)
+    public override void ClearForPool()
     {
-        GraphicsTexture texture = resource as GraphicsTexture;
-        texture.ResizeTexture(NewDimensions, NewFormat);
+        NewDimensions = new TextureDimensions();
+        NewFormat = GraphicsFormat.Unknown;
+    }
+
+    public override void Validate()
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override bool OnProcess(GraphicsQueue queue)
+    {
+        Resource.ResizeTexture(NewDimensions, NewFormat);
         return true;
     }
 }

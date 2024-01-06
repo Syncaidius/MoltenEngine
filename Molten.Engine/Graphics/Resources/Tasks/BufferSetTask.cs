@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics;
 
-internal struct BufferSetTask<T> : IGraphicsResourceTask
+internal class BufferSetTask<T> : GraphicsResourceTask<GraphicsBuffer, BufferSetTask<T>>
     where T : unmanaged
 {
     /// <summary>The number of bytes to offset the change, from the start of the provided <see cref="Segment"/>.</summary>
@@ -20,23 +20,28 @@ internal struct BufferSetTask<T> : IGraphicsResourceTask
 
     internal Action CompletionCallback;
 
-    public bool Process(GraphicsQueue cmd, GraphicsResource resource)
+    protected override bool OnProcess(GraphicsQueue queue)
     {
-        if (resource.Flags.Has(GraphicsResourceFlags.CpuWrite))
+        if (Resource.Flags.Has(GraphicsResourceFlags.CpuWrite))
         {
-            using (GraphicsStream stream = cmd.MapResource(resource, 0, ByteOffset, MapType))
+            using (GraphicsStream stream = queue.MapResource(Resource, 0, ByteOffset, MapType))
                 stream.WriteRange(Data, DataStartIndex, ElementCount);
         }
         else
         {
-            GraphicsBuffer staging = cmd.Device.Frame.StagingBuffer;
-            using (GraphicsStream stream = cmd.MapResource(staging, 0, ByteOffset, GraphicsMapType.Write))
+            GraphicsBuffer staging = queue.Device.Frame.StagingBuffer;
+            using (GraphicsStream stream = queue.MapResource(staging, 0, ByteOffset, GraphicsMapType.Write))
                 stream.WriteRange(Data, DataStartIndex, ElementCount);
 
-            cmd.CopyResource(staging, resource);
+            queue.CopyResource(staging, Resource);
         }
 
         CompletionCallback?.Invoke();
         return false;
+    }
+
+    public override void Validate()
+    {
+        throw new NotImplementedException();
     }
 }

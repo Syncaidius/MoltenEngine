@@ -3,7 +3,7 @@
 namespace Molten.Graphics.DX11;
 
 /// <summary>A render task which resolves a multisampled texture into a non-multisampled one.</summary>
-internal unsafe class TextureResolve : RenderTask<TextureResolve>
+internal unsafe class TextureResolve : GraphicsTask<TextureResolve>
 {
     public TextureDX11 Source;
 

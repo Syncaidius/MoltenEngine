@@ -16,7 +16,6 @@ public abstract class RenderService : EngineService
     RenderChain _chain;
     List<GraphicsDevice> _devices;
 
-    Dictionary<RenderTaskPriority, ThreadedQueue<RenderTask>> _tasks;
     AntiAliasLevel _requestedMultiSampleLevel = AntiAliasLevel.None;
 
     internal AntiAliasLevel MsaaLevel = AntiAliasLevel.None;
@@ -28,12 +27,7 @@ public abstract class RenderService : EngineService
     /// </summary>
     public RenderService()
     {
-        _tasks = new Dictionary<RenderTaskPriority, ThreadedQueue<RenderTask>>();
         _devices = new List<GraphicsDevice>();
-
-        RenderTaskPriority[] priorities = Enum.GetValues<RenderTaskPriority>();
-        foreach (RenderTaskPriority p in priorities)
-            _tasks[p] = new ThreadedQueue<RenderTask>();
 
         Surfaces = new SurfaceManager(this);
         Overlay = new OverlayProvider();
@@ -109,23 +103,6 @@ public abstract class RenderService : EngineService
         Fonts.Initialize();
     }
 
-    private void ProcessTasks(RenderTaskPriority priority)
-    {
-        // TODO Implement "AllowBatching" property on RenderTask to allow multiple tasks to be processed in a single Begin()-End() command block
-        //      Tasks that don't allow batching will:
-        //       - Be executed in individual Begin()-End() command blocks
-        //       - Be executed on the next available compute device queue
-        //       - May not finish in the order they were requested due to task size, queue size and device performance.
-
-        ThreadedQueue<RenderTask> queue = _tasks[priority];
-        Device.Queue.Begin();
-        Device.Queue.BeginEvent($"Process '{priority}' tasks");
-        while (queue.TryDequeue(out RenderTask task))
-            task.Process(this);
-        Device.Queue.EndEvent();
-        Device.Queue.End();
-    }
-
     /// <summary>
     /// Present's the renderer to it's bound output devices/surfaces.
     /// </summary>
@@ -157,7 +134,9 @@ public abstract class RenderService : EngineService
             _surfaceResizeRequired = true;
         }
 
-        ProcessTasks(RenderTaskPriority.StartOfFrame);
+        // Process the start-of-frame task queue for each device.
+        for (int i = 0; i < _devices.Count; i++)
+            _devices[i].TaskManager.Process(RenderTaskPriority.StartOfFrame);
 
         // Perform preliminary checks on active scene data.
         // Also ensure the backbuffer is always big enough for the largest scene render surface.
@@ -237,7 +216,8 @@ public abstract class RenderService : EngineService
             Device.Queue.EndEvent();
         }
 
-        ProcessTasks(RenderTaskPriority.EndOfFrame);
+        for (int i = 0; i < _devices.Count; i++)
+            _devices[i].TaskManager.Process(RenderTaskPriority.EndOfFrame);
         Device.EndFrame(time);
         Surfaces.ResetFirstCleared();
 
@@ -300,65 +280,11 @@ public abstract class RenderService : EngineService
     }
 
     /// <summary>
-    /// Queues a <see cref="IGraphicsResourceTask"/> on the current <see cref="GraphicsResource"/>.
+    /// Queues a <see cref="GraphicsTask"/> on the current <see cref="GraphicsResource"/>.
     /// </summary>
     /// <param name="priority">The priority of the task.</param>
-    /// <param name="resource">The <see cref="GraphicsResource"/>.</param>
-    /// <param name="op">The <see cref="IGraphicsResourceTask"/> to be pushed.</param>
-    public void PushTask<T>(GraphicsPriority priority, GraphicsResource resource, T op)
-        where T : struct, IGraphicsResourceTask
-    {
-        PushTask(priority, resource, ref op);
-    }
-
-    /// <summary>
-    /// Queues a <see cref="IGraphicsResourceTask"/> on the current <see cref="GraphicsResource"/>.
-    /// </summary>
-    /// <param name="priority">The priority of the task.</param>
-    /// <param name="resource">The <see cref="GraphicsResource"/>.</param>
-    /// <param name="op">The <see cref="IGraphicsResourceTask"/> to be pushed.</param>
-    public void PushTask<T>(GraphicsPriority priority, GraphicsResource resource, ref T op)
-        where T : struct, IGraphicsResourceTask
-    {
-        switch (priority)
-        {
-            default:
-            case GraphicsPriority.Immediate:
-                if (op.Process(Device.Queue, resource))
-                    resource.Version++;
-                break;
-
-            case GraphicsPriority.Apply:
-                resource.ApplyQueue.Enqueue(op);
-                break;
-
-            case GraphicsPriority.StartOfFrame:
-                {
-                    RunResourceTask<T> task = RunResourceTask<T>.Get();
-                    task.Task = op;
-                    task.Resource = resource;
-                    PushTask(RenderTaskPriority.StartOfFrame, task);
-                }
-                break;
-
-            case GraphicsPriority.EndOfFrame:
-                {
-                    RunResourceTask<T> task = RunResourceTask<T>.Get();
-                    task.Task = op;
-                    task.Resource = resource;
-                    PushTask(RenderTaskPriority.EndOfFrame, task);
-                }
-                break;
-        }
-    }
-
-    /// <summary>
-    /// Queues a <see cref="RenderTask"/> on the current <see cref="GraphicsResource"/>.
-    /// </summary>
-    /// <param name="priority">The priority of the task.</param>
-    /// <param name="resource">The <see cref="GraphicsResource"/>.</param>
-    /// <param name="op">The <see cref="IGraphicsResourceTask"/> to be pushed.</param>
-    public void PushTask(RenderTaskPriority priority, RenderTask task)
+    /// <param name="task">The <see cref="GraphicsTask"/> to be pushed.</param>
+    public void PushTask(RenderTaskPriority priority, GraphicsTask task)
     {
         _tasks[priority].Enqueue(task);
     }
@@ -440,7 +366,8 @@ public abstract class RenderService : EngineService
     public GraphicsManager DisplayManager { get; private set; }
 
     /// <summary>
-    /// Gets the primary <see cref="GraphicsDevice"/> bound to the current <see cref="RenderService"/>.
+    /// Gets the primary <see cref="GraphicsDevice"/> bound to the current <see cref="RenderService"/>. 
+    /// <para>This device is allocated the majority of render workload, but certain tasks may be offloaded to secondary devices, if available.</para>
     /// </summary>
     public GraphicsDevice Device { get; private set; }
 

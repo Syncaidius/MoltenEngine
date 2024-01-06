@@ -8,3 +8,11 @@ public enum GraphicsMapType
 
     Discard = 2,
 }
+
+public static class GraphicsMapTypeExtensions
+{
+    public static bool Has(this GraphicsMapType self, GraphicsMapType flag)
+    {
+        return (self & flag) == flag;
+    }
+}

@@ -8,7 +8,7 @@ public abstract class GraphicsResource : GraphicsObject, IGraphicsResource
         base(device)
     {
         Flags = flags;
-        ApplyQueue = new ThreadedQueue<IGraphicsResourceTask>();
+        ApplyQueue = new ThreadedQueue<GraphicsTask>();
         LastUsedFrameID = Device.Renderer.FrameID;
     }
 
@@ -99,19 +99,13 @@ public abstract class GraphicsResource : GraphicsObject, IGraphicsResource
     }
 
     /// <summary>Applies any pending changes to the resource, from the specified priority queue.</summary>
-    /// <param name="cmd">The graphics queue to use when process changes.</param>
-    protected virtual void OnApply(GraphicsQueue cmd)
+    /// <param name="queue">The graphics queue to use when process changes.</param>
+    protected virtual void OnApply(GraphicsQueue queue)
     {
         if (ApplyQueue.Count > 0)
         {
-            IGraphicsResourceTask op = null;
-            bool altered = false;
-            while (ApplyQueue.TryDequeue(out op))
-                altered = op.Process(cmd, this);
-
-            // If the resource was invalided, let the pipeline know it needs to be reapplied by incrementing version.
-            if (altered)
-                Version++;
+            while (ApplyQueue.TryDequeue(out GraphicsTask task))
+                task.Process(Device.Renderer, queue);
         }
     }
 
@@ -122,11 +116,11 @@ public abstract class GraphicsResource : GraphicsObject, IGraphicsResource
     /// <param name="result">The task that was dequeued, if any.</param>
     /// <returns></returns>
     protected bool DequeueTaskIfType<T>(out T result)
-        where T : IGraphicsResourceTask
+        where T : GraphicsTask
     {
         if (ApplyQueue.Count > 0 && ApplyQueue.IsNext<T>())
         {
-            if (ApplyQueue.TryDequeue(out IGraphicsResourceTask task))
+            if (ApplyQueue.TryDequeue(out GraphicsTask task))
             {
                 result = (T)task;
                 return true;
@@ -310,5 +304,5 @@ public abstract class GraphicsResource : GraphicsObject, IGraphicsResource
     /// <summary>
     /// Gets the queue of tasks that need to be applied to the current <see cref="GraphicsResource"/> during the next <see cref="Apply(GraphicsQueue)"/> call.
     /// </summary>
-    public ThreadedQueue<IGraphicsResourceTask> ApplyQueue { get; }
+    public ThreadedQueue<GraphicsTask> ApplyQueue { get; }
 }

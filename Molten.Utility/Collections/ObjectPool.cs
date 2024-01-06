@@ -2,7 +2,8 @@
 
 /// <summary>A thread-safe collection for handling object pooling.</summary>
 /// <typeparam name="T"></typeparam>
-public class ObjectPool<T> : IDisposable where T : IPoolable
+public class ObjectPool<T> : IDisposable 
+    where T : IPoolable
 {
     ThreadedQueue<T> _pool;
     Func<T> _generator;

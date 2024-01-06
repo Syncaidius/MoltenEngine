@@ -1,13 +1,23 @@
 ﻿namespace Molten.Graphics;
 
-internal struct GenerateMipMapsTask : IGraphicsResourceTask
+internal class GenerateMipMapsTask : GraphicsResourceTask<GraphicsTexture, GenerateMipMapsTask>
 {
-    internal Action<GraphicsResource> OnCompleted;
+    internal Action<GraphicsTexture> OnCompleted;
 
-    public unsafe bool Process(GraphicsQueue cmd, GraphicsResource resource)
+    public override void ClearForPool()
     {
-        cmd.GenerateMipMaps(resource);
-        OnCompleted?.Invoke(resource);
+        OnCompleted = null;
+    }
+
+    public override void Validate()
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override bool OnProcess(GraphicsQueue queue)
+    {
+        queue.GenerateMipMaps(Resource);
+        OnCompleted?.Invoke(Resource);
 
         return true;
     }

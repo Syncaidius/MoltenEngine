@@ -1,18 +1,30 @@
 ﻿namespace Molten.Graphics;
 
-public struct ResourceCopyTask : IGraphicsResourceTask
+public class ResourceCopyTask<R> : GraphicsResourceTask<R, ResourceCopyTask<R>>
+    where R : GraphicsResource
 {
     public GraphicsResource Destination;
 
     public Action<GraphicsResource> CompletionCallback;
 
-    public unsafe bool Process(GraphicsQueue cmd, GraphicsResource resource)
+    public override void ClearForPool()
     {
-        if (resource is GraphicsBuffer buffer && buffer.BufferType == GraphicsBufferType.Staging)
-            resource.Ensure(cmd);
+        Destination = null;
+        CompletionCallback = null;
+    }
 
-        cmd.CopyResource(resource, Destination);
-        CompletionCallback?.Invoke(resource);
+    public override void Validate()
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override bool OnProcess(GraphicsQueue queue)
+    {
+        if (Resource is GraphicsBuffer buffer && buffer.BufferType == GraphicsBufferType.Staging)
+            Resource.Ensure(queue);
+
+        queue.CopyResource(Resource, Destination);
+        CompletionCallback?.Invoke(Resource);
 
         return false;
     }

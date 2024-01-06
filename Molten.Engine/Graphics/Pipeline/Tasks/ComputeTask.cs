@@ -2,7 +2,7 @@
 
 public delegate void ComputeTaskCompletionCallback();
 
-internal class ComputeTask : RenderTask<ComputeTask>
+internal class ComputeTask : GraphicsTask
 {
     public ComputeTaskCompletionCallback CompletionCallback;
 
@@ -17,12 +17,11 @@ internal class ComputeTask : RenderTask<ComputeTask>
         CompletionCallback = null;
     }
 
-    public override void Process(RenderService renderer)
+    public override void Process(RenderService renderer, GraphicsDevice taskDevice)
     {
-        //renderer.Device.Queue.Begin();
-        renderer.Device.Queue.Dispatch(Shader, Groups);
-        //renderer.Device.Queue.End();
+        //taskDevice.Queue.Begin();
+        taskDevice.Queue.Dispatch(Shader, Groups);
+        //taskDevice.Queue.End();
         CompletionCallback?.Invoke();
-        Recycle(this);
     }
 }

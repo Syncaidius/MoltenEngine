@@ -1,6 +1,7 @@
 ﻿namespace Molten.Graphics;
 
-public struct SubResourceCopyTask : IGraphicsResourceTask
+public class SubResourceCopyTask<R> : GraphicsResourceTask<R, SubResourceCopyTask<R>>
+    where R : GraphicsResource
 {
     public ResourceRegion? SrcRegion;
 
@@ -17,26 +18,33 @@ public struct SubResourceCopyTask : IGraphicsResourceTask
 
     public Action<GraphicsResource> CompletionCallback;
 
-    public unsafe bool Process(GraphicsQueue cmd, GraphicsResource resource)
+    public override void ClearForPool()
+    {
+        SrcRegion = null;
+        SrcSubResource = 0;
+        DestResource = null;
+        DestSubResource = 0;
+        DestStart = Vector3UI.Zero;
+        CompletionCallback = null;
+    }
+
+
+    public override void Validate()
+    {
+        throw new NotImplementedException();
+    }
+
+    protected unsafe override bool OnProcess(GraphicsQueue queue)
     {
         if (DestResource.Flags.Has(GraphicsResourceFlags.GpuWrite))
-            throw new ResourceCopyException(resource, DestResource, "The destination resource must have GPU write access for writing the copied data.");
+            throw new ResourceCopyException(Resource, DestResource, "The destination resource must have GPU write access for writing the copied data.");
 
-        if (resource is GraphicsBuffer buffer && buffer.BufferType == GraphicsBufferType.Staging)
-            resource.Ensure(cmd);
+        if (Resource is GraphicsBuffer buffer && buffer.BufferType == GraphicsBufferType.Staging)
+            Resource.Ensure(queue);
 
-        if (SrcRegion.HasValue)
-        {
-            ResourceRegion region = SrcRegion.Value;
-            cmd.CopyResourceRegion(resource, SrcSubResource, &region, DestResource, DestSubResource, DestStart);
-        }
-        else
-        {
-            cmd.CopyResourceRegion(resource, SrcSubResource, null, DestResource, DestSubResource, DestStart);
-        }
-
-        cmd.Profiler.SubResourceCopyCalls++;
-        CompletionCallback?.Invoke(resource);
+        queue.CopyResourceRegion(Resource, SrcSubResource, SrcRegion, DestResource, DestSubResource, DestStart);
+        queue.Profiler.SubResourceCopyCalls++;
+        CompletionCallback?.Invoke(Resource);
 
         return false;
     }

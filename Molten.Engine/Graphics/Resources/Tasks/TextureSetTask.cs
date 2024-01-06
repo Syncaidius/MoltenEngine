@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics;
 
-public unsafe struct TextureSetTask : IGraphicsResourceTask
+public unsafe class TextureSetTask : GraphicsResourceTask<GraphicsTexture, TextureSetTask>
 {
     public uint MipLevel;
 
@@ -26,7 +26,7 @@ public unsafe struct TextureSetTask : IGraphicsResourceTask
 
     public Action<GraphicsResource> CompleteCallback;
 
-    public TextureSetTask(void* data, uint stride, uint startIndex, uint numElements)
+    public void SetData(void* data, uint stride, uint startIndex, uint numElements)
     {
         Stride = stride;
         NumElements = numElements;
@@ -37,26 +37,40 @@ public unsafe struct TextureSetTask : IGraphicsResourceTask
         Buffer.MemoryCopy(ptrStart, Data, NumBytes, NumBytes);
     }
 
-    public bool Process(GraphicsQueue cmd, GraphicsResource resource)
+    public override void ClearForPool()
     {
-        GraphicsTexture texture = resource as GraphicsTexture;
+        MipLevel = 0;
+        StartIndex = 0;
+        Pitch = 0;
+        ArrayIndex = 0;
+        MapType = GraphicsMapType.Read;
+        NumElements = 0;
+        NumBytes = 0;
+        Stride = 0;
+        Area = null;
+        CompleteCallback = null;
 
+        EngineUtil.Free(ref Data);
+    }
+
+    protected override bool OnProcess(GraphicsQueue queue)
+    {
         // Calculate size of a single array slice
         uint arraySliceBytes = 0;
         uint blockSize = 8; // default block size
-        uint levelWidth = texture.Width;
-        uint levelHeight = texture.Height;
-        uint levelDepth = texture.Depth;
+        uint levelWidth = Resource.Width;
+        uint levelHeight = Resource.Height;
+        uint levelDepth = Resource.Depth;
 
-        if (texture.IsBlockCompressed)
+        if (Resource.IsBlockCompressed)
         {
             if (Area != null)
                 throw new NotImplementedException("Area-based SetData on block-compressed texture is currently unsupported. Sorry!");
 
-            blockSize = BCHelper.GetBlockSize(texture.ResourceFormat);
+            blockSize = BCHelper.GetBlockSize(Resource.ResourceFormat);
 
             // Collect total level size.
-            for (uint i = 0; i < texture.MipMapCount; i++)
+            for (uint i = 0; i < Resource.MipMapCount; i++)
             {
                 arraySliceBytes += BCHelper.GetBCLevelSize(levelWidth, levelHeight, blockSize) * levelDepth;
                 levelWidth = Math.Max(1, levelWidth / 2);
@@ -67,7 +81,7 @@ public unsafe struct TextureSetTask : IGraphicsResourceTask
         else
         {
             // TODO: This is invalid if the format isn't 32bpp/4-bytes-per-pixel/RGBA.
-            for (uint i = 0; i < texture.MipMapCount; i++)
+            for (uint i = 0; i < Resource.MipMapCount; i++)
             {
                 arraySliceBytes += (levelWidth * levelHeight * 4) * levelDepth; //4 color channels. 1 byte each. Width * height * colorByteSize.
                 levelWidth = Math.Max(1, levelWidth / 2);
@@ -81,11 +95,11 @@ public unsafe struct TextureSetTask : IGraphicsResourceTask
         byte* ptrData = (byte*)Data;
         ptrData += startBytes;
 
-        uint subLevel = (texture.MipMapCount * ArrayIndex) + MipLevel;
+        uint subLevel = (Resource.MipMapCount * ArrayIndex) + MipLevel;
 
-        if (texture.Flags.Has(GraphicsResourceFlags.CpuWrite))
+        if (Resource.Flags.Has(GraphicsResourceFlags.CpuWrite))
         {
-            using (GraphicsStream stream = cmd.MapResource(resource, subLevel, 0, MapType))
+            using (GraphicsStream stream = queue.MapResource(Resource, subLevel, 0, MapType))
             {
                 // Are we constrained to an area of the texture?
                 if (Area != null)
@@ -110,35 +124,35 @@ public unsafe struct TextureSetTask : IGraphicsResourceTask
                     stream.WriteRange(ptrData, NumBytes);
                 }
             }
-            cmd.Profiler.ResourceMapCalls++;
+            queue.Profiler.ResourceMapCalls++;
         }
         else
         {
-            if (texture.IsBlockCompressed)
+            if (Resource.IsBlockCompressed)
             {
                 // Calculate mip-map level size.
-                levelWidth = Math.Max(1, texture.Width >> (int)MipLevel);
+                levelWidth = Math.Max(1, Resource.Width >> (int)MipLevel);
                 uint bcPitch = BCHelper.GetBCPitch(levelWidth, blockSize);
 
                 // TODO support copy flags (DX11.1 feature)
-                cmd.UpdateResource(resource, subLevel, null, ptrData, bcPitch, arraySliceBytes);
+                queue.UpdateResource(Resource, subLevel, null, ptrData, bcPitch, arraySliceBytes);
             }
             else
             {
                 if (Area != null)
                 {
                     uint rowPitch = Stride * Area.Value.Width;
-                    cmd.UpdateResource(resource, subLevel, Area.Value, ptrData, rowPitch, NumBytes);
+                    queue.UpdateResource(Resource, subLevel, Area.Value, ptrData, rowPitch, NumBytes);
                 }
                 else
                 {
-                    cmd.UpdateResource(resource, subLevel, null, ptrData, Pitch, arraySliceBytes);
+                    queue.UpdateResource(Resource, subLevel, null, ptrData, Pitch, arraySliceBytes);
                 }
             }
         }
 
         EngineUtil.Free(ref Data);
-        CompleteCallback?.Invoke(resource);
+        CompleteCallback?.Invoke(Resource);
         return true;
     }
 }

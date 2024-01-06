@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics;
 
-internal struct TextureGetSliceTask : IGraphicsResourceTask
+internal class TextureGetSliceTask : GraphicsResourceTask<GraphicsTexture, TextureGetSliceTask>
 {
     public Action<TextureSlice> CompleteCallback;
 
@@ -10,12 +10,23 @@ internal struct TextureGetSliceTask : IGraphicsResourceTask
 
     public GraphicsMapType MapType;
 
-    public bool Process(GraphicsQueue cmd, GraphicsResource resource)
+    public override void ClearForPool()
     {
-        GraphicsTexture texture = resource as GraphicsTexture;
+        CompleteCallback = null;
+        MipMapLevel = 0;
+        ArrayIndex = 0;
+        MapType = GraphicsMapType.Read;
+    }
 
-        bool isStaging = texture.Flags.Has(GraphicsResourceFlags.AllReadWrite);
-        TextureSlice slice = TextureSlice.FromTextureSlice(cmd, texture, MipMapLevel, ArrayIndex, MapType);
+    public override void Validate()
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override bool OnProcess(GraphicsQueue queue)
+    {
+        bool isStaging = Resource.Flags.Has(GraphicsResourceFlags.AllReadWrite);
+        TextureSlice slice = TextureSlice.FromTextureSlice(queue, Resource, MipMapLevel, ArrayIndex, MapType);
 
         // Return resulting data
         CompleteCallback?.Invoke(slice);
