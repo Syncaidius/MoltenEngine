@@ -7,9 +7,9 @@ namespace Molten.Content;
 
 public class TextureProcessor : ContentProcessor<TextureParameters>
 {
-    public override Type[] AcceptedTypes { get; } = new Type[] { typeof(ITexture), typeof(TextureData) };
+    public override Type[] AcceptedTypes { get; } = [ typeof(ITexture), typeof(TextureData) ];
 
-    public override Type[] RequiredServices { get; } = { typeof(RenderService) };
+    public override Type[] RequiredServices { get; } = [typeof(RenderService) ];
 
     public override Type PartType { get; } = typeof(TextureData);
 
@@ -218,67 +218,26 @@ public class TextureProcessor : ContentProcessor<TextureParameters>
             // TODO finish support for writing textures directly
 
             ITexture tex = asset as ITexture;
-            ITexture staging = null;
-
-            switch (tex)
-            {
-                case ITextureCube texCube:
-                    staging = handle.Manager.Engine.Renderer.Device.CreateTextureCube(
-                        tex.Width, 
-                        tex.Height, 
-                        tex.MipMapCount, 
-                        tex.ResourceFormat,
-                        texCube.CubeCount,
-                        tex.ArraySize,
-                        tex.Flags, 
-                        tex.Name + "_staging");
-                    break;
-
-                case ITexture3D:
-                    staging = handle.Manager.Engine.Renderer.Device.CreateTexture3D(
-                        tex.Width,
-                        tex.Height,
-                        tex.Depth,
-                        tex.MipMapCount,
-                        tex.ResourceFormat,
-                        tex.Flags,
-                        tex.Name + "_staging");
-                    break;
-
-                case ITexture2D:
-                    staging = handle.Manager.Engine.Renderer.Device.CreateTexture2D(
-                        tex.Width,
-                        tex.Height,
-                        tex.MipMapCount,
-                        tex.ArraySize,
-                        tex.ResourceFormat,
-                        tex.Flags,
-                        name: tex.Name + "_staging");
-                    break;
-
-                case ITexture:
-                    staging = handle.Manager.Engine.Renderer.Device.CreateTexture1D(
-                        tex.Width,
-                        tex.MipMapCount,
-                        tex.ArraySize,
-                        tex.ResourceFormat,
-                        tex.Flags,
-                        tex.Name + "_staging");
-                    break;
-            }
+            ITexture staging = handle.Manager.Engine.Renderer.Device.CreateStagingTexture(tex);
 
             if (staging != null)
             {
                 TextureData tData = null;
-                tex.GetData(GraphicsPriority.EndOfFrame, staging as GraphicsTexture, (data) =>
+                tex.GetData(GraphicsPriority.EndOfFrame, (data) =>
                 {
                     tData = data;
                 });
 
+                // TODO Remove the need for this horrible Thread.Sleep() wait loop.
                 while (tData == null)
                     Thread.Sleep(10);
 
                 texWriter.WriteData(stream, tData, handle.Manager.Log, handle.RelativePath);
+            }
+            else
+            {
+                handle.Manager.Log.Error($"Unable to write texture to file. Unsupported texture type: {tex.GetType().Name}");
+                return false;
             }
         }
 

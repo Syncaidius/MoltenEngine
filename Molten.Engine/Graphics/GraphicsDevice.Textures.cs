@@ -6,29 +6,18 @@ public abstract partial class GraphicsDevice
     {
         GraphicsResourceFlags flags = GraphicsResourceFlags.AllReadWrite | GraphicsResourceFlags.NoShaderAccess;
         string name = src.Name + "_staging";
-        ITexture result = null;
-
-        switch (src)
+        ITexture result = src switch
         {
-            case ITexture1D:
-                result = CreateTexture1D(src.Width, src.MipMapCount, src.ArraySize, src.ResourceFormat, flags, name);
-                break;
+            ITexture1D => CreateTexture1D(src.Width, src.MipMapCount, src.ArraySize, src.ResourceFormat, flags, name),
 
-            case ITextureCube cube:
-                result = CreateTextureCube(src.Width, src.Height, src.MipMapCount, src.ResourceFormat, cube.CubeCount, src.ArraySize, flags, name);
-                break;
+            ITextureCube cube => CreateTextureCube(src.Width, src.Height, src.MipMapCount, src.ResourceFormat, cube.CubeCount, src.ArraySize, flags, name),
 
-            case ITexture2D:
-                result = CreateTexture2D(src.Width, src.Height, src.MipMapCount, src.ArraySize, src.ResourceFormat, flags, src.MultiSampleLevel, src.SampleQuality, name);
-                break;
+            ITexture2D => CreateTexture2D(src.Width, src.Height, src.MipMapCount, src.ArraySize, src.ResourceFormat, flags, src.MultiSampleLevel, src.SampleQuality, name),
 
-            case ITexture3D:
-                result = CreateTexture3D(src.Width, src.Height, src.Depth, src.MipMapCount, src.ResourceFormat, flags, name);
-                break;
+            ITexture3D => CreateTexture3D(src.Width, src.Height, src.Depth, src.MipMapCount, src.ResourceFormat, flags, name),
 
-            default:
-                throw new GraphicsResourceException(src as GraphicsTexture, "Unsupported staging texture type");
-        }
+            _ => throw new GraphicsResourceException(src as GraphicsTexture, "Unsupported staging texture type"),
+        };
 
         return result as GraphicsTexture;
     }

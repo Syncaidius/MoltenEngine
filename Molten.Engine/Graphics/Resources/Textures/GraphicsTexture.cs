@@ -9,7 +9,7 @@ namespace Molten.Graphics;
 public delegate void TextureHandler(GraphicsTexture texture);
 
 public abstract class GraphicsTexture : GraphicsResource, ITexture
-{            
+{
     /// <summary>
     /// Invoked after resizing of the texture has completed.
     /// </summary>
@@ -18,8 +18,8 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
     TextureDimensions _dimensions;
     GraphicsFormat _format;
 
-    protected GraphicsTexture(GraphicsDevice device, TextureDimensions dimensions, AntiAliasLevel aaLevel, 
-        MSAAQuality sampleQuality, GraphicsFormat format, GraphicsResourceFlags flags, string name) 
+    protected GraphicsTexture(GraphicsDevice device, TextureDimensions dimensions, AntiAliasLevel aaLevel,
+        MSAAQuality sampleQuality, GraphicsFormat format, GraphicsResourceFlags flags, string name)
         : base(device, flags)
     {
         LastFrameResizedID = device.Renderer.FrameID;
@@ -52,7 +52,7 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
         base.ValidateFlags();
     }
 
-public void Resize(GraphicsPriority priority, uint newWidth)
+    public void Resize(GraphicsPriority priority, uint newWidth)
     {
         Resize(priority, newWidth, MipMapCount, ResourceFormat);
     }
@@ -185,7 +185,7 @@ public void Resize(GraphicsPriority priority, uint newWidth)
         });
     }
 
-    public unsafe void SetData<T>(GraphicsPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arrayIndex, 
+    public unsafe void SetData<T>(GraphicsPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arrayIndex,
         Action<GraphicsResource> completeCallback = null)
         where T : unmanaged
     {
@@ -221,20 +221,18 @@ public void Resize(GraphicsPriority priority, uint newWidth)
         });
     }
 
-    public void GetData(GraphicsPriority priority, GraphicsTexture stagingTexture, Action<TextureData> callback)
+    public void GetData(GraphicsPriority priority, Action<TextureData> callback)
     {
         Device.Renderer.PushTask(priority, this, new TextureGetTask()
         {
-            Staging = stagingTexture,
             CompleteCallback = callback,
         });
     }
 
-    public void GetData(GraphicsPriority priority, GraphicsTexture stagingTexture, uint mipLevel, uint arrayIndex, Action<TextureSlice> callback)
+    public void GetData(GraphicsPriority priority, uint mipLevel, uint arrayIndex, Action<TextureSlice> callback)
     {
         Device.Renderer.PushTask(priority, this, new TextureGetSliceTask()
         {
-            Staging = stagingTexture,
             CompleteCallback = callback,
             ArrayIndex = arrayIndex,
             MipMapLevel = mipLevel,
@@ -330,7 +328,7 @@ public void Resize(GraphicsPriority priority, uint newWidth)
         get => _format;
         protected set
         {
-            if(_format != value)
+            if (_format != value)
             {
                 _format = value;
                 IsBlockCompressed = BCHelper.GetBlockCompressed(_format);

@@ -150,7 +150,7 @@ public unsafe class TextureSlice : IDisposable
     /// <param name="level">The mip-map level.</param>
     /// <param name="arraySlice">The array slice.</param>
     /// <returns></returns>
-    internal static unsafe TextureSlice FromTextureSlice(GraphicsQueue cmd, GraphicsTexture tex, GraphicsTexture staging, uint level, uint arraySlice, GraphicsMapType mapType)
+    internal static unsafe TextureSlice FromTextureSlice(GraphicsQueue cmd, GraphicsTexture tex, uint level, uint arraySlice, GraphicsMapType mapType)
     {
         uint subID = (arraySlice * tex.MipMapCount) + level;
         uint subWidth = tex.Width >> (int)level;
@@ -158,13 +158,6 @@ public unsafe class TextureSlice : IDisposable
         uint subDepth = tex.Depth >> (int)level;
 
         GraphicsResource resMap = tex;
-
-        if (staging != null)
-        {
-            cmd.CopyResourceRegion(resMap, subID, null, staging, subID, Vector3UI.Zero);
-            cmd.Profiler.SubResourceCopyCalls++;
-            resMap = staging;
-        }
 
         uint blockSize = BCHelper.GetBlockSize(tex.ResourceFormat);
         uint expectedRowPitch = 4 * tex.Width; // 4-bytes per pixel * Width.
