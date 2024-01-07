@@ -45,7 +45,7 @@ public class SaveTexture : MoltenExample
         };
 
         Engine.Content.SaveToFile("assets/saved_recompressed_texture_raw.dds", loadedData, parameters: texParams);
-        tex.CopyTo(GraphicsPriority.EndOfFrame, texStaging, (resource) =>
+        tex.CopyTo(GraphicsPriority.EndOfFrame, texStaging, (task, successful) =>
         {
             texStaging.GetData(GraphicsPriority.EndOfFrame, (data) =>
             {

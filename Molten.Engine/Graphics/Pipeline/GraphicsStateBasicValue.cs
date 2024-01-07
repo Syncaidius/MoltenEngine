@@ -1,7 +1,7 @@
 ﻿namespace Molten.Graphics;
 
 /// <summary>
-/// A component class that is intended for use by a <see cref="GraphicsState"/> for binding a <see cref="IGraphicsObject"/> to a slot or pipeline element.
+/// A component class that is intended for use by a <see cref="GraphicsState"/> for binding a <see cref="GraphicsObject"/> to a slot or pipeline element.
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public class GraphicsStateBasicValue<T>

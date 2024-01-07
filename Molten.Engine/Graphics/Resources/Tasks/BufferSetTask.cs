@@ -18,8 +18,6 @@ internal class BufferSetTask<T> : GraphicsResourceTask<GraphicsBuffer>
 
     internal GraphicsBuffer DestBuffer;
 
-    internal Action CompletionCallback;
-
     public override void ClearForPool()
     {
         ByteOffset = 0;
@@ -28,10 +26,9 @@ internal class BufferSetTask<T> : GraphicsResourceTask<GraphicsBuffer>
         DataStartIndex = 0;
         Data = null;
         DestBuffer = null;
-        CompletionCallback = null;
     }
 
-    protected override bool OnProcess(GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
     {
         if (Resource.Flags.Has(GraphicsResourceFlags.CpuWrite))
         {
@@ -47,8 +44,7 @@ internal class BufferSetTask<T> : GraphicsResourceTask<GraphicsBuffer>
             queue.CopyResource(staging, Resource);
         }
 
-        CompletionCallback?.Invoke();
-        return false;
+        return true;
     }
 
     public override void Validate()

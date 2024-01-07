@@ -4,13 +4,13 @@ namespace Molten.Graphics;
 
 internal class TextureGetTask : GraphicsResourceTask<GraphicsTexture>
 {
-    public Action<TextureData> CompleteCallback;
+    public Action<TextureData> OnGetData;
 
     public GraphicsMapType MapType;
 
     public override void ClearForPool()
     {
-        CompleteCallback = null;
+        OnGetData = null;
         MapType = GraphicsMapType.Read;
     }
 
@@ -19,7 +19,7 @@ internal class TextureGetTask : GraphicsResourceTask<GraphicsTexture>
         throw new NotImplementedException();
     }
 
-    protected override bool OnProcess(GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
     {
         TextureData data = new TextureData(Resource.Width, Resource.Height, Resource.Depth, Resource.MipMapCount, Resource.ArraySize)
         {
@@ -44,7 +44,7 @@ internal class TextureGetTask : GraphicsResourceTask<GraphicsTexture>
             }
         }
 
-        CompleteCallback?.Invoke(data);
-        return false;
+        OnGetData?.Invoke(data);
+        return true;
     }
 }

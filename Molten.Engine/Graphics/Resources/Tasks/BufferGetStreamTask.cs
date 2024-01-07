@@ -9,12 +9,12 @@ internal class BufferGetStreamTask : GraphicsResourceTask<GraphicsBuffer>
     internal GraphicsBuffer Staging;
 
     /// <summary>A callback to interact with the retrieved stream.</summary>
-    internal Action<GraphicsBuffer, GraphicsStream> StreamCallback;
+    internal event Action<GraphicsBuffer, GraphicsStream> OnStreamOpened;
 
     public override void ClearForPool()
     {
         Staging = null;
-        StreamCallback = null;
+        OnStreamOpened = null;
     }
 
     public override void Validate()
@@ -26,11 +26,11 @@ internal class BufferGetStreamTask : GraphicsResourceTask<GraphicsBuffer>
             throw new GraphicsResourceException(Resource, "The resource must have CPU write access for writing the mapped data.");
     }
 
-    protected override bool OnProcess(GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
     {
         using (GraphicsStream stream = queue.MapResource(Resource, 0, ByteOffset, MapType))
-            StreamCallback?.Invoke(Resource, stream);
+            OnStreamOpened?.Invoke(Resource, stream);
 
-        return false;
+        return true;
     }
 }

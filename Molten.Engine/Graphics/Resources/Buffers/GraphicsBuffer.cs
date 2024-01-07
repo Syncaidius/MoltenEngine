@@ -19,7 +19,7 @@ public abstract class GraphicsBuffer : GraphicsResource
     /// <param name="data"></param>
     /// <param name="discard">Discard the data currently in the buffer and allocate fresh memory for the provided data.</param>
     /// <param name="completeCallback"></param>
-    public void SetData<T>(GraphicsPriority priority, T[] data, bool discard, Action completeCallback = null)
+    public void SetData<T>(GraphicsPriority priority, T[] data, bool discard, GraphicsTask.EventHandler completeCallback = null)
         where T : unmanaged
     {
         SetData(priority, data, 0, (uint)data.Length, discard, 0, completeCallback);
@@ -36,12 +36,13 @@ public abstract class GraphicsBuffer : GraphicsResource
     /// <param name="byteOffset">The start location within the buffer to start copying from, in bytes.</param>
     /// <param name="completeCallback"></param>
     /// <param name="discard">If true, the previous data will be discarded. Ignored if not applicable to the current buffer.</param>
-    public void SetData<T>(GraphicsPriority priority, T[] data, uint startIndex, uint elementCount, bool discard, uint byteOffset = 0, Action completeCallback = null)
+    public void SetData<T>(GraphicsPriority priority, T[] data, uint startIndex, uint elementCount, bool discard, uint byteOffset = 0, 
+        GraphicsTask.EventHandler completeCallback = null)
         where T : unmanaged
     {
         BufferSetTask<T> op = Device.Tasks.Get<BufferSetTask<T>>();
         op.ByteOffset = byteOffset;
-        op.CompletionCallback = completeCallback;
+        op.OnCompleted += completeCallback;
         op.DestBuffer = this;
         op.MapType = discard ? GraphicsMapType.Discard : GraphicsMapType.Write;
         op.ElementCount = elementCount;
@@ -51,7 +52,7 @@ public abstract class GraphicsBuffer : GraphicsResource
         {
             op.Data = data;
             op.DataStartIndex = startIndex;
-            op.Process(Device.Renderer, Device.Queue);
+            op.Process(Device.Queue);
         }
         else
         {
@@ -79,15 +80,14 @@ public abstract class GraphicsBuffer : GraphicsResource
         if (destination.Length < count)
             throw new ArgumentException("The provided destination array is not large enough.");
 
-        Device.Tasks.Push(priority, this, new BufferGetTask<T>()
-        {
-            ByteOffset = byteOffset,
-            DestArray = destination,
-            DestIndex = startIndex,
-            Count = count,
-            MapType = GraphicsMapType.Read,
-            CompletionCallback = completionCallback,
-        });
+        BufferGetTask<T> task = Device.Tasks.Get<BufferGetTask<T>>();
+        task.ByteOffset = byteOffset;
+        task.Count = count;
+        task.DestArray = destination;
+        task.DestIndex = startIndex;
+        task.MapType = GraphicsMapType.Read;
+        task.OnGetData += completionCallback;
+        Device.Tasks.Push(priority, this, task);
     }
 
     /// <summary>

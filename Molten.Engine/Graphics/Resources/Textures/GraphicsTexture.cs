@@ -114,7 +114,7 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
     }
 
     public unsafe void SetData<T>(GraphicsPriority priority, ResourceRegion area, T* data, uint numElements, uint bytesPerPixel, uint level, uint arrayIndex = 0,
-        Action<GraphicsResource> completeCallback = null)
+        GraphicsTask.EventHandler completeCallback = null)
         where T : unmanaged
     {
         uint texturePitch = area.Width * bytesPerPixel;
@@ -137,7 +137,7 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
         task.ArrayIndex = arrayIndex;
         task.MipLevel = level;
         task.Area = area;
-        task.CompleteCallback = completeCallback;
+        task.OnCompleted += completeCallback;
         Device.Tasks.Push(priority, this, task);
     }
 
@@ -150,7 +150,7 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
     /// <param name="destMipIndex">The mip-map index within the current texture to start copying to.</param>
     /// <param name="destArraySlice">The array slice index within the current texture to start copying to.<</param>
     public unsafe void SetData(GraphicsPriority priority, TextureData data, uint srcMipIndex, uint srcArraySlice, uint mipCount,
-        uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0, Action<GraphicsResource> completeCallback = null)
+        uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0, GraphicsTask.EventHandler completeCallback = null)
     {
         TextureSlice level = null;
         for (uint a = 0; a < arrayCount; a++)
@@ -172,19 +172,19 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
         }
     }
 
-    public unsafe void SetData(GraphicsPriority priority, TextureSlice data, uint mipIndex, uint arraySlice, Action<GraphicsResource> completeCallback = null)
+    public unsafe void SetData(GraphicsPriority priority, TextureSlice data, uint mipIndex, uint arraySlice, GraphicsTask.EventHandler completeCallback = null)
     {
         TextureSetTask task = Device.Tasks.Get<TextureSetTask>();
         task.Initialize(data.Data, 1, 0, data.TotalBytes);
         task.Pitch = data.Pitch;
         task.ArrayIndex = arraySlice;
         task.MipLevel = mipIndex;
-        task.CompleteCallback = completeCallback;
+        task.OnCompleted += completeCallback;
         Device.Tasks.Push(priority, this, task);
     }
 
     public unsafe void SetData<T>(GraphicsPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arrayIndex,
-        Action<GraphicsResource> completeCallback = null)
+        GraphicsTask.EventHandler completeCallback = null)
         where T : unmanaged
     {
         fixed (T* ptrData = data)
@@ -194,20 +194,21 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
             task.Pitch = pitch;
             task.ArrayIndex = arrayIndex;
             task.MipLevel = level;
-            task.CompleteCallback = completeCallback;
+            task.OnCompleted += completeCallback;
             Device.Tasks.Push(priority, this, task);
         }
     }
 
     public unsafe void SetData<T>(GraphicsPriority priority, ResourceRegion area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0,
-        Action<GraphicsResource> completeCallback = null)
+        GraphicsTask.EventHandler completeCallback = null)
         where T : unmanaged
     {
         fixed (T* ptrData = data)
             SetData(priority, area, ptrData, (uint)data.Length, bytesPerPixel, level, arrayIndex, completeCallback);
     }
 
-    public unsafe void SetData<T>(GraphicsPriority priority, uint level, T* data, uint startIndex, uint count, uint pitch, uint arrayIndex, Action<GraphicsResource> completeCallback = null)
+    public unsafe void SetData<T>(GraphicsPriority priority, uint level, T* data, uint startIndex, uint count, uint pitch, uint arrayIndex,
+        GraphicsTask.EventHandler completeCallback = null)
         where T : unmanaged
     {
         TextureSetTask task = Device.Tasks.Get<TextureSetTask>();
@@ -215,21 +216,21 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
         task.Pitch = pitch;
         task.ArrayIndex = arrayIndex;
         task.MipLevel = level;
-        task.CompleteCallback = completeCallback;
+        task.OnCompleted += completeCallback;
         Device.Tasks.Push(priority, this, task);
     }
 
     public void GetData(GraphicsPriority priority, Action<TextureData> callback)
     {
         TextureGetTask task = Device.Tasks.Get<TextureGetTask>();
-        task.CompleteCallback = callback;
+        task.OnGetData = callback;
         Device.Tasks.Push(priority, this, task);
     }
 
     public void GetData(GraphicsPriority priority, uint mipLevel, uint arrayIndex, Action<TextureSlice> callback)
     {
         TextureGetSliceTask task = Device.Tasks.Get<TextureGetSliceTask>();
-        task.CompleteCallback = callback;
+        task.OnGetData = callback;
         task.MipMapLevel = mipLevel;
         task.ArrayIndex = arrayIndex;
         Device.Tasks.Push(priority, this, task);
@@ -264,13 +265,13 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
     /// <summary>Generates mip maps for the texture via the current <see cref="GraphicsTexture"/>, if allowed.</summary>
     /// <param name="priority">The priority of the copy operation.</param>
     /// <param name="callback">A callback to run once the operation has completed.</param>
-    public void GenerateMipMaps(GraphicsPriority priority, Action<GraphicsResource> callback = null)
+    public void GenerateMipMaps(GraphicsPriority priority, GraphicsTask.EventHandler callback = null)
     {
         if (!Flags.Has(GraphicsResourceFlags.MipMapGeneration))
             throw new Exception("Cannot generate mip-maps for texture. Must have flag: TextureFlags.AllowMipMapGeneration.");
 
         GenerateMipMapsTask task = Device.Tasks.Get<GenerateMipMapsTask>();
-        task.OnCompleted = callback;
+        task.OnCompleted += callback;
         Device.Tasks.Push(priority, this, task);
     }
 

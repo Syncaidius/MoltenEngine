@@ -2,7 +2,7 @@
 
 internal class TextureGetSliceTask : GraphicsResourceTask<GraphicsTexture>
 {
-    public Action<TextureSlice> CompleteCallback;
+    public Action<TextureSlice> OnGetData;
 
     public uint MipMapLevel;
 
@@ -12,7 +12,7 @@ internal class TextureGetSliceTask : GraphicsResourceTask<GraphicsTexture>
 
     public override void ClearForPool()
     {
-        CompleteCallback = null;
+        OnGetData = null;
         MipMapLevel = 0;
         ArrayIndex = 0;
         MapType = GraphicsMapType.Read;
@@ -23,13 +23,13 @@ internal class TextureGetSliceTask : GraphicsResourceTask<GraphicsTexture>
         throw new NotImplementedException();
     }
 
-    protected override bool OnProcess(GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
     {
         bool isStaging = Resource.Flags.Has(GraphicsResourceFlags.AllReadWrite);
         TextureSlice slice = TextureSlice.FromTextureSlice(queue, Resource, MipMapLevel, ArrayIndex, MapType);
 
         // Return resulting data
-        CompleteCallback?.Invoke(slice);
-        return false;
+        OnGetData?.Invoke(slice);
+        return true;
     }
 }

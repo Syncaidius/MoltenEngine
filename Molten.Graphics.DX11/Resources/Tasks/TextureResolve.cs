@@ -29,7 +29,7 @@ internal unsafe class TextureResolve : GraphicsResourceTask<TextureDX11>
         throw new NotImplementedException();
     }
 
-    protected override bool OnProcess(GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
     {
         uint subSource = (Resource.MipMapCount * SourceArraySlice) + SourceMipLevel;
         uint subDest = (Destination.MipMapCount * DestArraySlice) + DestMipLevel;
@@ -39,6 +39,6 @@ internal unsafe class TextureResolve : GraphicsResourceTask<TextureDX11>
             (ID3D11Resource*)Resource.Handle, subSource, Resource.DxgiFormat);
 
         Destination.Version++;
-        return false;
+        return true;
     }
 }

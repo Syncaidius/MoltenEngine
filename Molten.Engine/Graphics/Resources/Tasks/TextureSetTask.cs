@@ -24,8 +24,6 @@ public unsafe class TextureSetTask : GraphicsResourceTask<GraphicsTexture>
 
     public ResourceRegion? Area;
 
-    public Action<GraphicsResource> CompleteCallback;
-
     public void Initialize(void* data, uint stride, uint startIndex, uint numElements)
     {
         Stride = stride;
@@ -48,7 +46,6 @@ public unsafe class TextureSetTask : GraphicsResourceTask<GraphicsTexture>
         NumBytes = 0;
         Stride = 0;
         Area = null;
-        CompleteCallback = null;
 
         EngineUtil.Free(ref Data);
     }
@@ -58,7 +55,7 @@ public unsafe class TextureSetTask : GraphicsResourceTask<GraphicsTexture>
         throw new NotImplementedException();
     }
 
-    protected override bool OnProcess(GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
     {
         // Calculate size of a single array slice
         uint arraySliceBytes = 0;
@@ -157,7 +154,7 @@ public unsafe class TextureSetTask : GraphicsResourceTask<GraphicsTexture>
         }
 
         EngineUtil.Free(ref Data);
-        CompleteCallback?.Invoke(Resource);
+        Resource.Version++;
         return true;
     }
 }

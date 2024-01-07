@@ -10,7 +10,7 @@ public interface IGraphicsResource : IDisposable
     /// <param name="priority">The priority of the copy operation.</param>
     /// <param name="destination">The destination texture.</param>
     /// <param name="completeCallback">A callback to run once the operation has completed.</param>
-    void CopyTo(GraphicsPriority priority, GraphicsResource destination, Action<GraphicsResource> completeCallback = null);
+    void CopyTo(GraphicsPriority priority, GraphicsResource destination, GraphicsTask.EventHandler completeCallback = null);
 
     /// <summary>
     /// Copies the current texture to the destination texture. Both texture levels must be of the same format and dimensions.
@@ -25,7 +25,7 @@ public interface IGraphicsResource : IDisposable
     void CopyTo(GraphicsPriority priority,
         uint sourceLevel, uint sourceSlice,
         GraphicsResource destination, uint destLevel, uint destSlice,
-        Action<GraphicsResource> completeCallback = null);
+        GraphicsTask.EventHandler completeCallback = null);
 
     /// <summary>
     /// Invoked when the current <see cref="GraphicsResource"/> should apply any changes before being bound to a GPU context.
@@ -70,7 +70,7 @@ public interface IGraphicsResource : IDisposable
     bool IsReleased { get; }
 
     /// <summary>
-    /// Gets the unique engine object ID (EOID) of the current <see cref="IGraphicsObject"/>.
+    /// Gets the unique engine object ID (EOID) of the current <see cref="GraphicsObject"/>.
     /// </summary>
     public ulong EOID { get; }
 }

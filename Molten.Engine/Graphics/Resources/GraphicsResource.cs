@@ -105,7 +105,7 @@ public abstract class GraphicsResource : GraphicsObject, IGraphicsResource
         if (ApplyQueue.Count > 0)
         {
             while (ApplyQueue.TryDequeue(out GraphicsTask task))
-                task.Process(Device.Renderer, queue);
+                task.Process(queue);
         }
     }
 
@@ -131,7 +131,7 @@ public abstract class GraphicsResource : GraphicsObject, IGraphicsResource
         return false;
     }
 
-    public void CopyTo(GraphicsPriority priority, GraphicsResource destination, Action<GraphicsResource> completeCallback = null)
+    public void CopyTo(GraphicsPriority priority, GraphicsResource destination, GraphicsTask.EventHandler completeCallback = null)
     {
         if (!Flags.Has(GraphicsResourceFlags.GpuRead))
             throw new ResourceCopyException(this, destination, "Source resource must have the GraphicsResourceFlags.GpuRead flag set.");
@@ -164,11 +164,10 @@ public abstract class GraphicsResource : GraphicsObject, IGraphicsResource
                 throw new GraphicsResourceException(this, "The destination buffer is not large enough.");
         }
 
-        Device.Tasks.Push(priority, this, new ResourceCopyTask()
-        {
-            Destination = destination,
-            CompletionCallback = completeCallback,
-        });
+        ResourceCopyTask task = Device.Tasks.Get<ResourceCopyTask>();
+        task.Destination = destination;
+        task.OnCompleted += completeCallback;
+        Device.Tasks.Push(priority, this, task);
     }
 
     /// <summary>
@@ -185,7 +184,7 @@ public abstract class GraphicsResource : GraphicsObject, IGraphicsResource
     public void CopyTo(GraphicsPriority priority,
     uint sourceLevel, uint sourceSlice,
     GraphicsResource destination, uint destLevel, uint destSlice,
-    Action<GraphicsResource> completeCallback = null)
+    GraphicsTask.EventHandler completeCallback = null)
     {
         if (!Flags.Has(GraphicsResourceFlags.GpuRead))
             throw new ResourceCopyException(this, destination, "The current texture cannot be copied from because the GraphicsResourceFlags.GpuRead flag was not set.");
@@ -219,15 +218,14 @@ public abstract class GraphicsResource : GraphicsObject, IGraphicsResource
                 if (destSlice >= destTex.ArraySize)
                     throw new ResourceCopyException(this, destination, "The destination array slice exceeds the total number of slices in the destination texture.");
 
-                Device.Tasks.Push(priority, this, new SubResourceCopyTask()
-                {
-                    SrcRegion = null,
-                    SrcSubResource = (sourceSlice * srcTex.MipMapCount) + sourceLevel,
-                    DestResource = destination,
-                    DestStart = Vector3UI.Zero,
-                    DestSubResource = (destSlice * destTex.MipMapCount) + destLevel,
-                    CompletionCallback = completeCallback,
-                });
+                SubResourceCopyTask task = Device.Tasks.Get<SubResourceCopyTask>();
+                task.SrcRegion = null;
+                task.SrcSubResource = (sourceSlice * srcTex.MipMapCount) + sourceLevel;
+                task.DestResource = destination;
+                task.DestStart = Vector3UI.Zero;
+                task.DestSubResource = (destSlice * destTex.MipMapCount) + destLevel;
+                task.OnCompleted += completeCallback;
+                Device.Tasks.Push(priority, this, task);
             }
             else
             {
@@ -243,15 +241,14 @@ public abstract class GraphicsResource : GraphicsObject, IGraphicsResource
     /// <param name="destByteOffset"></param>
     /// <param name="completionCallback">A callback to invoke once the operation is completed.</param>
     public void CopyTo(GraphicsPriority priority, GraphicsResource destination, ResourceRegion sourceRegion, uint destByteOffset = 0,
-        Action<GraphicsResource> completionCallback = null)
+        GraphicsTask.EventHandler completionCallback = null)
     {
-        Device.Tasks.Push(priority, this, new SubResourceCopyTask()
-        {
-            CompletionCallback = completionCallback,
-            DestResource = destination,
-            DestStart = new Vector3UI(destByteOffset, 0, 0),
-            SrcRegion = sourceRegion,
-        });
+        SubResourceCopyTask task = Device.Tasks.Get<SubResourceCopyTask>();
+        task.DestResource = destination;
+        task.DestStart = new Vector3UI(destByteOffset, 0, 0);
+        task.SrcRegion = sourceRegion;
+        task.OnCompleted += completionCallback;
+        Device.Tasks.Push(priority, this, task);
     }
 
     internal void Clear()

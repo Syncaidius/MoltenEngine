@@ -20,10 +20,10 @@ internal class DepthClearTask : GraphicsResourceTask<DepthSurfaceDX11>
         throw new NotImplementedException();
     }
 
-    protected override bool OnProcess(GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
     {
         Resource.Ensure(queue);
         Resource.OnClear(queue as GraphicsQueueDX11, this);
-        return false;
+        return true;
     }
 }

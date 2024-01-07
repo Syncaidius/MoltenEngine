@@ -19,7 +19,7 @@ internal class DepthClearTaskVK : GraphicsResourceTask<DepthSurfaceVK>
         throw new NotImplementedException();
     }
 
-    protected unsafe override bool OnProcess(GraphicsQueue queue)
+    protected unsafe override bool OnProcess(RenderService renderer, GraphicsQueue queue)
     {
         // TODO Implement proper handling of barrier transitions.
         //  -- Transition from the current layout to the one we need.

@@ -10,8 +10,9 @@ internal class RenderRemoveScene : GraphicsTask
         Data = null;
     }
 
-    public override void Process(RenderService renderer, GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
     {
-        renderer.Scenes.Remove(Data);
+        queue.Device.Renderer.Scenes.Remove(Data);
+        return true;
     }
 }

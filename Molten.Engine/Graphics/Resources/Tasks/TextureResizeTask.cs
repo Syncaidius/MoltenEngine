@@ -18,9 +18,10 @@ public class TextureResizeTask : GraphicsResourceTask<GraphicsTexture>
         throw new NotImplementedException();
     }
 
-    protected override bool OnProcess(GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
     {
         Resource.ResizeTexture(NewDimensions, NewFormat);
+        Resource.Version++;
         return true;
     }
 }

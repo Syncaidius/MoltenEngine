@@ -64,7 +64,7 @@ public class GraphicsTaskManager : IDisposable
         {
             default:
             case GraphicsPriority.Immediate:
-                task.Process(_device.Renderer, _device.Queue);
+                task.Process(_device.Queue);
                 break;
 
             case GraphicsPriority.Apply:
@@ -90,17 +90,17 @@ public class GraphicsTaskManager : IDisposable
     /// <param name="groupsY">The number of Y compute thread groups.</param>
     /// <param name="groupsZ">The number of Z compute thread groups.</param>
     /// <param name="callback">A callback to run once the task is completed.</param>
-    public void Push(GraphicsTaskPriority priority, HlslShader shader, uint groupsX, uint groupsY, uint groupsZ, ComputeTaskCompletionCallback callback = null)
+    public void Push(GraphicsTaskPriority priority, HlslShader shader, uint groupsX, uint groupsY, uint groupsZ, GraphicsTask.EventHandler callback = null)
     {
         Push(priority, shader, new Vector3UI(groupsX, groupsY, groupsZ), callback);
     }
 
-    public void Push(GraphicsTaskPriority priority, HlslShader shader, Vector3UI groups, ComputeTaskCompletionCallback callback = null)
+    public void Push(GraphicsTaskPriority priority, HlslShader shader, Vector3UI groups, GraphicsTask.EventHandler callback = null)
     {
         ComputeTask task = Get<ComputeTask>();
         task.Shader = shader;
         task.Groups = groups;
-        task.CompletionCallback = callback;
+        task.OnCompleted += callback;
         Push(priority, task);
     }
 
@@ -128,7 +128,8 @@ public class GraphicsTaskManager : IDisposable
         _device.Queue.Begin();
         _device.Queue.BeginEvent($"Process '{priority}' tasks");
         while (queue.TryDequeue(out GraphicsTask task))
-            task.Process(_device.Renderer, _device.Queue);
+            task.Process(_device.Queue);
+
         _device.Queue.EndEvent();
         _device.Queue.End();
     }

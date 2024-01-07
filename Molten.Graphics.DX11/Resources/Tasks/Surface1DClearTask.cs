@@ -14,10 +14,10 @@ internal class Surface1DClearTask : GraphicsResourceTask<RenderSurface1DDX11>
         throw new NotImplementedException();
     }
 
-    protected override bool OnProcess(GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
     {
         Resource.Ensure(queue);
         Resource.OnClear(queue as GraphicsQueueDX11, Color);
-        return false;
+        return true;
     }
 }

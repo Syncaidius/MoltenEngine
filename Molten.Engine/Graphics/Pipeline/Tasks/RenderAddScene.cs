@@ -10,8 +10,9 @@ internal class RenderAddScene : GraphicsTask
         Data = null;
     }
 
-    public override void Process(RenderService renderer, GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
     {
         renderer.Scenes.Add(Data);
+        return true;
     }
 }

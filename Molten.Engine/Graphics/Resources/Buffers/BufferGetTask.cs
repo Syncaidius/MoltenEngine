@@ -13,11 +13,13 @@ internal class BufferGetTask<T> : GraphicsResourceTask<GraphicsBuffer>
 
     internal GraphicsMapType MapType;
 
-    /// <summary>A callback to send the retrieved data to.</summary>
-    internal Action<T[]> CompletionCallback;
-
     /// <summary>The destination array to store the retrieved data.</summary>
     internal T[] DestArray;
+
+    /// <summary>
+    /// Invoked when data retrieval has been completed by the assigned <see cref="GraphicsQueue"/>.
+    /// </summary>
+    public event Action<T[]> OnGetData;
 
     public override void ClearForPool()
     {
@@ -25,15 +27,15 @@ internal class BufferGetTask<T> : GraphicsResourceTask<GraphicsBuffer>
         Count = 0;
         DestIndex = 0;
         MapType = GraphicsMapType.Read;
-        CompletionCallback = null;
     }
 
     public override void Validate()
     {
+        // TODO validate if destination array is large enough
         throw new NotImplementedException();
     }
 
-    protected override bool OnProcess(GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
     {
         DestArray ??= new T[Count];
 
@@ -41,7 +43,8 @@ internal class BufferGetTask<T> : GraphicsResourceTask<GraphicsBuffer>
         using (GraphicsStream stream = queue.MapResource(Resource, 0, ByteOffset, MapType))
             stream.ReadRange(DestArray, DestIndex, Count);
 
-        CompletionCallback?.Invoke(DestArray);
-        return false;
+        OnGetData?.Invoke(DestArray);
+
+        return true;
     }
 }

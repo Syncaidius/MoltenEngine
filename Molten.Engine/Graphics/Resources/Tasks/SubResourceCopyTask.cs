@@ -15,8 +15,6 @@ public class SubResourceCopyTask : GraphicsResourceTask<GraphicsResource>
 
     public uint DestSubResource;
 
-    public Action<GraphicsResource> CompletionCallback;
-
     public override void ClearForPool()
     {
         SrcRegion = null;
@@ -24,16 +22,14 @@ public class SubResourceCopyTask : GraphicsResourceTask<GraphicsResource>
         DestResource = null;
         DestSubResource = 0;
         DestStart = Vector3UI.Zero;
-        CompletionCallback = null;
     }
-
 
     public override void Validate()
     {
         throw new NotImplementedException();
     }
 
-    protected unsafe override bool OnProcess(GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
     {
         if (DestResource.Flags.Has(GraphicsResourceFlags.GpuWrite))
             throw new ResourceCopyException(Resource, DestResource, "The destination resource must have GPU write access for writing the copied data.");
@@ -43,8 +39,7 @@ public class SubResourceCopyTask : GraphicsResourceTask<GraphicsResource>
 
         queue.CopyResourceRegion(Resource, SrcSubResource, SrcRegion, DestResource, DestSubResource, DestStart);
         queue.Profiler.SubResourceCopyCalls++;
-        CompletionCallback?.Invoke(Resource);
 
-        return false;
+        return true;
     }
 }
