@@ -1,7 +1,7 @@
 ﻿namespace Molten.Graphics;
 
-/// <summary>A <see cref="RenderSceneChange"/> for removing a <see cref="IRenderable"/> from the root of a scene.</summary>
-internal class RenderableRemove : RenderSceneChange<RenderableRemove>
+/// <summary>A <see cref="GraphicsTask"/> for removing a <see cref="Renderable"/> from the root of a scene.</summary>
+internal class RenderableRemove : GraphicsTask
 {
     public Renderable Renderable;
 
@@ -16,12 +16,16 @@ internal class RenderableRemove : RenderSceneChange<RenderableRemove>
         LayerData = null;
     }
 
-    public override void Process()
+    public override bool Validate() => true;
+
+    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
     {
         RenderDataBatch batch;
         if (LayerData.Renderables.TryGetValue(Renderable, out batch))
             batch.Remove(Data);
+        else
+            return false;
 
-        Recycle(this);
+        return true;
     }
 }

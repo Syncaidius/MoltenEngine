@@ -1,6 +1,4 @@
-﻿using Molten.Collections;
-
-namespace Molten.Graphics;
+﻿namespace Molten.Graphics;
 
 public delegate void SceneRenderDataHandler(RenderService renderer, SceneRenderData data);
 
@@ -30,71 +28,71 @@ public class SceneRenderData
     public Color AmbientLightColor = Color.Black;
 
     public List<LayerRenderData> Layers = new List<LayerRenderData>();
-    protected readonly ThreadedQueue<RenderSceneChange> _pendingChanges = new ThreadedQueue<RenderSceneChange>();
+
+    GraphicsTaskManager _taskManager;
+
+    internal SceneRenderData(GraphicsTaskManager taskManager)
+    {
+        _taskManager = taskManager;
+    }
 
     public void AddLayer(LayerRenderData data)
     {
-        RenderLayerAdd change = RenderLayerAdd.Get();
-        change.LayerData = data;
-        change.SceneData = this;
-        _pendingChanges.Enqueue(change);
+        RenderLayerAdd task = _taskManager.Get<RenderLayerAdd>();
+        task.LayerData = data;
+        task.SceneData = this;
+        _taskManager.Push(GraphicsTaskPriority.StartOfFrame, task);
     }
 
     public void RemoveLayer(LayerRenderData data)
     {
-        RenderLayerRemove change = RenderLayerRemove.Get();
-        change.LayerData = data;
-        change.SceneData = this;
-        _pendingChanges.Enqueue(change);
+        RenderLayerRemove task = _taskManager.Get<RenderLayerRemove>();
+        task.LayerData = data;
+        task.SceneData = this;
+        _taskManager.Push(GraphicsTaskPriority.StartOfFrame, task);
     }
 
     public void ReorderLayer(LayerRenderData data, ReorderMode mode)
     {
-        RenderLayerReorder change = RenderLayerReorder.Get();
-        change.LayerData = data;
-        change.SceneData = this;
-        change.Mode = mode;
-        _pendingChanges.Enqueue(change);
+        RenderLayerReorder task = _taskManager.Get<RenderLayerReorder>();
+        task.LayerData = data;
+        task.SceneData = this;
+        task.Mode = mode;
+        _taskManager.Push(GraphicsTaskPriority.StartOfFrame, task);
     }
 
     public void AddObject(RenderCamera obj)
     {
-        AddCamera change = AddCamera.Get();
-        change.Camera = obj;
-        change.Data = this;
-        _pendingChanges.Enqueue(change);
+        AddCamera task = _taskManager.Get<AddCamera>();
+        task.Camera = obj;
+        task.Data = this;
+        _taskManager.Push(GraphicsTaskPriority.StartOfFrame, task);
     }
 
     public void RemoveObject(RenderCamera obj)
     {
-        RemoveCamera change = RemoveCamera.Get();
-        change.Camera = obj;
-        change.Data = this;
-        _pendingChanges.Enqueue(change);
+        RemoveCamera task = _taskManager.Get<RemoveCamera>();
+        task.Camera = obj;
+        task.Data = this;
+        _taskManager.Push(GraphicsTaskPriority.StartOfFrame, task);
     }
 
     public void AddObject(Renderable obj, ObjectRenderData renderData, LayerRenderData layer)
     {
-        RenderableAdd change = RenderableAdd.Get();
-        change.Renderable = obj;
-        change.Data = renderData;
-        change.LayerData = layer;
-        _pendingChanges.Enqueue(change);
+        RenderableAdd task = _taskManager.Get<RenderableAdd>();
+        task.Renderable = obj;
+        task.Data = renderData;
+        task.LayerData = layer;
+        _taskManager.Push(GraphicsTaskPriority.StartOfFrame, task);
     }
 
     public void RemoveObject(Renderable obj, ObjectRenderData renderData, LayerRenderData layer)
     {
-        RenderableRemove change = RenderableRemove.Get();
-        change.Renderable = obj;
-        change.Data = renderData;
-        change.LayerData = layer;
-        _pendingChanges.Enqueue(change);
-    }
-
-    internal void ProcessChanges()
-    {
-        while (_pendingChanges.TryDequeue(out RenderSceneChange change))
-            change.Process();
+        RenderableRemove task = _taskManager.Get<RenderableRemove>();
+        task.Renderable = obj;
+        task.Data = renderData;
+        task.LayerData = layer;
+        _taskManager.Push(GraphicsTaskPriority.StartOfFrame, task);
     }
 
     /// <summary>

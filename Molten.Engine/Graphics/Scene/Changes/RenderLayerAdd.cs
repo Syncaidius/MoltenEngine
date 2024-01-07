@@ -1,7 +1,7 @@
 ﻿namespace Molten.Graphics;
 
 /// <summary>A <see cref="RenderLayerAdd"/> for adding <see cref="LayerRenderData"/> to the a<see cref="SceneRenderData"/> instance.</summary>
-internal class RenderLayerAdd : RenderSceneChange<RenderLayerAdd>
+internal class RenderLayerAdd : GraphicsTask
 {
     public SceneRenderData SceneData;
 
@@ -13,9 +13,11 @@ internal class RenderLayerAdd : RenderSceneChange<RenderLayerAdd>
         LayerData = null;
     }
 
-    public override void Process()
+    public override bool Validate() => true;
+
+    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
     {
         SceneData.Layers.Add(LayerData);
-        Recycle(this);
+        return true;
     }
 }

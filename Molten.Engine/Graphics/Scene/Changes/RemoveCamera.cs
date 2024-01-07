@@ -1,7 +1,7 @@
 ﻿namespace Molten.Graphics;
 
-/// <summary>A <see cref="RenderSceneChange"/> for removing a <see cref="ICamera"/> from a scene.</summary>
-internal class RemoveCamera : RenderSceneChange<RemoveCamera>
+/// <summary>A <see cref="GraphicsTask"/> for removing a <see cref="RenderCamera"/> from a scene.</summary>
+internal class RemoveCamera : GraphicsTask
 {
     public RenderCamera Camera;
     public SceneRenderData Data;
@@ -12,9 +12,11 @@ internal class RemoveCamera : RenderSceneChange<RemoveCamera>
         Data = null;
     }
 
-    public override void Process()
+    public override bool Validate() => true;
+
+    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
     {
         Data.Cameras.Remove(Camera);
-        Recycle(this);
+        return true;
     }
 }

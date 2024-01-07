@@ -1,7 +1,7 @@
 ﻿namespace Molten.Graphics;
 
 /// <summary>A <see cref="RenderLayerReorder"/> for changing the draw order of a <see cref="LayerRenderData"/> instance.</summary>
-internal class RenderLayerReorder : RenderSceneChange<RenderLayerReorder>
+internal class RenderLayerReorder : GraphicsTask
 {
     public LayerRenderData LayerData;
     public SceneRenderData SceneData;
@@ -13,7 +13,9 @@ internal class RenderLayerReorder : RenderSceneChange<RenderLayerReorder>
         SceneData = null;
     }
 
-    public override void Process()
+    public override bool Validate() => true;
+
+    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
     {
         int indexOf = SceneData.Layers.IndexOf(LayerData);
         if (indexOf > -1)
@@ -43,6 +45,6 @@ internal class RenderLayerReorder : RenderSceneChange<RenderLayerReorder>
             }
         }
 
-        Recycle(this);
+        return true;
     }
 }

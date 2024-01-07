@@ -147,7 +147,6 @@ public abstract class RenderService : EngineService
         for (int i =0; i < Scenes.Count; i++)
         {
             data = Scenes[i];
-            data.ProcessChanges();
 
             for(int c = 0; c < data.Cameras.Count; c++)
             {
@@ -265,7 +264,7 @@ public abstract class RenderService : EngineService
 
     internal SceneRenderData CreateRenderData()
     {
-        SceneRenderData rd = new SceneRenderData();
+        SceneRenderData rd = new SceneRenderData(Device.Tasks);
         RenderAddScene task = Device.Tasks.Get<RenderAddScene>();
         task.Data = rd;
 

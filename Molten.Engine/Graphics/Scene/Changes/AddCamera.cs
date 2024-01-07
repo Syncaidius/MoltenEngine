@@ -1,7 +1,7 @@
 ﻿namespace Molten.Graphics;
 
-/// <summary>A <see cref="RenderSceneChange"/> for adding a <see cref="RenderCamera"/> to a scene.</summary>
-internal class AddCamera : RenderSceneChange<AddCamera>
+/// <summary>A <see cref="GraphicsTask"/> for adding a <see cref="RenderCamera"/> to a scene.</summary>
+internal class AddCamera : GraphicsTask
 {
     public RenderCamera Camera;
     public SceneRenderData Data;
@@ -12,9 +12,11 @@ internal class AddCamera : RenderSceneChange<AddCamera>
         Data = null;
     }
 
-    public override void Process()
+    public override bool Validate() => true;
+
+    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
     {
         Data.Cameras.Add(Camera);
-        Recycle(this);
+        return true;
     }
 }
