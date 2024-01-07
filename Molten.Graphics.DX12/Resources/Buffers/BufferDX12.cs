@@ -69,20 +69,19 @@ public class BufferDX12 : GraphicsBuffer
     public BufferAllocationDX12 Allocate(uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type)
     {
         ulong remaining = SizeInBytes - AllocatedBytes;
+        ulong required = stride * numElements;
 
-        // If the buffer has enough space left, we'll use it.
-        if (remaining >= SizeInBytes)
+
+        // Not enough available space?
+        if (remaining < required)
+            return null;
+
+        ulong offset = AllocatedBytes;
+        AllocatedBytes += SizeInBytes;
+        return new BufferAllocationDX12(this, offset, stride, numElements, Flags, BufferType)
         {
-            ulong offset = AllocatedBytes;
-            AllocatedBytes += SizeInBytes;
-            return new BufferAllocationDX12(this, offset, stride, numElements, Flags, BufferType)
-            {
-                IsFree = false,
-            };
-        }
-
-        // Not enough available space.
-        return null;
+            IsFree = false,
+        };
     }
 
     public BufferAllocationDX12 Allocate(uint stride, ulong numElements)
