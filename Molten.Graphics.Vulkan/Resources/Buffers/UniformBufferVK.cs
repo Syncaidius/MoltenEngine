@@ -38,7 +38,7 @@ public unsafe class UniformBufferVK : BufferVK, IConstantBuffer, IEquatable<Unif
                 v.Write(_constData + v.ByteOffset);
 
             using (GraphicsStream stream = cmd.MapResource(this, 0, 0, GraphicsMapType.Discard))
-                stream.WriteRange(_constData, SizeInBytes);
+                stream.WriteRange(_constData, (uint)SizeInBytes);
         }
 
 

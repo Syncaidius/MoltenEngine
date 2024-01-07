@@ -2,9 +2,10 @@
 
 public abstract class GraphicsBuffer : GraphicsResource
 {
-    protected GraphicsBuffer(GraphicsDevice device, uint stride, uint numElements, GraphicsResourceFlags flags, GraphicsBufferType type) :
+    protected GraphicsBuffer(GraphicsDevice device, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type) :
         base(device, flags)
     {
+        ResourceFormat = GraphicsFormat.Unknown;
         BufferType = type;
         Stride = stride;
         ElementCount = numElements;
@@ -99,12 +100,12 @@ public abstract class GraphicsBuffer : GraphicsResource
     /// <summary>
     /// Gets the number of elements that the current <see cref="GraphicsBuffer"/> can store.
     /// </summary>
-    public uint ElementCount { get; }
+    public ulong ElementCount { get; }
 
     /// <summary>
     /// Gets the total size of the buffer, in bytes.
     /// </summary>
-    public override uint SizeInBytes { get; protected set; }
+    public override ulong SizeInBytes { get; protected set; }
 
     /// <summary>
     /// Gets the type of the current <see cref="GraphicsBuffer"/>.

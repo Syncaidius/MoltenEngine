@@ -33,7 +33,7 @@ internal unsafe class RawBufferDX11 : BufferDX11
             {
                 BufferEx = new BufferexSrv()
                 {
-                    NumElements = ElementCount,
+                    NumElements = (uint)ElementCount,
                     FirstElement = 0,
                     Flags = (uint)BufferexSrvFlag.Raw // See: https://docs.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_bufferex_srv_flag
                 },
@@ -55,7 +55,7 @@ internal unsafe class RawBufferDX11 : BufferDX11
                 ViewDimension = UavDimension.Buffer,
                 Buffer = new BufferUav()
                 {
-                    NumElements = ElementCount,
+                    NumElements = (uint)ElementCount,
                     FirstElement = 0,
                     Flags = (uint)BufferUavFlag.Raw,
                 },

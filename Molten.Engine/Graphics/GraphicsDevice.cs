@@ -227,6 +227,8 @@ public abstract partial class GraphicsDevice : EngineObject
 
     internal void BeginFrame()
     {
+        OnBeginFrame(_outputSurfaces);
+
         // TODO check if _maxStagingSize has changed due to settings. May need to resize all existing staging buffers.
         CheckFrameBufferSize(true);
 
@@ -245,11 +247,6 @@ public abstract partial class GraphicsDevice : EngineObject
                 _frames[i] = null;
             }
         }
-    }
-
-    internal void Begin()
-    {
-        OnBeginFrame(_outputSurfaces);
     }
 
     internal void EndFrame(Timing time)

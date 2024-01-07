@@ -6,12 +6,14 @@ namespace Molten.Graphics.DX12;
 
 public class BufferDX12 : GraphicsBuffer
 {
-    ResourceHandleDX12 _curHandle;
+    ResourceHandleDX12 _curHandle; 
+    List<BufferAllocationDX12> _allocations;
 
-    public BufferDX12(DeviceDX12 device, uint stride, uint numElements, GraphicsResourceFlags flags, GraphicsBufferType type) : 
+    public BufferDX12(DeviceDX12 device, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type) : 
         base(device, stride, numElements, flags, type)
     {
         Device = device;
+        _allocations = new List<BufferAllocationDX12>();
     }
 
     protected unsafe override void OnCreateResource(uint frameBufferSize, uint frameBufferIndex, ulong frameID)
@@ -59,6 +61,35 @@ public class BufferDX12 : GraphicsBuffer
         _curHandle = new ResourceHandleDX12(this, (ID3D12Resource*)ptr);
     }
 
+    public BufferAllocationDX12 Allocate(ulong numBytes, GraphicsResourceFlags flags, GraphicsBufferType type)
+    {
+        return Allocate(1, numBytes, flags, type);
+    }
+
+    public BufferAllocationDX12 Allocate(uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type)
+    {
+        ulong remaining = SizeInBytes - AllocatedBytes;
+
+        // If the buffer has enough space left, we'll use it.
+        if (remaining >= SizeInBytes)
+        {
+            ulong offset = AllocatedBytes;
+            AllocatedBytes += SizeInBytes;
+            return new BufferAllocationDX12(this, offset, stride, numElements, Flags, BufferType)
+            {
+                IsFree = false,
+            };
+        }
+
+        // Not enough available space.
+        return null;
+    }
+
+    public BufferAllocationDX12 Allocate(uint stride, ulong numElements)
+    {
+        return Allocate(stride * numElements, Flags, BufferType);
+    }
+
     protected override void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
     {
         // TODO This should be left up to the renderer to handle. E.g. initializing 3 render targets for 3 swapchain buffers.
@@ -86,4 +117,9 @@ public class BufferDX12 : GraphicsBuffer
     public override GraphicsFormat ResourceFormat { get; protected set; }
 
     public new DeviceDX12 Device { get; }
+
+    /// <summary>
+    /// Gets the number of bytes that were allocated via <see cref="BufferDX12.Allocate(ulong)"/>.
+    /// </summary>
+    internal ulong AllocatedBytes { get; private set; }
 }

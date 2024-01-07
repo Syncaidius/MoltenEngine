@@ -275,7 +275,7 @@ public unsafe class GraphicsQueueVK : GraphicsQueue
         if (mapType == GraphicsMapType.Discard)
             handle.Discard();
 
-        ResourceMap map = new ResourceMap(null, resource.SizeInBytes, resource.SizeInBytes); // TODO Calculate correct RowPitch value when mapping textures
+        ResourceMap map = new ResourceMap(null, (uint)resource.SizeInBytes, (uint)resource.SizeInBytes); // TODO Calculate correct RowPitch value when mapping textures
         Result r = _vk.MapMemory(_device, handle.Memory, 0, resource.SizeInBytes, 0, &map.Ptr);
 
         if (!r.Check(_device))
@@ -339,7 +339,7 @@ public unsafe class GraphicsQueueVK : GraphicsQueue
 
                 ImageSubresourceLayers layers = new ImageSubresourceLayers(ImageAspectFlags.ColorBit, 0, 0, 1);
                 Span<BufferImageCopy> regions = [
-                    new BufferImageCopy(0, 0, src.SizeInBytes, layers, offset, extent)
+                    new BufferImageCopy(0, 0, (uint)src.SizeInBytes, layers, offset, extent)
                 ];
 
                 _vk.CmdCopyBufferToImage(_cmd, srcHandle, dstHandle, ImageLayout.TransferDstOptimal, regions);
@@ -358,7 +358,7 @@ public unsafe class GraphicsQueueVK : GraphicsQueue
             {
                 Buffer dstHandle = *dstBuffer.Handle.NativePtr;
                 Span<BufferImageCopy> regions = [
-                    new BufferImageCopy(0, 0, src.SizeInBytes, srcLayers, srcOffset, srcExtent)
+                    new BufferImageCopy(0, 0, (uint)src.SizeInBytes, srcLayers, srcOffset, srcExtent)
                 ];
 
                 _vk.CmdCopyImageToBuffer(_cmd, srcHandle, ImageLayout.TransferSrcOptimal, dstHandle, regions);

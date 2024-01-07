@@ -260,7 +260,7 @@ public abstract class GraphicsResource : GraphicsObject, IGraphicsResource
     /// Gets the size of the resource, in bytes. 
     /// <para>This is the total size of all sub-resources within the resource, such as mip-map levels and array slices.</para>
     /// </summary>
-    public abstract uint SizeInBytes { get; protected set; }
+    public abstract ulong SizeInBytes { get; protected set; }
 
     /// <summary>
     /// Gets the resource flags that provided given when the current <see cref="GraphicsResource"/> was created.

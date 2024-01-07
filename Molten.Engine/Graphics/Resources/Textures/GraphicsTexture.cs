@@ -303,7 +303,7 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
     }
 
     /// <inheritdoc/>
-    public override uint SizeInBytes { get; protected set; }
+    public override ulong SizeInBytes { get; protected set; }
 
     /// <summary>
     /// Gets the number of samples used when sampling the texture. Anything greater than 1 is considered as multi-sampled. 

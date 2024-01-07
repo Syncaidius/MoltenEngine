@@ -83,7 +83,7 @@ public unsafe class BufferDX11 : GraphicsBuffer
             throw new GraphicsResourceException(this, "Initial data cannot be null when buffer mode is Immutable.");
             
         Desc = new BufferDesc();
-        Desc.ByteWidth = SizeInBytes;
+        Desc.ByteWidth = (uint)SizeInBytes;
         Desc.StructureByteStride = 0;
         Desc.Usage = Flags.ToUsageFlags();
         Desc.CPUAccessFlags = (uint)Flags.ToCpuFlags();
@@ -121,7 +121,7 @@ public unsafe class BufferDX11 : GraphicsBuffer
     {
         if (_initialData != null)
         {
-            SubresourceData srd = new SubresourceData(_initialData, _initialBytes, SizeInBytes);
+            SubresourceData srd = new SubresourceData(_initialData, _initialBytes, (uint)SizeInBytes);
             fixed (BufferDesc* pDesc = &Desc)
                 device.Ptr->CreateBuffer(pDesc, &srd, ref handle.NativePtr);
 
@@ -147,7 +147,7 @@ public unsafe class BufferDX11 : GraphicsBuffer
             {
                 Buffer = new BufferSrv()
                 {
-                    NumElements = ElementCount,
+                    NumElements = (uint)ElementCount,
                     FirstElement = 0,
                 },
                 ViewDimension = D3DSrvDimension.D3D11SrvDimensionBuffer,
@@ -166,7 +166,7 @@ public unsafe class BufferDX11 : GraphicsBuffer
                 ViewDimension = UavDimension.Buffer,
                 Buffer = new BufferUav()
                 {
-                    NumElements = ElementCount,
+                    NumElements = (uint)ElementCount,
                     FirstElement = 0,
                     Flags = 0, // TODO add support for append, raw and counter buffers. See: https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_buffer_uav_flag
                 }
