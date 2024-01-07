@@ -45,7 +45,7 @@ public abstract partial class GraphicsDevice : EngineObject
         Manager = manager;
         Log = renderer.Log;
         Profiler = new GraphicsDeviceProfiler();
-        TaskManager = new GraphicsTaskManager(this);
+        Tasks = new GraphicsTaskManager(this);
 
         Cache = new GraphicsObjectCache();
         _outputSurfaces = new ThreadedList<ISwapChainSurface>();
@@ -138,6 +138,8 @@ public abstract partial class GraphicsDevice : EngineObject
 
     protected override void OnDispose()
     {
+        Tasks?.Dispose();
+
         if (_frames != null)
         {
             for (int i = 0; i < _frames.Length; i++)
@@ -423,5 +425,5 @@ public abstract partial class GraphicsDevice : EngineObject
     /// <summary>
     /// Gets the task manager of the current <see cref="GraphicsDevice"/>.
     /// </summary>
-    public GraphicsTaskManager TaskManager { get; }
+    public GraphicsTaskManager Tasks { get; }
 }

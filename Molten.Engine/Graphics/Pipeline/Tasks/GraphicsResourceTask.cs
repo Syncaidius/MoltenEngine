@@ -11,9 +11,9 @@ public abstract class GraphicsResourceTask<R> : GraphicsTask
     /// </summary>
     public R Resource;
 
-    public override void Process(RenderService renderer, GraphicsDevice taskDevice)
+    public override sealed void Process(RenderService renderer, GraphicsQueue queue)
     {
-        if (OnProcess(renderer.Device.Queue))
+        if (OnProcess(queue))
             Resource.Version++;
     }
 

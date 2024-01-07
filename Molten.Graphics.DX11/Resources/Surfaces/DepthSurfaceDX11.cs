@@ -135,20 +135,18 @@ public unsafe class DepthSurfaceDX11 : Texture2DDX11, IDepthStencilSurface
         UpdateViewport();
     }
 
-    internal void OnClear(GraphicsQueueDX11 cmd, ref DepthClearTask task)
+    internal void OnClear(GraphicsQueueDX11 cmd, DepthClearTask task)
     {
         cmd.Ptr->ClearDepthStencilView(_depthView, (uint)task.Flags, task.DepthClearValue, task.StencilClearValue);
     }
 
     public void Clear(GraphicsPriority priority, DepthClearFlags flags, float depth = 1.0f, byte stencil = 0)
     {
-        Device.Renderer.PushTask(priority, this, new DepthClearTask()
-        {
-            Flags = flags,
-            Surface = this,
-            DepthClearValue = depth,
-            StencilClearValue = stencil
-        });
+        DepthClearTask task = Device.Tasks.Get<DepthClearTask>();
+        task.Flags = flags;
+        task.DepthClearValue = depth;
+        task.StencilClearValue = stencil;
+        Device.Tasks.Push(priority, this, task);
     }
 
     protected override void OnGraphicsRelease()

@@ -100,18 +100,17 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
         if (this is not ITexture3D)
             depth = 1;
 
-        Device.Renderer.PushTask(priority, this, new TextureResizeTask()
+        TextureResizeTask task = Device.Tasks.Get<TextureResizeTask>();
+        task.NewFormat = newFormat == GraphicsFormat.Unknown ? ResourceFormat : newFormat;
+        task.NewDimensions = new TextureDimensions()
         {
-            NewFormat = newFormat == GraphicsFormat.Unknown ? ResourceFormat : newFormat,
-            NewDimensions = new TextureDimensions()
-            {
-                Width = width,
-                Height = height,
-                ArraySize = arraySize > 0 ? arraySize : ArraySize,
-                Depth = depth > 0 ? depth : Depth,
-                MipMapCount = mipMapCount > 0 ? mipMapCount : MipMapCount
-            },
-        });
+            Width = width,
+            Height = height,
+            ArraySize = arraySize > 0 ? arraySize : ArraySize,
+            Depth = depth > 0 ? depth : Depth,
+            MipMapCount = mipMapCount > 0 ? mipMapCount : MipMapCount
+        };
+        Device.Tasks.Push(priority, this, task);
     }
 
     public unsafe void SetData<T>(GraphicsPriority priority, ResourceRegion area, T* data, uint numElements, uint bytesPerPixel, uint level, uint arrayIndex = 0,
@@ -131,15 +130,15 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
         if (!texBounds.Contains(area))
             throw new Exception("The provided area would go outside of the current texture's bounds.");
 
-        Device.Renderer.PushTask(priority, this, new TextureSetTask(data, (uint)sizeof(T), 0, numElements)
-        {
-            Pitch = texturePitch,
-            StartIndex = 0,
-            ArrayIndex = arrayIndex,
-            MipLevel = level,
-            Area = area,
-            CompleteCallback = completeCallback,
-        });
+        TextureSetTask task = Device.Tasks.Get<TextureSetTask>();
+        task.Initialize(data, (uint)sizeof(T), 0, numElements);
+        task.Pitch = texturePitch;
+        task.StartIndex = 0;
+        task.ArrayIndex = arrayIndex;
+        task.MipLevel = level;
+        task.Area = area;
+        task.CompleteCallback = completeCallback;
+        Device.Tasks.Push(priority, this, task);
     }
 
     /// <summary>Copies data fom the provided <see cref="TextureData"/> instance into the current texture.</summary>
@@ -175,14 +174,13 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
 
     public unsafe void SetData(GraphicsPriority priority, TextureSlice data, uint mipIndex, uint arraySlice, Action<GraphicsResource> completeCallback = null)
     {
-        // Store pending change.
-        Device.Renderer.PushTask(priority, this, new TextureSetTask(data.Data, 1, 0, data.TotalBytes)
-        {
-            Pitch = data.Pitch,
-            ArrayIndex = arraySlice,
-            MipLevel = mipIndex,
-            CompleteCallback = completeCallback,
-        });
+        TextureSetTask task = Device.Tasks.Get<TextureSetTask>();
+        task.Initialize(data.Data, 1, 0, data.TotalBytes);
+        task.Pitch = data.Pitch;
+        task.ArrayIndex = arraySlice;
+        task.MipLevel = mipIndex;
+        task.CompleteCallback = completeCallback;
+        Device.Tasks.Push(priority, this, task);
     }
 
     public unsafe void SetData<T>(GraphicsPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arrayIndex,
@@ -191,13 +189,13 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
     {
         fixed (T* ptrData = data)
         {
-            Device.Renderer.PushTask(priority, this, new TextureSetTask(ptrData, (uint)sizeof(T), startIndex, count)
-            {
-                Pitch = pitch,
-                ArrayIndex = arrayIndex,
-                MipLevel = level,
-                CompleteCallback = completeCallback
-            });
+            TextureSetTask task = Device.Tasks.Get<TextureSetTask>();
+            task.Initialize(ptrData, (uint)sizeof(T), startIndex, count);
+            task.Pitch = pitch;
+            task.ArrayIndex = arrayIndex;
+            task.MipLevel = level;
+            task.CompleteCallback = completeCallback;
+            Device.Tasks.Push(priority, this, task);
         }
     }
 
@@ -212,31 +210,29 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
     public unsafe void SetData<T>(GraphicsPriority priority, uint level, T* data, uint startIndex, uint count, uint pitch, uint arrayIndex, Action<GraphicsResource> completeCallback = null)
         where T : unmanaged
     {
-        Device.Renderer.PushTask(priority, this, new TextureSetTask(data, (uint)sizeof(T), startIndex, count)
-        {
-            Pitch = pitch,
-            ArrayIndex = arrayIndex,
-            MipLevel = level,
-            CompleteCallback = completeCallback
-        });
+        TextureSetTask task = Device.Tasks.Get<TextureSetTask>();
+        task.Initialize(data, (uint)sizeof(T), startIndex, count);
+        task.Pitch = pitch;
+        task.ArrayIndex = arrayIndex;
+        task.MipLevel = level;
+        task.CompleteCallback = completeCallback;
+        Device.Tasks.Push(priority, this, task);
     }
 
     public void GetData(GraphicsPriority priority, Action<TextureData> callback)
     {
-        Device.Renderer.PushTask(priority, this, new TextureGetTask()
-        {
-            CompleteCallback = callback,
-        });
+        TextureGetTask task = Device.Tasks.Get<TextureGetTask>();
+        task.CompleteCallback = callback;
+        Device.Tasks.Push(priority, this, task);
     }
 
     public void GetData(GraphicsPriority priority, uint mipLevel, uint arrayIndex, Action<TextureSlice> callback)
     {
-        Device.Renderer.PushTask(priority, this, new TextureGetSliceTask()
-        {
-            CompleteCallback = callback,
-            ArrayIndex = arrayIndex,
-            MipMapLevel = mipLevel,
-        });
+        TextureGetSliceTask task = Device.Tasks.Get<TextureGetSliceTask>();
+        task.CompleteCallback = callback;
+        task.MipMapLevel = mipLevel;
+        task.ArrayIndex = arrayIndex;
+        Device.Tasks.Push(priority, this, task);
     }
 
     internal void ResizeTexture(in TextureDimensions newDimensions, GraphicsFormat newFormat)
@@ -273,10 +269,9 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
         if (!Flags.Has(GraphicsResourceFlags.MipMapGeneration))
             throw new Exception("Cannot generate mip-maps for texture. Must have flag: TextureFlags.AllowMipMapGeneration.");
 
-        Device.Renderer.PushTask(priority, this, new GenerateMipMapsTask()
-        {
-            OnCompleted = callback
-        });
+        GenerateMipMapsTask task = Device.Tasks.Get<GenerateMipMapsTask>();
+        task.OnCompleted = callback;
+        Device.Tasks.Push(priority, this, task);
     }
 
     /// <summary>Gets whether or not the texture is using a supported block-compressed format.</summary>

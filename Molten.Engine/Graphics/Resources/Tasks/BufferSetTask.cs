@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics;
 
-internal class BufferSetTask<T> : GraphicsResourceTask<GraphicsBuffer, BufferSetTask<T>>
+internal class BufferSetTask<T> : GraphicsResourceTask<GraphicsBuffer>
     where T : unmanaged
 {
     /// <summary>The number of bytes to offset the change, from the start of the provided <see cref="Segment"/>.</summary>
@@ -19,6 +19,17 @@ internal class BufferSetTask<T> : GraphicsResourceTask<GraphicsBuffer, BufferSet
     internal GraphicsBuffer DestBuffer;
 
     internal Action CompletionCallback;
+
+    public override void ClearForPool()
+    {
+        ByteOffset = 0;
+        ElementCount = 0;
+        MapType = GraphicsMapType.Read;
+        DataStartIndex = 0;
+        Data = null;
+        DestBuffer = null;
+        CompletionCallback = null;
+    }
 
     protected override bool OnProcess(GraphicsQueue queue)
     {

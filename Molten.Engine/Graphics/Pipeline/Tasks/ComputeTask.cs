@@ -17,11 +17,11 @@ internal class ComputeTask : GraphicsTask
         CompletionCallback = null;
     }
 
-    public override void Process(RenderService renderer, GraphicsDevice taskDevice)
+    public override void Process(RenderService renderer, GraphicsQueue queue)
     {
-        //taskDevice.Queue.Begin();
-        taskDevice.Queue.Dispatch(Shader, Groups);
-        //taskDevice.Queue.End();
+        //queue.Begin();
+        queue.Dispatch(Shader, Groups);
+        //queue.End();
         CompletionCallback?.Invoke();
     }
 }

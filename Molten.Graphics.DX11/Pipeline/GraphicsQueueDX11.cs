@@ -195,10 +195,13 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue
     }
 
     public override unsafe void CopyResourceRegion(
-        GraphicsResource source, uint srcSubresource, ResourceRegion* sourceRegion, 
+        GraphicsResource source, uint srcSubresource, ResourceRegion? sourceRegion, 
         GraphicsResource dest, uint destSubresource, Vector3UI destStart)
     {
-        Box* box = (Box*)sourceRegion;
+        Box* box = null;
+        ResourceRegion region = sourceRegion.Value;
+        if(sourceRegion.HasValue)
+            box = (Box*)&region;
 
         _handle->CopySubresourceRegion((ResourceHandleDX11)dest.Handle, destSubresource, destStart.X, destStart.Y, destStart.Z, (ResourceHandleDX11)source.Handle, srcSubresource, box);
         Profiler.SubResourceCopyCalls++;

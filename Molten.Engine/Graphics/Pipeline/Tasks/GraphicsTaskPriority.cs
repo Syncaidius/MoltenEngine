@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics;
 
-public enum RenderTaskPriority
+public enum GraphicsTaskPriority
 {
     StartOfFrame = 0,
 

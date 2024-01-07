@@ -69,11 +69,9 @@ public unsafe class RenderSurface1DDX11 : Texture1DDX11, IRenderSurface1D
 
     public void Clear(GraphicsPriority priority, Color color)
     {
-        Device.Renderer.PushTask(priority, this, new Surface1DClearTask()
-        {
-            Color = color,
-            Surface = this,
-        });
+        Surface1DClearTask task = Device.Tasks.Get<Surface1DClearTask>();
+        task.Color = color;
+        Device.Tasks.Push(priority, this, task);
     }
 
     /// <summary>Gets the viewport that defines the default renderable area of the render target.</summary>

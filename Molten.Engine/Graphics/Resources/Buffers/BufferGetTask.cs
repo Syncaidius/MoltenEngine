@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics;
 
-internal struct BufferGetTask<T> : IGraphicsResourceTask 
+internal class BufferGetTask<T> : GraphicsResourceTask<GraphicsBuffer> 
     where T : unmanaged
 {
     /// <summary>The number of bytes to offset the change, from the start of the provided <see cref="SrcSegment"/>.</summary>
@@ -19,13 +19,26 @@ internal struct BufferGetTask<T> : IGraphicsResourceTask
     /// <summary>The destination array to store the retrieved data.</summary>
     internal T[] DestArray;
 
-    public unsafe bool Process(GraphicsQueue cmd, GraphicsResource resource)
+    public override void ClearForPool()
     {
-        GraphicsBuffer buffer = resource as GraphicsBuffer;
+        ByteOffset = 0;
+        Count = 0;
+        DestIndex = 0;
+        MapType = GraphicsMapType.Read;
+        CompletionCallback = null;
+    }
+
+    public override void Validate()
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override bool OnProcess(GraphicsQueue queue)
+    {
         DestArray ??= new T[Count];
 
         // Now set the structured variable's data
-        using (GraphicsStream stream = cmd.MapResource(buffer, 0, ByteOffset, MapType))
+        using (GraphicsStream stream = queue.MapResource(Resource, 0, ByteOffset, MapType))
             stream.ReadRange(DestArray, DestIndex, Count);
 
         CompletionCallback?.Invoke(DestArray);

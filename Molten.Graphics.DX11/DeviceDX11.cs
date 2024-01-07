@@ -269,14 +269,13 @@ public unsafe class DeviceDX11 : DeviceDXGI
         {
             for (uint j = 0; j < mipLevels; j++)
             {
-                TextureResolve task = TextureResolve.Get();
-                task.Source = source as TextureDX11;
+                TextureResolve task = Tasks.Get<TextureResolve>();
                 task.Destination = destination as TextureDX11;
                 task.SourceMipLevel = j;
                 task.SourceArraySlice = i;
                 task.DestMipLevel = j;
                 task.DestArraySlice = i;
-                Renderer.PushTask(RenderTaskPriority.StartOfFrame, task);
+                Tasks.Push(GraphicsPriority.StartOfFrame, source as TextureDX11, task);
             }
         }
     }
@@ -297,10 +296,9 @@ public unsafe class DeviceDX11 : DeviceDXGI
         if (source.ResourceFormat != destination.ResourceFormat)
             throw new Exception("The source and destination texture must be the same format.");
 
-        TextureResolve task = TextureResolve.Get();
-        task.Source = source as TextureDX11;
+        TextureResolve task = Tasks.Get<TextureResolve>();
         task.Destination = destination as TextureDX11;
-        Renderer.PushTask(RenderTaskPriority.StartOfFrame, task);
+        Tasks.Push(GraphicsPriority.StartOfFrame, source as TextureDX11, task);
     }
 
     protected override ShaderSampler OnCreateSampler(ref ShaderSamplerParameters parameters)

@@ -2,37 +2,45 @@
 
 namespace Molten.Graphics.Vulkan;
 
-internal struct SurfaceClearTaskVK : IGraphicsResourceTask
+internal class SurfaceClearTaskVK : GraphicsResourceTask<TextureVK>
 {
     public Color Color;
 
-    public unsafe bool Process(GraphicsQueue queue, GraphicsResource resource)
+    public override void ClearForPool()
+    {
+        Color = Color.Black;
+    }
+
+    public override void Validate()
+    {
+        throw new NotImplementedException();
+    }
+
+    protected unsafe override bool OnProcess(GraphicsQueue queue)
     {
         // TODO Implement proper handling of barrier transitions.
         //  -- Transition from the current layout to the one we need.
         //  -- Transition back to the original layout once we're done.
 
-        RenderSurface2DVK surface = resource as RenderSurface2DVK;
-
-        if (surface.ApplyQueue.Count > 0)
+        if (Resource.ApplyQueue.Count > 0)
         {
             GraphicsQueueVK vkCmd = queue as GraphicsQueueVK;
-            surface.Ensure(queue);
+            Resource.Ensure(queue);
 
             vkCmd.Sync(GraphicsCommandListFlags.SingleSubmit);
-            surface.Transition(vkCmd, ImageLayout.Undefined, ImageLayout.TransferDstOptimal);
+            Resource.Transition(vkCmd, ImageLayout.Undefined, ImageLayout.TransferDstOptimal);
 
             ImageSubresourceRange range = new ImageSubresourceRange
             {
                 AspectMask = ImageAspectFlags.ColorBit,
                 BaseArrayLayer = 0,
-                LayerCount = surface.ArraySize,
+                LayerCount = Resource.ArraySize,
                 BaseMipLevel = 0,
-                LevelCount = surface.MipMapCount,
+                LevelCount = Resource.MipMapCount,
             };
 
-            vkCmd.ClearImage(*surface.Handle.NativePtr, ImageLayout.TransferDstOptimal, Color, &range, 1);
-            surface.Transition(vkCmd, ImageLayout.TransferDstOptimal, ImageLayout.ColorAttachmentOptimal);
+            vkCmd.ClearImage(*Resource.Handle.NativePtr, ImageLayout.TransferDstOptimal, Color, &range, 1);
+            Resource.Transition(vkCmd, ImageLayout.TransferDstOptimal, ImageLayout.ColorAttachmentOptimal);
             vkCmd.Sync();
 
             // Clear Surface via 
@@ -55,7 +63,16 @@ internal struct SurfaceClearTaskVK : IGraphicsResourceTask
         }
         else
         {
-            surface.ClearColor = Color;
+            switch (Resource)
+            {
+                case RenderSurface1DVK surface1D:
+                    surface1D.ClearColor = Color;
+                    break;
+
+                case RenderSurface2DVK surface2D:
+                    surface2D.ClearColor = Color;
+                    break;
+            }
         }
 
         return true;

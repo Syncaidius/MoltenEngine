@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics;
 
-internal class TextureGetTask : GraphicsResourceTask<GraphicsTexture, TextureGetTask>
+internal class TextureGetTask : GraphicsResourceTask<GraphicsTexture>
 {
     public Action<TextureData> CompleteCallback;
 

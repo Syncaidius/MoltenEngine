@@ -3,10 +3,8 @@
 namespace Molten.Graphics.DX11;
 
 /// <summary>A render task which resolves a multisampled texture into a non-multisampled one.</summary>
-internal unsafe class TextureResolve : GraphicsTask<TextureResolve>
+internal unsafe class TextureResolve : GraphicsResourceTask<TextureDX11>
 {
-    public TextureDX11 Source;
-
     public uint SourceArraySlice;
 
     public uint SourceMipLevel;
@@ -19,19 +17,28 @@ internal unsafe class TextureResolve : GraphicsTask<TextureResolve>
 
     public override void ClearForPool()
     {
-        Source = null;
+        SourceArraySlice = 0;
+        SourceMipLevel = 0;
         Destination = null;
+        DestArraySlice = 0;
+        DestMipLevel = 0;
     }
 
-    public override void Process(RenderService renderer)
+    public override void Validate()
     {
-        uint subSource = (Source.MipMapCount * SourceArraySlice) + SourceMipLevel;
+        throw new NotImplementedException();
+    }
+
+    protected override bool OnProcess(GraphicsQueue queue)
+    {
+        uint subSource = (Resource.MipMapCount * SourceArraySlice) + SourceMipLevel;
         uint subDest = (Destination.MipMapCount * DestArraySlice) + DestMipLevel;
 
-        RendererDX11 dx11Renderer = renderer as RendererDX11;
-        Destination.Apply(dx11Renderer.NativeDevice.Queue);
-        dx11Renderer.NativeDevice.Queue.Ptr->ResolveSubresource((ID3D11Resource*)Destination.Handle, subDest,
-            (ID3D11Resource*)Source.Handle, subSource, Source.DxgiFormat);
-        Recycle(this);
+        Destination.Apply(queue);
+        Resource.Device.Queue.Ptr->ResolveSubresource((ID3D11Resource*)Destination.Handle, subDest,
+            (ID3D11Resource*)Resource.Handle, subSource, Resource.DxgiFormat);
+
+        Destination.Version++;
+        return false;
     }
 }

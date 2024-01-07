@@ -122,7 +122,7 @@ public unsafe class CommandQueueDX12 : GraphicsQueue
         throw new NotImplementedException();
     }
 
-    public override unsafe void CopyResourceRegion(GraphicsResource source, uint srcSubresource, ResourceRegion* sourceRegion, GraphicsResource dest, uint destSubresource, Vector3UI destStart)
+    public override unsafe void CopyResourceRegion(GraphicsResource source, uint srcSubresource, ResourceRegion? sourceRegion, GraphicsResource dest, uint destSubresource, Vector3UI destStart)
     {
         throw new NotImplementedException();
     }

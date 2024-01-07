@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics;
 
-internal class GenerateMipMapsTask : GraphicsResourceTask<GraphicsTexture, GenerateMipMapsTask>
+internal class GenerateMipMapsTask : GraphicsResourceTask<GraphicsTexture>
 {
     internal Action<GraphicsTexture> OnCompleted;
 

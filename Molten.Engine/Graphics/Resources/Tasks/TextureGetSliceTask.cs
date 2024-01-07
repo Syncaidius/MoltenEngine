@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics;
 
-internal class TextureGetSliceTask : GraphicsResourceTask<GraphicsTexture, TextureGetSliceTask>
+internal class TextureGetSliceTask : GraphicsResourceTask<GraphicsTexture>
 {
     public Action<TextureSlice> CompleteCallback;
 

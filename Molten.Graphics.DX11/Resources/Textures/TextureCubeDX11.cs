@@ -73,34 +73,22 @@ public unsafe class TextureCubeDX11 : Texture2DDX11, ITextureCube
 
     public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight, uint newMipMapCount)
     {
-        Device.Renderer.PushTask(priority, this, new TextureResizeTask()
+        TextureResizeTask task = Device.Tasks.Get<TextureResizeTask>();
+        task.NewFormat = ResourceFormat;
+        task.NewDimensions = new TextureDimensions()
         {
-            NewDimensions = new TextureDimensions()
-            {
-                Width = newWidth,
-                Height = newHeight,
-                MipMapCount = newMipMapCount,
-                ArraySize = ArraySize,
-                Depth = Depth,
-            },
-            NewFormat = ResourceFormat,
-        });
+            Width = newWidth,
+            Height = newHeight,
+            MipMapCount = newMipMapCount,
+            ArraySize = ArraySize,
+            Depth = Depth,
+        };
+        Device.Tasks.Push<GraphicsTexture, TextureResizeTask>(priority, this, task);
     }
 
     public void Resize(GraphicsPriority priority, uint newWidth, uint newMipMapCount)
     {
-        Device.Renderer.PushTask(priority, this, new TextureResizeTask()
-        {
-            NewDimensions = new TextureDimensions()
-            {
-                Width = newWidth,
-                Height = Height,
-                MipMapCount = newMipMapCount,
-                ArraySize = ArraySize,
-                Depth = Depth,
-            },
-            NewFormat = ResourceFormat,
-        });
+        Resize(priority, newWidth, Height, newMipMapCount);
     }
 
     /// <summary>Gets information about the texture.</summary>

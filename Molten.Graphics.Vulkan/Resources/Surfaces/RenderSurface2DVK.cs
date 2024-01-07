@@ -30,10 +30,9 @@ public class RenderSurface2DVK : Texture2DVK, IRenderSurface2D, IRenderSurfaceVK
     /// <inheritdoc/>
     public void Clear(GraphicsPriority priority, Color color)
     {
-        Device.Renderer.PushTask(priority, this, new SurfaceClearTaskVK()
-        {
-            Color = color,
-        });
+        SurfaceClearTaskVK task = Device.Tasks.Get<SurfaceClearTaskVK>();
+        task.Color = color;
+        Device.Tasks.Push<TextureVK, SurfaceClearTaskVK>(priority, this, task);
     }
 
     /// <inheritdoc/>

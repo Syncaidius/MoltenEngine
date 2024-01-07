@@ -1,7 +1,7 @@
 ﻿
 namespace Molten.Graphics;
 
-public class TextureResizeTask : GraphicsResourceTask<GraphicsTexture, TextureResizeTask>
+public class TextureResizeTask : GraphicsResourceTask<GraphicsTexture>
 {
     public TextureDimensions NewDimensions;
 

@@ -1,15 +1,23 @@
 ﻿namespace Molten.Graphics.DX11;
 
-internal struct Surface1DClearTask : IGraphicsResourceTask
+internal class Surface1DClearTask : GraphicsResourceTask<RenderSurface1DDX11>
 {
-    public RenderSurface1DDX11 Surface;
-
     public Color Color;
 
-    public bool Process(GraphicsQueue cmd, GraphicsResource resource)
+    public override void ClearForPool()
     {
-        Surface.Ensure(cmd);
-        Surface.OnClear(cmd as GraphicsQueueDX11, Color);
+        Color = Color.Black;
+    }
+
+    public override void Validate()
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override bool OnProcess(GraphicsQueue queue)
+    {
+        Resource.Ensure(queue);
+        Resource.OnClear(queue as GraphicsQueueDX11, Color);
         return false;
     }
 }

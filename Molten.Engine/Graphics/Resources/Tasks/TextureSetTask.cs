@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics;
 
-public unsafe class TextureSetTask : GraphicsResourceTask<GraphicsTexture, TextureSetTask>
+public unsafe class TextureSetTask : GraphicsResourceTask<GraphicsTexture>
 {
     public uint MipLevel;
 
@@ -26,7 +26,7 @@ public unsafe class TextureSetTask : GraphicsResourceTask<GraphicsTexture, Textu
 
     public Action<GraphicsResource> CompleteCallback;
 
-    public void SetData(void* data, uint stride, uint startIndex, uint numElements)
+    public void Initialize(void* data, uint stride, uint startIndex, uint numElements)
     {
         Stride = stride;
         NumElements = numElements;
@@ -51,6 +51,11 @@ public unsafe class TextureSetTask : GraphicsResourceTask<GraphicsTexture, Textu
         CompleteCallback = null;
 
         EngineUtil.Free(ref Data);
+    }
+
+    public override void Validate()
+    {
+        throw new NotImplementedException();
     }
 
     protected override bool OnProcess(GraphicsQueue queue)

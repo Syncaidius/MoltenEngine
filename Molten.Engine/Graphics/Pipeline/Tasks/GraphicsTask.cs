@@ -6,7 +6,7 @@ public abstract class GraphicsTask : IPoolable
 {
     internal ObjectPool<GraphicsTask> Pool { get; set; }
 
-    internal void Recylce()
+    internal void Recycle()
     {
         Pool.Recycle(this);
     }

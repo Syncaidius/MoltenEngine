@@ -2,46 +2,55 @@
 
 namespace Molten.Graphics.Vulkan;
 
-internal struct DepthClearTaskVK : IGraphicsResourceTask
+internal class DepthClearTaskVK : GraphicsResourceTask<DepthSurfaceVK>
 {
     public float DepthValue;
 
     public uint StencilValue;
 
-    public unsafe bool Process(GraphicsQueue queue, GraphicsResource resource)
+    public override void ClearForPool()
+    {
+        DepthValue = 0;
+        StencilValue = 0;
+    }
+
+    public override void Validate()
+    {
+        throw new NotImplementedException();
+    }
+
+    protected unsafe override bool OnProcess(GraphicsQueue queue)
     {
         // TODO Implement proper handling of barrier transitions.
         //  -- Transition from the current layout to the one we need.
         //  -- Transition back to the original layout once we're done.
 
-        DepthSurfaceVK surface = resource as DepthSurfaceVK;
-
-        if (surface.ApplyQueue.Count > 0)
+        if (Resource.ApplyQueue.Count > 0)
         {
-            surface.ClearValue = null;
+            Resource.ClearValue = null;
 
             GraphicsQueueVK vkCmd = queue as GraphicsQueueVK;
-            surface.Ensure(queue);
+            Resource.Ensure(queue);
 
             vkCmd.Sync(GraphicsCommandListFlags.SingleSubmit);
-            surface.Transition(vkCmd, ImageLayout.Undefined, ImageLayout.TransferDstOptimal);
+            Resource.Transition(vkCmd, ImageLayout.Undefined, ImageLayout.TransferDstOptimal);
 
             ImageSubresourceRange range = new ImageSubresourceRange
             {
                 AspectMask = ImageAspectFlags.ColorBit,
                 BaseArrayLayer = 0,
-                LayerCount = surface.ArraySize,
+                LayerCount = Resource.ArraySize,
                 BaseMipLevel = 0,
-                LevelCount = surface.MipMapCount,
+                LevelCount = Resource.MipMapCount,
             };
 
-            vkCmd.ClearDepthImage(*surface.Handle.NativePtr, ImageLayout.TransferDstOptimal, DepthValue, StencilValue, &range, 1);
-            surface.Transition(vkCmd, ImageLayout.TransferDstOptimal, ImageLayout.DepthAttachmentOptimal);
+            vkCmd.ClearDepthImage(*Resource.Handle.NativePtr, ImageLayout.TransferDstOptimal, DepthValue, StencilValue, &range, 1);
+            Resource.Transition(vkCmd, ImageLayout.TransferDstOptimal, ImageLayout.DepthAttachmentOptimal);
             vkCmd.Sync();
         }
         else
         {
-            surface.ClearValue = new ClearDepthStencilValue(DepthValue, StencilValue);
+            Resource.ClearValue = new ClearDepthStencilValue(DepthValue, StencilValue);
         }
 
         return true;

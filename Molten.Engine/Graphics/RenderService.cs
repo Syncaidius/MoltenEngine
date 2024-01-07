@@ -136,7 +136,7 @@ public abstract class RenderService : EngineService
 
         // Process the start-of-frame task queue for each device.
         for (int i = 0; i < _devices.Count; i++)
-            _devices[i].TaskManager.Process(RenderTaskPriority.StartOfFrame);
+            _devices[i].Tasks.Process(GraphicsTaskPriority.StartOfFrame);
 
         // Perform preliminary checks on active scene data.
         // Also ensure the backbuffer is always big enough for the largest scene render surface.
@@ -217,7 +217,7 @@ public abstract class RenderService : EngineService
         }
 
         for (int i = 0; i < _devices.Count; i++)
-            _devices[i].TaskManager.Process(RenderTaskPriority.EndOfFrame);
+            _devices[i].Tasks.Process(GraphicsTaskPriority.EndOfFrame);
         Device.EndFrame(time);
         Surfaces.ResetFirstCleared();
 
@@ -266,52 +266,25 @@ public abstract class RenderService : EngineService
     internal SceneRenderData CreateRenderData()
     {
         SceneRenderData rd = new SceneRenderData();
-        RenderAddScene task = RenderAddScene.Get();
+        RenderAddScene task = Device.Tasks.Get<RenderAddScene>();
         task.Data = rd;
-        PushTask(RenderTaskPriority.StartOfFrame, task);
+
+        Device.Tasks.Push(GraphicsTaskPriority.StartOfFrame, task);
         return rd;
     }
 
     public void DestroyRenderData(SceneRenderData data)
     {
-        RenderRemoveScene task = RenderRemoveScene.Get();
+        RenderRemoveScene task = Device.Tasks.Get<RenderRemoveScene>();
         task.Data = data;
-        PushTask(RenderTaskPriority.StartOfFrame, task);
+
+        Device.Tasks.Push(GraphicsTaskPriority.StartOfFrame, task);
     }
 
     /// <summary>
-    /// Queues a <see cref="GraphicsTask"/> on the current <see cref="GraphicsResource"/>.
+    /// Invoked when the renderer
     /// </summary>
-    /// <param name="priority">The priority of the task.</param>
-    /// <param name="task">The <see cref="GraphicsTask"/> to be pushed.</param>
-    public void PushTask(RenderTaskPriority priority, GraphicsTask task)
-    {
-        _tasks[priority].Enqueue(task);
-    }
-
-    /// <summary>
-    /// Pushes a compute-based shader as a task.
-    /// </summary>
-    /// <param name="priority"></param>
-    /// <param name="shader">The compute shader to be run inside the task.</param>
-    /// <param name="groupsX">The number of X compute thread groups.</param>
-    /// <param name="groupsY">The number of Y compute thread groups.</param>
-    /// <param name="groupsZ">The number of Z compute thread groups.</param>
-    /// <param name="callback">A callback to run once the task is completed.</param>
-    public void PushTask(RenderTaskPriority priority, HlslShader shader, uint groupsX, uint groupsY, uint groupsZ, ComputeTaskCompletionCallback callback = null)
-    {
-        PushTask(priority, shader, new Vector3UI(groupsX, groupsY, groupsZ), callback);
-    }
-
-    public void PushTask(RenderTaskPriority priority, HlslShader shader, Vector3UI groups, ComputeTaskCompletionCallback callback = null)
-    {
-        ComputeTask task = ComputeTask.Get();
-        task.Shader = shader;
-        task.Groups = groups;
-        task.CompletionCallback = callback;
-        PushTask(priority, task);
-    }
-
+    /// <param name="settings"></param>
     protected abstract void OnInitializeRenderer(EngineSettings settings);
 
     /// <summary>

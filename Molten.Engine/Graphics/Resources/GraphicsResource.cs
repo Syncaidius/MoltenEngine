@@ -164,7 +164,7 @@ public abstract class GraphicsResource : GraphicsObject, IGraphicsResource
                 throw new GraphicsResourceException(this, "The destination buffer is not large enough.");
         }
 
-        Device.Renderer.PushTask(priority, this, new ResourceCopyTask()
+        Device.Tasks.Push(priority, this, new ResourceCopyTask()
         {
             Destination = destination,
             CompletionCallback = completeCallback,
@@ -219,7 +219,7 @@ public abstract class GraphicsResource : GraphicsObject, IGraphicsResource
                 if (destSlice >= destTex.ArraySize)
                     throw new ResourceCopyException(this, destination, "The destination array slice exceeds the total number of slices in the destination texture.");
 
-                Device.Renderer.PushTask(priority, this, new SubResourceCopyTask()
+                Device.Tasks.Push(priority, this, new SubResourceCopyTask()
                 {
                     SrcRegion = null,
                     SrcSubResource = (sourceSlice * srcTex.MipMapCount) + sourceLevel,
@@ -245,7 +245,7 @@ public abstract class GraphicsResource : GraphicsObject, IGraphicsResource
     public void CopyTo(GraphicsPriority priority, GraphicsResource destination, ResourceRegion sourceRegion, uint destByteOffset = 0,
         Action<GraphicsResource> completionCallback = null)
     {
-        Device.Renderer.PushTask(priority, this, new SubResourceCopyTask()
+        Device.Tasks.Push(priority, this, new SubResourceCopyTask()
         {
             CompletionCallback = completionCallback,
             DestResource = destination,

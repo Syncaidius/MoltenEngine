@@ -39,21 +39,19 @@ public abstract class GraphicsBuffer : GraphicsResource
     public void SetData<T>(GraphicsPriority priority, T[] data, uint startIndex, uint elementCount, bool discard, uint byteOffset = 0, Action completeCallback = null)
         where T : unmanaged
     {
-        BufferSetTask<T> op = new BufferSetTask<T>()
-        {
-            ByteOffset = byteOffset,
-            CompletionCallback = completeCallback,
-            DestBuffer = this,
-            MapType = discard ? GraphicsMapType.Discard : GraphicsMapType.Write,
-            ElementCount = elementCount,
-        };
+        BufferSetTask<T> op = Device.Tasks.Get<BufferSetTask<T>>();
+        op.ByteOffset = byteOffset;
+        op.CompletionCallback = completeCallback;
+        op.DestBuffer = this;
+        op.MapType = discard ? GraphicsMapType.Discard : GraphicsMapType.Write;
+        op.ElementCount = elementCount;
 
         // Custom handling of immediate command, so that we potentially avoid a data copy.
         if (priority == GraphicsPriority.Immediate)
         {
             op.Data = data;
             op.DataStartIndex = startIndex;
-            op.Process(Device.Queue, this);
+            op.Process(Device.Renderer, Device.Queue);
         }
         else
         {
@@ -61,7 +59,7 @@ public abstract class GraphicsBuffer : GraphicsResource
             op.Data = new T[data.Length];
             op.DataStartIndex = 0;
             Array.Copy(data, (int)startIndex, op.Data, 0, elementCount);
-            Device.Renderer.PushTask(priority, this, ref op);
+            Device.Tasks.Push(priority, this, op);
         }
     }
 
@@ -81,7 +79,7 @@ public abstract class GraphicsBuffer : GraphicsResource
         if (destination.Length < count)
             throw new ArgumentException("The provided destination array is not large enough.");
 
-        Device.Renderer.PushTask(priority, this, new BufferGetTask<T>()
+        Device.Tasks.Push(priority, this, new BufferGetTask<T>()
         {
             ByteOffset = byteOffset,
             DestArray = destination,
