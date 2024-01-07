@@ -50,9 +50,9 @@ public unsafe class TextureSetTask : GraphicsResourceTask<GraphicsTexture>
         EngineUtil.Free(ref Data);
     }
 
-    public override void Validate()
+    public override bool Validate()
     {
-        throw new NotImplementedException();
+        return true;
     }
 
     protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)

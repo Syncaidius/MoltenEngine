@@ -52,6 +52,7 @@ public abstract class GraphicsBuffer : GraphicsResource
         {
             op.Data = data;
             op.DataStartIndex = startIndex;
+            op.Resource = this;
             op.Process(Device.Queue);
         }
         else

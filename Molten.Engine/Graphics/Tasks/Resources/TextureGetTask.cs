@@ -14,9 +14,9 @@ internal class TextureGetTask : GraphicsResourceTask<GraphicsTexture>
         MapType = GraphicsMapType.Read;
     }
 
-    public override void Validate()
+    public override bool Validate()
     {
-        throw new NotImplementedException();
+        return true;
     }
 
     protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)

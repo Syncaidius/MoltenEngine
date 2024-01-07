@@ -17,13 +17,15 @@ internal class BufferGetStreamTask : GraphicsResourceTask<GraphicsBuffer>
         OnStreamOpened = null;
     }
 
-    public override void Validate()
+    public override bool Validate()
     {
         if(MapType.Has(GraphicsMapType.Read) && !Resource.Flags.Has(GraphicsResourceFlags.CpuRead))
             throw new GraphicsResourceException(Resource, "The resource must have CPU read access for reading the mapped data.");
 
         if (MapType.Has(GraphicsMapType.Write) && !Resource.Flags.Has(GraphicsResourceFlags.CpuWrite))
             throw new GraphicsResourceException(Resource, "The resource must have CPU write access for writing the mapped data.");
+
+        return true;
     }
 
     protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)

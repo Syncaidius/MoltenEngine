@@ -29,10 +29,10 @@ internal class BufferGetTask<T> : GraphicsResourceTask<GraphicsBuffer>
         MapType = GraphicsMapType.Read;
     }
 
-    public override void Validate()
+    public override bool Validate()
     {
         // TODO validate if destination array is large enough
-        throw new NotImplementedException();
+        return true;
     }
 
     protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)

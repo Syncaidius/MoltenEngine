@@ -1,7 +1,7 @@
 ﻿namespace Molten.Graphics;
 
 /// <summary>A <see cref="RenderSceneChange"/> for adding a <see cref="SceneObject"/> to the root of a scene.</summary>
-internal class RenderAddScene : GraphicsTask
+internal class RenderRemoveScene : GraphicsTask
 {
     public SceneRenderData Data;
 
@@ -10,9 +10,14 @@ internal class RenderAddScene : GraphicsTask
         Data = null;
     }
 
+    public override bool Validate()
+    {
+        return true;
+    }
+
     protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
     {
-        renderer.Scenes.Add(Data);
+        queue.Device.Renderer.Scenes.Remove(Data);
         return true;
     }
 }

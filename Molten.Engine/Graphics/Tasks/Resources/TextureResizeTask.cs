@@ -1,5 +1,4 @@
-﻿
-namespace Molten.Graphics;
+﻿namespace Molten.Graphics;
 
 public class TextureResizeTask : GraphicsResourceTask<GraphicsTexture>
 {
@@ -13,9 +12,9 @@ public class TextureResizeTask : GraphicsResourceTask<GraphicsTexture>
         NewFormat = GraphicsFormat.Unknown;
     }
 
-    public override void Validate()
+    public override bool Validate()
     {
-        throw new NotImplementedException();
+        return true;
     }
 
     protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)

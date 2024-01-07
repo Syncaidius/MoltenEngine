@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics;
 
-/// <summary>A <see cref="RenderSceneChange"/> for adding a <see cref="ICamera"/> to a scene.</summary>
+/// <summary>A <see cref="RenderSceneChange"/> for adding a <see cref="RenderCamera"/> to a scene.</summary>
 internal class AddCamera : RenderSceneChange<AddCamera>
 {
     public RenderCamera Camera;

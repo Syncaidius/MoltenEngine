@@ -12,6 +12,11 @@ internal class ComputeTask : GraphicsTask
         Groups = Vector3UI.Zero;
     }
 
+    public override bool Validate()
+    {
+        return true;
+    }
+
     protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
     {
         //queue.Begin();

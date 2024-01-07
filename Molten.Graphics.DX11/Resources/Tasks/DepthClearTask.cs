@@ -15,9 +15,9 @@ internal class DepthClearTask : GraphicsResourceTask<DepthSurfaceDX11>
         StencilClearValue = 0;
     }
 
-    public override void Validate()
+    public override bool Validate()
     {
-        throw new NotImplementedException();
+        return true;
     }
 
     protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)

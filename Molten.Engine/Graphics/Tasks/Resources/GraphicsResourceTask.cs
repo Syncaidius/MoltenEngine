@@ -9,6 +9,4 @@ public abstract class GraphicsResourceTask<R> : GraphicsTask
     /// The target <see cref="GraphicsResource"/>. This is set by the <see cref="RenderService"/> when the task is queued.
     /// </summary>
     public R Resource;
-
-    public abstract void Validate();
 }

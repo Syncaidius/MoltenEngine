@@ -9,9 +9,9 @@ internal class Surface2DClearTask : GraphicsResourceTask<RenderSurface2DDX11>
         Color = Color.Black;
     }
 
-    public override void Validate()
+    public override bool Validate()
     {
-        throw new NotImplementedException();
+        return true;
     }
 
     protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)

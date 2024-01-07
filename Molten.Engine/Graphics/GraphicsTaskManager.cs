@@ -45,8 +45,11 @@ public class GraphicsTaskManager : IDisposable
     /// <param name="task"></param>
     public void Push(GraphicsTaskPriority priority, GraphicsTask task)
     {
-        ThreadedQueue<GraphicsTask> queue = _tasks[priority];
-        queue.Enqueue(task);
+        if (task.Validate())
+        {
+            ThreadedQueue<GraphicsTask> queue = _tasks[priority];
+            queue.Enqueue(task);
+        }
     }
 
     /// <summary>
@@ -64,11 +67,13 @@ public class GraphicsTaskManager : IDisposable
         {
             default:
             case GraphicsPriority.Immediate:
-                task.Process(_device.Queue);
+                if(task.Validate())
+                    task.Process(_device.Queue);
                 break;
 
             case GraphicsPriority.Apply:
-                resource.ApplyQueue.Enqueue(task);
+                if(task.Validate())
+                    resource.ApplyQueue.Enqueue(task);
                 break;
 
             case GraphicsPriority.StartOfFrame:

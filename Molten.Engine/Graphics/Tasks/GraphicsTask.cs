@@ -18,6 +18,8 @@ public abstract class GraphicsTask : IPoolable
 
     public abstract void ClearForPool();
 
+    public abstract bool Validate();
+
     /// <summary>
     /// Invoked when the current <see cref="GraphicsTask"/> needs to be processed.
     /// </summary>

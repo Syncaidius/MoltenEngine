@@ -28,6 +28,11 @@ internal class BufferSetTask<T> : GraphicsResourceTask<GraphicsBuffer>
         DestBuffer = null;
     }
 
+    public override bool Validate()
+    {
+        return true;
+    }
+
     protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
     {
         if (Resource.Flags.Has(GraphicsResourceFlags.CpuWrite))
@@ -45,10 +50,5 @@ internal class BufferSetTask<T> : GraphicsResourceTask<GraphicsBuffer>
         }
 
         return true;
-    }
-
-    public override void Validate()
-    {
-        throw new NotImplementedException();
     }
 }

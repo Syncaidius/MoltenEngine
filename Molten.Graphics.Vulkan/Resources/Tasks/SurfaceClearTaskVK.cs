@@ -11,9 +11,9 @@ internal class SurfaceClearTaskVK : GraphicsResourceTask<TextureVK>
         Color = Color.Black;
     }
 
-    public override void Validate()
+    public override bool Validate()
     {
-        throw new NotImplementedException();
+        return true;
     }
 
     protected unsafe override bool OnProcess(RenderService renderer, GraphicsQueue queue)

@@ -9,9 +9,9 @@ public class ResourceCopyTask : GraphicsResourceTask<GraphicsResource>
         Destination = null;
     }
 
-    public override void Validate()
+    public override bool Validate()
     {
-        throw new NotImplementedException();
+        return true;
     }
 
     protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
