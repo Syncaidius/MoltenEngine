@@ -13,6 +13,59 @@ public abstract class GraphicsBuffer : GraphicsResource
     }
 
     /// <summary>
+    /// Allocates a <see cref="GraphicsBuffer"/> as a sub-buffer within the current <see cref="GraphicsBuffer"/>.
+    /// </summary>
+    /// <param name="stride"></param>
+    /// <param name="numElements"></param>
+    /// <param name="alignment"></param>
+    /// <param name="flags"></param>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public GraphicsBuffer Allocate(uint stride, ulong numElements, ulong alignment, GraphicsResourceFlags flags, GraphicsBufferType type)
+    {
+        ulong required = stride * numElements;
+        ulong alignedOffset = EngineUtil.Align(Offset + AllocatedBytes, alignment);
+        ulong remaining = SizeInBytes - alignedOffset;
+
+        // Not enough available space?
+        if (remaining < required)
+            return null;
+
+        AllocatedBytes = alignedOffset + required;
+
+        GraphicsBuffer subBuffer = OnAllocateSubBuffer(alignedOffset, stride, numElements, flags, type);
+        subBuffer.ParentBuffer = this;
+        subBuffer.Alignment = alignment;
+        return subBuffer;
+    }
+
+    /// <summary>
+    /// Allocates a <see cref="GraphicsBuffer"/> as a sub-buffer within the current <see cref="GraphicsBuffer"/>.
+    /// </summary>
+    /// <param name="numBytes"></param>
+    /// <param name="alignment"></param>
+    /// <param name="flags"></param>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public GraphicsBuffer Allocate(ulong numBytes, ulong alignment, GraphicsResourceFlags flags, GraphicsBufferType type)
+    {
+        return Allocate(1, numBytes, alignment, flags, type);
+    }
+
+    public GraphicsBuffer Allocate(uint stride, ulong numElements, ulong alignment = 1)
+    {
+        return Allocate(stride * numElements, alignment, Flags, BufferType);
+    }
+
+    /// <summary>
+    /// Invoked when the buffer must provide the alignment required for the specified <see cref="GraphicsBufferType"/>.
+    /// </summary>
+    /// <returns></returns>
+    protected abstract ulong GetTypeAlignment(GraphicsBufferType type);
+
+    protected abstract GraphicsBuffer OnAllocateSubBuffer(ulong offset, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type);
+
+    /// <summary>
     /// 
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -42,7 +95,7 @@ public abstract class GraphicsBuffer : GraphicsResource
         where T : unmanaged
     {
         BufferSetTask<T> op = Device.Tasks.Get<BufferSetTask<T>>();
-        op.ByteOffset = byteOffset;
+        op.ByteOffset = Offset + byteOffset;
         op.OnCompleted += completeCallback;
         op.DestBuffer = this;
         op.MapType = discard ? GraphicsMapType.Discard : GraphicsMapType.Write;
@@ -83,7 +136,7 @@ public abstract class GraphicsBuffer : GraphicsResource
             throw new ArgumentException("The provided destination array is not large enough.");
 
         BufferGetTask<T> task = Device.Tasks.Get<BufferGetTask<T>>();
-        task.ByteOffset = byteOffset;
+        task.ByteOffset = Offset + byteOffset;
         task.Count = count;
         task.DestArray = destination;
         task.DestIndex = startIndex;
@@ -117,4 +170,22 @@ public abstract class GraphicsBuffer : GraphicsResource
     /// <para>This property is only set if the current <see cref="BufferType"/> is <see cref="GraphicsBufferType.Vertex"/>.</para>
     /// </summary>
     public VertexFormat VertexFormat { get; internal set; }
+
+    /// <summary>
+    /// Gets the total number of bytes that have been sub-allocated by the current <see cref="GraphicsBuffer"/>.
+    /// </summary>
+    public ulong AllocatedBytes { get; private set; }
+
+    /// <summary>
+    /// Gets the offset of the current <see cref="GraphicsBuffer"/> within its parent <see cref="GraphicsBuffer"/>.
+    /// <para>If the buffer has no parent, this value should always be 0.</para>
+    /// </summary>
+    public ulong Offset { get; protected set; }
+
+    /// <summary>
+    /// Gets the expected alignment of the current <see cref="GraphicsBuffer"/>.
+    /// </summary>
+    public ulong Alignment { get; private set; }
+
+    public GraphicsBuffer ParentBuffer { get; protected set; }
 }

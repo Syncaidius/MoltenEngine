@@ -56,6 +56,16 @@ public unsafe class BufferDX11 : GraphicsBuffer
         device.ProcessDebugLayerMessages();
     }
 
+    protected override GraphicsBuffer OnAllocateSubBuffer(ulong offset, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type)
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override ulong GetTypeAlignment(GraphicsBufferType type)
+    {
+        throw new NotImplementedException();
+    }
+
     protected override void OnNextFrame(GraphicsQueue queue, uint frameBufferIndex, ulong frameID)
     {
         _curHandle = _handles[frameBufferIndex];

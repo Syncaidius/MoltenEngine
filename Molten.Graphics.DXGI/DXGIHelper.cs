@@ -90,16 +90,6 @@ internal static class DXGIHelper
         return count;
     }
 
-    public static Format ToApi(this GraphicsFormat format)
-    {
-        return (Format)format;
-    }
-
-    public static GraphicsFormat FromApi(this Format format)
-    {
-        return (GraphicsFormat)format;
-    }
-
     public static ModeScaling ToApi(this DisplayScalingMode format)
     {
         return (ModeScaling)format;

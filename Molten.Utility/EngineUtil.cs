@@ -257,6 +257,34 @@ public unsafe static class EngineUtil
     }
 
     /// <summary>
+    /// Aligns a location, such as a memory address) to the next multiple of the specified alignment.
+    /// </summary>
+    /// <param name="location">The location to be aligned.</param>
+    /// <param name="alignment">The alignment of the location</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    public static ulong Align(ulong location, ulong alignment)
+    {
+        if(alignment == 0 || (alignment & (alignment - 1)) != 0)
+            throw new ArgumentException("Alignment must be a power-of-two value.");
+
+        return ((location + alignment - 1) & ~(alignment - 1));
+    }
+
+    /// <summary>
+    /// Aligns a pointer to the next multiple of the specified alignment.
+    /// </summary>
+    /// <param name="location">The pointer to be aligned.</param>
+    /// <param name="alignment">The alignment of the location</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    public static T* Align<T>(T* location, ulong alignment) 
+        where T : unmanaged
+    {
+        return (T*)Align((ulong)location, alignment);
+    }
+
+    /// <summary>
     /// An implementation of <see cref="Array.Resize{T}(ref T[], int)"/> that is not constrained 
     /// to [<see cref="int.MaxValue"/>] number of elements.
     /// </summary>

@@ -9,14 +9,4 @@ internal static class SilkEnumExtensions
     {
         return (value & flag) == flag;
     }
-
-    public static Format ToApi(this GraphicsFormat format)
-   {
-        return (Format)format;
-    }
-
-    public static GraphicsFormat FromApi(this Format format)
-    {
-        return (GraphicsFormat)format;
-    }
 }

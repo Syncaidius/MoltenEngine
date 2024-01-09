@@ -20,6 +20,11 @@ public unsafe class BufferVK : GraphicsBuffer
         ResourceFormat = GraphicsFormat.Unknown;
     }
 
+    protected override GraphicsBuffer OnAllocateSubBuffer(ulong offset, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type)
+    {
+        throw new NotImplementedException();
+    }
+
     protected override void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
     {
         throw new NotImplementedException();
@@ -125,6 +130,11 @@ public unsafe class BufferVK : GraphicsBuffer
 
             _handles[i].Dispose();
         }
+    }
+
+    protected override ulong GetTypeAlignment(GraphicsBufferType type)
+    {
+        throw new NotImplementedException();
     }
 
     public override unsafe ResourceHandleVK<Buffer, BufferHandleVK> Handle => _curHandle;

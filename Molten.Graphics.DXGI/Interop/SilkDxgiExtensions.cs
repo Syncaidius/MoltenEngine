@@ -1,8 +1,9 @@
-﻿using Silk.NET.Maths;
+﻿using Silk.NET.DXGI;
+using Silk.NET.Maths;
 
 namespace Molten.Graphics;
 
-internal static class SilkDxgiExtensions
+public static class SilkDxgiExtensions
 {
     public static Rectangle<int> ToApi(this Rectangle r)
     {
@@ -17,5 +18,15 @@ internal static class SilkDxgiExtensions
     public static Rectangle FromApi(this Box2D<int> r)
     {
         return new Rectangle(r.Min.X, r.Min.Y, r.Size.X, r.Size.Y);
+    }
+
+    public static Format ToApi(this GraphicsFormat format)
+    {
+        return (Format)format;
+    }
+
+    public static GraphicsFormat FromApi(this Format format)
+    {
+        return (GraphicsFormat)format;
     }
 }

@@ -4,7 +4,7 @@ internal class BufferSetTask<T> : GraphicsResourceTask<GraphicsBuffer>
     where T : unmanaged
 {
     /// <summary>The number of bytes to offset the change, from the start of the provided <see cref="Segment"/>.</summary>
-    internal uint ByteOffset;
+    internal ulong ByteOffset;
 
     /// <summary>The number of elements to be copied.</summary>
     internal uint ElementCount;

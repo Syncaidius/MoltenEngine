@@ -1,24 +1,24 @@
 ﻿using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
-using Silk.NET.DXGI;
 
 namespace Molten.Graphics.DX12;
 
 public class BufferDX12 : GraphicsBuffer
 {
-    ResourceHandleDX12 _curHandle; 
-    List<BufferAllocationDX12> _allocations;
+    ResourceHandleDX12 _handle; 
+    List<SubBufferDX12> _allocations;
 
     public BufferDX12(DeviceDX12 device, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type) : 
         base(device, stride, numElements, flags, type)
     {
         Device = device;
-        _allocations = new List<BufferAllocationDX12>();
+        _allocations = new List<SubBufferDX12>();
+        ResourceFormat = GraphicsFormat.Unknown;
     }
 
     protected unsafe override void OnCreateResource(uint frameBufferSize, uint frameBufferIndex, ulong frameID)
     {
-        _curHandle?.Dispose();
+        _handle?.Dispose();
 
         HeapProperties heapProp = new HeapProperties()
         {
@@ -48,7 +48,7 @@ public class BufferDX12 : GraphicsBuffer
             Height = 1,
             DepthOrArraySize = 1,
             Layout = TextureLayout.LayoutRowMajor,
-            Format = Format.FormatUnknown,
+            Format = ResourceFormat.ToApi(),
             Flags = flags,
         };
 
@@ -58,35 +58,67 @@ public class BufferDX12 : GraphicsBuffer
         if (!Device.Log.CheckResult(hr, () => $"Failed to create {desc.Dimension} resource"))
             return;
 
-        _curHandle = new ResourceHandleDX12(this, (ID3D12Resource*)ptr);
+        _handle = new ResourceHandleDX12(this, (ID3D12Resource*)ptr);
     }
 
-    public BufferAllocationDX12 Allocate(ulong numBytes, GraphicsResourceFlags flags, GraphicsBufferType type)
+    protected virtual void OnCreateViews()
     {
-        return Allocate(1, numBytes, flags, type);
+        // TODO Constant buffers must be 256-bit aligned, which means the data sent to SetData() must be too.
+        //      We can validate this by checking if the stride is a multiple of 256: sizeof(T) % 256 == 0
+        //      This value is also provided via D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT.
+        //      
+        //      If not, we throw an exception stating this.
+
+        if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
+        {
+            _handle.SRV.Desc = new ShaderResourceViewDesc()
+            {
+                Format = ResourceFormat.ToApi(),
+                ViewDimension = SrvDimension.Buffer,
+                Shader4ComponentMapping = (uint)(ShaderComponentMapping.FromMemoryComponent0 |
+                    ShaderComponentMapping.FromMemoryComponent1 |
+                    ShaderComponentMapping.FromMemoryComponent2 |
+                    ShaderComponentMapping.FromMemoryComponent3),
+                Buffer = new BufferSrv()
+                {
+                    FirstElement = Stride > 0 ? (Offset / Stride) : 0,
+                    NumElements = (uint)ElementCount,
+                    Flags = BufferSrvFlags.None,
+                    StructureByteStride = Stride, // TODO If stride is 0, then it is a typed buffer, where the ResourceFormat must be set to a valid format.
+                },
+            };
+        }
+
+        if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
+        {
+            _handle.UAV.Desc = new UnorderedAccessViewDesc()
+            {
+                Format = ResourceFormat.ToApi(),
+                ViewDimension = UavDimension.Buffer,
+                Buffer = new BufferUav()
+                {
+                    FirstElement = Stride > 0 ? (Offset / Stride) : 0,
+                    NumElements = (uint)ElementCount,
+                    Flags = BufferUavFlags.None,
+                    CounterOffsetInBytes = 0,
+                    StructureByteStride = Stride, // TODO If stride is 0, then it is a typed buffer, where the ResourceFormat must be set to a valid format.
+                },
+            };
+        }
+    }
+    protected override ulong GetTypeAlignment(GraphicsBufferType type)
+    {
+        throw new NotImplementedException();
     }
 
-    public BufferAllocationDX12 Allocate(uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type)
+
+    protected override GraphicsBuffer OnAllocateSubBuffer(ulong offset, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type)
     {
-        ulong remaining = SizeInBytes - AllocatedBytes;
-        ulong required = stride * numElements;
-
-
-        // Not enough available space?
-        if (remaining < required)
-            return null;
-
-        ulong offset = AllocatedBytes;
-        AllocatedBytes += SizeInBytes;
-        return new BufferAllocationDX12(this, offset, stride, numElements, Flags, BufferType)
+        // TODO check through existing allocations to see if we can re-use one.
+        return new SubBufferDX12(this, offset, stride, numElements, Flags, BufferType)
         {
             IsFree = false,
         };
-    }
-
-    public BufferAllocationDX12 Allocate(uint stride, ulong numElements)
-    {
-        return Allocate(stride * numElements, Flags, BufferType);
     }
 
     protected override void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
@@ -106,19 +138,14 @@ public class BufferDX12 : GraphicsBuffer
 
     protected override void OnGraphicsRelease()
     {
-        _curHandle?.Dispose();
+        _handle?.Dispose();
     }
 
     /// <inheritdoc/>
-    public override ResourceHandleDX12 Handle => _curHandle;
+    public override ResourceHandleDX12 Handle => _handle;
 
     /// <inheritdoc/>
     public override GraphicsFormat ResourceFormat { get; protected set; }
 
     public new DeviceDX12 Device { get; }
-
-    /// <summary>
-    /// Gets the number of bytes that were allocated via <see cref="BufferDX12.Allocate(ulong)"/>.
-    /// </summary>
-    internal ulong AllocatedBytes { get; private set; }
 }
