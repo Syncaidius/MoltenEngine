@@ -4,19 +4,19 @@ using Silk.NET.Direct3D12;
 
 namespace Molten.Graphics.DX12;
 
-internal unsafe class CommandAllocatorDX12 : GraphicsObject<DeviceDX12>
+public unsafe class CommandAllocatorDX12 : GraphicsObject<DeviceDX12>
 {
     ID3D12CommandAllocator* _handle;
     ThreadedList<CommandListDX12> _allocated;
 
-    public CommandAllocatorDX12(DeviceDX12 device, CommandListType type) : base(device)
+    internal CommandAllocatorDX12(CommandQueueDX12 queue, CommandListType type) : base(queue.Device)
     {
         Guid guid = ID3D12CommandAllocator.Guid;
         Type = type;
 
         void* ptr = null;
         HResult hr = Device.Ptr->CreateCommandAllocator(CommandListType.Direct, &guid, &ptr);
-        if (!device.Log.CheckResult(hr, () => "Failed to create command allocator"))
+        if (!queue.Device.Log.CheckResult(hr, () => "Failed to create command allocator"))
             hr.Throw();
 
         _handle = (ID3D12CommandAllocator*)ptr;
@@ -52,4 +52,6 @@ internal unsafe class CommandAllocatorDX12 : GraphicsObject<DeviceDX12>
     }
 
     public CommandListType Type { get; }
+
+    public CommandQueueDX12 Queue { get; }
 }

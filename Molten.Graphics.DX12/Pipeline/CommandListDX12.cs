@@ -2,9 +2,9 @@
 
 namespace Molten.Graphics.DX12;
 
-internal abstract class CommandListDX12 : GraphicsObject<DeviceDX12>
+public abstract class CommandListDX12 : GraphicsCommandList
 {
-    protected CommandListDX12(CommandAllocatorDX12 allocator) : base(allocator.Device) { }
+    protected CommandListDX12(CommandQueueDX12 queue, CommandAllocatorDX12 allocator) : base(queue) { }
 
     protected override void OnGraphicsRelease()
     {
@@ -14,7 +14,7 @@ internal abstract class CommandListDX12 : GraphicsObject<DeviceDX12>
     /// <summary>
     /// Gets the parent <see cref="CommandAllocatorDX12"/> from which the current <see cref="CommandListDX12"/> was allocated.
     /// </summary>
-    public CommandAllocatorDX12 Allocator { get; }
+    internal CommandAllocatorDX12 Allocator { get; }
 
     public unsafe abstract ID3D12CommandList* BaseHandle { get; }
 
@@ -26,7 +26,8 @@ internal abstract unsafe class CommandListDX12<T> : CommandListDX12
 {
     T* _handle;
 
-    internal CommandListDX12(CommandAllocatorDX12 allocator, T* handle) : base(allocator)
+    internal CommandListDX12(CommandAllocatorDX12 allocator, T* handle) : 
+        base(allocator.Queue, allocator)
     {
         _handle = handle;
     }

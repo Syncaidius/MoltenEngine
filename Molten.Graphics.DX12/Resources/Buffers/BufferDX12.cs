@@ -6,63 +6,99 @@ namespace Molten.Graphics.DX12;
 public class BufferDX12 : GraphicsBuffer
 {
     ResourceHandleDX12 _handle; 
-    List<SubBufferDX12> _allocations;
+    List<BufferDX12> _allocations;
 
     public BufferDX12(DeviceDX12 device, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type) : 
         base(device, stride, numElements, flags, type)
     {
         Device = device;
-        _allocations = new List<SubBufferDX12>();
+        _allocations = new List<BufferDX12>();
         ResourceFormat = GraphicsFormat.Unknown;
+    }
+
+    private BufferDX12(BufferDX12 parentBuffer, ulong offset, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type)
+        : base(parentBuffer.Device, stride, numElements, flags, type)
+    {
+        if (ParentBuffer != null)
+        {
+            ParentBuffer = parentBuffer;
+            RootBuffer = parentBuffer.RootBuffer ?? parentBuffer;
+        }
+        Offset = offset;
     }
 
     protected unsafe override void OnCreateResource(uint frameBufferSize, uint frameBufferIndex, ulong frameID)
     {
         _handle?.Dispose();
 
-        HeapProperties heapProp = new HeapProperties()
-        {
-            Type = HeapType.Upload,
-            CPUPageProperty = CpuPageProperty.Unknown,
-            CreationNodeMask = 1,
-            MemoryPoolPreference = MemoryPool.Unknown,
-            VisibleNodeMask = 1,
-        };
-
         HeapFlags heapFlags = HeapFlags.None;
         ResourceFlags flags = ResourceFlags.None;
         HeapType heapType = Flags.ToHeapType();
         ResourceStates stateFlags = Flags.ToResourceState();
-
-        if(Flags.Has(GraphicsResourceFlags.NoShaderAccess))
-            flags |= ResourceFlags.DenyShaderResource;
-
-        if(Flags.Has(GraphicsResourceFlags.UnorderedAccess))
-            flags |= ResourceFlags.AllowUnorderedAccess;
-
-        ResourceDesc desc = new ResourceDesc()
+        if (ParentBuffer == null && BufferType == GraphicsBufferType.Unknown)
         {
-            Dimension = ResourceDimension.Buffer,
-            Alignment = 0,
-            Width = SizeInBytes,
-            Height = 1,
-            DepthOrArraySize = 1,
-            Layout = TextureLayout.LayoutRowMajor,
-            Format = ResourceFormat.ToApi(),
-            Flags = flags,
-        };
+            HeapProperties heapProp = new HeapProperties()
+            {
+                Type = heapType,
+                CPUPageProperty = CpuPageProperty.Unknown,
+                CreationNodeMask = 1,
+                MemoryPoolPreference = MemoryPool.Unknown,
+                VisibleNodeMask = 1,
+            };
 
-        Guid guid = ID3D12Resource.Guid;
-        void* ptr = null;
-        HResult hr = Device.Ptr->CreateCommittedResource(heapProp, heapFlags, desc, stateFlags, null, &guid, &ptr);
-        if (!Device.Log.CheckResult(hr, () => $"Failed to create {desc.Dimension} resource"))
-            return;
+            if (Flags.Has(GraphicsResourceFlags.NoShaderAccess))
+                flags |= ResourceFlags.DenyShaderResource;
 
-        _handle = new ResourceHandleDX12(this, (ID3D12Resource*)ptr);
+            if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
+                flags |= ResourceFlags.AllowUnorderedAccess;
+
+            ResourceDesc desc = new()
+            {
+                Dimension = ResourceDimension.Buffer,
+                Alignment = 0,
+                Width = SizeInBytes,
+                Height = 1,
+                DepthOrArraySize = 1,
+                Layout = TextureLayout.LayoutRowMajor,
+                Format = ResourceFormat.ToApi(),
+                Flags = flags,
+            };
+
+            Guid guid = ID3D12Resource.Guid;
+            void* ptr = null;
+            HResult hr = Device.Ptr->CreateCommittedResource(heapProp, heapFlags, desc, stateFlags, null, &guid, &ptr);
+            if (!Device.Log.CheckResult(hr, () => $"Failed to create {desc.Dimension} resource"))
+                return;
+
+            _handle = new ResourceHandleDX12(this, (ID3D12Resource*)ptr);
+        }
+        else
+        {
+            _handle = OnCreateHandle((ID3D12Resource*)RootBuffer.Handle.Ptr);
+        }
     }
 
-    protected virtual void OnCreateViews()
+    private unsafe ResourceHandleDX12 OnCreateHandle(ID3D12Resource* ptr)
     {
+        switch (BufferType)
+        {
+            case GraphicsBufferType.Vertex:
+                _handle = new ResourceHandleDX12<VertexBufferView>(this, ptr);
+                break;
+
+                case GraphicsBufferType.Index:
+                _handle = new ResourceHandleDX12<IndexBufferView>(this, ptr);
+                break;
+
+                    case GraphicsBufferType.Constant:
+                _handle = new ResourceHandleDX12<ConstantBufferViewDesc>(this, ptr);
+                break;
+
+            default:
+                _handle = new ResourceHandleDX12(this, ptr);
+                break;
+        }
+
         // TODO Constant buffers must be 256-bit aligned, which means the data sent to SetData() must be too.
         //      We can validate this by checking if the stride is a multiple of 256: sizeof(T) % 256 == 0
         //      This value is also provided via D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT.
@@ -105,6 +141,8 @@ public class BufferDX12 : GraphicsBuffer
                 },
             };
         }
+
+        return _handle;
     }
     protected override ulong GetTypeAlignment(GraphicsBufferType type)
     {
@@ -115,7 +153,7 @@ public class BufferDX12 : GraphicsBuffer
     protected override GraphicsBuffer OnAllocateSubBuffer(ulong offset, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type)
     {
         // TODO check through existing allocations to see if we can re-use one.
-        return new SubBufferDX12(this, offset, stride, numElements, Flags, BufferType)
+        return new BufferDX12(this, offset, stride, numElements, Flags, BufferType)
         {
             IsFree = false,
         };
@@ -148,4 +186,11 @@ public class BufferDX12 : GraphicsBuffer
     public override GraphicsFormat ResourceFormat { get; protected set; }
 
     public new DeviceDX12 Device { get; }
+
+    /// <summary>
+    /// Gets the root <see cref="BufferDX12"/> instance. This is the top-most buffer, regardless of how many nested sub-buffers we allocated.
+    /// </summary>
+    internal BufferDX12 RootBuffer { get; private set; }
+
+    internal bool IsFree { get; set; }
 }

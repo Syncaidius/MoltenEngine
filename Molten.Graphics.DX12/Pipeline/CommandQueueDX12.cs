@@ -13,6 +13,7 @@ public unsafe class CommandQueueDX12 : GraphicsQueue
     {
         _desc = desc;
         Log = log;
+        Device = device;
 
         Initialize(builder);
     }
@@ -151,4 +152,6 @@ public unsafe class CommandQueueDX12 : GraphicsQueue
         get => throw new NotImplementedException();
         set => throw new NotImplementedException();
     }
+
+    internal new DeviceDX12 Device { get; }
 }

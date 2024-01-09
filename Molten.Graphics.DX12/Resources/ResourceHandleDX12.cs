@@ -32,3 +32,18 @@ public unsafe class ResourceHandleDX12 : GraphicsResourceHandle
 
     public override unsafe void* Ptr => _ptr;
 }
+
+public class ResourceHandleDX12<D> : ResourceHandleDX12
+    where D : unmanaged
+{
+    internal unsafe ResourceHandleDX12(GraphicsResource resource, ID3D12Resource* ptr) :
+        base(resource, ptr)
+    {
+        View = new ResourceViewDX12<D>(this);
+    }
+
+    /// <summary>
+    /// An additional, unique view of the resource, with a specific description.
+    /// </summary>
+    internal ResourceViewDX12<D> View { get; }
+}

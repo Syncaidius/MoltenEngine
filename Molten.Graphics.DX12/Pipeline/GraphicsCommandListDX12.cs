@@ -12,4 +12,9 @@ internal unsafe class GraphicsCommandListDX12 : CommandListDX12<ID3D12GraphicsCo
     {
         Handle->Close();
     }
+
+    public override void Free()
+    {
+        throw new NotImplementedException();
+    }
 }

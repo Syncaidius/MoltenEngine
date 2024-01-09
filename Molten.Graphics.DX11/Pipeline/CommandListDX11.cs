@@ -14,7 +14,7 @@ public unsafe class CommandListDX11 : GraphicsCommandList
 
     public override void Free() { }
 
-    protected override void OnDispose()
+    protected override void OnGraphicsRelease()
     {
         EngineUtil.Free(ref _native);
     }

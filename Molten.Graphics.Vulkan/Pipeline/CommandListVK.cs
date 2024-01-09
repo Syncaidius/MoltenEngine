@@ -28,7 +28,7 @@ internal unsafe class CommandListVK : GraphicsCommandList
         _allocation.Free(this);
     }
 
-    protected override void OnDispose()
+    protected override void OnGraphicsRelease()
     {
         throw new NotImplementedException();
     }
