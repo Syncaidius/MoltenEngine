@@ -20,7 +20,7 @@ internal unsafe class RawBufferDX11 : BufferDX11
         uint numElements,
         void* initialData,
         uint initialBytes)
-        : base(device, GraphicsBufferType.ByteAddress, flags, GraphicsFormat.Unknown, sizeof(uint), numElements, initialData, initialBytes)
+        : base(device, GraphicsBufferType.ByteAddress, flags, GraphicsFormat.Unknown, sizeof(uint), numElements, 1, initialData, initialBytes)
     {
         
     }

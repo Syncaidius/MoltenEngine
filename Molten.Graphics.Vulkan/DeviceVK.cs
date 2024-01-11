@@ -453,7 +453,7 @@ public unsafe class DeviceVK : GraphicsDevice
 
     protected override GraphicsBuffer CreateBuffer<T>(GraphicsBufferType type, GraphicsResourceFlags flags, GraphicsFormat format, uint numElements, T[] initialData)
     {
-        BufferVK buffer =  new BufferVK(this, type, flags, (uint)sizeof(T), numElements);
+        BufferVK buffer =  new BufferVK(this, type, flags, (uint)sizeof(T), numElements, 1);
 
         if (initialData != null)
             buffer.SetData(GraphicsPriority.Apply, initialData, false);

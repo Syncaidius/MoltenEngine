@@ -8,7 +8,7 @@ public unsafe class UniformBufferVK : BufferVK, IConstantBuffer, IEquatable<Unif
     byte* _constData;
 
     internal UniformBufferVK(GraphicsDevice device, ConstantBufferInfo info) : 
-        base(device, GraphicsBufferType.Constant, GraphicsResourceFlags.NoShaderAccess | GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.Buffered, 1, info.Size)
+        base(device, GraphicsBufferType.Constant, GraphicsResourceFlags.NoShaderAccess | GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.Buffered, 1, info.Size, 1)
     {
         _varLookup = new Dictionary<string, GraphicsConstantVariable>();
         _constData = (byte*)EngineUtil.Alloc(info.Size);

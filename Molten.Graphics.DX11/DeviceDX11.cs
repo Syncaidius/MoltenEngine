@@ -312,7 +312,7 @@ public unsafe class DeviceDX11 : DeviceDXGI
         uint initialBytes = initialData != null ? (uint)initialData.Length * stride : 0;
 
         fixed(T* ptrData = initialData)
-            return new BufferDX11(this, type, flags, format, stride, numElements, ptrData, initialBytes);
+            return new BufferDX11(this, type, flags, format, stride, numElements, 1, ptrData, initialBytes);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

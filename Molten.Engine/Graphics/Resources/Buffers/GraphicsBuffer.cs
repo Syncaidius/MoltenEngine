@@ -2,14 +2,20 @@
 
 public abstract class GraphicsBuffer : GraphicsResource
 {
-    protected GraphicsBuffer(GraphicsDevice device, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type) :
+    List<GraphicsBuffer> _allocations;
+    List<GraphicsBuffer> _freeAllocations;
+
+    protected GraphicsBuffer(GraphicsDevice device, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type, uint alignment) :
         base(device, flags)
     {
+        _allocations = new List<GraphicsBuffer>();
+        _freeAllocations = new List<GraphicsBuffer>();
         ResourceFormat = GraphicsFormat.Unknown;
         BufferType = type;
         Stride = stride;
         ElementCount = numElements;
         SizeInBytes = stride * numElements;
+        Alignment = alignment;
     }
 
     /// <summary>
@@ -21,21 +27,43 @@ public abstract class GraphicsBuffer : GraphicsResource
     /// <param name="flags"></param>
     /// <param name="type"></param>
     /// <returns></returns>
-    public GraphicsBuffer Allocate(uint stride, ulong numElements, ulong alignment, GraphicsResourceFlags flags, GraphicsBufferType type)
+    public GraphicsBuffer Allocate(uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type, uint alignment = 1)
     {
         ulong required = stride * numElements;
         ulong alignedOffset = EngineUtil.Align(Offset + AllocatedBytes, alignment);
         ulong remaining = SizeInBytes - alignedOffset;
 
-        // Not enough available space?
+        // Check for any free allocations we can re-use. 
+        // Choose the smallest-fitting allocation, which may also include a new allocation using the remaining space.
+        ulong smallest = remaining; 
+        int freeIndex = -1;
+        GraphicsBuffer subBuffer = null;
+        for (int i = 0; i < _freeAllocations.Count; i++)
+        {
+            GraphicsBuffer alloc = _freeAllocations[i];
+            if (alloc.SizeInBytes >= required && alloc.SizeInBytes < smallest)
+            {
+                smallest = alloc.SizeInBytes;
+                freeIndex = i;
+                subBuffer = alloc;
+            }
+        }
+
+        if (subBuffer != null)
+        {
+            _freeAllocations.RemoveAt(freeIndex);
+            return subBuffer;
+        }
+
+            // Not enough available space for a new allocation?
         if (remaining < required)
             return null;
 
         AllocatedBytes = alignedOffset + required;
 
-        GraphicsBuffer subBuffer = OnAllocateSubBuffer(alignedOffset, stride, numElements, flags, type);
-        subBuffer.ParentBuffer = this;
-        subBuffer.Alignment = alignment;
+        subBuffer = OnAllocateSubBuffer(alignedOffset, stride, numElements, flags, type, alignment);
+        _allocations.Add(subBuffer);
+
         return subBuffer;
     }
 
@@ -47,23 +75,59 @@ public abstract class GraphicsBuffer : GraphicsResource
     /// <param name="flags"></param>
     /// <param name="type"></param>
     /// <returns></returns>
-    public GraphicsBuffer Allocate(ulong numBytes, ulong alignment, GraphicsResourceFlags flags, GraphicsBufferType type)
+    public GraphicsBuffer Allocate(ulong numBytes, GraphicsResourceFlags flags, GraphicsBufferType type, uint alignment = 1)
     {
-        return Allocate(1, numBytes, alignment, flags, type);
-    }
-
-    public GraphicsBuffer Allocate(uint stride, ulong numElements, ulong alignment = 1)
-    {
-        return Allocate(stride * numElements, alignment, Flags, BufferType);
+        return Allocate(1, numBytes, flags, type, alignment);
     }
 
     /// <summary>
-    /// Invoked when the buffer must provide the alignment required for the specified <see cref="GraphicsBufferType"/>.
+    /// 
     /// </summary>
+    /// <param name="stride"></param>
+    /// <param name="numElements"></param>
+    /// <param name="alignment"></param>
     /// <returns></returns>
-    protected abstract ulong GetTypeAlignment(GraphicsBufferType type);
+    public GraphicsBuffer Allocate(uint stride, ulong numElements, uint alignment = 1)
+    {
+        return Allocate(stride * numElements, Flags, BufferType, alignment);
+    }
 
-    protected abstract GraphicsBuffer OnAllocateSubBuffer(ulong offset, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type);
+    /// <summary>
+    /// Frees a sub-allocated buffer on the current <see cref="GraphicsBuffer"/>. If the buffer was not allocated by this buffer, an exception is thrown.
+    /// <para>Freeing a sub-allocated buffer will allow it to be reallocated during a future allocate request.</para>
+    /// </summary>
+    public void Free(GraphicsBuffer buffer)
+    {
+        if (ParentBuffer == this)
+            _freeAllocations.Add(buffer);
+        else
+            throw new InvalidOperationException("The graphics buffer was not allocated by this buffer.");
+    }
+
+    /// <summary>
+    /// Frees the current buffer from its <see cref="ParentBuffer"/>. If <see cref="ParentBuffer"/> is null, an exception is thrown.
+    /// <para>Freeing a sub-allocated buffer will allow it to be reallocated during a future allocate request.</para>
+    /// </summary>
+    /// <exception cref="InvalidOperationException"></exception>
+    public void Free()
+    {
+        if(ParentBuffer != null)
+            ParentBuffer.Free(this);
+        else
+            throw new InvalidOperationException("The graphics buffer was not allocated by another buffer.");
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="offset"></param>
+    /// <param name="stride"></param>
+    /// <param name="numElements"></param>
+    /// <param name="flags"></param>
+    /// <param name="type"></param>
+    /// <param name="alignment"></param>
+    /// <returns></returns>
+    protected abstract GraphicsBuffer OnAllocateSubBuffer(ulong offset, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type, uint alignment);
 
     /// <summary>
     /// 
@@ -185,7 +249,10 @@ public abstract class GraphicsBuffer : GraphicsResource
     /// <summary>
     /// Gets the expected alignment of the current <see cref="GraphicsBuffer"/>.
     /// </summary>
-    public ulong Alignment { get; private set; }
+    public uint Alignment { get; private set; }
 
+    /// <summary>
+    /// Gets the parent <see cref="GraphicsBuffer"/> of the current <see cref="GraphicsBuffer"/>, if any.
+    /// </summary>
     public GraphicsBuffer ParentBuffer { get; protected set; }
 }

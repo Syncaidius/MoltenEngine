@@ -14,13 +14,14 @@ public unsafe class BufferVK : GraphicsBuffer
         GraphicsBufferType type,
         GraphicsResourceFlags flags,
         uint stride,
-        uint numElements) :
-        base(device, stride, numElements, flags, type)
+        uint numElements,
+        uint alignment) :
+        base(device, stride, numElements, flags, type, alignment)
     {
         ResourceFormat = GraphicsFormat.Unknown;
     }
 
-    protected override GraphicsBuffer OnAllocateSubBuffer(ulong offset, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type)
+    protected override GraphicsBuffer OnAllocateSubBuffer(ulong offset, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type, uint alignment)
     {
         throw new NotImplementedException();
     }
@@ -130,11 +131,6 @@ public unsafe class BufferVK : GraphicsBuffer
 
             _handles[i].Dispose();
         }
-    }
-
-    protected override ulong GetTypeAlignment(GraphicsBufferType type)
-    {
-        throw new NotImplementedException();
     }
 
     public override unsafe ResourceHandleVK<Buffer, BufferHandleVK> Handle => _curHandle;

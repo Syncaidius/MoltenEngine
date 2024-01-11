@@ -5,19 +5,16 @@ namespace Molten.Graphics.DX12;
 
 public class BufferDX12 : GraphicsBuffer
 {
-    ResourceHandleDX12 _handle; 
-    List<BufferDX12> _allocations;
+    ResourceHandleDX12 _handle;
 
-    public BufferDX12(DeviceDX12 device, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type) : 
-        base(device, stride, numElements, flags, type)
+    public BufferDX12(DeviceDX12 device, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type, uint alignment) :
+        base(device, stride, numElements, flags, type, alignment)
     {
         Device = device;
-        _allocations = new List<BufferDX12>();
-        ResourceFormat = GraphicsFormat.Unknown;
     }
 
-    private BufferDX12(BufferDX12 parentBuffer, ulong offset, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type)
-        : base(parentBuffer.Device, stride, numElements, flags, type)
+    private BufferDX12(BufferDX12 parentBuffer, ulong offset, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type, uint alignment)
+        : base(parentBuffer.Device, stride, numElements, flags, type, alignment)
     {
         if (ParentBuffer != null)
         {
@@ -86,11 +83,11 @@ public class BufferDX12 : GraphicsBuffer
                 _handle = new ResourceHandleDX12<VertexBufferView>(this, ptr);
                 break;
 
-                case GraphicsBufferType.Index:
+            case GraphicsBufferType.Index:
                 _handle = new ResourceHandleDX12<IndexBufferView>(this, ptr);
                 break;
 
-                    case GraphicsBufferType.Constant:
+            case GraphicsBufferType.Constant:
                 _handle = new ResourceHandleDX12<ConstantBufferViewDesc>(this, ptr);
                 break;
 
@@ -144,19 +141,17 @@ public class BufferDX12 : GraphicsBuffer
 
         return _handle;
     }
-    protected override ulong GetTypeAlignment(GraphicsBufferType type)
-    {
-        throw new NotImplementedException();
-    }
 
-
-    protected override GraphicsBuffer OnAllocateSubBuffer(ulong offset, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type)
+    protected override GraphicsBuffer OnAllocateSubBuffer(
+        ulong offset, 
+        uint stride, 
+        ulong numElements, 
+        GraphicsResourceFlags flags,
+        GraphicsBufferType type,
+        uint alignment)
     {
         // TODO check through existing allocations to see if we can re-use one.
-        return new BufferDX12(this, offset, stride, numElements, Flags, BufferType)
-        {
-            IsFree = false,
-        };
+        return new BufferDX12(this, offset, stride, numElements, Flags, BufferType, alignment);
     }
 
     protected override void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
@@ -191,6 +186,4 @@ public class BufferDX12 : GraphicsBuffer
     /// Gets the root <see cref="BufferDX12"/> instance. This is the top-most buffer, regardless of how many nested sub-buffers we allocated.
     /// </summary>
     internal BufferDX12 RootBuffer { get; private set; }
-
-    internal bool IsFree { get; set; }
 }

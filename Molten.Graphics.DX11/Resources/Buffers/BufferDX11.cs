@@ -38,8 +38,9 @@ public unsafe class BufferDX11 : GraphicsBuffer
         GraphicsFormat format,
         uint stride,
         uint numElements,
+        uint alignment,
         void* initialData,
-        uint initialBytes) : base(device, stride, numElements, flags | GraphicsResourceFlags.GpuRead, type)
+        uint initialBytes) : base(device, stride, numElements, flags | GraphicsResourceFlags.GpuRead, type, alignment)
     {
         if (initialData != null && initialBytes > 0)
         {
@@ -56,12 +57,7 @@ public unsafe class BufferDX11 : GraphicsBuffer
         device.ProcessDebugLayerMessages();
     }
 
-    protected override GraphicsBuffer OnAllocateSubBuffer(ulong offset, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type)
-    {
-        throw new NotImplementedException();
-    }
-
-    protected override ulong GetTypeAlignment(GraphicsBufferType type)
+    protected override GraphicsBuffer OnAllocateSubBuffer(ulong offset, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type, uint alignment)
     {
         throw new NotImplementedException();
     }

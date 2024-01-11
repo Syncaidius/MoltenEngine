@@ -30,7 +30,7 @@ internal unsafe class TypedBufferDX11 : BufferDX11
                   TypedBufferFormat.UInt32 => sizeof(uint),
                   TypedBufferFormat.Int32 => sizeof(int),
                   TypedBufferFormat.Float => sizeof(float)
-              }, numElements, initialData, initialBytes)
+              }, numElements, 1, initialData, initialBytes)
     {
         TypedFormat = format;
         switch (format)

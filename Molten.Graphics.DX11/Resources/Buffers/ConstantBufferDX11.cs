@@ -12,7 +12,7 @@ internal unsafe class ConstantBufferDX11 : BufferDX11, IConstantBuffer, IEquatab
     internal ConstantBufferDX11(DeviceDX11 device, ConstantBufferInfo info)
         : base(device, GraphicsBufferType.Constant, 
               GraphicsResourceFlags.NoShaderAccess | GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.Buffered, 
-              GraphicsFormat.Unknown, 1, info.Size, null, 0)
+              GraphicsFormat.Unknown, 1, info.Size, 1, null, 0)
     {
         _varLookup = new Dictionary<string, GraphicsConstantVariable>();
         _constData = (byte*)EngineUtil.Alloc(info.Size);
