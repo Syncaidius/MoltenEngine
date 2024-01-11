@@ -120,7 +120,24 @@ public unsafe class DeviceDX12 : DeviceDXGI
 
     protected override GraphicsBuffer CreateBuffer<T>(GraphicsBufferType type, GraphicsResourceFlags flags, GraphicsFormat format, uint numElements, T[] initialData)
     {
-        throw new NotImplementedException();
+        uint stride = (uint)sizeof(T);
+        uint alignment = stride;
+        if (type == GraphicsBufferType.Constant)
+        {
+            alignment = D3D12.ConstantBufferDataPlacementAlignment; // Constant buffers must be 256-bit aligned.
+
+            if (stride % 256 != 0)
+                throw new GraphicsStrideException(stride, $"The data type of a DX12 constant buffer must be a multiple of 256 bytes.");
+        }
+
+        BufferDX12 buffer = new BufferDX12(this, stride, numElements, flags, type, alignment);
+        if(initialData != null)
+        {
+            // TODO send initial data to the buffer.
+            // buffer.SetData<T>(GraphicsPriority.Immediate, initialData);
+        }
+
+        return buffer;
     }
 
     protected override INativeSurface OnCreateFormSurface(string formTitle, string formName, uint width, uint height,
