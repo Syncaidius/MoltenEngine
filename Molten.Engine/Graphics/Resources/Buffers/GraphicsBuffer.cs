@@ -255,4 +255,9 @@ public abstract class GraphicsBuffer : GraphicsResource
     /// Gets the parent <see cref="GraphicsBuffer"/> of the current <see cref="GraphicsBuffer"/>, if any.
     /// </summary>
     public GraphicsBuffer ParentBuffer { get; protected set; }
+
+    /// <summary>
+    /// Gets a list of all sub-allocated <see cref="GraphicsBuffer"/> that were allocated by the current <see cref="GraphicsBuffer"/>.
+    /// </summary>
+    internal IReadOnlyList<GraphicsBuffer> Allocations => _allocations;
 }
