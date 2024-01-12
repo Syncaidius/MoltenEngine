@@ -8,6 +8,9 @@ namespace Molten.Graphics.Dxc;
 
 public unsafe abstract class DxcCompiler : ShaderCompiler
 {
+    public const ShaderModel MIN_SHADER_MODEL = ShaderModel.Model6_0;
+    public const ShaderModel MAX_SHADER_MODEL = ShaderModel.Model6_7;
+
     // For reference or help see the following:
     // See: https://github.com/microsoft/DirectXShaderCompiler/blob/master/include/dxc/dxcapi.h
     // See: https://posts.tanki.ninja/2019/07/11/Using-DXC-In-Practice/
@@ -42,7 +45,7 @@ public unsafe abstract class DxcCompiler : ShaderCompiler
     public DxcCompiler(RenderService renderer, string includePath, Assembly includeAssembly) : 
         base(renderer, includePath, includeAssembly)
     {
-        Model = ShaderModel.Model6_0;
+        Model = renderer.Device.Capabilities.MaxShaderModel.Clamp(MIN_SHADER_MODEL, MAX_SHADER_MODEL);
         _sourceBlobs = new Dictionary<ShaderSource, DxcBuffer>();
         _baseArgs = new Dictionary<DxcCompilerArg, string>();
 

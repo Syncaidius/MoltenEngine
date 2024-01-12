@@ -9,13 +9,9 @@ namespace Molten.Graphics.DX12;
 
 internal class HlslDxcCompiler : DxcCompiler
 {
-    public const ShaderModel MIN_SHADER_MODEL = ShaderModel.Model6_0;
-    public const ShaderModel MAX_SHADER_MODEL = ShaderModel.Model6_7;
-
     public HlslDxcCompiler(RendererDX12 renderer, string includePath, Assembly includeAssembly) : 
         base(renderer, includePath, includeAssembly)
     {
-        Model = renderer.Device.Capabilities.MaxShaderModel.Clamp(ShaderModel.Model6_0, ShaderModel.Model6_6);
         AddBaseArg(DxcCompilerArg.HlslVersion, "2021");
 
 #if DEBUG
