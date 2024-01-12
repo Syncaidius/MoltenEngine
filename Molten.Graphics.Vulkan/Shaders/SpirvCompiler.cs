@@ -56,7 +56,7 @@ internal class SpirvCompiler : DxcCompiler
 #endif
     }
 
-    protected override unsafe void* BuildShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes)
+    protected override unsafe void* BuildNativeShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes)
     {
         IDxcBlob* blob = (IDxcBlob*)byteCode;
         byteCode = blob->GetBufferPointer();

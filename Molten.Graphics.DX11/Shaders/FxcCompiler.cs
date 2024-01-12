@@ -545,7 +545,7 @@ HlslShader shader, string bufferName, string[] varNames)
         return bVar;
     }
 
-    protected override unsafe void* BuildShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes)
+    protected override unsafe void* BuildNativeShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes)
     {
         ID3D10Blob* dx11ByteCode = (ID3D10Blob*)byteCode;
         void* ptrBytecode = dx11ByteCode->GetBufferPointer();

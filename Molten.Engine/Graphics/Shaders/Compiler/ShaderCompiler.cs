@@ -157,7 +157,7 @@ public abstract class ShaderCompiler : EngineObject
 
                 if (Validate(pass, context, cResult))
                 {
-                    sc.PtrShader = BuildShader(pass, epType, cResult.ByteCode, cResult.NumBytes);
+                    sc.PtrShader = BuildNativeShader(pass, epType, cResult.ByteCode, cResult.NumBytes);
                     sc.InputLayout = BuildIO(cResult, sc.Type, ShaderIOLayoutType.Input);
                     sc.OutputLayout = BuildIO(cResult, sc.Type, ShaderIOLayoutType.Output);
                 }
@@ -505,7 +505,7 @@ public abstract class ShaderCompiler : EngineObject
         }
     }
 
-    protected unsafe abstract void* BuildShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes);
+    protected unsafe abstract void* BuildNativeShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes);
 
     protected abstract bool Validate(HlslPass pass, ShaderCompilerContext context, ShaderCodeResult result);
 
