@@ -8,6 +8,9 @@ namespace Molten.Graphics.DX11;
 
 public unsafe class FxcCompiler : ShaderCompiler
 {
+    public const ShaderModel MIN_SHADER_MODEL = ShaderModel.Model5_0;
+    public const ShaderModel MAX_SHADER_MODEL = ShaderModel.Model5_1;
+
     D3DCompiler _d3dCompiler;
 
     /// <summary>
@@ -20,6 +23,7 @@ public unsafe class FxcCompiler : ShaderCompiler
     internal FxcCompiler(RendererDX11 renderer, Logger log, string includePath, Assembly includeAssembly) :
         base(renderer, includePath, includeAssembly)
     {
+        Model = renderer.Device.Capabilities.MaxShaderModel.Clamp(MIN_SHADER_MODEL, MAX_SHADER_MODEL);
         _d3dCompiler = D3DCompiler.GetApi();
     }
 
@@ -51,7 +55,7 @@ public unsafe class FxcCompiler : ShaderCompiler
         // Get shader resource input bindings
         for (uint i = 0; i < fxcReflection.Desc.BoundResources; i++)
         {
-            ShaderInputBindDesc rDesc = new ShaderInputBindDesc();
+            ShaderInputBindDesc rDesc = new();
             fxcReflection.Ptr->GetResourceBindingDesc(i, &rDesc);
 
             ShaderResourceInfo bindInfo = new ShaderResourceInfo()
@@ -208,7 +212,7 @@ public unsafe class FxcCompiler : ShaderCompiler
         if (!context.Shaders.TryGetValue(entryPoint, out result))
         {
             ulong numBytes = 0;
-            string shaderProfile = ShaderModel.Model5_0.ToProfile(type);
+            string shaderProfile = Model.ToProfile(type);
             byte* pSourceName = EngineUtil.StringToPtr(context.Source.Filename, encoding);
             byte* pEntryPoint = (byte*)SilkMarshal.StringToPtr(entryPoint, nativeEncoding);
             byte* pTarget = (byte*)SilkMarshal.StringToPtr(shaderProfile, nativeEncoding);

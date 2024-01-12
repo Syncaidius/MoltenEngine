@@ -49,8 +49,11 @@ internal class SpirvCompiler : DxcCompiler
         AddBaseArg(DxcCompilerArg.SpirV);
         AddBaseArg(DxcCompilerArg.HlslVersion, "2021");
         AddBaseArg(DxcCompilerArg.VulkanVersion, cTarget);
+
+#if DEBUG
         AddBaseArg(DxcCompilerArg.SkipOptimizations);
         AddBaseArg(DxcCompilerArg.Debug);
+#endif
     }
 
     protected override unsafe void* BuildShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes)

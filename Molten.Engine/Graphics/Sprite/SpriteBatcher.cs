@@ -288,9 +288,10 @@ public partial class SpriteBatcher : IDisposable
     /// <summary>Adds a sprite to the batch.</summary>
     /// <param name="texture"></param>
     /// <param name="destination"></param>
-    /// <param name="color">Sets the color of the sprite. This overrides <see cref="SpriteStyle.PrimaryColor"/> of the active <see cref="SpriteStyle"/>.</param>
+    /// <param name="color">Sets the color of the sprite. This overrides <see cref="RectStyle.FillColor"/> of the active <see cref="RectStyle"/>.</param>
     /// <param name="shader">The shader to use when rendering the sprite.</param>
     /// <param name="arraySlice"></param>
+    /// <param name="surfaceSlice"></param>
     public void Draw(RectangleF destination, Color color, ITexture2D texture = null, HlslShader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
     {
         _rectStyle.FillColor = color;

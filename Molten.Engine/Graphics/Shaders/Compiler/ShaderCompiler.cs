@@ -33,6 +33,7 @@ public abstract class ShaderCompiler : EngineObject
     /// <param name="includeAssembly"></param>
     protected ShaderCompiler(RenderService renderer, string includePath, Assembly includeAssembly)
     {
+        Model = ShaderModel.Model5_0;
         Renderer = renderer;
         _defaultIncludePath = includePath;
         _defaultIncludeAssembly = includeAssembly;
@@ -508,10 +509,18 @@ public abstract class ShaderCompiler : EngineObject
 
     protected abstract bool Validate(HlslPass pass, ShaderCompilerContext context, ShaderCodeResult result);
 
+    /// <summary>
+    /// Gets the <see cref="RenderService"/> that the shader compiler is bound to.
+    /// </summary>
     public RenderService Renderer { get; }
 
     /// <summary>
     /// Gets the <see cref="Logger"/> bound to the current <see cref="ShaderCompiler"/> instance.
     /// </summary>
     public Logger Log => Renderer.Log;
+
+    /// <summary>
+    /// Gets or sets the <see cref="ShaderModel"/> to use when compiling shaders.
+    /// </summary>
+    public ShaderModel Model { get; set; }
 }

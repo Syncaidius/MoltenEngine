@@ -14,9 +14,10 @@ public unsafe class DeviceDX12 : DeviceDXGI
     ID3D12InfoQueue1* _debugInfo;
     uint _debugCookieID;
 
-    internal DeviceDX12(RenderService renderer, GraphicsManagerDXGI manager, IDXGIAdapter4* adapter, DeviceBuilderDX12 deviceBuilder) :
+    internal DeviceDX12(RendererDX12 renderer, GraphicsManagerDXGI manager, IDXGIAdapter4* adapter, DeviceBuilderDX12 deviceBuilder) :
         base(renderer, manager, adapter)
     {
+        Renderer = renderer;
         _builder = deviceBuilder;
         CapabilitiesDX12 = new CapabilitiesDX12();
     }
@@ -44,7 +45,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
                 Log.Error("Failed to register debug callback");
         }
 
-        CommandQueueDesc cmdDesc = new CommandQueueDesc()
+        CommandQueueDesc cmdDesc = new()
         {
             Type = CommandListType.Direct,
         };
@@ -115,7 +116,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
 
     protected override HlslPass OnCreateShaderPass(HlslShader shader, string name)
     {
-        throw new NotImplementedException();
+        return new ShaderPassDX12(shader, name);
     }
 
     protected override GraphicsBuffer CreateBuffer<T>(GraphicsBufferType type, GraphicsResourceFlags flags, GraphicsFormat format, uint numElements, T[] initialData)
@@ -215,4 +216,6 @@ public unsafe class DeviceDX12 : DeviceDXGI
     /// Gets DirectX 12-specific capabilities.
     /// </summary>
     internal CapabilitiesDX12 CapabilitiesDX12 { get; }
+
+    public new RendererDX12 Renderer { get; }
 }

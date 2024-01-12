@@ -12,6 +12,13 @@ internal class HlslDxcCompiler : DxcCompiler
     public HlslDxcCompiler(RendererDX12 renderer, string includePath, Assembly includeAssembly) : 
         base(renderer, includePath, includeAssembly)
     {
+        Model = renderer.Device.Capabilities.MaxShaderModel.Clamp(ShaderModel.Model6_0, ShaderModel.Model6_6);
+        AddBaseArg(DxcCompilerArg.HlslVersion, "2021");
+
+#if DEBUG
+        AddBaseArg(DxcCompilerArg.SkipOptimizations);
+        AddBaseArg(DxcCompilerArg.Debug);
+#endif
     }
 
     protected override unsafe void* BuildShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes)

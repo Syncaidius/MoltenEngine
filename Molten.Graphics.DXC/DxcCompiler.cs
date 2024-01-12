@@ -42,6 +42,7 @@ public unsafe abstract class DxcCompiler : ShaderCompiler
     public DxcCompiler(RenderService renderer, string includePath, Assembly includeAssembly) : 
         base(renderer, includePath, includeAssembly)
     {
+        Model = ShaderModel.Model6_0;
         _sourceBlobs = new Dictionary<ShaderSource, DxcBuffer>();
         _baseArgs = new Dictionary<DxcCompilerArg, string>();
 
@@ -106,9 +107,8 @@ public unsafe abstract class DxcCompiler : ShaderCompiler
                     args.Set(arg, argVal);
             }
 
-            args.SetShaderProfile(ShaderModel.Model6_0, type);
+            args.SetShaderProfile(Model, type);
             args.SetEntryPoint(entryPoint);
-
 
             Guid dxcResultGuid = IDxcResult.Guid;
             void* ptrResult;

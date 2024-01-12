@@ -47,4 +47,20 @@ public static class ShaderModelExtensions
 
         return pString;
     }
+
+    /// <summary>
+    /// Clamps the <see cref="ShaderModel"/> to the specified minimum and/or maximum models.
+    /// </summary>
+    /// <param name="modelValue"></param>
+    /// <param name="minModel"></param>
+    /// <param name="maxModel"></param>
+    /// <returns></returns>
+    public static ShaderModel Clamp(this ShaderModel modelValue, ShaderModel minModel, ShaderModel maxModel)
+    {
+        uint min = (uint)minModel;
+        uint max = (uint)maxModel;
+        uint model = Math.Clamp((uint)modelValue, min, max);
+
+        return (ShaderModel)model;
+    }
 }
