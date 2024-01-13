@@ -232,7 +232,7 @@ public unsafe abstract class DxcCompiler : ShaderCompiler
     private bool GetDxcOutput(ShaderCompilerContext context, OutKind outputType, IDxcResult* dxcResult,
         ref IDxcBlob* outData, IDxcBlobUtf16** outPath = null)
     {
-        if (dxcResult->HasOutput(outputType))
+        if (!dxcResult->HasOutput(outputType))
         {
             context.AddWarning($"Unable to retrieve '{outputType}' data: Not found");
             return false;

@@ -34,7 +34,7 @@ public enum GeometryHullTopology
     /// <summary>
     /// Triangle adjacency topology.
     /// </summary>
-    TriangleAdjaccency = 7,
+    TriangleAdjacency = 7,
 
     /// <summary>
     /// A patch with 1 control point.

@@ -116,7 +116,7 @@ public class ShaderLayoutValidator
             * not valid when tessellation is active (this results in undefined behavior, which the debug layer will complain about)."*/
         HlslPass pass = pResult.Pass;
         valid = pass.GeometryPrimitive == GeometryHullTopology.LineAdjacency ||
-            pass.GeometryPrimitive == GeometryHullTopology.TriangleAdjaccency;
+            pass.GeometryPrimitive == GeometryHullTopology.TriangleAdjacency;
 
         return valid;
     }

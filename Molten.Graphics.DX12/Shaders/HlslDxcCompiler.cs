@@ -11,7 +11,7 @@ namespace Molten.Graphics.DX12;
 /// Compiles HLSL shaders using DXC for Windows.
 /// <para>If the compiler fails in release mode, try updating DXIL.dll. Located at: C:\Program Files (x86)\Windows Kits\10\Redist\D3D\x64</para>
 /// </summary>
-internal class HlslDxcCompiler : DxcCompiler
+internal unsafe class HlslDxcCompiler : DxcCompiler
 {
     public HlslDxcCompiler(RendererDX12 renderer, string includePath, Assembly includeAssembly) : 
         base(renderer, includePath, includeAssembly)
@@ -41,7 +41,7 @@ internal class HlslDxcCompiler : DxcCompiler
         return true;
     }
 
-    protected override unsafe ShaderReflection OnBuildReflection(ShaderCompilerContext context, IDxcBlob* byteCode, DxcBuffer* reflectionBuffer)
+    protected override ShaderReflection OnBuildReflection(ShaderCompilerContext context, IDxcBlob* byteCode, DxcBuffer* reflectionBuffer)
     {
         Guid guidReflection = ID3D12ShaderReflection.Guid;
         Guid guidContainer = IDxcContainerReflection.Guid;
@@ -51,27 +51,82 @@ internal class HlslDxcCompiler : DxcCompiler
         HResult r = (HResult)Utils->CreateReflection(reflectionBuffer, ref guidReflection, ref pReflection);
         ID3D12ShaderReflection* reflection = (ID3D12ShaderReflection*)pReflection;
 
-        void* pContainer = null;
-        r = (HResult)Api.CreateInstance(&guidClassID, &guidContainer, &pContainer);
-        IDxcContainerReflection* container = (IDxcContainerReflection*)pContainer;
+        ShaderDesc shaderDesc = new();
+        reflection->GetDesc(&shaderDesc);
 
-        // See for part FOURCC values: https://github.com/microsoft/DirectXShaderCompiler/blob/5874b72e81da082ab6ba585dc5f1592c3df27f61/include/dxc/dxcapi.h#L116
-        uint partCount = 0;
-        r = (HResult)container->GetPartCount(&partCount);
-        for (uint i = 0; i < partCount; i++)
+        ShaderReflection result = new ShaderReflection();
+        result.GSInputPrimitive = shaderDesc.GSOutputTopology.FromApi();
+        //result.GSMaxOutputVertexCount = shaderDesc.GSMaxOutputVertexCount;
+
+        for(uint i = 0; i < shaderDesc.BoundResources; i++)
         {
-            uint pk = 0;
-            r = container->GetPartKind(i, &pk);
+            ShaderResourceInfo rInfo = new ShaderResourceInfo()
+            {
 
-            // Convert to a part FOURCC. Each letter is 8-bits
-            string fourcc = new string((char)((pk >> 0) & 0xFF), 1);
-            fourcc += (char)((pk >> 8) & 0xFF);
-            fourcc += (char)((pk >> 16) & 0xFF);
-            fourcc += (char)((pk >> 24) & 0xFF);
+            };
+
+            result.BoundResources.Add(rInfo);
         }
 
-        // TODO populate shader reflection.
+        PopulateShaderParameters(context, result, reflection, ref shaderDesc, ShaderIOLayoutType.Input);
+        PopulateShaderParameters(context, result, reflection, ref shaderDesc, ShaderIOLayoutType.Output);
 
-        return new ShaderReflection();
+        NativeUtil.ReleasePtr(ref reflection);
+        return result;
+    }
+
+    private void PopulateShaderParameters(
+        ShaderCompilerContext context, 
+        ShaderReflection result, 
+        ID3D12ShaderReflection* reflection, 
+        ref ShaderDesc desc, 
+        ShaderIOLayoutType type)
+    {
+        List<ShaderParameterInfo> parameters;
+        List<SignatureParameterDesc> variables = new List<SignatureParameterDesc>();
+
+        switch (type)
+        {
+            case ShaderIOLayoutType.Input:
+                parameters = result.InputParameters;
+                for(uint i = 0; i < desc.InputParameters; i++)
+                {
+                    SignatureParameterDesc param = new();
+                    reflection->GetInputParameterDesc(i, &param);
+                    variables.Add(param);
+                }
+                break;
+
+            case ShaderIOLayoutType.Output:
+                parameters = result.OutputParameters;
+                for (uint i = 0; i < desc.OutputParameters; i++)
+                {
+                    SignatureParameterDesc param = new();
+                    reflection->GetOutputParameterDesc(i, &param);
+                    variables.Add(param);
+                }
+                break;
+
+            default:
+                return;
+        }
+
+        for(int i = 0; i < variables.Count; i++)
+        {
+            SignatureParameterDesc pDesc = variables[i];
+            parameters.Add(new ShaderParameterInfo()
+            {
+                ComponentType = (ShaderRegisterType)pDesc.ComponentType,
+                Mask = (ShaderComponentMaskFlags)pDesc.Mask,
+                ReadWriteMask = (ShaderComponentMaskFlags)pDesc.ReadWriteMask,
+                MinPrecision = (ShaderMinPrecision)pDesc.MinPrecision,
+                Register = pDesc.Register,
+                SemanticIndex = pDesc.SemanticIndex,
+                SemanticName = SilkMarshal.PtrToString((nint)pDesc.SemanticName).ToUpper(),
+                SemanticNamePtr = pDesc.SemanticName,
+                Stream = pDesc.Stream,
+                SystemValueType = (ShaderSVType)pDesc.SystemValueType,
+            });
+        }
     }
 }

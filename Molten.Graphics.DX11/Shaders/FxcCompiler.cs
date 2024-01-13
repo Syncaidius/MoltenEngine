@@ -46,8 +46,9 @@ public unsafe class FxcCompiler : ShaderCompiler
         nuint numBytes = byteCode->GetBufferSize();
 
         _d3dCompiler.Reflect(ppByteCode, numBytes, &guidReflect, &ppReflection);
+
         FxcReflection fxcReflection = new FxcReflection((ID3D11ShaderReflection*)ppReflection);
-        ShaderReflection r = new ShaderReflection()
+        ShaderReflection result = new ShaderReflection()
         {
             GSInputPrimitive = fxcReflection.Ptr->GetGSInputPrimitive().FromApi(),
         };
@@ -70,7 +71,7 @@ public unsafe class FxcCompiler : ShaderCompiler
                 Flags = ((D3DShaderInputFlags)rDesc.UFlags).FromApi()
             };
 
-            r.BoundResources.Add(bindInfo);
+            result.BoundResources.Add(bindInfo);
 
             switch (bindInfo.Type)
             {
@@ -91,7 +92,7 @@ public unsafe class FxcCompiler : ShaderCompiler
                         Size = bufferDesc.Size,
                     };
 
-                    r.ConstantBuffers.Add(bindInfo.Name, cBufferInfo);
+                    result.ConstantBuffers.Add(bindInfo.Name, cBufferInfo);
 
                     for (uint v = 0; v < bufferDesc.Variables; v++)
                     {
@@ -106,7 +107,7 @@ public unsafe class FxcCompiler : ShaderCompiler
                         ShaderReflection.ReflectionPtr ptrDefault = null;
                         if (desc.DefaultValue != null)
                         {
-                            ptrDefault = r.NewPtr(desc.Size);
+                            ptrDefault = result.NewPtr(desc.Size);
                             System.Buffer.MemoryCopy(desc.DefaultValue, ptrDefault, desc.Size, desc.Size);
                         }
 
@@ -136,11 +137,11 @@ public unsafe class FxcCompiler : ShaderCompiler
             }
         }
 
-        PopulateReflectionParamters(r, fxcReflection, ShaderIOLayoutType.Input);
-        PopulateReflectionParamters(r, fxcReflection, ShaderIOLayoutType.Output);
+        PopulateReflectionParamters(result, fxcReflection, ShaderIOLayoutType.Input);
+        PopulateReflectionParamters(result, fxcReflection, ShaderIOLayoutType.Output);
 
         fxcReflection.Dispose();
-        return r;
+        return result;
     }
 
     private void PopulateReflectionParamters(ShaderReflection reflection, FxcReflection fxcReflection, ShaderIOLayoutType type)
@@ -183,14 +184,14 @@ public unsafe class FxcCompiler : ShaderCompiler
             {
                 ComponentType = (ShaderRegisterType)pDesc.ComponentType,
                 Mask = (ShaderComponentMaskFlags)pDesc.Mask,
-                ReadWriteMask = pDesc.ReadWriteMask,
+                ReadWriteMask = (ShaderComponentMaskFlags)pDesc.ReadWriteMask,
                 MinPrecision = (ShaderMinPrecision)pDesc.MinPrecision,
                 Register = pDesc.Register,
                 SemanticIndex = pDesc.SemanticIndex,
                 SemanticName = SilkMarshal.PtrToString((nint)pDesc.SemanticName).ToUpper(),
                 SemanticNamePtr = pDesc.SemanticName,
                 Stream = pDesc.Stream,
-                SystemValueType = (ShaderSVType)pDesc.SystemValueType
+                SystemValueType = (ShaderSVType)pDesc.SystemValueType,
             });
         }
     }

@@ -149,7 +149,7 @@ internal class SpirvCompiler : DxcCompiler
                     return GeometryHullTopology.Point;
 
                 case SpirvExecutionMode.InputTrianglesAdjacency:
-                    return GeometryHullTopology.TriangleAdjaccency;
+                    return GeometryHullTopology.TriangleAdjacency;
             }
         }
 
@@ -325,7 +325,7 @@ internal class SpirvCompiler : DxcCompiler
             {
                 ComponentType = GetRegisterType(v.Type),
                 Mask = ShaderComponentMaskFlags.All,
-                ReadWriteMask = 255,
+                ReadWriteMask = ShaderComponentMaskFlags.All,
                 MinPrecision = GetMinPrecision(v.Type),
                 Register = v.Binding.HasValue ? v.Binding.Value : 0,
                 SemanticIndex = v.Binding.HasValue ? v.Binding.Value : 0,
