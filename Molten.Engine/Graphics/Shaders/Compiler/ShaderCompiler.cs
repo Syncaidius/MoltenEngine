@@ -150,28 +150,37 @@ public abstract class ShaderCompiler : EngineObject
                 continue;
             }
 
-            if (CompileSource(context.EntryPoint, epType, context, out ShaderCodeResult cResult))
+            // Since it's not possible to have two functions in the same file with the same name, we'll just check if
+            // a shader with the same entry-point name is already loaded in the context.
+            // If not, compile it.
+            if (!context.Shaders.TryGetValue(context.EntryPoint, out ShaderCodeResult cResult))
             {
-                result[epType] = cResult;
-                ShaderComposition sc = pass.AddComposition(epType);
-
-                if (Validate(pass, context, cResult))
+                cResult = CompileSource(context.EntryPoint, epType, context);
+                if (cResult != null)
                 {
-                    sc.PtrShader = BuildNativeShader(pass, epType, cResult.ByteCode, cResult.NumBytes);
-                    sc.InputLayout = BuildIO(cResult, sc.Type, ShaderIOLayoutType.Input);
-                    sc.OutputLayout = BuildIO(cResult, sc.Type, ShaderIOLayoutType.Output);
+                    if (Validate(pass, context, cResult))
+                    {
+                        context.Shaders.Add(context.EntryPoint, cResult);
+                    }
+                    else
+                    {
+                        context.AddError($"{context.Source.Filename}: Validation failed for '{epType}' stage of shader pass.");
+                        return;
+                    }
                 }
                 else
                 {
-                    context.AddError($"{context.Source.Filename}: Validation failed for '{epType}' stage of shader pass.");
+                    context.AddError($"{context.Source.Filename}: Failed to compile {epType} stage of shader pass.");
                     return;
                 }
             }
-            else
-            {
-                context.AddError($"{context.Source.Filename}: Failed to compile {epType} stage of shader pass.");
-                return;
-            }
+
+            // At this point, the bytecode has already been validated, so we can proceed.
+            result[epType] = cResult;
+            ShaderComposition sc = pass.AddComposition(epType);
+            sc.PtrShader = BuildNativeShader(pass, epType, cResult.ByteCode, cResult.NumBytes);
+            sc.InputLayout = BuildIO(cResult, sc.Type, ShaderIOLayoutType.Input);
+            sc.OutputLayout = BuildIO(cResult, sc.Type, ShaderIOLayoutType.Output);
         }
 
         if (!context.HasErrors)
@@ -237,7 +246,7 @@ public abstract class ShaderCompiler : EngineObject
 
     public abstract ShaderIOLayout BuildIO(ShaderCodeResult result, ShaderType sType, ShaderIOLayoutType type);
 
-    public abstract bool CompileSource(string entryPoint, ShaderType type, ShaderCompilerContext context, out ShaderCodeResult result);
+    public abstract ShaderCodeResult CompileSource(string entryPoint, ShaderType type, ShaderCompilerContext context);
 
     public abstract bool BuildStructure(ShaderCompilerContext context, HlslShader shader, ShaderCodeResult result, ShaderComposition composition);
 

@@ -10,6 +10,10 @@ internal unsafe class PipelineStateDX12 : GraphicsObject<DeviceDX12>
     public PipelineStateDX12(DeviceDX12 device, ShaderPassDX12 pass, ref ShaderPassParameters parameters) : 
         base(device)
     {
+        _desc = new GraphicsPipelineStateDesc()
+        {
+            
+        };
     }
 
     protected override void OnGraphicsRelease()

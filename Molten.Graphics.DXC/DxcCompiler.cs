@@ -89,78 +89,67 @@ public unsafe abstract class DxcCompiler : ShaderCompiler
     /// <param name="result"></param>
     /// <returns></returns>
     /// 
-    public override bool CompileSource(string entryPoint, ShaderType type, 
-        ShaderCompilerContext context, out ShaderCodeResult result)
+    public override ShaderCodeResult CompileSource(string entryPoint, ShaderType type,
+        ShaderCompilerContext context)
     {
         const NativeStringEncoding argEncoding = NativeStringEncoding.LPWStr;
 
-        // Since it's not possible to have two functions in the same file with the same name, we'll just check if
-        // a shader with the same entry-point name is already loaded in the context.
-        if (!context.Shaders.TryGetValue(entryPoint, out result))
+        DxcArgumentBuilder args = new DxcArgumentBuilder(context);
+        ShaderReflection reflection = null;
+
+        foreach (DxcCompilerArg arg in _baseArgs.Keys)
         {
-            DxcArgumentBuilder args = new DxcArgumentBuilder(context);
-            ShaderReflection reflection = null;
+            string argVal = _baseArgs[arg];
+            if (string.IsNullOrWhiteSpace(argVal))
+                args.Set(arg);
+            else
+                args.Set(arg, argVal);
+        }
 
-            foreach (DxcCompilerArg arg in _baseArgs.Keys)
+        args.SetShaderProfile(Model, type);
+        args.SetEntryPoint(entryPoint);
+
+        Guid dxcResultGuid = IDxcResult.Guid;
+        void* ptrResult;
+        char** ptrArgs = args.GetArgsPtr(argEncoding, out uint argCount);
+
+        DxcBuffer srvBuffer = BuildSource(context.Source, Encoding.UTF8);
+        HResult hResult = (HResult)_native->Compile(srvBuffer, ptrArgs, argCount, null, &dxcResultGuid, &ptrResult);
+        args.FreeArgsPtr(ref ptrArgs, argCount, argEncoding);
+
+        IDxcResult* dxcResult = (IDxcResult*)ptrResult;
+        IDxcBlob* byteCode = null;
+        IDxcBlob* pdbData = null;
+        string pdbPath = "";
+
+        // List all available outputs
+        uint numOutputs = dxcResult->GetNumOutputs();
+        context.AddDebug($"{numOutputs} DXC outputs found: ");
+        for (uint i = 0; i < numOutputs; i++)
+        {
+            OutKind kind = dxcResult->GetOutputByIndex(i);
+            context.AddDebug($"\t{kind}");
+        }
+
+        LoadErrors(context, dxcResult, NativeStringEncoding.UTF8);
+        NativeUtil.ReleasePtr(ref pdbData);
+
+        if (!context.HasErrors && GetDxcOutput(context, OutKind.Object, dxcResult, ref byteCode))
+        {
+            LoadPdbData(context, dxcResult, ref pdbData, ref pdbPath);
+
+            try
             {
-                string argVal = _baseArgs[arg];
-                if (string.IsNullOrWhiteSpace(argVal))
-                    args.Set(arg);
-                else
-                    args.Set(arg, argVal);
+                reflection = BuildReflection(context, args, byteCode, dxcResult);
+                return new ShaderCodeResult(reflection, byteCode, byteCode->GetBufferSize(), pdbData);
             }
-
-            args.SetShaderProfile(Model, type);
-            args.SetEntryPoint(entryPoint);
-
-            Guid dxcResultGuid = IDxcResult.Guid;
-            void* ptrResult;
-            char** ptrArgs = args.GetArgsPtr(argEncoding, out uint argCount);
-
-            DxcBuffer srvBuffer = BuildSource(context.Source, Encoding.UTF8);
-            HResult hResult = (HResult)_native->Compile(srvBuffer, ptrArgs, argCount, null, &dxcResultGuid, &ptrResult);
-            args.FreeArgsPtr(ref ptrArgs, argCount, argEncoding);
-
-            IDxcResult* dxcResult = (IDxcResult*)ptrResult;
-            IDxcBlob* byteCode = null;
-            IDxcBlob* pdbData = null;
-            string pdbPath = "";
-
-            // List all available outputs
-            uint numOutputs = dxcResult->GetNumOutputs();
-            context.AddDebug($"{numOutputs} DXC outputs found: ");
-            for(uint i = 0; i < numOutputs; i++)
+            catch (Exception ex)
             {
-                OutKind kind = dxcResult->GetOutputByIndex(i);
-                context.AddDebug($"\t{kind}");
-            }
-
-            LoadErrors(context, dxcResult, NativeStringEncoding.UTF8);
-            NativeUtil.ReleasePtr(ref pdbData);
-
-            if (context.HasErrors)
-                return false;
-
-            if (GetDxcOutput(context, OutKind.Object, dxcResult, ref byteCode))
-            {
-                LoadPdbData(context, dxcResult, ref pdbData, ref pdbPath);
-
-                try
-                {
-                    reflection = BuildReflection(context, args, byteCode, dxcResult);
-                }
-                catch (Exception ex)
-                {
-                    context.AddError($"An error occurred while building shader reflection: {ex.Message}");
-                    return false;
-                }
-
-                result = new ShaderCodeResult(reflection, byteCode, byteCode->GetBufferSize(), pdbData);
-                context.Shaders.Add(entryPoint, result);
+                context.AddError($"An error occurred while building shader reflection: {ex.Message}");
             }
         }
 
-        return true;
+        return null;
     }
 
     private void LoadPdbData(ShaderCompilerContext context, IDxcResult* dxcResult, ref IDxcBlob* data, ref string pdbPath)
@@ -216,10 +205,8 @@ public unsafe abstract class DxcCompiler : ShaderCompiler
         {
             nuint numBytes = pErrorBlob->GetBufferSize();
             string strErrors = SilkMarshal.PtrToString((nint)ptrErrors, encoding);
-
             string[] entries = strErrors.Split('\n', StringSplitOptions.RemoveEmptyEntries);
 
-            bool isError = true;
             for (int i = 0; i < entries.Length; i++)
             {
                 string err = entries[i].Trim();
@@ -227,15 +214,8 @@ public unsafe abstract class DxcCompiler : ShaderCompiler
                     continue;
 
                 if(err.Contains("error: "))
-                    isError = true;
-                else if(err.Contains("warning: "))
-                    isError = false;
-
-
-                // Add error without any trimming
-                if (isError)
                     context.AddError(entries[i]);
-                else
+                else if(err.Contains("warning: "))
                     context.AddWarning(entries[i]);
             }
         }

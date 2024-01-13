@@ -201,59 +201,53 @@ public unsafe class FxcCompiler : ShaderCompiler
     /// <param name="context"></param>
     /// <param name="result"></param>
     /// <returns></returns>
-    public override bool CompileSource(string entryPoint, ShaderType type, 
-        ShaderCompilerContext context, out ShaderCodeResult result)
+    public override ShaderCodeResult CompileSource(string entryPoint, ShaderType type,
+        ShaderCompilerContext context)
     {
         Encoding encoding = CodePagesEncodingProvider.Instance.GetEncoding(1252); // Ansi codepage
         NativeStringEncoding nativeEncoding = NativeStringEncoding.LPStr;
-        
-        // Since it's not possible to have two functions in the same file with the same name, we'll just check if
-        // a shader with the same entry-point name is already loaded in the context.
-        if (!context.Shaders.TryGetValue(entryPoint, out result))
+
+        ulong numBytes = 0;
+        string shaderProfile = Model.ToProfile(type);
+        byte* pSourceName = EngineUtil.StringToPtr(context.Source.Filename, encoding);
+        byte* pEntryPoint = (byte*)SilkMarshal.StringToPtr(entryPoint, nativeEncoding);
+        byte* pTarget = (byte*)SilkMarshal.StringToPtr(shaderProfile, nativeEncoding);
+        void* pSrc = EngineUtil.StringToPtr(context.Source.SourceCode, encoding, out numBytes);
+        FxcCompileFlags compileFlags = context.Flags.Translate();
+
+        ID3D10Blob* pByteCode = null;
+        ID3D10Blob* pErrors = null;
+        ID3D10Blob* pProcessedSrc = null;
+
+        // Preprocess and check for errors
+        HResult hr = _d3dCompiler.Preprocess(pSrc, (nuint)numBytes, pSourceName, null, null, &pProcessedSrc, &pErrors);
+        ParseErrors(context, hr, pErrors);
+
+        // Compile source and check for errors
+        if (hr.IsSuccess)
         {
-            ulong numBytes = 0;
-            string shaderProfile = Model.ToProfile(type);
-            byte* pSourceName = EngineUtil.StringToPtr(context.Source.Filename, encoding);
-            byte* pEntryPoint = (byte*)SilkMarshal.StringToPtr(entryPoint, nativeEncoding);
-            byte* pTarget = (byte*)SilkMarshal.StringToPtr(shaderProfile, nativeEncoding);
-            void* pSrc = EngineUtil.StringToPtr(context.Source.SourceCode, encoding, out numBytes);
-            FxcCompileFlags compileFlags = context.Flags.Translate();
+            void* postProcessedSrc = pProcessedSrc->GetBufferPointer();
+            nuint postProcessedSize = pProcessedSrc->GetBufferSize();
 
-            ID3D10Blob* pByteCode = null;
-            ID3D10Blob* pErrors = null;
-            ID3D10Blob* pProcessedSrc = null;
-
-            // Preprocess and check for errors
-            HResult hr = _d3dCompiler.Preprocess(pSrc, (nuint)numBytes, pSourceName, null, null, &pProcessedSrc, &pErrors);
+            hr = _d3dCompiler.Compile(postProcessedSrc, postProcessedSize, pSourceName, null, null, pEntryPoint, pTarget, (uint)compileFlags, 0, &pByteCode, &pErrors);
             ParseErrors(context, hr, pErrors);
-
-            // Compile source and check for errors
-            if (hr.IsSuccess)
-            {
-                void* postProcessedSrc = pProcessedSrc->GetBufferPointer();
-                nuint postProcessedSize = pProcessedSrc->GetBufferSize();
-
-                hr = _d3dCompiler.Compile(postProcessedSrc, postProcessedSize, pSourceName, null, null, pEntryPoint, pTarget, (uint)compileFlags, 0, &pByteCode, &pErrors);
-                ParseErrors(context, hr, pErrors);
-            }
-
-            //Store shader result
-            if (!context.HasErrors)
-            {
-                ShaderReflection reflection = BuildReflection(context, pByteCode);
-                result = new ShaderCodeResult(reflection, pByteCode, pByteCode->GetBufferSize(), null);
-                context.Shaders.Add(entryPoint, result);
-            }
-
-            NativeUtil.ReleasePtr(ref pProcessedSrc);
-            NativeUtil.ReleasePtr(ref pErrors);
-            EngineUtil.Free(ref pSrc);
-            EngineUtil.Free(ref pSourceName);
-            SilkMarshal.Free((nint)pEntryPoint);
-            SilkMarshal.Free((nint) pTarget);
         }
 
-        return !context.HasErrors;
+        //Store shader result
+        if (!context.HasErrors)
+        {
+            ShaderReflection reflection = BuildReflection(context, pByteCode);
+            return new ShaderCodeResult(reflection, pByteCode, pByteCode->GetBufferSize(), null);
+        }
+
+        NativeUtil.ReleasePtr(ref pProcessedSrc);
+        NativeUtil.ReleasePtr(ref pErrors);
+        EngineUtil.Free(ref pSrc);
+        EngineUtil.Free(ref pSourceName);
+        SilkMarshal.Free((nint)pEntryPoint);
+        SilkMarshal.Free((nint)pTarget);
+
+        return null;
     }
 
     public override ShaderIOLayout BuildIO(ShaderCodeResult result, ShaderType sType, ShaderIOLayoutType type)

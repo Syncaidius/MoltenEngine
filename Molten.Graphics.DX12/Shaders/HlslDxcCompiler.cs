@@ -7,6 +7,10 @@ using DxcBuffer = Silk.NET.Direct3D.Compilers.Buffer;
 
 namespace Molten.Graphics.DX12;
 
+/// <summary>
+/// Compiles HLSL shaders using DXC for Windows.
+/// <para>If the compiler fails in release mode, try updating DXIL.dll. Located at: C:\Program Files (x86)\Windows Kits\10\Redist\D3D\x64</para>
+/// </summary>
 internal class HlslDxcCompiler : DxcCompiler
 {
     public HlslDxcCompiler(RendererDX12 renderer, string includePath, Assembly includeAssembly) : 
@@ -22,12 +26,19 @@ internal class HlslDxcCompiler : DxcCompiler
 
     protected override unsafe void* BuildNativeShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes)
     {
-        throw new NotImplementedException();
+        IDxcBlob* blob = (IDxcBlob*)byteCode;
+        byteCode = blob->GetBufferPointer();
+
+        ShaderBytecode* handle = EngineUtil.Alloc<ShaderBytecode>();
+        handle->PShaderBytecode = byteCode;
+        handle->BytecodeLength = numBytes;
+
+        return handle;
     }
 
     protected override bool Validate(HlslPass pass, ShaderCompilerContext context, ShaderCodeResult result)
     {
-        throw new NotImplementedException();
+        return true;
     }
 
     protected override unsafe ShaderReflection OnBuildReflection(ShaderCompilerContext context, IDxcBlob* byteCode, DxcBuffer* reflectionBuffer)
