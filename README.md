@@ -51,12 +51,14 @@ Blank - Not Started\
 
 | Feature                | DX11       | DX12     | Vulkan |
 | :---                   | :-------:  | :-----: | :-:    |
+| Multi-GPU Support      | 🚧         | 🚧     | 🚧    |
 | Deferrend rendering    | 🚧         |         |       |
 | Physically-Based (PBR) |            |         |       |
 | Geometry Shaders       | ✔️         |         |      |
 | Tessellation           | 🚧         |         |      |
 | Hull & Domain Shaders  | ✔️         |         |      |
 | Compute Shaders        | ✔️         |         |      |
+| Mesh Shaders           | 🚫         |         |      |
 | 2D Spite batching      | ✔️         |         |      |
 | 2D Primitive batching  | ✔️         |         |      |
 | Compressed textures    | ✔️         |         |      |
