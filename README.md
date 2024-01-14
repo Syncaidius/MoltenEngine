@@ -49,38 +49,36 @@ See the following table for the per-renderer support and status of each feature.
 Blank - Not Started\
 🚫 Not-supported
 
-| Feature                | DX11       | DX12    | OpenGL  | OpenGL ES  | Vulkan |
-| :---                   | :-------:  | :-----: | :---:   | :-:        | :-:    |
-| Deferrend rendering    | 🚧         |         |        |             |       |
-| Physically-Based (PBR) |            |         |        |             |       |
-| Geometry Shaders       | ✔️         |         |        |             |       |
-| Tessellation           | 🚧         |         |        |             |       |
-| Hull & Domain Shaders  | ✔️         |         |        |             |       |
-| Compute Shaders        | ✔️         |         |        |             |       |
-| 2D Spite batching      | ✔️         |         |        |             |       |
-| 2D Primitive batching  | ✔️         |         |        |             |       |
-| Compressed textures    | ✔️         |         |        |             |       |
-| [Hardware instancing](https://en.wikipedia.org/wiki/Geometry_instancing)    | ✔️         |         |        |             |       |
-| [Occlusion culling](https://en.wikipedia.org/wiki/Hidden-surface_determination#Occlusion_culling)      |            |         |        |             |       |
-| [Frustrum culling](https://en.wikipedia.org/wiki/Hidden-surface_determination#Viewing-frustum_culling)       |            |         |        |             |       |
-| [Portal culling](https://docs.panda3d.org/1.10/python/programming/render-attributes/occlusion-culling/portal-culling)         |            |         |        |             |       |
-| [Level of Detail (LoD)](https://en.wikipedia.org/wiki/Level_of_detail_(computer_graphics))  |            |         |        |             |       |
-| HDR support            |            |         |        |             |       |
-| 2D Texture arrays      | ✔️         |         |        |             |       |
-| 3D Texture arrays      | ✔️         |         |        |             |       |
-| 3D/volume textures     | ✔️         |         |        |             |       |
-| static skyboxes        | ✔️         |         |        |             |       |
-| real-time skyboxes     |            |         |        |             |       |
-| multi-window support   | ✔️         |         |        | 🚫          |       |
-| Render into WinForms   | ✔️         |         |        | 🚫          | 🚫    |
-| Render into WPF        |            |         |        | 🚫          | 🚫    |
-| Render into UWP        |            |         | 🚫    | 🚫          | 🚫    |
-|[Render into MAUI](https://docs.microsoft.com/en-us/dotnet/maui/what-is-maui) |            |         |       |             |       |
-| Render into Android UI | 🚫         | 🚫      |       |             |       |
-| Raytracing             | 🚫         |         | 🚫    | 🚫          |       |
-| HLSL Shader Compiler   | 🚧		  | 🚫      | 🚫    | 🚫          | 🚫   |
-| GLSL Shader Compiler   |  		  |         |        |             |      |
-| SPIR-V Shader Compiler |  		  |         |        |             |      |
+| Feature                | DX11       | DX12     | Vulkan |
+| :---                   | :-------:  | :-----: | :-:    |
+| Deferrend rendering    | 🚧         |         |       |
+| Physically-Based (PBR) |            |         |       |
+| Geometry Shaders       | ✔️         |         |      |
+| Tessellation           | 🚧         |         |      |
+| Hull & Domain Shaders  | ✔️         |         |      |
+| Compute Shaders        | ✔️         |         |      |
+| 2D Spite batching      | ✔️         |         |      |
+| 2D Primitive batching  | ✔️         |         |      |
+| Compressed textures    | ✔️         |         |      |
+| [Hardware instancing](https://en.wikipedia.org/wiki/Geometry_instancing)    | ✔️         |         |        | 
+| [Occlusion culling](https://en.wikipedia.org/wiki/Hidden-surface_determination#Occlusion_culling)      |            |         |        |
+| [Frustrum culling](https://en.wikipedia.org/wiki/Hidden-surface_determination#Viewing-frustum_culling)       |            |         |        |
+| [Portal culling](https://docs.panda3d.org/1.10/python/programming/render-attributes/occlusion-culling/portal-culling)         |            |         |        |
+| [Level of Detail (LoD)](https://en.wikipedia.org/wiki/Level_of_detail_(computer_graphics))  |            |         |        |
+| HDR support            |            |         |        |
+| 2D Texture arrays      | ✔️         |         |        |
+| 3D Texture arrays      | ✔️         |         |        |
+| 3D/volume textures     | ✔️         |         |        |
+| static skyboxes        | ✔️         |         |        |
+| real-time skyboxes     |            |         |        |
+| multi-window support   | ✔️         |         |        |
+| Render into WinForms   | ✔️         |         |        |
+| Render into WPF        |            |         |        |
+| Render into UWP        |            |         | 🚫    |
+|[Render into MAUI](https://docs.microsoft.com/en-us/dotnet/maui/what-is-maui) |            |         |       |
+| Render into Android UI | 🚫         | 🚫      |       | 
+| Raytracing             | 🚫         |         | 🚫    | 
+| Shader Compiler (HLSL/SPIR-V)   | 🚧		  | 🚧      | 🚧    | 
 
 # Android
 To build for Android you will need to install the Android workloads by running  
