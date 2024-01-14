@@ -22,6 +22,11 @@ public class ShaderReflection : IDisposable
     public GeometryHullTopology GSInputPrimitive;
 
     /// <summary>
+    /// Gets the maximum number of vertices that the geometry shader stage can output, or null if unknown.
+    /// </summary>
+    public uint? GSMaxOutputVertexCount;
+
+    /// <summary>
     /// Gets a list of required API-specific extensions, if any.
     /// </summary>
     public List<string> RequiredExtensions { get; } = new List<string>();

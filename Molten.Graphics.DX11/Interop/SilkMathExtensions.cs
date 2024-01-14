@@ -53,6 +53,7 @@ public static class SilkMathExtensions
     {
         return (D3DShaderInputFlags)type;
     }
+
     public static D3DCBufferType ToApi(this ConstantBufferType type)
     {
         return (D3DCBufferType)type;

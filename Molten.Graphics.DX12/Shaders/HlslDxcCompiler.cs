@@ -56,16 +56,89 @@ internal unsafe class HlslDxcCompiler : DxcCompiler
 
         ShaderReflection result = new ShaderReflection();
         result.GSInputPrimitive = shaderDesc.GSOutputTopology.FromApi();
-        //result.GSMaxOutputVertexCount = shaderDesc.GSMaxOutputVertexCount;
+        result.GSMaxOutputVertexCount = shaderDesc.GSMaxOutputVertexCount;
 
         for(uint i = 0; i < shaderDesc.BoundResources; i++)
         {
-            ShaderResourceInfo rInfo = new ShaderResourceInfo()
-            {
+            ShaderInputBindDesc rDesc = new();
+            reflection->GetResourceBindingDesc(i, &rDesc);
 
+            ShaderResourceInfo bindInfo = new ShaderResourceInfo()
+            {
+                Name = SilkMarshal.PtrToString((nint)rDesc.Name),
+                BindCount = rDesc.BindCount,
+                BindPoint = rDesc.BindPoint,
+                Dimension = rDesc.Dimension.FromApi(),
+                Type = rDesc.Type.FromApi(),
+                NumSamples = rDesc.NumSamples,
+                ResourceReturnType = rDesc.ReturnType.FromApi(),
+                Flags = ((D3DShaderInputFlags)rDesc.UFlags).FromApi(),
             };
 
-            result.BoundResources.Add(rInfo);
+            result.BoundResources.Add(bindInfo);
+
+            switch (bindInfo.Type)
+            {
+                case ShaderInputType.CBuffer:
+                    ID3D12ShaderReflectionConstantBuffer* buffer = reflection->GetConstantBufferByName(bindInfo.Name);
+                    ShaderBufferDesc bufferDesc = new ShaderBufferDesc();
+                    buffer->GetDesc(ref bufferDesc);
+
+                    // Skip binding info buffers
+                    if (bufferDesc.Type == D3DCBufferType.D3DCTResourceBindInfo)
+                        continue;
+
+                    ConstantBufferInfo cBufferInfo = new ConstantBufferInfo()
+                    {
+                        Name = bindInfo.Name,
+                        Type = bufferDesc.Type.FromApi(),
+                        Flags = (ConstantBufferFlags)bufferDesc.UFlags,
+                        Size = bufferDesc.Size,
+                    };
+
+                    result.ConstantBuffers.Add(bindInfo.Name, cBufferInfo);
+
+                    for (uint v = 0; v < bufferDesc.Variables; v++)
+                    {
+                        ID3D12ShaderReflectionVariable* variable = buffer->GetVariableByIndex(v);
+                        ShaderVariableDesc desc = new ShaderVariableDesc();
+                        variable->GetDesc(&desc);
+
+                        ID3D12ShaderReflectionType* rType = variable->GetType();
+                        ShaderTypeDesc typeDesc = new ShaderTypeDesc();
+                        rType->GetDesc(&typeDesc);
+
+                        ShaderReflection.ReflectionPtr ptrDefault = null;
+                        if (desc.DefaultValue != null)
+                        {
+                            ptrDefault = result.NewPtr(desc.Size);
+                            System.Buffer.MemoryCopy(desc.DefaultValue, ptrDefault, desc.Size, desc.Size);
+                        }
+
+                        ConstantBufferVariableInfo cVarInfo = new ConstantBufferVariableInfo()
+                        {
+                            DefaultValue = ptrDefault,
+                            Name = SilkMarshal.PtrToString((nint)desc.Name),
+                            Size = desc.Size,
+                            StartOffset = desc.StartOffset,
+                            SamplerSize = desc.SamplerSize,
+                            StartSampler = desc.StartSampler,
+                            StartTexture = desc.StartTexture,
+                            TextureSize = desc.TextureSize,
+                            Flags = (ShaderVariableFlags)desc.UFlags,
+                        };
+
+                        cBufferInfo.Variables.Add(cVarInfo);
+                        cVarInfo.Type.Name = SilkMarshal.PtrToString((nint)typeDesc.Name);
+                        cVarInfo.Type.Offset = typeDesc.Offset;
+                        cVarInfo.Type.Type = (ShaderVariableType)typeDesc.Type;
+                        cVarInfo.Type.Class = (ShaderVariableClass)typeDesc.Class;
+                        cVarInfo.Type.ColumnCount = typeDesc.Columns;
+                        cVarInfo.Type.RowCount = typeDesc.Rows;
+                        cVarInfo.Type.Elements = typeDesc.Elements;
+                    }
+                    break;
+            }
         }
 
         PopulateShaderParameters(context, result, reflection, ref shaderDesc, ShaderIOLayoutType.Input);
