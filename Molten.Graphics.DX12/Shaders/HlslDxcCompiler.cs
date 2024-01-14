@@ -41,6 +41,16 @@ internal unsafe class HlslDxcCompiler : DxcCompiler
         return true;
     }
 
+    public override ShaderIOLayout BuildIO(ShaderCodeResult result, ShaderType sType, ShaderIOLayoutType type)
+    {
+        return new ShaderIOLayoutDX12(result, sType, type);
+    }
+
+    public override bool BuildStructure(ShaderCompilerContext context, HlslShader shader, ShaderCodeResult result, ShaderComposition composition)
+    {
+        throw new NotImplementedException();
+    }
+
     protected override ShaderReflection OnBuildReflection(ShaderCompilerContext context, IDxcBlob* byteCode, DxcBuffer* reflectionBuffer)
     {
         Guid guidReflection = ID3D12ShaderReflection.Guid;
@@ -141,14 +151,14 @@ internal unsafe class HlslDxcCompiler : DxcCompiler
             }
         }
 
-        PopulateShaderParameters(context, result, reflection, ref shaderDesc, ShaderIOLayoutType.Input);
-        PopulateShaderParameters(context, result, reflection, ref shaderDesc, ShaderIOLayoutType.Output);
+        PopulateReflectionParameters(context, result, reflection, ref shaderDesc, ShaderIOLayoutType.Input);
+        PopulateReflectionParameters(context, result, reflection, ref shaderDesc, ShaderIOLayoutType.Output);
 
         NativeUtil.ReleasePtr(ref reflection);
         return result;
     }
 
-    private void PopulateShaderParameters(
+    private void PopulateReflectionParameters(
         ShaderCompilerContext context, 
         ShaderReflection result, 
         ID3D12ShaderReflection* reflection, 

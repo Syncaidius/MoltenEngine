@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Molten.Graphics.DX11;
+namespace Molten.Graphics;
 
 /// <summary>A placeholder vertex type for times when no vertex input is required.</summary>
 [StructLayout(LayoutKind.Sequential, Pack = 4)]

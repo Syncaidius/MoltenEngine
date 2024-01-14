@@ -272,17 +272,6 @@ public unsafe abstract class DxcCompiler : ShaderCompiler
         return buffer;
     }
 
-    public override ShaderIOLayout BuildIO(ShaderCodeResult result, ShaderType sType, ShaderIOLayoutType type)
-    {
-        return new DXCShaderIOLayout(result, sType, type);
-    }
-
-    public override bool BuildStructure(ShaderCompilerContext context, HlslShader shader, ShaderCodeResult result, ShaderComposition composition)
-    {
-        //throw new NotImplementedException();
-        return false;
-    }
-
     protected IDxcUtils* Utils => _utils;
 
     protected DXC Api => _dxc;

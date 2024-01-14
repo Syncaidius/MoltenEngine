@@ -20,8 +20,8 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue
     ShaderCSStage _cs;
 
     D3DPrimitiveTopology _boundTopology;
-    VertexInputLayoutDX11 _inputLayout;
-    List<VertexInputLayoutDX11> _cachedLayouts = new List<VertexInputLayoutDX11>();
+    PipelineInputLayoutDX11 _inputLayout;
+    List<PipelineInputLayoutDX11> _cachedLayouts = new List<PipelineInputLayoutDX11>();
 
     GraphicsDepthWritePermission _boundDepthMode = GraphicsDepthWritePermission.Enabled;
 
@@ -560,17 +560,17 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue
 
     /// <summary>Retrieves or creates a usable input layout for the provided vertex buffers and sub-effect.</summary>
     /// <returns>An instance of InputLayout.</returns>
-    private VertexInputLayoutDX11 GetInputLayout(HlslPass pass)
+    private PipelineInputLayoutDX11 GetInputLayout(HlslPass pass)
     {
         // Retrieve layout list or create new one if needed.
-        foreach (VertexInputLayoutDX11 l in _cachedLayouts)
+        foreach (PipelineInputLayoutDX11 l in _cachedLayouts)
         {
             if (l.IsMatch(Device.Log, State.VertexBuffers))
                 return l;
         }
 
         ShaderComposition vs = pass[ShaderType.Vertex];
-        VertexInputLayoutDX11 input = new VertexInputLayoutDX11(DXDevice, State.VertexBuffers, (ID3D10Blob*)pass.InputByteCode, vs.InputLayout);
+        PipelineInputLayoutDX11 input = new PipelineInputLayoutDX11(DXDevice, State.VertexBuffers, (ID3D10Blob*)pass.InputByteCode, vs.InputLayout);
         _cachedLayouts.Add(input);
 
         return input;

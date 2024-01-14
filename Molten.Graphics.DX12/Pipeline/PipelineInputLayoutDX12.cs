@@ -1,20 +1,21 @@
 ﻿using Silk.NET.Core.Native;
-using Silk.NET.Direct3D11;
+using Silk.NET.Direct3D12;
 
-namespace Molten.Graphics.DX11;
+namespace Molten.Graphics.DX12;
 
 /// <summary>A helper class that safely wraps InputLayout.</summary>
-internal unsafe class VertexInputLayoutDX11 : GraphicsObject<DeviceDX11>
+internal unsafe class PipelineInputLayoutDX11 : GraphicsObject<DeviceDX12>
 {
-    ID3D11InputLayout* _native;
+    InputLayoutDesc _desc;
     ulong[] _expectedFormatIDs;
 
-    internal VertexInputLayoutDX11(DeviceDX11 device,
-        GraphicsStateValueGroup<GraphicsBuffer> vbSlots, 
+    internal PipelineInputLayoutDX11(DeviceDX12 device,
+        GraphicsStateValueGroup<GraphicsBuffer> vbSlots,
         ID3D10Blob* vertexBytecode,
-        ShaderIOLayout io) : 
+        ShaderIOLayout io) :
         base(device)
     {
+        _desc = new InputLayoutDesc();
         IsValid = true;
         _expectedFormatIDs = new ulong[vbSlots.Length];
         List<InputElementDesc> elements = new List<InputElementDesc>();
@@ -38,7 +39,7 @@ internal unsafe class VertexInputLayoutDX11 : GraphicsObject<DeviceDX11>
             }
 
             // Collate vertex format elements into layout and set the correct input slot for each element.
-            elements.AddRange((format.Structure as ShaderIOLayoutDX11).VertexElements);
+            elements.AddRange((format.Structure as ShaderIOLayoutDX12).VertexElements);
 
             for (int eID = startID; eID < elements.Count; eID++)
             {
@@ -56,54 +57,26 @@ internal unsafe class VertexInputLayoutDX11 : GraphicsObject<DeviceDX11>
         if (elements.Count == 0)
         {
             VertexFormat nullFormat = device.VertexCache.Get<VertexWithID>();
-            elements.Add((nullFormat.Structure as ShaderIOLayoutDX11).VertexElements[0]);
+            elements.Add((nullFormat.Structure as ShaderIOLayoutDX12).VertexElements[0]);
             IsNullBuffer = true;
         }
 
-        InputElementDesc[] finalElements = elements.ToArray();
-
-        // Attempt creation of input layout.
-        if (IsValid)
+        _desc = new InputLayoutDesc()
         {
-            void* ptrByteCode = vertexBytecode->GetBufferPointer();
-            nuint numBytes = vertexBytecode->GetBufferSize();
+            PInputElementDescs = EngineUtil.AllocArray<InputElementDesc>((nuint)elements.Count),
+            NumElements = (uint)elements.Count,
+        };
 
-            fixed(InputElementDesc* ptrElements = &finalElements[0])
-                device.Ptr->CreateInputLayout(ptrElements, (uint)finalElements.Length, ptrByteCode, numBytes, ref _native);
-
-            if(_native == null)
-            {
-                device.Log.Error("Failed to create new vertex input layout");
-                device.ProcessDebugLayerMessages();
-            }
-        }
-        else
-        {
-            device.Log.Warning($"Vertex formats do not match the input layout of shader:");
-            for (int i = 0; i < vbSlots.Length; i++)
-            {
-                if (vbSlots.BoundValues[i] == null)
-                    continue;
-
-                format = vbSlots.BoundValues[i].VertexFormat;
-
-                device.Log.Warning("Format - Buffer slot " + i + ": ");
-                for (int f = 0; f < format.Structure.Metadata.Length; f++)
-                    device.Log.Warning($"\t[{f}]{format.Structure.Metadata[f].Name} -- index: {format.Structure.Metadata[f].SemanticIndex} -- slot: {i}");
-            }
-
-            // List final input structure.
-            device.Log.Warning("Shader Input Structure: ");
-            for (int i = 0; i < finalElements.Length; i++)
-                device.Log.Warning($"\t[{i}]{format.Structure.Metadata[i].Name} -- index: {finalElements[i].SemanticIndex} -- slot: {finalElements[i].InputSlot}");
-        }
+        // Copy final element list into the unsafe array of elements.
+        Span<InputElementDesc> elementSpan = new Span<InputElementDesc>(_desc.PInputElementDescs, elements.Count);
+        elements.CopyTo(elementSpan);
     }
 
     public bool IsMatch(Logger log, GraphicsStateValueGroup<GraphicsBuffer> grp)
     {
         for (int i = 0; i < grp.Length; i++)
         {
-            BufferDX11 seg = grp.BoundValues[i] as BufferDX11;
+            BufferDX12 seg = grp.BoundValues[i] as BufferDX12;
 
             // If null vertex buffer, check if shader actually need one to be present.
             if (seg == null)
@@ -131,12 +104,7 @@ internal unsafe class VertexInputLayoutDX11 : GraphicsObject<DeviceDX11>
 
     protected override void OnGraphicsRelease()
     {
-        NativeUtil.ReleasePtr(ref _native);
-    }
-
-    public static implicit operator ID3D11InputLayout*(VertexInputLayoutDX11 resource)
-    {
-        return resource.NativePtr;
+        EngineUtil.Free(ref _desc.PInputElementDescs);
     }
 
     /// <summary>Gets whether or not the input layout is valid.</summary>
@@ -146,9 +114,9 @@ internal unsafe class VertexInputLayoutDX11 : GraphicsObject<DeviceDX11>
     public bool IsInstanced { get; }
 
     /// <summary>
-    /// Gets whether the current <see cref="VertexInputLayoutDX11"/> can represent a null vertex buffer. e.g. Contains SV_VertexID as the only vertex element.
+    /// Gets whether the current <see cref="PipelineInputLayoutDX11"/> can represent a null vertex buffer. e.g. Contains SV_VertexID as the only vertex element.
     /// </summary>
     public bool IsNullBuffer { get; }
 
-    internal ref ID3D11InputLayout* NativePtr => ref _native;
+    internal ref InputLayoutDesc Desc => ref _desc;
 }

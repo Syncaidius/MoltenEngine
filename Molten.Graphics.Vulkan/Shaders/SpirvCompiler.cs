@@ -75,6 +75,16 @@ internal class SpirvCompiler : DxcCompiler
         return shader;
     }
 
+    public override ShaderIOLayout BuildIO(ShaderCodeResult result, ShaderType sType, ShaderIOLayoutType type)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override bool BuildStructure(ShaderCompilerContext context, HlslShader shader, ShaderCodeResult result, ShaderComposition composition)
+    {
+        throw new NotImplementedException();
+    }
+
     protected override unsafe ShaderReflection OnBuildReflection(ShaderCompilerContext context, IDxcBlob* byteCode, DxcBuffer* reflectionBuffer)
     {
         // Output to file.
