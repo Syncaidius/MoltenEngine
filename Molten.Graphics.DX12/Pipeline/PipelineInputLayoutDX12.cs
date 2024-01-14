@@ -4,12 +4,12 @@ using Silk.NET.Direct3D12;
 namespace Molten.Graphics.DX12;
 
 /// <summary>A helper class that safely wraps InputLayout.</summary>
-internal unsafe class PipelineInputLayoutDX11 : GraphicsObject<DeviceDX12>
+internal unsafe class PipelineInputLayoutDX12 : GraphicsObject<DeviceDX12>
 {
     InputLayoutDesc _desc;
     ulong[] _expectedFormatIDs;
 
-    internal PipelineInputLayoutDX11(DeviceDX12 device,
+    internal PipelineInputLayoutDX12(DeviceDX12 device,
         GraphicsStateValueGroup<GraphicsBuffer> vbSlots,
         ID3D10Blob* vertexBytecode,
         ShaderIOLayout io) :
@@ -19,7 +19,7 @@ internal unsafe class PipelineInputLayoutDX11 : GraphicsObject<DeviceDX12>
         IsValid = true;
         _expectedFormatIDs = new ulong[vbSlots.Length];
         List<InputElementDesc> elements = new List<InputElementDesc>();
-        VertexFormat format = null;
+        ShaderIOLayout format = null;
 
         // Store the EOID of each expected vertext format.
         for (int i = 0; i < vbSlots.Length; i++)
@@ -27,19 +27,19 @@ internal unsafe class PipelineInputLayoutDX11 : GraphicsObject<DeviceDX12>
             if (vbSlots.BoundValues[i] == null)
                 continue;
 
-            format = vbSlots.BoundValues[i].VertexFormat;
+            format = vbSlots.BoundValues[i].VertexLayout;
 
             /* Check if the current vertex segment's format matches 
                the part of the shader's input structure that it's meant to represent. */
             int startID = elements.Count;
-            if (!io.IsCompatible(format.Structure, startID))
+            if (!io.IsCompatible(format, startID))
             {
                 IsValid = false;
                 break;
             }
 
             // Collate vertex format elements into layout and set the correct input slot for each element.
-            elements.AddRange((format.Structure as ShaderIOLayoutDX12).VertexElements);
+            elements.AddRange((format as ShaderIOLayoutDX12).VertexElements);
 
             for (int eID = startID; eID < elements.Count; eID++)
             {
@@ -56,8 +56,8 @@ internal unsafe class PipelineInputLayoutDX11 : GraphicsObject<DeviceDX12>
         // Check if there are actually any elements. If not, use the default placeholder vertex type.
         if (elements.Count == 0)
         {
-            VertexFormat nullFormat = device.VertexCache.Get<VertexWithID>();
-            elements.Add((nullFormat.Structure as ShaderIOLayoutDX12).VertexElements[0]);
+            ShaderIOLayout nullFormat = device.VertexCache.Get<VertexWithID>();
+            elements.Add((nullFormat as ShaderIOLayoutDX12).VertexElements[0]);
             IsNullBuffer = true;
         }
 
@@ -89,13 +89,13 @@ internal unsafe class PipelineInputLayoutDX11 : GraphicsObject<DeviceDX12>
             }
 
             // Prevent vertex buffer segments with no format from crashing the application.
-            if (seg.VertexFormat == null)
+            if (seg.VertexLayout == null)
             {
                 log.Warning($"Missing format for bound vertex segment {seg.Name} in slot {i}. Skipping validation. This may cause a false input layout match.");
                 continue;
             }
 
-            if (seg.VertexFormat.EOID != _expectedFormatIDs[i])
+            if (seg.VertexLayout.EOID != _expectedFormatIDs[i])
                 return false;
         }
 
@@ -114,7 +114,7 @@ internal unsafe class PipelineInputLayoutDX11 : GraphicsObject<DeviceDX12>
     public bool IsInstanced { get; }
 
     /// <summary>
-    /// Gets whether the current <see cref="PipelineInputLayoutDX11"/> can represent a null vertex buffer. e.g. Contains SV_VertexID as the only vertex element.
+    /// Gets whether the current <see cref="PipelineInputLayoutDX12"/> can represent a null vertex buffer. e.g. Contains SV_VertexID as the only vertex element.
     /// </summary>
     public bool IsNullBuffer { get; }
 

@@ -7,7 +7,7 @@ public abstract partial class GraphicsDevice
     {
         flags |= GraphicsResourceFlags.NoShaderAccess;
         GraphicsBuffer buffer = CreateBuffer(GraphicsBufferType.Vertex, flags, GraphicsFormat.Unknown, vertexCapacity, initialData);
-        buffer.VertexFormat = VertexCache.Get<T>();
+        buffer.VertexLayout = VertexCache.Get<T>();
 
         return buffer;
     }

@@ -18,9 +18,9 @@ public class VertexFormatCache : EngineObject
         public IntPtr Offset;
     }
 
-    ConcurrentDictionary<Type, VertexFormat> Cache { get; }
+    ConcurrentDictionary<Type, ShaderIOLayout> Cache { get; }
 
-    ConcurrentDictionary<ulong, VertexFormat> CacheByID { get; }
+    ConcurrentDictionary<ulong, ShaderIOLayout> CacheByID { get; }
 
     /// <summary>
     /// Gets the <see cref="Type"/> of keys accepted. Valid keys are assignable to this type.
@@ -38,15 +38,15 @@ public class VertexFormatCache : EngineObject
     public VertexFormatCache(VertexFormatNewStructureCallback newCallback, VertexFormatNewElementCallback newElementCallback)
     {
         KeyType = typeof(IVertexType);
-        Cache = new ConcurrentDictionary<Type, VertexFormat>();
-        CacheByID = new ConcurrentDictionary<ulong, VertexFormat>();
+        Cache = new ConcurrentDictionary<Type, ShaderIOLayout>();
+        CacheByID = new ConcurrentDictionary<ulong, ShaderIOLayout>();
         _newCallback = newCallback;
         _newElementCallback = newElementCallback;
     }
 
     protected override void OnDispose()
     {
-        foreach (KeyValuePair<Type, VertexFormat> kv in Cache)
+        foreach (KeyValuePair<Type, ShaderIOLayout> kv in Cache)
             kv.Value.Dispose();
     }
 
@@ -55,9 +55,9 @@ public class VertexFormatCache : EngineObject
     /// </summary>
     /// <param name="eoid">The engine-object-identifier (EOID) of the to be retrieved.</param>
     /// <returns></returns>
-    public VertexFormat GetByID(ulong eoid)
+    public ShaderIOLayout GetByID(ulong eoid)
     {
-        if (CacheByID.TryGetValue(eoid, out VertexFormat format))
+        if (CacheByID.TryGetValue(eoid, out ShaderIOLayout format))
             return format;
         else
             return null;
@@ -66,18 +66,18 @@ public class VertexFormatCache : EngineObject
     /// <summary>Gets an object from the cache using the specified <typeparamref name="IVertexType"/> key.</summary>
     /// <typeparam name="T">The type to use as a key.</typeparam>
     /// <returns></returns>
-    public VertexFormat Get<T>()
+    public ShaderIOLayout Get<T>()
     {
         Type kt = typeof(T);
         return Get(kt);
     }
 
-    public VertexFormat Get(Type getKeyType)
+    public ShaderIOLayout Get(Type getKeyType)
     {
         if (!KeyType.IsAssignableFrom(getKeyType))
             throw new Exception($"The specified vertex type must implement or derive {KeyType.Name}.");
 
-        if (!Cache.TryGetValue(getKeyType, out VertexFormat value))
+        if (!Cache.TryGetValue(getKeyType, out ShaderIOLayout value))
         {
             value = GetNewFormat(getKeyType);
             Cache.TryAdd(getKeyType, value);
@@ -87,7 +87,7 @@ public class VertexFormatCache : EngineObject
         return value;
     }
 
-    private VertexFormat GetNewFormat(Type t)
+    private ShaderIOLayout GetNewFormat(Type t)
     {
         List<FieldElement> fieldElements = new List<FieldElement>();
 
@@ -137,7 +137,7 @@ public class VertexFormatCache : EngineObject
             eCount++;
         }
 
-        return new VertexFormat(structure, sizeOf);
+        return structure;
     }
 
     private string GetSemanticName(VertexElementAttribute att)

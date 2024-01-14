@@ -560,7 +560,7 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue
 
     /// <summary>Retrieves or creates a usable input layout for the provided vertex buffers and sub-effect.</summary>
     /// <returns>An instance of InputLayout.</returns>
-    private PipelineInputLayoutDX11 GetInputLayout(HlslPass pass)
+    private PipelineInputLayoutDX11 GetInputLayout(ShaderPassDX11 pass)
     {
         // Retrieve layout list or create new one if needed.
         foreach (PipelineInputLayoutDX11 l in _cachedLayouts)
@@ -569,8 +569,7 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue
                 return l;
         }
 
-        ShaderComposition vs = pass[ShaderType.Vertex];
-        PipelineInputLayoutDX11 input = new PipelineInputLayoutDX11(DXDevice, State.VertexBuffers, (ID3D10Blob*)pass.InputByteCode, vs.InputLayout);
+        PipelineInputLayoutDX11 input = new PipelineInputLayoutDX11(DXDevice, State.VertexBuffers, pass);
         _cachedLayouts.Add(input);
 
         return input;
