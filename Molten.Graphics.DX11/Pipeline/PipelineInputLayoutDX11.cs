@@ -6,20 +6,26 @@ namespace Molten.Graphics.DX11;
 /// <summary>A helper class that safely wraps InputLayout.</summary>
 internal unsafe class PipelineInputLayoutDX11 : GraphicsObject<DeviceDX11>
 {
+    struct FormatBinding
+    {
+        public ulong FormatEOID;
+        public uint SlotID;
+    }
+
     ID3D11InputLayout* _native;
-    ulong[] _expectedFormatIDs;
+    FormatBinding[] _expectedBindings;
+    ShaderIOLayout _sourceLayout;
 
     internal PipelineInputLayoutDX11(DeviceDX11 device,
         GraphicsStateValueGroup<GraphicsBuffer> vbSlots, 
         ShaderPassDX11 pass) : 
         base(device)
     {
-        ShaderComposition vs = pass[ShaderType.Vertex];
-
         IsValid = true;
-        _expectedFormatIDs = new ulong[vbSlots.Length];
+        ShaderComposition vs = pass[ShaderType.Vertex];
+        _sourceLayout = vs.InputLayout;
+        List<FormatBinding> expected = new List<FormatBinding>();
         List<InputElementDesc> elements = new List<InputElementDesc>();
-        ShaderIOLayout inputLayout = null;
 
         // Store the EOID of each expected vertext format.
         for (int i = 0; i < vbSlots.Length; i++)
@@ -27,12 +33,12 @@ internal unsafe class PipelineInputLayoutDX11 : GraphicsObject<DeviceDX11>
             if (vbSlots.BoundValues[i] == null)
                 continue;
 
-            inputLayout = vbSlots.BoundValues[i].VertexLayout;
+            ShaderIOLayout inputLayout = vbSlots.BoundValues[i].VertexLayout;
 
             /* Check if the current vertex segment's format matches 
                the part of the shader's input structure that it's meant to represent. */
             int startID = elements.Count;
-            if (!vs.InputLayout.IsCompatible(inputLayout, startID))
+            if (!_sourceLayout.IsCompatible(inputLayout, startID))
             {
                 IsValid = false;
                 break;
@@ -50,30 +56,41 @@ internal unsafe class PipelineInputLayoutDX11 : GraphicsObject<DeviceDX11>
                 IsInstanced = IsInstanced || e.InputSlotClass == InputClassification.PerInstanceData;
             }
 
-            _expectedFormatIDs[i] = inputLayout.EOID;
+            expected.Add(new FormatBinding()
+            {
+                FormatEOID = inputLayout.EOID,
+                SlotID = (uint)i,
+            });
         }
+
 
         // Check if there are actually any elements. If not, use the default placeholder vertex type.
         if (elements.Count == 0)
         {
             ShaderIOLayout nullFormat = device.VertexCache.Get<VertexWithID>();
             elements.Add((nullFormat as ShaderIOLayoutDX11).VertexElements[0]);
+            expected.Add(new FormatBinding()
+            {
+                 FormatEOID = nullFormat.EOID,
+                 SlotID = 0,
+            });
             IsNullBuffer = true;
         }
 
+        _expectedBindings = expected.ToArray();
         InputElementDesc[] finalElements = elements.ToArray();
 
         // Attempt creation of input layout.
         if (IsValid)
         {
             ID3D10Blob* byteCode = (ID3D10Blob*)pass.InputByteCode;
-            void * ptrByteCode = byteCode->GetBufferPointer();
+            void* ptrByteCode = byteCode->GetBufferPointer();
             nuint numBytes = byteCode->GetBufferSize();
 
-            fixed(InputElementDesc* ptrElements = &finalElements[0])
+            fixed (InputElementDesc* ptrElements = &finalElements[0])
                 device.Ptr->CreateInputLayout(ptrElements, (uint)finalElements.Length, ptrByteCode, numBytes, ref _native);
 
-            if(_native == null)
+            if (_native == null)
             {
                 device.Log.Error("Failed to create new vertex input layout");
                 device.ProcessDebugLayerMessages();
@@ -87,7 +104,7 @@ internal unsafe class PipelineInputLayoutDX11 : GraphicsObject<DeviceDX11>
                 if (vbSlots.BoundValues[i] == null)
                     continue;
 
-                inputLayout = vbSlots.BoundValues[i].VertexLayout;
+                ShaderIOLayout inputLayout = vbSlots.BoundValues[i].VertexLayout;
 
                 device.Log.Warning("Format - Buffer slot " + i + ": ");
                 for (int f = 0; f < inputLayout.Metadata.Length; f++)
@@ -97,35 +114,57 @@ internal unsafe class PipelineInputLayoutDX11 : GraphicsObject<DeviceDX11>
             // List final input structure.
             device.Log.Warning("Shader Input Structure: ");
             for (int i = 0; i < finalElements.Length; i++)
-                device.Log.Warning($"\t[{i}]{inputLayout.Metadata[i].Name} -- index: {finalElements[i].SemanticIndex} -- slot: {finalElements[i].InputSlot}");
+            {
+                int slotID = (int)finalElements[i].InputSlot;
+                ShaderIOLayout inputLayout = vbSlots.BoundValues[slotID].VertexLayout;
+                device.Log.Warning($"\t[{i}]{inputLayout.Metadata[i].Name} -- index: {finalElements[i].SemanticIndex} -- slot: {slotID}");
+            }
         }
     }
 
     public bool IsMatch(Logger log, GraphicsStateValueGroup<GraphicsBuffer> grp)
     {
-        for (int i = 0; i < grp.Length; i++)
-        {
-            BufferDX11 seg = grp.BoundValues[i] as BufferDX11;
+        int lastIndex = _expectedBindings.Length - 1;
 
-            // If null vertex buffer, check if shader actually need one to be present.
-            if (seg == null)
+        for(int i = 0; i < _expectedBindings.Length; i++)
+        {
+            int iNext = i < lastIndex ? i + 1 : i;
+            ref FormatBinding binding = ref _expectedBindings[i];
+            ref FormatBinding nextBinding = ref _expectedBindings[iNext];
+
+            int slotID = (int)binding.SlotID;
+            GraphicsBuffer buffer = grp.BoundValues[(int)binding.SlotID];
+
+            // If the expected slot is null, then the there is no match.
+            if (!IsNullBuffer)
             {
-                // if shader's buffer hash is null for this slot, it's allowed to be null, otherwise no match.
-                if (_expectedFormatIDs[i] == 0)
-                    continue;
-                else
+                if (buffer == null)
+                {
+                    log.Warning($"Missing expected vertex buffer in slot {slotID}. Aborting validation. This may cause a false input layout match.");
+                    return false;
+                }
+
+                // If the expected vertex layout ID doesn't match, then there is no match.
+                if (buffer.VertexLayout == null || buffer.VertexLayout.EOID != binding.FormatEOID)
+                {
+                    log.Warning($"Missing format for bound vertex segment {buffer.Name} in slot {i}. Aborting validation. This may cause a false input layout match.");
+                    return false;
+                }
+            }
+            else
+            {
+                // If we're expecting a null buffer, then the current slot should be null.
+                if (buffer != null)
                     return false;
             }
 
-            // Prevent vertex buffer segments with no format from crashing the application.
-            if (seg.VertexLayout == null)
+            // All buffers between the current and next slot should be null
+            int nextSlotID = (int)nextBinding.SlotID;
+            for (int s = slotID + 1; s < nextSlotID; s++)
             {
-                log.Warning($"Missing format for bound vertex segment {seg.Name} in slot {i}. Skipping validation. This may cause a false input layout match.");
-                continue;
+                if (grp.BoundValues[s] != null)
+                    return false;
             }
-
-            if (seg.VertexLayout.EOID != _expectedFormatIDs[i])
-                return false;
         }
 
         return true;
