@@ -1,4 +1,4 @@
-﻿using Silk.NET.Core.Native;
+﻿using Molten.Graphics.DX12;
 using Silk.NET.Direct3D12;
 
 namespace Molten.Graphics.DX12;
@@ -6,20 +6,26 @@ namespace Molten.Graphics.DX12;
 /// <summary>A helper class that safely wraps InputLayout.</summary>
 internal unsafe class PipelineInputLayoutDX12 : GraphicsObject<DeviceDX12>
 {
+    struct FormatBinding
+    {
+        public ulong FormatEOID;
+        public uint SlotID;
+    }
+
     InputLayoutDesc _desc;
-    ulong[] _expectedFormatIDs;
+    FormatBinding[] _expectedBindings;
+    ShaderIOLayout _sourceLayout;
 
     internal PipelineInputLayoutDX12(DeviceDX12 device,
         GraphicsStateValueGroup<GraphicsBuffer> vbSlots,
-        ID3D10Blob* vertexBytecode,
-        ShaderIOLayout io) :
+        ShaderPassDX12 pass) :
         base(device)
     {
-        _desc = new InputLayoutDesc();
         IsValid = true;
-        _expectedFormatIDs = new ulong[vbSlots.Length];
+        ShaderComposition vs = pass[ShaderType.Vertex];
+        _sourceLayout = vs.InputLayout;
+        List<FormatBinding> expected = new List<FormatBinding>();
         List<InputElementDesc> elements = new List<InputElementDesc>();
-        ShaderIOLayout format = null;
 
         // Store the EOID of each expected vertext format.
         for (int i = 0; i < vbSlots.Length; i++)
@@ -27,19 +33,19 @@ internal unsafe class PipelineInputLayoutDX12 : GraphicsObject<DeviceDX12>
             if (vbSlots.BoundValues[i] == null)
                 continue;
 
-            format = vbSlots.BoundValues[i].VertexLayout;
+            ShaderIOLayoutDX12 inputLayout = vbSlots.BoundValues[i].VertexLayout as ShaderIOLayoutDX12;
 
             /* Check if the current vertex segment's format matches 
                the part of the shader's input structure that it's meant to represent. */
             int startID = elements.Count;
-            if (!io.IsCompatible(format, startID))
+            if (!_sourceLayout.IsCompatible(inputLayout, startID))
             {
                 IsValid = false;
                 break;
             }
 
             // Collate vertex format elements into layout and set the correct input slot for each element.
-            elements.AddRange((format as ShaderIOLayoutDX12).VertexElements);
+            elements.AddRange(inputLayout.VertexElements);
 
             for (int eID = startID; eID < elements.Count; eID++)
             {
@@ -50,14 +56,23 @@ internal unsafe class PipelineInputLayoutDX12 : GraphicsObject<DeviceDX12>
                 IsInstanced = IsInstanced || e.InputSlotClass == InputClassification.PerInstanceData;
             }
 
-            _expectedFormatIDs[i] = format.EOID;
+            expected.Add(new FormatBinding()
+            {
+                FormatEOID = inputLayout.EOID,
+                SlotID = (uint)i,
+            });
         }
 
         // Check if there are actually any elements. If not, use the default placeholder vertex type.
         if (elements.Count == 0)
         {
-            ShaderIOLayout nullFormat = device.VertexCache.Get<VertexWithID>();
-            elements.Add((nullFormat as ShaderIOLayoutDX12).VertexElements[0]);
+            ShaderIOLayoutDX12 nullFormat = device.VertexCache.Get<VertexWithID>() as ShaderIOLayoutDX12;
+            elements.Add(nullFormat.VertexElements[0]);
+            expected.Add(new FormatBinding()
+            {
+                FormatEOID = nullFormat.EOID,
+                SlotID = 0,
+            });
             IsNullBuffer = true;
         }
 
@@ -74,29 +89,41 @@ internal unsafe class PipelineInputLayoutDX12 : GraphicsObject<DeviceDX12>
 
     public bool IsMatch(Logger log, GraphicsStateValueGroup<GraphicsBuffer> grp)
     {
-        for (int i = 0; i < grp.Length; i++)
-        {
-            BufferDX12 seg = grp.BoundValues[i] as BufferDX12;
+        int lastIndex = _expectedBindings.Length - 1;
 
-            // If null vertex buffer, check if shader actually need one to be present.
-            if (seg == null)
+        for (int i = 0; i < _expectedBindings.Length; i++)
+        {
+            int iNext = i < lastIndex ? i + 1 : i;
+            ref FormatBinding binding = ref _expectedBindings[i];
+            ref FormatBinding nextBinding = ref _expectedBindings[iNext];
+
+            int slotID = (int)binding.SlotID;
+            GraphicsBuffer buffer = grp.BoundValues[(int)binding.SlotID];
+
+            // If the expected slot is null, then the there is no match.
+            if (!IsNullBuffer)
             {
-                // if shader's buffer hash is null for this slot, it's allowed to be null, otherwise no match.
-                if (_expectedFormatIDs[i] == 0)
-                    continue;
-                else
+                if (buffer == null)
+                    return false;
+
+                // If the expected vertex layout ID doesn't match, then there is no match.
+                if (buffer.VertexLayout == null || buffer.VertexLayout.EOID != binding.FormatEOID)
+                    return false;
+            }
+            else
+            {
+                // If we're expecting a null buffer, then the current slot should be null.
+                if (buffer != null)
                     return false;
             }
 
-            // Prevent vertex buffer segments with no format from crashing the application.
-            if (seg.VertexLayout == null)
+            // All buffers between the current and next slot should be null
+            int nextSlotID = (int)nextBinding.SlotID;
+            for (int s = slotID + 1; s < nextSlotID; s++)
             {
-                log.Warning($"Missing format for bound vertex segment {seg.Name} in slot {i}. Skipping validation. This may cause a false input layout match.");
-                continue;
+                if (grp.BoundValues[s] != null)
+                    return false;
             }
-
-            if (seg.VertexLayout.EOID != _expectedFormatIDs[i])
-                return false;
         }
 
         return true;
@@ -114,7 +141,7 @@ internal unsafe class PipelineInputLayoutDX12 : GraphicsObject<DeviceDX12>
     public bool IsInstanced { get; }
 
     /// <summary>
-    /// Gets whether the current <see cref="PipelineInputLayoutDX12"/> can represent a null vertex buffer. e.g. Contains SV_VertexID as the only vertex element.
+    /// Gets whether the current <see cref="PipelineInputLayoutDX11"/> can represent a null vertex buffer. e.g. Contains SV_VertexID as the only vertex element.
     /// </summary>
     public bool IsNullBuffer { get; }
 

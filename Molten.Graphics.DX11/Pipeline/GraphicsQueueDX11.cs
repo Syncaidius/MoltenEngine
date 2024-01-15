@@ -563,7 +563,6 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue
     private PipelineInputLayoutDX11 GetInputLayout(ShaderPassDX11 pass)
     {
         // Retrieve layout list or create new one if needed.
-        ShaderComposition sc = pass[ShaderType.Vertex];
         foreach (PipelineInputLayoutDX11 l in _cachedLayouts)
         {
             if (l.IsMatch(Device.Log, State.VertexBuffers))

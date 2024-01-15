@@ -33,7 +33,7 @@ internal unsafe class PipelineInputLayoutDX11 : GraphicsObject<DeviceDX11>
             if (vbSlots.BoundValues[i] == null)
                 continue;
 
-            ShaderIOLayout inputLayout = vbSlots.BoundValues[i].VertexLayout;
+            ShaderIOLayoutDX11 inputLayout = vbSlots.BoundValues[i].VertexLayout as ShaderIOLayoutDX11;
 
             /* Check if the current vertex segment's format matches 
                the part of the shader's input structure that it's meant to represent. */
@@ -45,7 +45,7 @@ internal unsafe class PipelineInputLayoutDX11 : GraphicsObject<DeviceDX11>
             }
 
             // Collate vertex format elements into layout and set the correct input slot for each element.
-            elements.AddRange((inputLayout as ShaderIOLayoutDX11).VertexElements);
+            elements.AddRange(inputLayout.VertexElements);
 
             for (int eID = startID; eID < elements.Count; eID++)
             {
@@ -67,8 +67,8 @@ internal unsafe class PipelineInputLayoutDX11 : GraphicsObject<DeviceDX11>
         // Check if there are actually any elements. If not, use the default placeholder vertex type.
         if (elements.Count == 0)
         {
-            ShaderIOLayout nullFormat = device.VertexCache.Get<VertexWithID>();
-            elements.Add((nullFormat as ShaderIOLayoutDX11).VertexElements[0]);
+            ShaderIOLayoutDX11 nullFormat = device.VertexCache.Get<VertexWithID>() as ShaderIOLayoutDX11;
+            elements.Add(nullFormat.VertexElements[0]);
             expected.Add(new FormatBinding()
             {
                  FormatEOID = nullFormat.EOID,
@@ -139,17 +139,11 @@ internal unsafe class PipelineInputLayoutDX11 : GraphicsObject<DeviceDX11>
             if (!IsNullBuffer)
             {
                 if (buffer == null)
-                {
-                    log.Warning($"Missing expected vertex buffer in slot {slotID}. Aborting validation. This may cause a false input layout match.");
                     return false;
-                }
 
                 // If the expected vertex layout ID doesn't match, then there is no match.
                 if (buffer.VertexLayout == null || buffer.VertexLayout.EOID != binding.FormatEOID)
-                {
-                    log.Warning($"Missing format for bound vertex segment {buffer.Name} in slot {i}. Aborting validation. This may cause a false input layout match.");
                     return false;
-                }
             }
             else
             {
