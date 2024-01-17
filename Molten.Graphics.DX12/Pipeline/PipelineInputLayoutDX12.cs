@@ -65,7 +65,7 @@ internal unsafe class PipelineInputLayoutDX12 : GraphicsObject<DeviceDX12>
         // Check if there are actually any elements. If not, use the default placeholder vertex type.
         if (elements.Count == 0)
         {
-            ShaderIOLayoutDX12 nullFormat = device.VertexCache.GetVertexLayout<VertexWithID>() as ShaderIOLayoutDX12;
+            ShaderIOLayoutDX12 nullFormat = device.LayoutCache.GetVertexLayout<VertexWithID>() as ShaderIOLayoutDX12;
             elements.Add(nullFormat.VertexElements[0]);
             expected.Add(new FormatBinding()
             {

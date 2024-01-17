@@ -1,4 +1,5 @@
 ﻿using Silk.NET.Core.Native;
+using Silk.NET.Direct3D12;
 
 namespace Molten.Graphics.DX12;
 internal static class ShaderInterop
@@ -103,5 +104,15 @@ internal static class ShaderInterop
     public static ConstantBufferType FromApi(this D3DCBufferType type)
     {
         return (ConstantBufferType)type;
+    }
+
+    public static InputClassification ToApi(this VertexInputType type)
+    {
+        return (InputClassification)type;
+    }
+
+    public static VertexInputType FromApi(this InputClassification type)
+    {
+        return (VertexInputType)type;
     }
 }

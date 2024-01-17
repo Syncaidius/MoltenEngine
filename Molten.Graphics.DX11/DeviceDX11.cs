@@ -22,6 +22,7 @@ public unsafe class DeviceDX11 : DeviceDXGI
 
     ID3D11Debug* _debug;
     ID3D11InfoQueue* _debugInfo;
+    ShaderLayoutCache<ShaderIOLayoutDX11> _layoutCache;
 
     /// <summary>The adapter to initially bind the graphics device to. Can be changed later.</summary>
     /// <param name="adapter">The physical display adapter to bind the new device to.</param>
@@ -31,22 +32,7 @@ public unsafe class DeviceDX11 : DeviceDXGI
         _builder = builder;
         _displayManager = manager;
         _cmdDeferred = new List<GraphicsQueueDX11>();
-
-        VertexCache = new ShaderLayoutCache(
-            (elementCount) => new ShaderIOLayoutDX11(elementCount),
-            (att, structure, index, byteOffset) =>
-            {
-                ShaderIOLayoutDX11 dxStruct = structure as ShaderIOLayoutDX11;
-                dxStruct.VertexElements[index] = new InputElementDesc()
-                {
-                    SemanticName = (byte*)SilkMarshal.StringToPtr(dxStruct.Metadata[index].Name),
-                    SemanticIndex = att.SemanticIndex,
-                    AlignedByteOffset = byteOffset,
-                    InstanceDataStepRate = att.InstanceStepRate,
-                    InputSlotClass = att.Classification.ToApi(),
-                    Format = att.Type.ToGraphicsFormat().ToApi()
-                };
-            });
+        _layoutCache = new ShaderLayoutCache<ShaderIOLayoutDX11>();
     }
 
     internal unsafe void ProcessDebugLayerMessages()
@@ -162,7 +148,7 @@ public unsafe class DeviceDX11 : DeviceDXGI
         _queue.Dispose();
 
         // TODO dispose of all bound IGraphicsResource
-        VertexCache.Dispose();
+        LayoutCache.Dispose();
 
         if (_debug != null)
         {
@@ -340,4 +326,6 @@ public unsafe class DeviceDX11 : DeviceDXGI
 
     /// <inheritdoc/>
     public override GraphicsQueueDX11 Queue => _queue;
+
+    public override ShaderLayoutCache LayoutCache => _layoutCache;
 }

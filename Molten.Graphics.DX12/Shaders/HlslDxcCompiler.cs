@@ -41,11 +41,6 @@ internal unsafe class HlslDxcCompiler : DxcCompiler
         return true;
     }
 
-    public override ShaderIOLayout BuildIO(ShaderCodeResult result, ShaderType sType, ShaderIOLayoutType type)
-    {
-        return new ShaderIOLayoutDX12(result, sType, type);
-    }
-
     public override bool BuildStructure(ShaderCompilerContext context, HlslShader shader, ShaderCodeResult result, ShaderComposition composition)
     {
         throw new NotImplementedException();

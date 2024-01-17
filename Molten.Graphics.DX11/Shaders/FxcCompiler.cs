@@ -251,11 +251,6 @@ public unsafe class FxcCompiler : ShaderCompiler
         return null;
     }
 
-    public override ShaderIOLayout BuildIO(ShaderCodeResult result, ShaderType sType, ShaderIOLayoutType type)
-    {
-        return new ShaderIOLayoutDX11(result, sType, type);
-    }
-
     public override bool BuildStructure(ShaderCompilerContext context,
         HlslShader shader, ShaderCodeResult result, ShaderComposition composition)
     {

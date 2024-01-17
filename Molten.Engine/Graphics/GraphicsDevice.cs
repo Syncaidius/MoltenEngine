@@ -58,8 +58,7 @@ public abstract partial class GraphicsDevice : EngineObject
         bufferingMode.OnChanged += BufferingMode_OnChanged;
     }
 
-    /// <summary>
-    /// Invoked when the minimum supported frame-buffer size needs to be known.
+    /// <summary> Invoked when the minimum supported frame-buffer size needs to be known.
     /// </summary>
     /// <returns></returns>
     protected abstract uint MinimumFrameBufferSize();
@@ -388,10 +387,13 @@ public abstract partial class GraphicsDevice : EngineObject
     public GraphicsCapabilities Capabilities { get; protected set; }
 
     /// <summary>
-    /// Gets the vertex format cache which stores <see cref="VertexFormat"/> instances to help avoid the need to generate multiple instances of the same formats.
+    /// Gets the vertex format cache which stores <see cref="ShaderIOLayout"/> instances to help avoid the need to generate multiple instances of the same formats.
     /// </summary>
-    public ShaderLayoutCache VertexCache { get; protected set; }
+    public abstract ShaderLayoutCache LayoutCache { get; }
 
+    /// <summary>
+    /// Gets the profiler attached to the current device.
+    /// </summary>
     public GraphicsDeviceProfiler Profiler { get; } 
 
     /// <summary>

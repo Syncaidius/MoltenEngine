@@ -179,8 +179,8 @@ public abstract class ShaderCompiler : EngineObject
             result[epType] = cResult;
             ShaderComposition sc = pass.AddComposition(epType);
             sc.PtrShader = BuildNativeShader(pass, epType, cResult.ByteCode, cResult.NumBytes);
-            sc.InputLayout = BuildIO(cResult, sc.Type, ShaderIOLayoutType.Input);
-            sc.OutputLayout = BuildIO(cResult, sc.Type, ShaderIOLayoutType.Output);
+            sc.InputLayout = BuildIO(cResult, ShaderIOLayoutType.Input);
+            sc.OutputLayout = BuildIO(cResult, ShaderIOLayoutType.Output);
         }
 
         if (!context.HasErrors)
@@ -244,7 +244,13 @@ public abstract class ShaderCompiler : EngineObject
         return !context.HasErrors;
     }
 
-    public abstract ShaderIOLayout BuildIO(ShaderCodeResult result, ShaderType sType, ShaderIOLayoutType type);
+    private ShaderIOLayout BuildIO(ShaderCodeResult result, ShaderIOLayoutType type)
+    {
+        ShaderIOLayout layout = Renderer.Device.LayoutCache.Create();
+        layout.Build(result, type);
+        Renderer.Device.LayoutCache.Cache(ref layout);
+        return layout;
+    }
 
     public abstract ShaderCodeResult CompileSource(string entryPoint, ShaderType type, ShaderCompilerContext context);
 

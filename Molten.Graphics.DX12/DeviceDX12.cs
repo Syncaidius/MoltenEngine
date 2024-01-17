@@ -13,12 +13,14 @@ public unsafe class DeviceDX12 : DeviceDXGI
     CommandQueueDX12 _cmdDirect;
     ID3D12InfoQueue1* _debugInfo;
     uint _debugCookieID;
+    ShaderLayoutCache<ShaderIOLayoutDX12> _layoutCache;
 
     internal DeviceDX12(RendererDX12 renderer, GraphicsManagerDXGI manager, IDXGIAdapter4* adapter, DeviceBuilderDX12 deviceBuilder) :
         base(renderer, manager, adapter)
     {
         Renderer = renderer;
         _builder = deviceBuilder;
+        _layoutCache = new ShaderLayoutCache<ShaderIOLayoutDX12>();
         CapabilitiesDX12 = new CapabilitiesDX12();
     }
 
@@ -218,4 +220,6 @@ public unsafe class DeviceDX12 : DeviceDXGI
     internal CapabilitiesDX12 CapabilitiesDX12 { get; }
 
     public new RendererDX12 Renderer { get; }
+
+    public override ShaderLayoutCache LayoutCache => _layoutCache;
 }

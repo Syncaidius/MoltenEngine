@@ -247,13 +247,6 @@ public unsafe class DeviceVK : GraphicsDevice
                 }
             }
 
-            VertexCache = new ShaderLayoutCache(
-            (elementCount) => null,
-            (att, structure, index, byteOffset) =>
-            {
-                // TODO populate ShaderIOLayoutVK
-            });
-
             _extSwapChain = GetExtension<KhrSwapchain>();
 
             return true;
@@ -592,4 +585,6 @@ public unsafe class DeviceVK : GraphicsDevice
     internal Glfw GLFW => _renderer.GLFW;
 
     internal MemoryManagerVK Memory => _memory;
+
+    public override ShaderLayoutCache LayoutCache => throw new NotImplementedException();
 }
