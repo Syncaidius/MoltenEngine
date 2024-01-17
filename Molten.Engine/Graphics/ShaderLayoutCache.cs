@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 namespace Molten.Graphics;
 
 /// <summary>An object type which stores objects against <see cref="Type"/> keys.</summary>
-public class VertexFormatCache : EngineObject
+public class ShaderLayoutCache : EngineObject
 {
-    public delegate ShaderIOLayout VertexFormatNewStructureCallback(uint elementCount);
+    public delegate ShaderIOLayout NewLayoutCallback(uint elementCount);
 
-    public delegate void VertexFormatNewElementCallback(VertexElementAttribute att, ShaderIOLayout structure, uint index, uint byteOffset);
+    public delegate void NewElementCallback(VertexElementAttribute att, ShaderIOLayout structure, uint index, uint byteOffset);
 
     private class FieldElement
     {
@@ -18,35 +18,27 @@ public class VertexFormatCache : EngineObject
         public IntPtr Offset;
     }
 
-    ConcurrentDictionary<Type, ShaderIOLayout> Cache { get; }
-
-    ConcurrentDictionary<ulong, ShaderIOLayout> CacheByID { get; }
-
-    /// <summary>
-    /// Gets the <see cref="Type"/> of keys accepted. Valid keys are assignable to this type.
-    /// </summary>
-    public Type KeyType { get; }
-
     static IntPtrComparer _ptrComparer = new IntPtrComparer();
 
-    VertexFormatNewStructureCallback _newCallback;
-    VertexFormatNewElementCallback _newElementCallback;
+    NewLayoutCallback _newCallback;
+    NewElementCallback _newElementCallback;
+    ConcurrentDictionary<Type, ShaderIOLayout> _cacheByVertexType;
+    ConcurrentDictionary<ulong, ShaderIOLayout> _cache;
 
     /// <summary>
     /// Creates a new instance of <see cref="ObjectCache{K, V}"/>
     /// </summary>
-    public VertexFormatCache(VertexFormatNewStructureCallback newCallback, VertexFormatNewElementCallback newElementCallback)
+    public ShaderLayoutCache(NewLayoutCallback newCallback, NewElementCallback newElementCallback)
     {
-        KeyType = typeof(IVertexType);
-        Cache = new ConcurrentDictionary<Type, ShaderIOLayout>();
-        CacheByID = new ConcurrentDictionary<ulong, ShaderIOLayout>();
+        _cacheByVertexType = new ConcurrentDictionary<Type, ShaderIOLayout>();
+        _cache = new ConcurrentDictionary<ulong, ShaderIOLayout>();
         _newCallback = newCallback;
         _newElementCallback = newElementCallback;
     }
 
     protected override void OnDispose()
     {
-        foreach (KeyValuePair<Type, ShaderIOLayout> kv in Cache)
+        foreach (KeyValuePair<Type, ShaderIOLayout> kv in _cacheByVertexType)
             kv.Value.Dispose();
     }
 
@@ -57,37 +49,55 @@ public class VertexFormatCache : EngineObject
     /// <returns></returns>
     public ShaderIOLayout GetByID(ulong eoid)
     {
-        if (CacheByID.TryGetValue(eoid, out ShaderIOLayout format))
+        if (_cache.TryGetValue(eoid, out ShaderIOLayout format))
             return format;
         else
             return null;
     }
 
-    /// <summary>Gets an object from the cache using the specified <typeparamref name="IVertexType"/> key.</summary>
-    /// <typeparam name="T">The type to use as a key.</typeparam>
+    /// <summary>
+    /// Checks if a matching <see cref="ShaderIOLayout"/> exists in the cache. If true, the provided one is disposed and replaced with the cached one.
+    /// </summary>
+    /// <param name="layout">The layout to be cached.</param>
     /// <returns></returns>
-    public ShaderIOLayout Get<T>()
+    public void Cache(ref ShaderIOLayout layout)
     {
-        Type kt = typeof(T);
-        return Get(kt);
+        if(layout == null)
+            throw new ArgumentNullException(nameof(layout));
+
+        List<ShaderIOLayout> cached = _cacheByVertexType.Values.ToList();
+        for(int i = 0; i < cached.Count; i++)
+        {
+            if (cached[i].Equals(layout))
+            {
+                layout.Dispose();
+                layout = cached[i];
+                return;
+            }
+        }
     }
 
-    public ShaderIOLayout Get(Type getKeyType)
+    /// <summary>Gets a <see cref="ShaderIOLayout"/> from the cache using the specified <typeparamref name="T"/> vertex type. 
+    /// If an existing one is not found, a new one will be created matching the structure of <typeparamref name="T"/>.</summary>
+    /// <typeparam name="T">The type to use as a key.</typeparam>
+    /// <returns></returns>
+    public ShaderIOLayout GetVertexLayout<T>()
     {
-        if (!KeyType.IsAssignableFrom(getKeyType))
-            throw new Exception($"The specified vertex type must implement or derive {KeyType.Name}.");
+        Type vertexType = typeof(T);
+        if (!typeof(IVertexType).IsAssignableFrom(vertexType))
+            throw new Exception($"The specified vertex type must implement or derive {vertexType.Name}.");
 
-        if (!Cache.TryGetValue(getKeyType, out ShaderIOLayout value))
+        if (!_cacheByVertexType.TryGetValue(vertexType, out ShaderIOLayout value))
         {
-            value = GetNewFormat(getKeyType);
-            Cache.TryAdd(getKeyType, value);
-            CacheByID.TryAdd(value.EOID, value);
+            value = CreateVertexLayout(vertexType);
+            _cacheByVertexType.TryAdd(vertexType, value);
+            _cache.TryAdd(value.EOID, value);
         }
 
         return value;
     }
 
-    private ShaderIOLayout GetNewFormat(Type t)
+    private ShaderIOLayout CreateVertexLayout(Type t)
     {
         List<FieldElement> fieldElements = new List<FieldElement>();
 

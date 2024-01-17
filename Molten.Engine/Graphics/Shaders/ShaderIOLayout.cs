@@ -11,7 +11,7 @@ public enum ShaderIOLayoutType
 /// Also generating useful metadata that can be used to validate vertex input at engine level.</summary>
 public unsafe abstract class ShaderIOLayout : EngineObject
 {
-    public struct InputElementMetadata
+    public struct ElementMetadata
     {
         public string Name;
 
@@ -21,10 +21,9 @@ public unsafe abstract class ShaderIOLayout : EngineObject
     }
 
     /// <summary>
-    /// Contains extra/helper information about input elements
+    /// Contains extra/helper information about elements
     /// </summary>
-    public InputElementMetadata[] Metadata { get; }
-
+    public ElementMetadata[] Metadata { get; }
 
     // Reference: http://takinginitiative.wordpress.com/2011/12/11/directx-1011-basic-shader-reflection-automatic-input-layout-creation/
 
@@ -34,7 +33,7 @@ public unsafe abstract class ShaderIOLayout : EngineObject
     /// <param name="elementCount"></param>
     protected ShaderIOLayout(uint elementCount)
     {
-        Metadata = new InputElementMetadata[elementCount];
+        Metadata = new ElementMetadata[elementCount];
         Initialize(elementCount);
     }
 
@@ -61,7 +60,7 @@ public unsafe abstract class ShaderIOLayout : EngineObject
 
         uint count = (uint)parameters.Count;
         bool isVertex = sType == ShaderType.Vertex;
-        Metadata = new InputElementMetadata[count];
+        Metadata = new ElementMetadata[count];
         Initialize(isVertex ? count : 0);
 
         for (int i = 0; i < count; i++)
@@ -75,7 +74,7 @@ public unsafe abstract class ShaderIOLayout : EngineObject
                 BuildVertexElement(result, type, pInfo, eFormat, i);
             }
 
-            Metadata[i] = new InputElementMetadata()
+            Metadata[i] = new ElementMetadata()
             {
                 Name = pInfo.SemanticName,
                 SystemValueType = pInfo.SystemValueType,
@@ -175,12 +174,7 @@ public unsafe abstract class ShaderIOLayout : EngineObject
         GraphicsFormat format,
         int index);
 
-    public bool IsCompatible(ShaderIOLayout other)
-    {
-        return IsCompatible(other, 0);
-    }
-
-    public bool IsCompatible(ShaderIOLayout other, int startIndex)
+    public bool IsCompatible(ShaderIOLayout other, int startIndex = 0)
     {
         int count = Math.Min(Metadata.Length - startIndex, other.Metadata.Length);
         for (int i = 0; i < count; i++)

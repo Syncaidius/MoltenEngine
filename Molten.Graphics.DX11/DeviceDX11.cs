@@ -32,7 +32,7 @@ public unsafe class DeviceDX11 : DeviceDXGI
         _displayManager = manager;
         _cmdDeferred = new List<GraphicsQueueDX11>();
 
-        VertexCache = new VertexFormatCache(
+        VertexCache = new ShaderLayoutCache(
             (elementCount) => new ShaderIOLayoutDX11(elementCount),
             (att, structure, index, byteOffset) =>
             {

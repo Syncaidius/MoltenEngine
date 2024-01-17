@@ -1,5 +1,4 @@
-﻿using Molten.Graphics.DX12;
-using Silk.NET.Direct3D12;
+﻿using Silk.NET.Direct3D12;
 
 namespace Molten.Graphics.DX12;
 
@@ -66,7 +65,7 @@ internal unsafe class PipelineInputLayoutDX12 : GraphicsObject<DeviceDX12>
         // Check if there are actually any elements. If not, use the default placeholder vertex type.
         if (elements.Count == 0)
         {
-            ShaderIOLayoutDX12 nullFormat = device.VertexCache.Get<VertexWithID>() as ShaderIOLayoutDX12;
+            ShaderIOLayoutDX12 nullFormat = device.VertexCache.GetVertexLayout<VertexWithID>() as ShaderIOLayoutDX12;
             elements.Add(nullFormat.VertexElements[0]);
             expected.Add(new FormatBinding()
             {
@@ -141,7 +140,7 @@ internal unsafe class PipelineInputLayoutDX12 : GraphicsObject<DeviceDX12>
     public bool IsInstanced { get; }
 
     /// <summary>
-    /// Gets whether the current <see cref="PipelineInputLayoutDX11"/> can represent a null vertex buffer. e.g. Contains SV_VertexID as the only vertex element.
+    /// Gets whether the current <see cref="PipelineInputLayoutDX12"/> can represent a null vertex buffer. e.g. Contains SV_VertexID as the only vertex element.
     /// </summary>
     public bool IsNullBuffer { get; }
 

@@ -247,7 +247,7 @@ public unsafe class DeviceVK : GraphicsDevice
                 }
             }
 
-            VertexCache = new VertexFormatCache(
+            VertexCache = new ShaderLayoutCache(
             (elementCount) => null,
             (att, structure, index, byteOffset) =>
             {

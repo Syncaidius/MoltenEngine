@@ -390,7 +390,7 @@ public abstract partial class GraphicsDevice : EngineObject
     /// <summary>
     /// Gets the vertex format cache which stores <see cref="VertexFormat"/> instances to help avoid the need to generate multiple instances of the same formats.
     /// </summary>
-    public VertexFormatCache VertexCache { get; protected set; }
+    public ShaderLayoutCache VertexCache { get; protected set; }
 
     public GraphicsDeviceProfiler Profiler { get; } 
 

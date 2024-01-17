@@ -12,6 +12,9 @@ public class ShaderParameterInfo : IDisposable
     /// </summary>
     public string SemanticName;
 
+    /// <summary>
+    /// Contains the native API string pointer for <see cref="SemanticName"/>. If null, no native pointer was provided.
+    /// </summary>
     public unsafe void* SemanticNamePtr;
 
     /// <summary>

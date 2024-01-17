@@ -3,7 +3,7 @@ using Silk.NET.Direct3D12;
 
 namespace Molten.Graphics.DX12;
 
-public unsafe class ShaderIOLayoutDX12 : ShaderIOLayout
+public unsafe class ShaderIOLayoutDX12 : ShaderIOLayout, IEquatable<ShaderIOLayoutDX12>
 {
     internal InputElementDesc[] VertexElements { get; private set; }
 
@@ -37,10 +37,50 @@ public unsafe class ShaderIOLayoutDX12 : ShaderIOLayout
         };
     }
 
+    public override bool Equals(object obj)
+    {
+        if(obj is ShaderIOLayoutDX12 layout)
+            return Equals(layout);
+
+        return false;
+    }
+
+    public bool Equals(ShaderIOLayoutDX12 other)
+    {
+        // If we're comparing the object to itself, return true.
+        if(EOID == other.EOID)
+            return true;
+
+        if(VertexElements.Length != other.VertexElements.Length)
+            return false;
+
+        for (int i = 0; i < VertexElements.Length; i++)
+        {
+            ref InputElementDesc element = ref VertexElements[i];
+            ref InputElementDesc otherElement = ref other.VertexElements[i];
+
+            if (Metadata[i].Name != other.Metadata[i].Name)
+                return false;
+
+            if (element.SemanticIndex != otherElement.SemanticIndex
+            || element.InputSlot != otherElement.InputSlot
+            || element.InstanceDataStepRate != otherElement.InstanceDataStepRate
+            || element.AlignedByteOffset != otherElement.AlignedByteOffset
+            || element.InputSlotClass != otherElement.InputSlotClass
+            || element.Format != otherElement.Format)
+                return false;
+        }
+
+        return true;
+    }
+
     protected override void OnDispose()
     {
         // Dispose of element string pointers, since they were statically-allocated by Silk.NET
-        for (uint i = 0; i < VertexElements.Length; i++)
-            SilkMarshal.Free((nint)VertexElements[i].SemanticName);
+        if (VertexElements != null)
+        {
+            for (uint i = 0; i < VertexElements.Length; i++)
+                SilkMarshal.Free((nint)VertexElements[i].SemanticName);
+        }
     }
 }
