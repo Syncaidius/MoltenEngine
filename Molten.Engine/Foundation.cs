@@ -1,6 +1,5 @@
 ﻿using Molten.Graphics;
 using Molten.Input;
-using Molten.Net;
 using Molten.Services;
 using Molten.Utility;
 
@@ -98,10 +97,6 @@ public abstract class Foundation : IDisposable
 
                     _gameWindow.IsVisible = true;
                     _gameWindow.OnClose += _gameWindow_OnClose;
-                    break;
-
-                case NetworkService nService:
-                    // TODO setup a net player identity for the current foundation instance.
                     break;
             }
         }

@@ -1,5 +1,4 @@
-﻿using Molten.Net;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace Molten;
 
@@ -10,11 +9,6 @@ public class NetworkSettings : SettingBank
     {
         Port = AddSetting<int>("net_port", 6113);
     }
-
-    /// <summary>
-    /// The start-up application mode of a <see cref="NetworkManager"/>.
-    /// </summary>
-    public NetworkMode Mode { get; set; } = NetworkMode.Client;
 
     /// <summary>
     /// The port to bind a network manager to.

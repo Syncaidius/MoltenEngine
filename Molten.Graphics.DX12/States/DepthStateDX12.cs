@@ -1,30 +1,40 @@
-﻿using Silk.NET.Direct3D11;
+﻿using Silk.NET.Direct3D12;
+using System.Runtime.InteropServices;
 
-namespace Molten.Graphics.DX11;
+namespace Molten.Graphics.DX12;
 
-/// <summary>Stores a depth-stencil state for use with a <see cref="GraphicsQueueDX11"/>.</summary>
-internal unsafe class DepthStateDX11 : GraphicsObject<DeviceDX11>, IEquatable<DepthStateDX11>, IEquatable<DepthStateDX11.CombinedDesc>
+/// <summary>Stores a depth-stencil state description.</summary>
+internal unsafe class DepthStateDX12 : GraphicsObject<DeviceDX12>, IEquatable<DepthStateDX12>, IEquatable<DepthStateDX12.CombinedDesc>
 {
+    [StructLayout(LayoutKind.Explicit)]
     public struct CombinedDesc
     {
+        const int DESC1_SIZE = 56;
+
+        [FieldOffset(0)]
+        public DepthStencilDesc1 Desc1;
+
+        [FieldOffset(0)]
         public DepthStencilDesc Desc;
+
+        [FieldOffset(DESC1_SIZE)]
         public uint StencilReference;
     }
 
-    ID3D11DepthStencilState* _native;
     CombinedDesc _desc;
 
-    internal DepthStateDX11(DeviceDX11 device, ref ShaderPassParameters parameters) :
+    internal DepthStateDX12(DeviceDX12 device, ref ShaderPassParameters parameters) :
         base(device)
     {
         _desc = new CombinedDesc();
-        ref DepthStencilDesc dDesc = ref _desc.Desc;
+        ref DepthStencilDesc1 dDesc = ref _desc.Desc1;
         dDesc.DepthEnable = parameters.IsDepthEnabled;
         dDesc.DepthFunc = (ComparisonFunc)parameters.DepthComparison;
         dDesc.DepthWriteMask = parameters.DepthWriteEnabled ? DepthWriteMask.All : DepthWriteMask.Zero;
         dDesc.StencilWriteMask = parameters.StencilWriteMask;
         dDesc.StencilReadMask = parameters.StencilReadMask;
         dDesc.StencilEnable = parameters.IsStencilEnabled;
+        dDesc.DepthBoundsTestEnable = parameters.DepthBoundsTestEnabled;
         _desc.StencilReference = parameters.DepthFrontFace.StencilReference > 0 ? 
             parameters.DepthFrontFace.StencilReference : 
             parameters.DepthBackFace.StencilReference;
@@ -43,8 +53,6 @@ internal unsafe class DepthStateDX11 : GraphicsObject<DeviceDX11>, IEquatable<De
             StencilFunc = (ComparisonFunc)parameters.DepthBackFace.Comparison,
             StencilPassOp = (StencilOp)parameters.DepthBackFace.StencilPass,
         };
-
-        device.Ptr->CreateDepthStencilState(dDesc, ref _native);
     }
 
     private bool StencilOpEqual(ref DepthStencilopDesc a, ref DepthStencilopDesc b)
@@ -57,7 +65,7 @@ internal unsafe class DepthStateDX11 : GraphicsObject<DeviceDX11>, IEquatable<De
 
     public override bool Equals(object obj)
     {
-        if(obj is DepthStateDX11 other)
+        if(obj is DepthStateDX12 other)
             return Equals(other._desc);
 
         return false;
@@ -68,8 +76,8 @@ internal unsafe class DepthStateDX11 : GraphicsObject<DeviceDX11>, IEquatable<De
         if (_desc.StencilReference != other.StencilReference)
             return false;
 
-        ref DepthStencilDesc a = ref _desc.Desc;
-        ref DepthStencilDesc b = ref other.Desc;
+        ref DepthStencilDesc1 a = ref _desc.Desc1;
+        ref DepthStencilDesc1 b = ref other.Desc1;
         if (a.StencilEnable.Value != b.StencilEnable.Value
             || a.DepthEnable.Value != b.DepthEnable.Value
             || a.DepthFunc != b.DepthFunc
@@ -84,17 +92,14 @@ internal unsafe class DepthStateDX11 : GraphicsObject<DeviceDX11>, IEquatable<De
         return true;
     }
 
-    public bool Equals(DepthStateDX11 other)
+    public bool Equals(DepthStateDX12 other)
     {
         return Equals(other._desc);
     }
 
-    protected override void OnGraphicsRelease()
-    {
-        NativeUtil.ReleasePtr(ref _native);
-    }
+    protected override void OnGraphicsRelease() { }
 
-    internal unsafe ref ID3D11DepthStencilState* NativePtr => ref _native;
+    internal ref CombinedDesc Description => ref _desc;
 
     public uint StencilReference { get; set; }
 }

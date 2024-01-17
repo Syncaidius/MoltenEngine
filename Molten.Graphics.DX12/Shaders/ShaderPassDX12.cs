@@ -8,7 +8,7 @@ public class ShaderPassDX12 : HlslPass
     protected override void OnInitialize(ref ShaderPassParameters parameters)
     {
         DeviceDX12 device = Device as DeviceDX12;
-        State = new PipelineStateDX12(device, this, ref parameters);
+        State = new PipelineStateDX12(device, this, ref parameters, true);
     }
 
     protected override void OnGraphicsRelease()
@@ -18,5 +18,8 @@ public class ShaderPassDX12 : HlslPass
         base.OnGraphicsRelease();
     }
 
+    /// <summary>
+    /// Gets the template pipeline state for this pass.
+    /// </summary>
     internal PipelineStateDX12 State { get; private set; }
 }
