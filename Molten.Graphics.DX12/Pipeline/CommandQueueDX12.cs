@@ -76,17 +76,20 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
 
     public override void BeginEvent(string label)
     {
-        throw new NotImplementedException();
+        // TODO Requires mappings for PIX on Windows: https://devblogs.microsoft.com/pix/winpixeventruntime/
+        // See Also: https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/reference/tools/pix3/functions/pixscopedevent-overloads
     }
 
     public override void EndEvent()
     {
-        throw new NotImplementedException();
+        // TODO Requires mappings for PIX on Windows: https://devblogs.microsoft.com/pix/winpixeventruntime/
+        // See Also: https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/reference/tools/pix3/functions/pixscopedevent-overloads
     }
 
     public override void SetMarker(string label)
     {
-        throw new NotImplementedException();
+        // TODO Requires mappings for PIX on Windows: https://devblogs.microsoft.com/pix/winpixeventruntime/
+        // See Also: https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/reference/tools/pix3/functions/pixscopedevent-overloads
     }
 
     protected override GraphicsBindResult DoRenderPass(HlslPass pass, QueueValidationMode mode, Action callback)

@@ -493,19 +493,25 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue<DeviceDX11>
 
     public override void BeginEvent(string label)
     {
+#if DEBUG
         fixed(char* ptr = label)
             _debugAnnotation->BeginEvent(ptr);
+#endif
     }
 
     public override void EndEvent()
     {
+#if DEBUG
         _debugAnnotation->EndEvent();
+#endif
     }
 
     public override void SetMarker(string label)
     {
+#if DEBUG
         fixed (char* ptr = label)
             _debugAnnotation->SetMarker(ptr);
+#endif
     }
 
     public override GraphicsBindResult Draw(HlslShader shader, uint vertexCount, uint vertexStartIndex = 0)
