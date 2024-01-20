@@ -510,7 +510,8 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue<DeviceDX11>
 
     public override GraphicsBindResult Draw(HlslShader shader, uint vertexCount, uint vertexStartIndex = 0)
     {
-        return ApplyState(shader, QueueValidationMode.Unindexed, () => _handle->Draw(vertexCount, vertexStartIndex));
+        return ApplyState(shader, QueueValidationMode.Unindexed, () => 
+            _handle->Draw(vertexCount, vertexStartIndex));
     }
 
     /// <inheritdoc/>
@@ -521,7 +522,7 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue<DeviceDX11>
         uint instanceStartIndex = 0)
     {
         return ApplyState(shader, QueueValidationMode.Instanced, () =>
-        _handle->DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex));
+            _handle->DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex));
     }
 
     /// <inheritdoc/>
@@ -530,7 +531,8 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue<DeviceDX11>
         int vertexIndexOffset = 0,
         uint startIndex = 0)
     {
-        return ApplyState(shader, QueueValidationMode.Indexed, () => _handle->DrawIndexed(indexCount, startIndex, vertexIndexOffset));
+        return ApplyState(shader, QueueValidationMode.Indexed, () => 
+            _handle->DrawIndexed(indexCount, startIndex, vertexIndexOffset));
     }
 
     /// <inheritdoc/>

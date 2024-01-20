@@ -8,7 +8,7 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
     CommandQueueDesc _desc;
     ID3D12CommandQueue* _ptr;
     CommandAllocatorDX12 _cmdAllocator;
-    CommandListDX12 _cmd;
+    GraphicsCommandListDX12 _cmd;
     PipelineInputLayoutDX12 _inputLayout;
     List<PipelineInputLayoutDX12> _cachedLayouts = new List<PipelineInputLayoutDX12>();
 
@@ -40,6 +40,7 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
         }
 
         _ptr = (ID3D12CommandQueue*)cmdQueue;
+        _cmdAllocator = new CommandAllocatorDX12(this, CommandListType.Direct);
     }
 
     protected override void GenerateMipMaps(GraphicsResource texture)
@@ -72,29 +73,6 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
         return base.End();
     }
 
-
-    public override GraphicsBindResult Draw(HlslShader shader, uint vertexCount, uint vertexStartIndex = 0)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override GraphicsBindResult DrawInstanced(HlslShader shader, uint vertexCountPerInstance, 
-        uint instanceCount, 
-        uint vertexStartIndex = 0, 
-        uint instanceStartIndex = 0)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override GraphicsBindResult DrawIndexed(HlslShader shader, uint indexCount, int vertexIndexOffset = 0, uint startIndex = 0)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override GraphicsBindResult DrawIndexedInstanced(HlslShader shader, uint indexCountPerInstance, uint instanceCount, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
-    {
-        throw new NotImplementedException();
-    }
 
     public override void BeginEvent(string label)
     {
@@ -146,14 +124,43 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
         throw new NotImplementedException();
     }
 
-    protected override void OnDispose(bool immediate)
+    public override GraphicsBindResult Draw(HlslShader shader, uint vertexCount, uint vertexStartIndex = 0)
     {
-        NativeUtil.ReleasePtr(ref _ptr);
+        return ApplyState(shader, QueueValidationMode.Unindexed, () =>
+                   _cmd.Handle->DrawInstanced(vertexCount, 1, vertexStartIndex, 0));
+    }
+
+    public override GraphicsBindResult DrawInstanced(HlslShader shader, uint vertexCountPerInstance,
+        uint instanceCount,
+        uint vertexStartIndex = 0,
+        uint instanceStartIndex = 0)
+    {
+        return ApplyState(shader, QueueValidationMode.Instanced, () =>
+                   _cmd.Handle->DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex));
+    }
+
+    public override GraphicsBindResult DrawIndexed(HlslShader shader, uint indexCount, int vertexIndexOffset = 0, uint startIndex = 0)
+    {
+        return ApplyState(shader, QueueValidationMode.Indexed, () =>
+            _cmd.Handle->DrawIndexedInstanced(indexCount, 1, startIndex, vertexIndexOffset, 0));
+    }
+
+    public override GraphicsBindResult DrawIndexedInstanced(HlslShader shader, uint indexCountPerInstance, uint instanceCount, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
+    {
+        return ApplyState(shader, QueueValidationMode.InstancedIndexed, () =>
+            _cmd.Handle->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndex, vertexIndexOffset, instanceStartIndex););
     }
 
     public override GraphicsBindResult Dispatch(HlslShader shader, Vector3UI groups)
     {
-        throw new NotImplementedException();
+        DrawInfo.Custom.ComputeGroups = groups;
+        return ApplyState(shader, QueueValidationMode.Compute, null);
+    }
+
+    protected override void OnDispose(bool immediate)
+    {
+        _cmdAllocator?.Dispose(true);
+        NativeUtil.ReleasePtr(ref _ptr);
     }
 
     protected override GraphicsBindResult CheckInstancing()

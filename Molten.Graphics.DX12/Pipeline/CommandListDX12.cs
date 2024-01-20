@@ -42,5 +42,5 @@ internal abstract unsafe class CommandListDX12<T> : CommandListDX12
 
     public override unsafe ID3D12CommandList* BaseHandle => (ID3D12CommandList*)_handle;
 
-    protected ref T* Handle => ref _handle;
+    internal ref T* Handle => ref _handle;
 }
