@@ -24,7 +24,7 @@ public sealed class UIManagerComponent : SpriteRenderComponent, IPickable<Vector
     }
 
     /// <inheritdoc/>
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
 
     }

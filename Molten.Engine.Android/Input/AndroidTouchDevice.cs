@@ -77,7 +77,7 @@ public class AndroidTouchDevice : TouchDevice
         }
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         base.OnDispose();
         OnUnbind(_boundSurface);

@@ -31,19 +31,28 @@ public abstract class EngineObject : IDisposable
         return Name;
     }
 
-    /// <summary>Disposes of the current <see cref="EngineObject"/> instance.</summary>
     public void Dispose()
+    {
+        Dispose(false);
+    }
+
+    /// <summary>Disposes of the current <see cref="EngineObject"/> instance.</summary>
+    /// <param name="immediate">If true, the object should dispose immediately 
+    /// and avoid any deferring the release of any native resources.</param>
+    public void Dispose(bool immediate)
     {
         if (IsDisposed)
             return;
 
         IsDisposed = true;
         Interlocked.CompareExchange(ref OnDisposing, null, null)?.Invoke(this);
-        OnDispose();
+        OnDispose(immediate);
     }
 
     /// <summary>Invoked when <see cref="Dispose"/> is called.</summary>
-    protected abstract void OnDispose();
+    /// <param name="immediate">If true, the object should dispose immediately 
+    /// and avoid any deferring the release of any native resources.</param>
+    protected abstract void OnDispose(bool immediate);
 
     /// <summary>Gets whether or not the object has been disposed.</summary>
     public bool IsDisposed { get; private set; }

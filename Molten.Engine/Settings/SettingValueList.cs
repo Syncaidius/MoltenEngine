@@ -20,7 +20,7 @@ public class SettingValueList<T> : SettingValue
         return val._value;
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         _value = null;
         _pendingValue = null;

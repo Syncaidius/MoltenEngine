@@ -52,7 +52,6 @@ public abstract class GraphicsQueue : EngineObject
     protected GraphicsQueue(GraphicsDevice device)
     {
         DrawInfo = new BatchDrawInfo();
-        Device = device;
         _state = new GraphicsState(device);
         _stateStack = new Stack<GraphicsState>();
         _freeStateStack = new Stack<GraphicsState>();
@@ -96,22 +95,6 @@ public abstract class GraphicsQueue : EngineObject
     }
 
     /// <summary>
-    /// Starts recording commands in the current <see cref="GraphicsCommandList"/>.
-    /// </summary>
-    /// <param name="flags">The flags to apply to the underlying command segment.</param>   
-    /// If false, the command list can be submitted more than once during the current frame. This is useful if you wish to reuse a set of recorded commands for multiple passes.</param>
-    /// <exception cref="GraphicsCommandListException"></exception>
-    public virtual void Begin(GraphicsCommandListFlags flags = GraphicsCommandListFlags.None)
-    {
-#if DEBUG
-        if (DrawInfo.Began)
-            throw new GraphicsCommandQueueException(this, $"{nameof(GraphicsCommandList)}: End() must be called before the next Begin() call.");
-#endif
-
-        DrawInfo.Began = true; 
-    }
-
-    /// <summary>
     /// Syncs or submits any unsubmitted commands in the current <see cref="GraphicsQueue"/> to the GPU. 
     /// A new command segment is started with the specified <paramref name="flags"/>.
     /// </summary>
@@ -124,6 +107,22 @@ public abstract class GraphicsQueue : EngineObject
     /// </summary>
     /// <param name="list"></param>
     public abstract void Execute(GraphicsCommandList list);
+
+    /// <summary>
+    /// Starts recording commands in the current <see cref="GraphicsCommandList"/>.
+    /// </summary>
+    /// <param name="flags">The flags to apply to the underlying command segment.</param>   
+    /// If false, the command list can be submitted more than once during the current frame. This is useful if you wish to reuse a set of recorded commands for multiple passes.</param>
+    /// <exception cref="GraphicsCommandListException"></exception>
+    public virtual void Begin(GraphicsCommandListFlags flags = GraphicsCommandListFlags.None)
+    {
+#if DEBUG
+        if (DrawInfo.Began)
+            throw new GraphicsCommandQueueException(this, $"{nameof(GraphicsCommandList)}: End() must be called before the next Begin() call.");
+#endif
+
+        DrawInfo.Began = true;
+    }
 
     public virtual GraphicsCommandList End()
     {
@@ -410,14 +409,32 @@ public abstract class GraphicsQueue : EngineObject
     /// <summary>
     /// Gets the parent <see cref="GraphicsDevice"/> of the current <see cref="GraphicsQueue"/>.
     /// </summary>
-    public GraphicsDevice Device { get; }
+    public abstract GraphicsDevice Device { get; }
 
     /// <summary>Gets the profiler bound to the current <see cref="GraphicsQueue"/>.</summary>
     public GraphicsQueueProfiler Profiler { get; }
 
+    /// <summary>
+    /// Gets the current <see cref="GraphicsCommandList"/> of the current <see cref="GraphicsQueue"/>.
+    /// </summary>
     protected abstract GraphicsCommandList Cmd { get; set; }
 
+    /// <summary>
+    /// Gets the pipeline state of the current <see cref="GraphicsQueue"/>.
+    /// </summary>
     public GraphicsState State => _state;
 
     protected BatchDrawInfo DrawInfo { get; }
+}
+
+public abstract class GraphicsQueue<T> : GraphicsQueue
+    where T : GraphicsDevice
+{
+    protected GraphicsQueue(T device) : base(device)
+    {
+        Device = device;
+    }
+
+    /// <inheritdoc/>
+    public override T Device { get; }
 }

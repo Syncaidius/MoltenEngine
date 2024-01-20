@@ -303,14 +303,14 @@ public abstract class RenderService : EngineService
     /// <summary>
     /// Occurs when the current <see cref="RenderService"/> instance/implementation is being disposed.
     /// </summary>
-    protected override sealed void OnDispose()
+    protected override sealed void OnDispose(bool immediate)
     {
         _disposeRequested = true;
     }
 
     protected void DisposeBeforeRender()
     {
-        base.OnDispose();
+        base.OnDispose(true);
 
         _chain.Dispose();
         SpriteBatch.Dispose();

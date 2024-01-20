@@ -32,7 +32,7 @@ public unsafe class GraphicsManagerDXGI : GraphicsManager
         Devices = _devices.AsReadOnly();
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         NativeUtil.ReleasePtr(ref _dxgiFactory);
         _api.Dispose();

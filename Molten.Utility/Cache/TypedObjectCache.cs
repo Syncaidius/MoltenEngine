@@ -30,7 +30,7 @@ public class TypedObjectCache<K, V> : EngineObject
         CacheByID = new ConcurrentDictionary<ulong, V>();
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         foreach (KeyValuePair<Type, V> kv in Cache)
             kv.Value.Dispose();

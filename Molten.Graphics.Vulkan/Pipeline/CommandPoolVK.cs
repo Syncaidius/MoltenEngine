@@ -18,8 +18,8 @@ internal unsafe class CommandPoolVK : EngineObject
         info.QueueFamilyIndex = queue.FamilyIndex;
 
         CommandPool pool = new CommandPool();
-        Result r = Queue.VK.CreateCommandPool(Queue.VKDevice, &info, null, &pool);
-        if (!r.Check(Queue.VKDevice, ()=> "Failed to create command buffer pool"))
+        Result r = Queue.VK.CreateCommandPool(Queue.Device, &info, null, &pool);
+        if (!r.Check(Queue.Device, ()=> "Failed to create command buffer pool"))
             return;
 
         _pool = pool;
@@ -57,13 +57,13 @@ internal unsafe class CommandPoolVK : EngineObject
             if (result.Fence != null)
                 result.Fence.Reset();
             else
-                result.Fence = Queue.VKDevice.GetFence();
+                result.Fence = Queue.Device.GetFence();
         }
         else
         {
             if (result.Fence != null)
             {
-                Queue.VKDevice.FreeFence(result.Fence as FenceVK);
+                Queue.Device.FreeFence(result.Fence as FenceVK);
                 result.Fence = null;
             }
         }
@@ -73,9 +73,9 @@ internal unsafe class CommandPoolVK : EngineObject
         return result;
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
-        Queue.VK.DestroyCommandPool(Queue.VKDevice, _pool, null);
+        Queue.VK.DestroyCommandPool(Queue.Device, _pool, null);
     }
 
     internal GraphicsQueueVK Queue { get; }

@@ -54,7 +54,7 @@ public class RenderCamera : EngineObject
         _clipPreset[RenderCameraMode.Orthographic] = new ClipRange(0.0f, 1.0f);
     }
 
-    protected override void OnDispose() { }
+    protected override void OnDispose(bool immediate) { }
 
     /// <summary>
     /// Creates a new instance of <see cref="RenderCamera"/> with the specified projection calculation preset.

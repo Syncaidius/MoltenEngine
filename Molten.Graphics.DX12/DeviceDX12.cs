@@ -89,7 +89,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
         return 2;
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         _cmdDirect.Dispose();
 
@@ -98,7 +98,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
             _debugInfo->UnregisterMessageCallback(_debugCookieID);
             NativeUtil.ReleasePtr(ref _debugInfo);
         }
-        base.OnDispose();
+        base.OnDispose(immediate);
     }
 
     protected override void OnBeginFrame(ThreadedList<ISwapChainSurface> surfaces)

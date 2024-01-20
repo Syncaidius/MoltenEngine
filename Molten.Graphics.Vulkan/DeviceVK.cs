@@ -292,7 +292,7 @@ public unsafe class DeviceVK : GraphicsDevice
             return (SharingMode.Concurrent, set.ToArray());
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         // Dispose of fences
         for(int i = 0; i < _fences.Count; i++)
@@ -308,7 +308,7 @@ public unsafe class DeviceVK : GraphicsDevice
 
         EngineUtil.Free(ref _native);
 
-        base.OnDispose();
+        base.OnDispose(immediate);
     }
 
     internal FenceVK GetFence()

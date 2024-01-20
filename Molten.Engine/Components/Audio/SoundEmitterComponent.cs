@@ -4,7 +4,7 @@ public class SoundEmitterComponent : SceneComponent
 {
     ISoundSource _sound;
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         throw new NotImplementedException();
     }

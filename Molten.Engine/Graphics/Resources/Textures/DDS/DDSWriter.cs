@@ -198,5 +198,5 @@ public class DDSWriter : TextureWriter
         writer.Write(header.Reserved2);
     }
 
-    protected override void OnDispose() { }
+    protected override void OnDispose(bool immediate) { }
 }

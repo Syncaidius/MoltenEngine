@@ -326,9 +326,9 @@ public class WinMouseDevice : MouseDevice
         Cursor.Position = new Point((int)position.X, (int)position.Y);
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
-        base.OnDispose();
+        base.OnDispose(immediate);
 
         if (!IsCursorVisible)
             Cursor.Show();

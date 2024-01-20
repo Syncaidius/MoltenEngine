@@ -41,7 +41,7 @@ public class SettingValue<T> : SettingValue
         _pendingValue = value;
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         _value = default(T);
         _pendingValue = default(T);

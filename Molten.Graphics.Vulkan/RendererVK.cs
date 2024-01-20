@@ -94,12 +94,12 @@ public unsafe class RendererVK : RenderService
             if (device == NativeDevice)
                 continue;
 
-            DeviceVK vkDevice = device as DeviceVK;
-            vkDevice.PreInitialize(CommandSetCapabilityFlags.Graphics);
-            vkDevice.AddExtension<KhrSwapchain>();
+            DeviceVK Device = device as DeviceVK;
+            Device.PreInitialize(CommandSetCapabilityFlags.Graphics);
+            Device.AddExtension<KhrSwapchain>();
 
-            if (vkDevice.Initialize())
-                result.Add(vkDevice);
+            if (Device.Initialize())
+                result.Add(Device);
         }
 
         return result;

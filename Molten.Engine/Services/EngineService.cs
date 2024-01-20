@@ -161,7 +161,7 @@ public abstract class EngineService : EngineObject
         State = EngineServiceState.Ready;
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         Stop(true);
 

@@ -102,7 +102,7 @@ internal class RenderChain : EngineObject
         queue.End();
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         // Dispose of render steps
         for (int i = 0; i < _stepList.Count; i++)

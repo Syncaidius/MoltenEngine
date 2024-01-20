@@ -644,7 +644,7 @@ namespace Molten.UI
             ParentLayer?.SendToBack(this);
         }
 
-        protected override void OnDispose() { }
+        protected override void OnDispose(bool immediate) { }
 
         /// <summary>
         /// Invoked when the bounds need to be updated on the current <see cref=""UIElement""/>.

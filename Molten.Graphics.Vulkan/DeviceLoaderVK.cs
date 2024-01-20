@@ -103,10 +103,10 @@ internal unsafe class DeviceLoaderVK : ExtensionLoaderVK<Device>
         return r;
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         EngineUtil.Free(ref _queueInfo);
-        base.OnDispose();
+        base.OnDispose(immediate);
     }
 
     internal DeviceQueueCreateInfo* QueueInfo => _queueInfo;

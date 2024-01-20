@@ -201,7 +201,7 @@ public partial class Scene : EngineObject
         }
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         Engine.RemoveScene(this);
         Engine.Renderer?.DestroyRenderData(RenderData);

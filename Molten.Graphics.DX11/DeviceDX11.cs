@@ -143,7 +143,7 @@ public unsafe class DeviceDX11 : DeviceDXGI
     }
 
     /// <summary>Disposes of the <see cref="DeviceDX11"/> and any deferred contexts and resources bound to it.</summary>
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         _queue.Dispose();
 
@@ -158,7 +158,7 @@ public unsafe class DeviceDX11 : DeviceDXGI
             NativeUtil.ReleasePtr(ref _debug);
         }
 
-        base.OnDispose();
+        base.OnDispose(immediate);
     }
 
     protected override void OnBeginFrame(ThreadedList<ISwapChainSurface> surfaces)

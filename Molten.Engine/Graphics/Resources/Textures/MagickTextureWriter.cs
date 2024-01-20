@@ -35,7 +35,7 @@ public abstract class MagickTextureWriter : TextureWriter
         }
     }
 
-    protected override void OnDispose() { }
+    protected override void OnDispose(bool immediate) { }
 }
 
 public class PNGWriter : MagickTextureWriter

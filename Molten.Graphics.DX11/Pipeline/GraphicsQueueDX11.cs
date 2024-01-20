@@ -6,7 +6,7 @@ using Silk.NET.Maths;
 namespace Molten.Graphics.DX11;
 
 /// <summary>Manages the pipeline of a either an immediate or deferred <see cref="GraphicsQueueDX11"/>.</summary>
-public unsafe partial class GraphicsQueueDX11 : GraphicsQueue
+public unsafe partial class GraphicsQueueDX11 : GraphicsQueue<DeviceDX11>
 {
     internal const uint D3D11_KEEP_UNORDERED_ACCESS_VIEWS = 0xffffffff;
 
@@ -40,7 +40,6 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue
     internal GraphicsQueueDX11(DeviceDX11 device, ID3D11DeviceContext4* context) :
         base(device)
     {      
-        DXDevice = device;
         _handle = context;
 
         if (_handle->GetType() == DeviceContextType.Immediate)
@@ -569,7 +568,7 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue
                 return l;
         }
 
-        PipelineInputLayoutDX11 input = new PipelineInputLayoutDX11(DXDevice, State.VertexBuffers, pass);
+        PipelineInputLayoutDX11 input = new PipelineInputLayoutDX11(Device, State.VertexBuffers, pass);
         _cachedLayouts.Add(input);
 
         return input;
@@ -584,14 +583,14 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue
     }
 
     /// <summary>Dispoes of the current <see cref="Graphics.GraphicsQueueDX11"/> instance.</summary>
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         NativeUtil.ReleasePtr(ref _handle);
         NativeUtil.ReleasePtr(ref _debugAnnotation);
 
         // Dispose context.
         if (Type != CommandQueueType.Immediate)
-            DXDevice.RemoveDeferredContext(this);
+            Device.RemoveDeferredContext(this);
 
         EngineUtil.FreePtrArray(ref _rtvs);
         _cmd.Dispose();
@@ -599,8 +598,6 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue
 
     /// <summary>Gets the current <see cref="GraphicsQueueDX11"/> type. This value will not change during the context's life.</summary>
     internal CommandQueueType Type { get; private set; }
-
-    internal DeviceDX11 DXDevice { get; private set; }
 
     protected override GraphicsCommandList Cmd
     {

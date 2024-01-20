@@ -21,8 +21,8 @@ internal unsafe class CommandPoolAllocation : IDisposable
         info.CommandBufferCount = 1;
 
         _ptrBuffers = EngineUtil.AllocArray<CommandBuffer>(count);
-        Result r = pool.Queue.VK.AllocateCommandBuffers(pool.Queue.VKDevice, &info, _ptrBuffers);
-        if (!r.Check(pool.Queue.VKDevice, () => "Failed to allocate command buffers"))
+        Result r = pool.Queue.VK.AllocateCommandBuffers(pool.Queue.Device, &info, _ptrBuffers);
+        if (!r.Check(pool.Queue.Device, () => "Failed to allocate command buffers"))
             _freeCount = 0;
 
         _free = new CommandListVK[count];
@@ -53,7 +53,7 @@ internal unsafe class CommandPoolAllocation : IDisposable
     {
         _freeCount = 0;
 
-        Pool.Queue.VK.FreeCommandBuffers(Pool.Queue.VKDevice, Pool.Native, (uint)_lists.Length, _ptrBuffers);
+        Pool.Queue.VK.FreeCommandBuffers(Pool.Queue.Device, Pool.Native, (uint)_lists.Length, _ptrBuffers);
         EngineUtil.Free(ref _ptrBuffers);
     }
 

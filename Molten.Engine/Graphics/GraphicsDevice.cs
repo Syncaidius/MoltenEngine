@@ -135,7 +135,7 @@ public abstract partial class GraphicsDevice : EngineObject
         _disposals.Add(obj);
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         Tasks?.Dispose();
 

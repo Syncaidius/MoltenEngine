@@ -99,7 +99,7 @@ public abstract unsafe class DeviceDXGI : GraphicsDevice
         _activeOutputs.Clear();
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         NativeUtil.ReleasePtr(ref _adapter);
     }

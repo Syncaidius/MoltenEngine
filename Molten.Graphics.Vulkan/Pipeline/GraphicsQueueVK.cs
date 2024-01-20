@@ -7,7 +7,7 @@ using VKViewport = Silk.NET.Vulkan.Viewport;
 
 namespace Molten.Graphics.Vulkan;
 
-public unsafe class GraphicsQueueVK : GraphicsQueue
+public unsafe class GraphicsQueueVK : GraphicsQueue<DeviceVK>
 {
     DeviceVK _device;
     Vk _vk;
@@ -222,7 +222,7 @@ public unsafe class GraphicsQueueVK : GraphicsQueue
         return (Flags & flags) == flags;
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         _applyScissors.Dispose();
         _applyViewports.Dispose();
@@ -589,8 +589,6 @@ public unsafe class GraphicsQueueVK : GraphicsQueue
     internal Vk VK => _vk;
 
     internal Logger Log { get; }
-
-    internal DeviceVK VKDevice => _device;
 
     /// <summary>
     /// Gets the Queue family index, in relation to the bound <see cref="DeviceVK"/>.

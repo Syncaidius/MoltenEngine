@@ -3,10 +3,13 @@ using Silk.NET.Direct3D12;
 
 namespace Molten.Graphics.DX12;
 
-public unsafe class CommandQueueDX12 : GraphicsQueue
+public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
 {
     CommandQueueDesc _desc;
     ID3D12CommandQueue* _ptr;
+    CommandAllocatorDX12 _cmdAllocator;
+    PipelineInputLayoutDX12 _inputLayout;
+    List<PipelineInputLayoutDX12> _cachedLayouts = new List<PipelineInputLayoutDX12>();
 
     internal CommandQueueDX12(Logger log, DeviceDX12 device, DeviceBuilderDX12 builder, ref CommandQueueDesc desc) : 
         base(device)
@@ -23,7 +26,7 @@ public unsafe class CommandQueueDX12 : GraphicsQueue
         Guid cmdGuid = ID3D12CommandQueue.Guid;
         void* cmdQueue = null;
 
-        DeviceDX12 device = Device as DeviceDX12; 
+        DeviceDX12 device = Device; 
         HResult r = device.Ptr->CreateCommandQueue(_desc, &cmdGuid, &cmdQueue);
         if (!device.Log.CheckResult(r))
         {
@@ -56,6 +59,16 @@ public unsafe class CommandQueueDX12 : GraphicsQueue
     public override void Sync(GraphicsCommandListFlags flags)
     {
         throw new NotImplementedException();
+    }
+
+    public override void Begin(GraphicsCommandListFlags flags = GraphicsCommandListFlags.None)
+    {
+        base.Begin(flags);
+    }
+
+    public override GraphicsCommandList End()
+    {
+        return base.End();
     }
 
     public override GraphicsBindResult Draw(HlslShader shader, uint vertexCount, uint vertexStartIndex = 0)
@@ -128,7 +141,7 @@ public unsafe class CommandQueueDX12 : GraphicsQueue
         throw new NotImplementedException();
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         NativeUtil.ReleasePtr(ref _ptr);
     }
@@ -140,7 +153,27 @@ public unsafe class CommandQueueDX12 : GraphicsQueue
 
     protected override GraphicsBindResult CheckInstancing()
     {
-        throw new NotImplementedException();
+        if (_inputLayout != null && _inputLayout.IsInstanced)
+            return GraphicsBindResult.Successful;
+        else
+            return GraphicsBindResult.NonInstancedVertexLayout;
+    }
+
+    /// <summary>Retrieves or creates a usable input layout for the provided vertex buffers and sub-effect.</summary>
+    /// <returns>An instance of InputLayout.</returns>
+    private PipelineInputLayoutDX12 GetInputLayout(ShaderPassDX12 pass)
+    {
+        // Retrieve layout list or create new one if needed.
+        foreach (PipelineInputLayoutDX12 l in _cachedLayouts)
+        {
+            if (l.IsMatch(Device.Log, State.VertexBuffers))
+                return l;
+        }
+
+        PipelineInputLayoutDX12 input = new PipelineInputLayoutDX12(Device, State.VertexBuffers, pass);
+        _cachedLayouts.Add(input);
+
+        return input;
     }
 
     internal ID3D12CommandQueue* Ptr => _ptr;

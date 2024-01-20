@@ -27,7 +27,7 @@ public unsafe class FxcCompiler : ShaderCompiler
         _d3dCompiler = D3DCompiler.GetApi();
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         _d3dCompiler.Dispose();
     }

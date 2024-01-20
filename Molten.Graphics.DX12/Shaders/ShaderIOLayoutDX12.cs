@@ -69,7 +69,7 @@ public unsafe class ShaderIOLayoutDX12 : ShaderIOLayout, IEquatable<ShaderIOLayo
         return base.Equals(other);
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         // Dispose of element string pointers, since they were statically-allocated by Silk.NET
         if (VertexElements != null)

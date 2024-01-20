@@ -56,7 +56,7 @@ public unsafe class AudioBuffer : EngineObject
         return numBytes;
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         if (_data != null)
         {

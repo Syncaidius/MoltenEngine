@@ -21,7 +21,7 @@ public unsafe class DisplayOutputDXGI : EngineObject, IDisplayOutput
         Name = Name.Replace("\0", string.Empty);
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         EngineUtil.Free(ref _desc);
         NativeUtil.ReleasePtr(ref Native);

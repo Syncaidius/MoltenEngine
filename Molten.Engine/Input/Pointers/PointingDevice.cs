@@ -217,9 +217,9 @@ public abstract class PointingDevice: InputDevice<PointerState, PointerButton>
         return false;
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
-        base.OnDispose();
+        base.OnDispose(immediate);
         _sensitivitySetting.OnChanged -= PointerSensitivity_OnChanged;
     }
 

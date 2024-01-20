@@ -31,7 +31,7 @@ public class CapsuleLightComponent : SceneComponent
         base.OnInitialize(obj);
     }
 
-    protected override void OnDispose() { }
+    protected override void OnDispose(bool immediate) { }
 
     private void AddToScene(SceneObject obj)
     {

@@ -172,7 +172,7 @@ public abstract class InputService : EngineService
 
     protected override void OnStop(EngineSettings settings) { }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         foreach (InputDevice device in _byType.Values)
             device.Dispose();

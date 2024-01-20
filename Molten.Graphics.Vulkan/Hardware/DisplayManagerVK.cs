@@ -115,7 +115,7 @@ internal unsafe class DisplayManagerVK : GraphicsManager
         }
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         throw new NotImplementedException();
     }
@@ -136,13 +136,13 @@ internal unsafe class DisplayManagerVK : GraphicsManager
         {
             if (value != null)
             {
-                if (value is not DeviceVK vkDevice)
+                if (value is not DeviceVK Device)
                     throw new GraphicsDeviceException(value, "The adapter is not a valid Vulkan device.");
 
                 if (value.Manager != this)
                     throw new GraphicsDeviceException(value, "The adapter not owned by the current display manager.");
 
-                _selectedAdapter = vkDevice;
+                _selectedAdapter = Device;
             }
             else
             {

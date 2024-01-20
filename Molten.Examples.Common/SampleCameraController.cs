@@ -64,7 +64,7 @@ public class SampleCameraController : SceneComponent,
 
     public bool AcceptInput { get; set; } = true;
 
-    protected override void OnDispose() { }
+    protected override void OnDispose(bool immediate) { }
 
     public void InitializeInput(MouseDevice device, Timing timing) { }
 

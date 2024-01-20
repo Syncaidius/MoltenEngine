@@ -241,7 +241,7 @@ public class SpriteFontManager : EngineObject
         return (int)Math.Ceiling(BaseFontSize * designUnits / font.Header.DesignUnitsPerEm);
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         _camera.Surface?.Dispose();
         _rtTransfer?.Dispose();

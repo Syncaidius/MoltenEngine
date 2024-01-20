@@ -389,7 +389,7 @@ public class ContentManager : EngineObject
 
         return proc;
     }
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         _workers.Dispose();
 

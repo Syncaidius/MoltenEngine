@@ -9,7 +9,7 @@ public class SampleSpriteRenderComponent : SpriteRenderComponent
 {
     public SampleSpriteRenderComponent() { }
 
-    protected override void OnDispose() { }
+    protected override void OnDispose(bool immediate) { }
 
     protected override void OnRender(SpriteBatcher sb)
     {

@@ -11,7 +11,7 @@ public sealed class ShaderCompileResult : EngineObject
         _shadersByName.Add(shader.Name.ToLower(), shader);
     }
 
-    protected override void OnDispose() { }
+    protected override void OnDispose(bool immediate) { }
 
     /// <summary>
     /// Gets a <see cref="HlslShader"/> of the specified name which was built successfully.

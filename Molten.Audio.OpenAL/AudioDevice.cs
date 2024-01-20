@@ -99,7 +99,7 @@ public unsafe abstract class AudioDevice : OpenALObject, IAudioDevice, IDisposab
     /// <param name="other"></param>
     protected abstract void OnTransferTo(AudioDevice other);
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         foreach (ContextExtensionBase ext in _extensions.Values)
             ext.Dispose();

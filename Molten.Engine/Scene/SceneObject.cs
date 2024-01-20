@@ -90,7 +90,7 @@ public sealed class SceneObject : EngineObject
         item.Parent = this;
     }
 
-    protected override void OnDispose() { }
+    protected override void OnDispose(bool immediate) { }
 
     internal void Update(Timing time)
     {

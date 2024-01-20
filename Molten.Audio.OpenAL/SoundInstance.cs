@@ -62,7 +62,7 @@ public class SoundInstance : OpenALObject, ISoundInstance
         throw new NotImplementedException();
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         if(_created)
         {

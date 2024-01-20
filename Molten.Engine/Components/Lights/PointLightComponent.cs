@@ -88,7 +88,7 @@ public class PointLightComponent : SceneComponent
         }
     }
 
-    protected override void OnDispose() { }
+    protected override void OnDispose(bool immediate) { }
 
     /// <summary>
     /// Gets or sets whether the light is visible.

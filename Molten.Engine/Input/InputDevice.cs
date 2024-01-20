@@ -118,7 +118,7 @@ public abstract class InputDevice : EngineObject
         }
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         IsEnabled = false;
     }

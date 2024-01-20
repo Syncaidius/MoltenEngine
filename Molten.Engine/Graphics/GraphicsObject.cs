@@ -7,9 +7,12 @@ public abstract class GraphicsObject : EngineObject
         Device = device;
     }
 
-    protected override sealed void OnDispose()
+    protected override sealed void OnDispose(bool immediate)
     {
-        Device.MarkForRelease(this);
+        if (immediate)
+            GraphicsRelease();
+        else
+            Device.MarkForRelease(this);
     }
 
     internal void GraphicsRelease()

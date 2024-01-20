@@ -14,7 +14,7 @@ internal unsafe class CommandListVK : GraphicsCommandList
     {
         _allocation = allocation;
         _native = cmdBuffer;
-        _device = allocation.Pool.Queue.VKDevice;
+        _device = allocation.Pool.Queue.Device;
         _vk = allocation.Pool.Queue.VK;
         Semaphore = new SemaphoreVK(_device);
     }

@@ -67,7 +67,7 @@ public unsafe abstract class DxcCompiler : ShaderCompiler
             _baseArgs.Add(arg, value);
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         NativeUtil.ReleasePtr(ref _native);
         NativeUtil.ReleasePtr(ref _utils);

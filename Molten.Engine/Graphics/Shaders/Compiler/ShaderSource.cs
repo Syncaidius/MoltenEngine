@@ -35,7 +35,7 @@ public class ShaderSource : EngineObject
         }
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         _src = null;
     }

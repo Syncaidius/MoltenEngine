@@ -18,7 +18,7 @@ public abstract class ShaderLayoutCache : EngineObject
         _cache = new ConcurrentDictionary<ulong, ShaderIOLayout>();
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         foreach (KeyValuePair<Type, ShaderIOLayout> kv in _cacheByVertexType)
             kv.Value.Dispose();

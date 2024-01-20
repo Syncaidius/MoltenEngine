@@ -233,7 +233,7 @@ internal unsafe abstract class ExtensionLoaderVK<D> : EngineObject
         }
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
 
         foreach (VulkanExtension ext in _bind.Extensions.Values)

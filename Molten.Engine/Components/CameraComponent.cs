@@ -116,7 +116,7 @@ public class CameraComponent : SceneComponent, IInputReceiver<KeyboardDevice>
         OnSurfaceResized?.Invoke(this, surface);
     }
 
-    protected override void OnDispose() 
+    protected override void OnDispose(bool immediate) 
     {
         if (_keyboard == null)
             return;

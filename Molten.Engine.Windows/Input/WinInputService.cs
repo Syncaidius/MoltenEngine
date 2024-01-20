@@ -111,7 +111,7 @@ public class WinInputService : InputService
         return _gamepads[index];
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         Win32.HookToWindow(IntPtr.Zero);
 

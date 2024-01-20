@@ -29,7 +29,7 @@ public class SoundSource : OpenALObject, ISoundSource
         return instance;
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         if (_created)
         {

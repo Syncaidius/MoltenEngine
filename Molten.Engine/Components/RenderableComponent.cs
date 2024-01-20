@@ -69,7 +69,7 @@ public class RenderableComponent : SceneComponent
         _data.TargetTransform = Object.Transform.Global;
     }
 
-    protected override void OnDispose()
+    protected override void OnDispose(bool immediate)
     {
         RemoveFromScene(Object);
     }
