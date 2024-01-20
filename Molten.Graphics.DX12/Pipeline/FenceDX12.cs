@@ -10,44 +10,50 @@ internal unsafe class FenceDX12 : GraphicsFence
     ID3D12Fence* _ptr;
     DeviceDX12 _device;
     void* _fenceEvent;
+    ulong _value;
 
     internal FenceDX12(DeviceDX12 device, FenceFlags flags) : base(device)
     {
         _device = device;
         void* ptr = null;
         Guid guid = ID3D12Fence.Guid;
-        HResult hr = device.Ptr->CreateFence(Value, flags, &guid, &ptr);
+        HResult hr = device.Ptr->CreateFence(_value, flags, &guid, &ptr);
         if (!device.Log.CheckResult(hr, () => "Failed to create fence"))
             return;
 
-        Value++;
+        _value++;
         _ptr = (ID3D12Fence*)ptr;
-        void* ptrEvent = Win32Events.CreateEvent(null, false, false, null);
-        if (ptrEvent == null)
+        _fenceEvent = Win32Events.CreateEvent(null, false, false, null);
+        if (_fenceEvent == null)
         {
             hr = Marshal.GetLastWin32Error();
             hr.Throw();
         }
 
-        _ptr->SetEventOnCompletion(Value, ptrEvent);
+        _ptr->SetEventOnCompletion(Value, _fenceEvent);
     }
 
     public override void Reset()
     {
-        Signal(0);
+        Set(0);
     }   
 
-    internal void Signal(ulong value)
+    /// <summary>
+    /// Sets the fence value from the CPU side.
+    /// </summary>
+    /// <param name="value">The value to set the current <see cref="FenceDX12"/> to.</param>
+    internal void Set(ulong value)
     {
-        Value = value;
-        _ptr->Signal(Value);
+        _value = value;
+        _ptr->Signal(_value);
     }
 
     public override bool Wait(ulong nsTimeout = ulong.MaxValue)
     {
-        _device.Queue.Ptr->Signal(_ptr, Value);
+        ulong fenceVal = Interlocked.Increment(ref _value);
+        _device.Queue.Ptr->Signal(_ptr, fenceVal);
 
-        if(_ptr->GetCompletedValue() < Value)
+        if (_ptr->GetCompletedValue() < fenceVal)
         {
             uint msTimeout = (uint)nsTimeout / 1000000U; // Convert from nanoseconds to milliseconds.
             WaitForSingleObjectResult result = (WaitForSingleObjectResult)Win32Events.WaitForSingleObjectEx(_fenceEvent, msTimeout, false);
@@ -63,18 +69,21 @@ internal unsafe class FenceDX12 : GraphicsFence
             }
         }
 
-        Value++;
-
         return true;
     }
 
     protected override void OnGraphicsRelease()
     {
         NativeUtil.ReleasePtr(ref _ptr);
+        if(_fenceEvent != null)
+        {
+            Win32Events.CloseHandle(_fenceEvent);
+            _fenceEvent = null;
+        }
     }
 
     /// <summary>
     /// Gets or sets the value of the current <see cref="FenceDX12"/>.
     /// </summary>
-    internal ulong Value { get; set; }
+    internal ulong Value => _value;
 }

@@ -181,7 +181,7 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue<DeviceDX11>
         // Check for valid resource map handle.
         if (resMap.PData == null)
         {
-            (Device as DeviceDX11).ProcessDebugLayerMessages();
+            Device.ProcessDebugLayerMessages();
             throw new InvalidOperationException($"Failed to map resource {resource.Name} for {mapType} access");
         }
 

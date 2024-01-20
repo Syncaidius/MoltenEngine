@@ -10,6 +10,7 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
     CommandAllocatorDX12 _cmdAllocator;
     GraphicsCommandListDX12 _cmd;
     PipelineInputLayoutDX12 _inputLayout;
+    PipelineStateDX12 _pipelineState;
     List<PipelineInputLayoutDX12> _cachedLayouts = new List<PipelineInputLayoutDX12>();
 
     internal CommandQueueDX12(Logger log, DeviceDX12 device, DeviceBuilderDX12 builder, ref CommandQueueDesc desc) : 
@@ -55,7 +56,10 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
 
     public override void Execute(GraphicsCommandList list)
     {
-        throw new NotImplementedException();
+        GraphicsCommandListDX12 cmd = (GraphicsCommandListDX12)list;
+
+        ID3D12CommandList** lists = stackalloc ID3D12CommandList*[] { cmd.BaseHandle };
+        _ptr->ExecuteCommandLists(1, lists);
     }
 
     public override void Sync(GraphicsCommandListFlags flags)
@@ -66,13 +70,25 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
     public override void Begin(GraphicsCommandListFlags flags = GraphicsCommandListFlags.None)
     {
         base.Begin(flags);
+
+        _cmd = _cmdAllocator.Allocate(null);
+        Device.Frame.BranchCount++;
+
+        Device.Frame.Track(_cmd);
+
+        ID3D12PipelineState* pState = _pipelineState != null ? _pipelineState.Handle : null;
+        _cmd.Handle->Reset(_cmdAllocator.Handle, pState);
     }
 
     public override GraphicsCommandList End()
     {
-        return base.End();
-    }
+        base.End();
 
+        if (_cmd.Flags.HasFlag(GraphicsCommandListFlags.Deferred))
+            return _cmd;
+
+        return null;
+    }
 
     public override void BeginEvent(string label)
     {
@@ -151,7 +167,7 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
     public override GraphicsBindResult DrawIndexedInstanced(HlslShader shader, uint indexCountPerInstance, uint instanceCount, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
     {
         return ApplyState(shader, QueueValidationMode.InstancedIndexed, () =>
-            _cmd.Handle->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndex, vertexIndexOffset, instanceStartIndex););
+            _cmd.Handle->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndex, vertexIndexOffset, instanceStartIndex));
     }
 
     public override GraphicsBindResult Dispatch(HlslShader shader, Vector3UI groups)

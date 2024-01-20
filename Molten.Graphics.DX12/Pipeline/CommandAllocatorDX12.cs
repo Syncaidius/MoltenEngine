@@ -31,6 +31,8 @@ public unsafe class CommandAllocatorDX12 : GraphicsObject<DeviceDX12>
         if (!Device.Log.CheckResult(hr, () => $"Failed to allocate {Type} command list"))
             hr.Throw();
 
+        // TODO Check free list.
+
         GraphicsCommandListDX12 list = new GraphicsCommandListDX12(this, (ID3D12GraphicsCommandList*) ptr);
         _allocated.Add(list);
 
@@ -53,5 +55,7 @@ public unsafe class CommandAllocatorDX12 : GraphicsObject<DeviceDX12>
 
     public CommandListType Type { get; }
 
-    public CommandQueueDX12 Queue { get; }
+    internal CommandQueueDX12 Queue { get; }
+
+    internal ID3D12CommandAllocator* Handle => _handle;
 }

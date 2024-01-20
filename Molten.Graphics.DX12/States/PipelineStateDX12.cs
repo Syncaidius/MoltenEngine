@@ -135,4 +135,5 @@ internal unsafe class PipelineStateDX12 : GraphicsObject<DeviceDX12>, IEquatable
 
     public bool IsBuilt { get; private set; }
 
+    internal ID3D12PipelineState* Handle => _state;
 }

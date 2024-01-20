@@ -11,6 +11,9 @@ public class Win32Events
 
     [DllImport("kernel32.dll", SetLastError = true)]
     public unsafe static extern uint WaitForSingleObjectEx(void* hHandle, uint dwMilliseconds, bool bAlertable);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    public unsafe static extern bool CloseHandle(void* hObject);
 }
 
 /// <summary>
