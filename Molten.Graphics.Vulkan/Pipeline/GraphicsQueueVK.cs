@@ -615,11 +615,7 @@ public unsafe class GraphicsQueueVK : GraphicsQueue<DeviceVK>
     internal Queue Native { get; private set; }
 
     /// <summary>
-    /// The current command list, if any.
+    /// Gets the current command list, if any.
     /// </summary>
-    protected override GraphicsCommandList Cmd
-    {
-        get => _cmd;
-        set => _cmd = value as CommandListVK;
-    }
+    protected override GraphicsCommandList Cmd => _cmd;
 }

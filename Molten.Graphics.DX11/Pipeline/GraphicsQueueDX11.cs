@@ -599,11 +599,8 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue<DeviceDX11>
     /// <summary>Gets the current <see cref="GraphicsQueueDX11"/> type. This value will not change during the context's life.</summary>
     internal CommandQueueType Type { get; private set; }
 
-    protected override GraphicsCommandList Cmd
-    {
-        get => _cmd;
-        set => _cmd = value as CommandListDX11;
-    }
+    /// <inheritdoc/>
+    protected override GraphicsCommandList Cmd => _cmd;
 
     internal ID3D11DeviceContext4* Ptr => _handle;
 

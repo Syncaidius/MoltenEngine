@@ -8,6 +8,7 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
     CommandQueueDesc _desc;
     ID3D12CommandQueue* _ptr;
     CommandAllocatorDX12 _cmdAllocator;
+    CommandListDX12 _cmd;
     PipelineInputLayoutDX12 _inputLayout;
     List<PipelineInputLayoutDX12> _cachedLayouts = new List<PipelineInputLayoutDX12>();
 
@@ -71,12 +72,16 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
         return base.End();
     }
 
+
     public override GraphicsBindResult Draw(HlslShader shader, uint vertexCount, uint vertexStartIndex = 0)
     {
         throw new NotImplementedException();
     }
 
-    public override GraphicsBindResult DrawInstanced(HlslShader shader, uint vertexCountPerInstance, uint instanceCount, uint vertexStartIndex = 0, uint instanceStartIndex = 0)
+    public override GraphicsBindResult DrawInstanced(HlslShader shader, uint vertexCountPerInstance, 
+        uint instanceCount, 
+        uint vertexStartIndex = 0, 
+        uint instanceStartIndex = 0)
     {
         throw new NotImplementedException();
     }
@@ -180,11 +185,7 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
 
     internal Logger Log { get; }
 
-    protected override GraphicsCommandList Cmd
-    {
-        get => throw new NotImplementedException();
-        set => throw new NotImplementedException();
-    }
+    protected override GraphicsCommandList Cmd => _cmd;
 
     internal new DeviceDX12 Device { get; }
 }

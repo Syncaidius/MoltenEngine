@@ -417,7 +417,7 @@ public abstract class GraphicsQueue : EngineObject
     /// <summary>
     /// Gets the current <see cref="GraphicsCommandList"/> of the current <see cref="GraphicsQueue"/>.
     /// </summary>
-    protected abstract GraphicsCommandList Cmd { get; set; }
+    protected abstract GraphicsCommandList Cmd { get; }
 
     /// <summary>
     /// Gets the pipeline state of the current <see cref="GraphicsQueue"/>.
