@@ -64,7 +64,9 @@ public unsafe class GraphicsQueueVK : GraphicsQueue<DeviceVK>
         if(flags.Has(GraphicsCommandListFlags.SingleSubmit))
             beginInfo.Flags |= CommandBufferUsageFlags.OneTimeSubmitBit;
 
-        _cmd = _poolFrame.Allocate(level, Device.Frame.BranchCount++, flags);
+        _cmd = _poolFrame.Allocate(level, Device.Frame.BranchCount, flags);
+        Device.Frame.BranchCount++;
+
         Device.Frame.Track(_cmd);
         _vk.BeginCommandBuffer(_cmd, &beginInfo);
     }

@@ -5,7 +5,6 @@ public abstract class GraphicsCommandList : GraphicsObject
     protected GraphicsCommandList(GraphicsQueue queue) : 
         base(queue.Device)
     {
-        
         Queue = queue;
     }
 
