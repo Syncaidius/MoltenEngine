@@ -50,6 +50,9 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
 
     protected override void GenerateMipMaps(GraphicsResource texture)
     {
+        // TODO: Implement compute-based mip-map generation - This can then be commonized for DX11/Vulkan too.
+        //       See: https://www.3dgep.com/learning-directx-12-4/#Generate_Mipmaps_Compute_Shader
+
         throw new NotImplementedException();
     }
 
@@ -151,7 +154,11 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
 
     protected override void CopyResource(GraphicsResource src, GraphicsResource dest)
     {
-        throw new NotImplementedException();
+        src.Apply(this);
+        dest.Apply(this);
+
+        _cmd.CopyResource(dest, src);
+        Profiler.ResourceCopyCalls++;
     }
 
     public override unsafe void CopyResourceRegion(GraphicsResource source, uint srcSubresource, ResourceRegion? sourceRegion, GraphicsResource dest, uint destSubresource, Vector3UI destStart)
@@ -162,7 +169,7 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
     public override GraphicsBindResult Draw(HlslShader shader, uint vertexCount, uint vertexStartIndex = 0)
     {
         return ApplyState(shader, QueueValidationMode.Unindexed, () =>
-                   _cmd.Handle->DrawInstanced(vertexCount, 1, vertexStartIndex, 0));
+            _cmd.Handle->DrawInstanced(vertexCount, 1, vertexStartIndex, 0));
     }
 
     public override GraphicsBindResult DrawInstanced(HlslShader shader, uint vertexCountPerInstance,
@@ -171,7 +178,7 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
         uint instanceStartIndex = 0)
     {
         return ApplyState(shader, QueueValidationMode.Instanced, () =>
-                   _cmd.Handle->DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex));
+            _cmd.Handle->DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex));
     }
 
     public override GraphicsBindResult DrawIndexed(HlslShader shader, uint indexCount, int vertexIndexOffset = 0, uint startIndex = 0)

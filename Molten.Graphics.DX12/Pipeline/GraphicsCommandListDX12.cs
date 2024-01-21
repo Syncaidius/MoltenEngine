@@ -14,6 +14,11 @@ internal unsafe class GraphicsCommandListDX12 : CommandListDX12<ID3D12GraphicsCo
         Handle->Reset(allocator.Handle, pState);
     }
 
+    public void CopyResource(GraphicsResource dst, GraphicsResource src)
+    {
+        Handle->CopyResource((ResourceHandleDX12)dst.Handle, (ResourceHandleDX12)src.Handle);
+    }
+
     public void Close()
     {
         Handle->Close();
