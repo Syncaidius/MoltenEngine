@@ -69,7 +69,7 @@ public partial class SpriteBatcher : IDisposable
     uint _dataCount;
     uint _flushIndex;
 
-    GraphicsBuffer _buffer;
+    ResourceFrameBuffer<GraphicsBuffer> _buffer;
 
     CheckerCallback[] _checkers;
     HlslShader _matDefault;
@@ -86,7 +86,7 @@ public partial class SpriteBatcher : IDisposable
     /// </summary>
     RectStyle _rectStyle;
 
-    public unsafe SpriteBatcher(RenderService renderer, uint dataCapacity, uint rangeCapacity)
+    public unsafe SpriteBatcher(GraphicsDevice device, uint dataCapacity, uint rangeCapacity)
     {
         _rectStyle = RectStyle.Default;
 
@@ -100,10 +100,13 @@ public partial class SpriteBatcher : IDisposable
         Reset();
 
 
-        throw new NotImplementedException("Implement per-frame buffer");
-        _buffer = renderer.Device.CreateStructuredBuffer<GpuData>(GraphicsResourceFlags.CpuWrite, dataCapacity);
+        //throw new NotImplementedException("Implement per-frame buffer");
+        _buffer = new ResourceFrameBuffer<GraphicsBuffer>(device, (device) =>
+        {
+            return device.CreateStructuredBuffer<GpuData>(GraphicsResourceFlags.CpuWrite, FlushCapacity);
+        });
 
-        ShaderCompileResult result = renderer.Device.LoadEmbeddedShader("Molten.Assets", "sprite.mfx");
+        ShaderCompileResult result = device.LoadEmbeddedShader("Molten.Assets", "sprite.mfx");
         _matDefaultNoTexture = result["sprite-no-texture"];
         _matDefault = result["sprite-texture"];
         _matCircle = result["circle"];
@@ -112,7 +115,7 @@ public partial class SpriteBatcher : IDisposable
         _matGrid = result["grid"];
         //_matDefaultMS = result[ShaderClassType.Material, "sprite-texture-ms"] as Material;
 
-        ShaderCompileResult resultSdf = renderer.Device.LoadEmbeddedShader("Molten.Assets", "sprite_sdf.mfx");
+        ShaderCompileResult resultSdf = device.LoadEmbeddedShader("Molten.Assets", "sprite_sdf.mfx");
         _matMsdf = resultSdf["sprite-msdf"];
 
         _checkers = new CheckerCallback[7];
@@ -534,8 +537,10 @@ public partial class SpriteBatcher : IDisposable
         GraphicsMapType map = GraphicsMapType.Discard;
         uint flushByteOffset = 0;
 
+        GraphicsBuffer dataBuffer = _buffer.Prepare();
+
         // TODO Improve this. Wasting a discard at the start of each frame!
-        if (_buffer.LastUsedFrameID != cmd.Device.Renderer.FrameID)
+        if (dataBuffer.LastUsedFrameID != cmd.Device.Renderer.FrameID)
         {
             _flushIndex = 0;
         }
@@ -553,7 +558,7 @@ public partial class SpriteBatcher : IDisposable
             }
         }
 
-        using (GraphicsStream stream = cmd.MapResource(_buffer, 0, flushByteOffset, map))
+        using (GraphicsStream stream = cmd.MapResource(dataBuffer, 0, flushByteOffset, map))
             stream.WriteRange(Data, vertexStartIndex, vertexCount);
 
         uint bufferOffset = _flushIndex;
@@ -569,7 +574,7 @@ public partial class SpriteBatcher : IDisposable
 
             HlslShader shader = range.Shader ?? _checkers[(int)range.Type](cmd, ref range, data);
 
-            shader["spriteData"].Value = _buffer;
+            shader["spriteData"].Value = dataBuffer;
             shader["vertexOffset"].Value = bufferOffset;
 
             // Set common material properties

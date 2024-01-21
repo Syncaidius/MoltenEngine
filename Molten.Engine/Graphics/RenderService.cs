@@ -95,7 +95,7 @@ public abstract class RenderService : EngineService
 
         OnInitializeRenderer(settings);
 
-        SpriteBatch = new SpriteBatcher(this, 3000, 20);
+        SpriteBatch = new SpriteBatcher(Device, 3000, 20);
         LoadDefaultShaders();
 
         Surfaces.Initialize(BiggestWidth, BiggestHeight);
