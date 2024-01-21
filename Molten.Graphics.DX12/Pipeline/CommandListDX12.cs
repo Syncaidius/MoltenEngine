@@ -4,7 +4,10 @@ namespace Molten.Graphics.DX12;
 
 public abstract class CommandListDX12 : GraphicsCommandList
 {
-    protected CommandListDX12(CommandQueueDX12 queue, CommandAllocatorDX12 allocator) : base(queue) { }
+    protected CommandListDX12(CommandQueueDX12 queue, CommandAllocatorDX12 allocator) : base(queue)
+    {
+        Fence = new FenceDX12(queue.Device, FenceFlags.None);
+    }
 
     protected override void OnGraphicsRelease()
     {
@@ -35,6 +38,8 @@ internal abstract unsafe class CommandListDX12<T> : CommandListDX12
     protected override void OnGraphicsRelease()
     {
         NativeUtil.ReleasePtr(ref _handle);
+        Fence?.Dispose();
+
         base.OnGraphicsRelease();
     }
 
@@ -43,4 +48,6 @@ internal abstract unsafe class CommandListDX12<T> : CommandListDX12
     public override unsafe ID3D12CommandList* BaseHandle => (ID3D12CommandList*)_handle;
 
     internal ref T* Handle => ref _handle;
+
+    internal FenceDX12 Fence { get; }
 }

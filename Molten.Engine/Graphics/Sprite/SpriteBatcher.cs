@@ -69,7 +69,7 @@ public partial class SpriteBatcher : IDisposable
     uint _dataCount;
     uint _flushIndex;
 
-    ResourceFrameBuffer<GraphicsBuffer> _buffer;
+    GraphicsFrameBuffer<GraphicsBuffer> _buffer;
 
     CheckerCallback[] _checkers;
     HlslShader _matDefault;
@@ -101,7 +101,7 @@ public partial class SpriteBatcher : IDisposable
 
 
         //throw new NotImplementedException("Implement per-frame buffer");
-        _buffer = new ResourceFrameBuffer<GraphicsBuffer>(device, (device) =>
+        _buffer = new GraphicsFrameBuffer<GraphicsBuffer>(device, (device) =>
         {
             return device.CreateStructuredBuffer<GpuData>(GraphicsResourceFlags.CpuWrite, FlushCapacity);
         });

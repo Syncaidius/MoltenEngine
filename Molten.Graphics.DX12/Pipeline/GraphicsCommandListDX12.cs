@@ -8,6 +8,12 @@ internal unsafe class GraphicsCommandListDX12 : CommandListDX12<ID3D12GraphicsCo
         base(allocator, handle)
     { }
 
+    internal void Reset(CommandAllocatorDX12 allocator, PipelineStateDX12 initialState)
+    {
+        ID3D12PipelineState* pState = initialState != null ? initialState.Handle : null;
+        Handle->Reset(allocator.Handle, pState);
+    }
+
     public void Close()
     {
         Handle->Close();

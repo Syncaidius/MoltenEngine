@@ -4,8 +4,8 @@
 /// Creates multiple instances a resource, one for each buffered frame.
 /// </summary>
 /// <typeparam name="T">The type of resource to be buffered.</typeparam>
-public class ResourceFrameBuffer<T> : GraphicsObject
-    where T : GraphicsResource
+public class GraphicsFrameBuffer<T> : GraphicsObject
+    where T : GraphicsObject
 {
     public delegate T CreateResourceCallback(GraphicsDevice device);
 
@@ -15,7 +15,7 @@ public class ResourceFrameBuffer<T> : GraphicsObject
     uint _requestedFrameBufferSize;
     T[] _resources;
 
-    public ResourceFrameBuffer(GraphicsDevice device, CreateResourceCallback createCallback) : 
+    public GraphicsFrameBuffer(GraphicsDevice device, CreateResourceCallback createCallback) : 
         base(device)
     {
         _createCallback = createCallback;

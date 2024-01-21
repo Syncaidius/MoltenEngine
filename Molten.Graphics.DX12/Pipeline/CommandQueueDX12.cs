@@ -6,12 +6,13 @@ namespace Molten.Graphics.DX12;
 public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
 {
     CommandQueueDesc _desc;
-    ID3D12CommandQueue* _ptr;
-    CommandAllocatorDX12 _cmdAllocator;
-    GraphicsCommandListDX12 _cmd;
+    ID3D12CommandQueue* _handle;
     PipelineInputLayoutDX12 _inputLayout;
     PipelineStateDX12 _pipelineState;
     List<PipelineInputLayoutDX12> _cachedLayouts = new List<PipelineInputLayoutDX12>();
+
+    GraphicsCommandListDX12 _cmd;
+    GraphicsFrameBuffer<CommandAllocatorDX12> _cmdAllocators;
 
     internal CommandQueueDX12(Logger log, DeviceDX12 device, DeviceBuilderDX12 builder, ref CommandQueueDesc desc) : 
         base(device)
@@ -40,8 +41,11 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
             Log.WriteLine($"Initialized '{_desc.Type}' command queue");
         }
 
-        _ptr = (ID3D12CommandQueue*)cmdQueue;
-        _cmdAllocator = new CommandAllocatorDX12(this, CommandListType.Direct);
+        _handle = (ID3D12CommandQueue*)cmdQueue;
+        _cmdAllocators = new GraphicsFrameBuffer<CommandAllocatorDX12>(Device, (device) =>
+        {
+            return new CommandAllocatorDX12(this, CommandListType.Direct);
+        });
     }
 
     protected override void GenerateMipMaps(GraphicsResource texture)
@@ -59,31 +63,37 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
         GraphicsCommandListDX12 cmd = (GraphicsCommandListDX12)list;
 
         ID3D12CommandList** lists = stackalloc ID3D12CommandList*[] { cmd.BaseHandle };
-        _ptr->ExecuteCommandLists(1, lists);
+        _handle->ExecuteCommandLists(1, lists);
     }
 
     public override void Sync(GraphicsCommandListFlags flags)
     {
-        throw new NotImplementedException();
+        if (flags.Has(GraphicsCommandListFlags.Deferred))
+            throw new InvalidOperationException($"An immediate/primary command list branch cannot use deferred flag during Sync() calls.");
 
-        // TODO This should just call Wait() on the current frame's fence?
-        // TODO Refactor and strip out previous attempt at frame-buffering
-        //      -- Implement frame-buffering at renderer level (multiple textures, command lists, etc).
-        //      -- Move Draw commands to GraphicsCommandList
-        //      -- Queues will be responsible for producing and processing command lists
+        ID3D12CommandList** lists = stackalloc ID3D12CommandList*[] { _cmd.BaseHandle };
+        _handle->ExecuteCommandLists(1, lists);
+
+        // A fence will signal a synchronization event.
+        // This blocks the CPU until the GPU has finished processing all commands prior to the fences signal command.
+        if (!_cmd.Fence.Wait())
+            throw new InvalidOperationException("Command list Sync() fence failed Wait() call. See logs for details");
+
+        CommandAllocatorDX12 allocator = _cmdAllocators.Prepare();
+        _cmd.Reset(allocator, _pipelineState);
     }
 
     public override void Begin(GraphicsCommandListFlags flags = GraphicsCommandListFlags.None)
     {
         base.Begin(flags);
 
-        _cmd = _cmdAllocator.Allocate(null);
+        CommandAllocatorDX12 allocator = _cmdAllocators.Prepare();
+        _cmd = allocator.Allocate(null);
         Device.Frame.BranchCount++;
 
         Device.Frame.Track(_cmd);
 
-        ID3D12PipelineState* pState = _pipelineState != null ? _pipelineState.Handle : null;
-        _cmd.Handle->Reset(_cmdAllocator.Handle, pState);
+        _cmd.Reset(allocator, _pipelineState);
     }
 
     public override GraphicsCommandList End()
@@ -184,8 +194,8 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
 
     protected override void OnDispose(bool immediate)
     {
-        _cmdAllocator?.Dispose(true);
-        NativeUtil.ReleasePtr(ref _ptr);
+        _cmdAllocators?.Dispose(true);
+        NativeUtil.ReleasePtr(ref _handle);
     }
 
     protected override GraphicsBindResult CheckInstancing()
@@ -213,7 +223,7 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
         return input;
     }
 
-    internal ID3D12CommandQueue* Ptr => _ptr;
+    internal ID3D12CommandQueue* Ptr => _handle;
 
     internal Logger Log { get; }
 
