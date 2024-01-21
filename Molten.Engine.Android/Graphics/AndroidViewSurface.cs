@@ -160,6 +160,41 @@ public class AndroidViewSurface : INativeSurface
         throw new NotImplementedException();
     }
 
+    public void GenerateMipMaps(GraphicsPriority priority, GraphicsTask.EventHandler completeCallback = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SetData(GraphicsPriority priority, TextureData data, uint srcMipIndex, uint srcArraySlice, uint mipCount, uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0, GraphicsTask.EventHandler completeCallback = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SetData<T>(GraphicsPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arraySlice = 0, GraphicsTask.EventHandler completeCallback = null) where T : unmanaged
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SetData(GraphicsPriority priority, TextureSlice data, uint mipLevel, uint arraySlice, GraphicsTask.EventHandler completeCallback = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SetData<T>(GraphicsPriority priority, ResourceRegion area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0, GraphicsTask.EventHandler completeCallback = null) where T : unmanaged
+    {
+        throw new NotImplementedException();
+    }
+
+    public void CopyTo(GraphicsPriority priority, GraphicsResource destination, GraphicsTask.EventHandler completeCallback = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void CopyTo(GraphicsPriority priority, uint sourceLevel, uint sourceSlice, GraphicsResource destination, uint destLevel, uint destSlice, GraphicsTask.EventHandler completeCallback = null)
+    {
+        throw new NotImplementedException();
+    }
+
     public string Title
     {
         get => TargetActivity.UnderlyingActivity.Title;
