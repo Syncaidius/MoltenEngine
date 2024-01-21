@@ -25,7 +25,6 @@
     <ProjectReference Include="..\Molten.Graphics.DX11\Molten.Graphics.DX11.csproj" />
     <ProjectReference Include="..\Molten.Graphics.DX12\Molten.Graphics.DX12.csproj" />
     <ProjectReference Include="..\Molten.Graphics.Vulkan\Molten.Graphics.Vulkan.csproj" />
-    <ProjectReference Include="..\Molten.IO\Molten.IO.csproj" />
     <ProjectReference Include="..\Molten.Math\Molten.Math.csproj" />
     <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj" />
   </ItemGroup>

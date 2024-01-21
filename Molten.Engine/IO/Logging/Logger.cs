@@ -15,7 +15,7 @@ public class Logger : IDisposable
         public string Text { get; internal set; }
 
         public LogCategory Category { get; internal set; }
-
+         
         public Color Color { get; set; } = Color.White;
 
         public Entry Previous { get; internal set; }

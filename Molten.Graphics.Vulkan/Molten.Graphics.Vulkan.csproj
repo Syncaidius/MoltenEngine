@@ -50,7 +50,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Molten.Engine\Molten.Engine.csproj" />
-    <ProjectReference Include="..\Molten.Font\Molten.Font.csproj" />
     <ProjectReference Include="..\Molten.Graphics.DXC\Molten.Graphics.DXC.csproj" />
     <ProjectReference Include="..\Molten.Math\Molten.Math.csproj" />
     <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj" />

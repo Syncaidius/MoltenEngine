@@ -120,6 +120,7 @@ public unsafe abstract class TextureVK : GraphicsTexture
         CreateImage(device, subHandle, memFlags);
     }
 
+    protected virtual void CreateImage(DeviceVK device, ImageHandleVK subHandle, MemoryPropertyFlags memFlags)
     {
         Result r = device.VK.CreateImage(device, _info, null, subHandle.Ptr);
         if (!r.Check(device, () => "Failed to create image resource"))

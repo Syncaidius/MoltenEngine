@@ -138,8 +138,6 @@
         "type": "Project",
         "dependencies": {
           "Magick.NET-Q8-AnyCPU": "[13.5.0, )",
-          "Molten.Font": "[0.8.0, )",
-          "Molten.IO": "[0.8.0, )",
           "Molten.Math": "[0.8.0, )",
           "Molten.Utility": "[0.8.0, )",
           "Newtonsoft.Json": "[13.0.3, )"
@@ -153,14 +151,6 @@
           "Molten.Utility": "[0.8.0, )",
           "Silk.NET.XInput": "[2.20.0, )",
           "System.Management": "[8.0.0, )"
-        }
-      },
-      "molten.font": {
-        "type": "Project",
-        "dependencies": {
-          "Molten.IO": "[0.8.0, )",
-          "Molten.Math": "[0.8.0, )",
-          "Molten.Utility": "[0.8.0, )"
         }
       },
       "molten.graphics.dxc": {
@@ -177,17 +167,9 @@
         "dependencies": {
           "Molten.Engine": "[0.8.0, )",
           "Molten.Engine.Windows": "[0.8.0, )",
-          "Molten.IO": "[0.8.0, )",
           "Molten.Math": "[0.8.0, )",
           "Molten.Utility": "[0.8.0, )",
           "Silk.NET.DXGI": "[2.20.0, )"
-        }
-      },
-      "molten.io": {
-        "type": "Project",
-        "dependencies": {
-          "Molten.Math": "[0.8.0, )",
-          "Molten.Utility": "[0.8.0, )"
         }
       },
       "molten.math": {

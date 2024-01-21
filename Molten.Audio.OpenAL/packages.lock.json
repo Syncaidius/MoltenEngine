@@ -137,26 +137,9 @@
         "type": "Project",
         "dependencies": {
           "Magick.NET-Q8-AnyCPU": "[13.5.0, )",
-          "Molten.Font": "[0.8.0, )",
-          "Molten.IO": "[0.8.0, )",
           "Molten.Math": "[0.8.0, )",
           "Molten.Utility": "[0.8.0, )",
           "Newtonsoft.Json": "[13.0.3, )"
-        }
-      },
-      "molten.font": {
-        "type": "Project",
-        "dependencies": {
-          "Molten.IO": "[0.8.0, )",
-          "Molten.Math": "[0.8.0, )",
-          "Molten.Utility": "[0.8.0, )"
-        }
-      },
-      "molten.io": {
-        "type": "Project",
-        "dependencies": {
-          "Molten.Math": "[0.8.0, )",
-          "Molten.Utility": "[0.8.0, )"
         }
       },
       "molten.math": {

@@ -85,14 +85,6 @@
       "molten.font": {
         "type": "Project",
         "dependencies": {
-          "Molten.IO": "[0.8.0, )",
-          "Molten.Math": "[0.8.0, )",
-          "Molten.Utility": "[0.8.0, )"
-        }
-      },
-      "molten.io": {
-        "type": "Project",
-        "dependencies": {
           "Molten.Math": "[0.8.0, )",
           "Molten.Utility": "[0.8.0, )"
         }

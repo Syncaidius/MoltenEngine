@@ -40,7 +40,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Molten.Engine.Windows\Molten.Engine.Windows.csproj" />
     <ProjectReference Include="..\Molten.Engine\Molten.Engine.csproj" />
-    <ProjectReference Include="..\Molten.IO\Molten.IO.csproj" />
     <ProjectReference Include="..\Molten.Math\Molten.Math.csproj" />
     <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj" />
   </ItemGroup>
