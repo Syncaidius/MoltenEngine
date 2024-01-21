@@ -48,15 +48,9 @@ public enum GraphicsResourceFlags
     Shared = 1 << 6,
 
     /// <summary>
-    /// Tells the underlying implementation that we want any changes to the resource to be buffered inline with the back-buffer.
-    /// <para>The amount of memory required by the resource will be multiplied by the frame-buffer size.</para>
-    /// </summary>
-    Buffered = 1 << 7,
-
-    /// <summary>
     /// Allow mi-pmap generation for the resource.
     /// </summary>
-    MipMapGeneration = 1 << 8,
+    MipMapGeneration = 1 << 7,
 
     /// <summary>
     /// All of the GPU and CPU read/write flags. Generally used by staging resources.

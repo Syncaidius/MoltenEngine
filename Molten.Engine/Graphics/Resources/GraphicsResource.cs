@@ -26,64 +26,7 @@ public abstract class GraphicsResource : GraphicsObject, IGraphicsResource
         }
     }
 
-    /// <summary>
-    /// Gives a derived resource implementation a chance to provide it's maximum supported frame-buffer size.
-    /// </summary>
-    /// <param name="frameBufferSize">The renderer's frame-buffer size.</param>
-    /// <returns></returns>
-    protected virtual uint GetMaxFrameBufferSize(uint frameBufferSize)
-    {
-        return frameBufferSize;
-    }
-
-    /// <summary>
-    /// Invoked when the next frame has started to give the resource a chance to prepare it's underlying memory or state.
-    /// </summary>
-    /// <param name="queue">The <see cref="GraphicsQueue"/> that is performing the frame transition.</param>
-    /// <param name="frameBufferIndex">The frame buffer or in-flight frame index. This will be between 0 and the back-buffer size.</param>
-    /// <param name="frameID">The frame ID. This is based on a total count of frames processed so far.</param>
-    protected abstract void OnNextFrame(GraphicsQueue queue, uint frameBufferIndex, ulong frameID);
-
-    protected abstract void OnCreateResource(uint frameBufferSize, uint frameBufferIndex, ulong frameID);
-
-    protected abstract void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID);
-
-    /// <summary>
-    /// Ensure the resource has been initialized.
-    /// </summary>
-    /// <param name="queue">The queue that will perform initialization, if needed.</param>
-    public void Ensure(GraphicsQueue queue)
-    {
-        uint fbSize = 1;
-        uint fbIndex = 0;
-
-        // Cap frame-buffer size to 1 if the resource is static.
-        if (Flags.Has(GraphicsResourceFlags.Buffered))
-        {
-            fbSize = GetMaxFrameBufferSize(Device.FrameBufferSize);
-            fbIndex = Math.Min(fbSize - 1, Device.FrameBufferIndex);
-        }
-
-        LastUsedFrameID = Device.Renderer.FrameID;
-
-        // Check if the last known frame buffer size has changed.
-        if (Handle == null)
-        {
-            OnCreateResource(fbSize, fbIndex, Device.Renderer.FrameID);
-        }
-        else if (KnownFrameBufferSize != fbSize)
-        {
-            OnFrameBufferResized(KnownFrameBufferSize, fbSize, fbIndex, Device.Renderer.FrameID);
-            LastFrameResizedID = Device.Renderer.FrameID;
-        }
-        else if (LastUsedFrameBufferIndex != fbIndex)
-        {
-            OnNextFrame(queue, Device.FrameBufferIndex, Device.Renderer.FrameID);
-            LastUsedFrameBufferIndex = fbIndex;
-        }
-
-        KnownFrameBufferSize = fbSize;
-    }
+    protected abstract void OnCreateResource();
 
     /// <summary>
     /// Invoked when the current <see cref="GraphicsObject"/> should apply any changes before being bound to a GPU context.
@@ -94,7 +37,12 @@ public abstract class GraphicsResource : GraphicsObject, IGraphicsResource
         if (IsDisposed)
             return;
 
-        Ensure(queue);
+        LastUsedFrameID = Device.Renderer.FrameID;
+
+        // Check if the last known frame buffer size has changed.
+        if (Handle == null)
+            OnCreateResource();
+
         OnApply(queue);
     }
 
@@ -278,19 +226,9 @@ public abstract class GraphicsResource : GraphicsObject, IGraphicsResource
     public abstract GraphicsFormat ResourceFormat { get; protected set; }
 
     /// <summary>
-    /// Gets the last known frame buffer size for the current <see cref="GraphicsResource"/>.
-    /// </summary>
-    public uint KnownFrameBufferSize { get; protected set; }
-
-    /// <summary>
     /// Gets the ID of the frame that the current <see cref="GraphicsResource"/> was applied.
     /// </summary>
     public ulong LastUsedFrameID { get; private set; }
-
-    /// <summary>
-    /// Gets the last frame buffer index that the current <see cref="GraphicsResource"/> was applied.
-    /// </summary>
-    protected uint LastUsedFrameBufferIndex { get; private set; }
 
     /// <summary>
     /// Gets the ID of the frame that the current <see cref="GraphicsTexture"/> was resized. 

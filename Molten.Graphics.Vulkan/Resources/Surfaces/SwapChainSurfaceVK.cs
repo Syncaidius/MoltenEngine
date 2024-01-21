@@ -26,6 +26,8 @@ public abstract class SwapChainSurfaceVK : RenderSurface2DVK, INativeSurface
     SurfaceFormatKHR _surfaceFormat;
     uint _curChainSize;
 
+    ResourceHandleVK<Image, ImageHandleVK>[] _handles;
+
     protected SwapChainSurfaceVK(DeviceVK device, string title, uint width, uint height, uint mipCount,
         GraphicsResourceFlags flags = GraphicsResourceFlags.None,
         GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm,
@@ -81,7 +83,13 @@ public abstract class SwapChainSurfaceVK : RenderSurface2DVK, INativeSurface
         return PresentModeKHR.FifoKhr;
     }
 
-    protected unsafe override void CreateImages(DeviceVK device, ResourceHandleVK<Image, ImageHandleVK>[] handles, MemoryPropertyFlags memFlags, ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo)
+    protected override ResourceHandleVK<Image, ImageHandleVK> CreateImageHandle()
+    {
+        _handles = new ResourceHandleVK<Image, ImageHandleVK>[Device.FrameBufferSize];
+        return null;
+    }
+
+    protected unsafe override void CreateImage(DeviceVK device, ImageHandleVK subHandle, MemoryPropertyFlags memFlags, ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo)
     {
         RendererVK renderer = Device.Renderer as RendererVK;
 
@@ -126,14 +134,16 @@ public abstract class SwapChainSurfaceVK : RenderSurface2DVK, INativeSurface
             return _extSwapChain.GetSwapchainImages(device, _swapChain, count, items);
         }, "Swapchain image");
 
-        if (scImages.Length != handles.Length)
+        // Ignore the provided handle and create one for each swap-chain image.
+
+        if (scImages.Length != _handles.Length)
             throw new InvalidOperationException("The number of swap-chain images did not match the current buffering mode.");
 
-        for (int i = 0; i < handles.Length; i++)
+        for (int i = 0; i < _handles.Length; i++)
         {
-            handles[i].NativePtr[0] = scImages[i];
+            _handles[i].NativePtr[0] = scImages[i];
             viewInfo.Image = scImages[i];
-            r = renderer.VK.CreateImageView(device, viewInfo, null, handles[i].SubHandle.ViewPtr);
+            r = renderer.VK.CreateImageView(device, viewInfo, null, _handles[i].SubHandle.ViewPtr);
             if (!r.Check(device, () => $"Failed to create image view for back-buffer image {i}"))
                 break;
         }
@@ -204,14 +214,9 @@ public abstract class SwapChainSurfaceVK : RenderSurface2DVK, INativeSurface
         return _extSwapChain.CreateSwapchain(Device, &createInfo, null, out _swapChain);
     }
 
-    protected override sealed void OnNextFrame(GraphicsQueue queue, uint imageIndex, ulong frameID)
-    {
-        // We don't want to do anything here as handle-switching happens as part of presentation.
-    }
-
     internal void Prepare(GraphicsQueueVK queue, uint imageIndex)
     {
-        SetHandle(imageIndex);
+        SetHandle(_handles[imageIndex]);
         Transition(queue, ImageLayout.Undefined, ImageLayout.PresentSrcKhr);
     }
 

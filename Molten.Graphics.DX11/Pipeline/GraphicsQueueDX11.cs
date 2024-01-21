@@ -228,8 +228,8 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue<DeviceDX11>
 
     protected override void CopyResource(GraphicsResource src, GraphicsResource dest)
     {
-        src.Ensure(this);
-        dest.Ensure(this);
+        src.Apply(this);
+        dest.Apply(this);
 
         _handle->CopyResource((ResourceHandleDX11)dest.Handle, (ResourceHandleDX11)src.Handle);
         Profiler.ResourceCopyCalls++;

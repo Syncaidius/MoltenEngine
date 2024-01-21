@@ -245,22 +245,12 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
         _dimensions = newDimensions;
         ResourceFormat = newFormat;
 
-        // Cap frame-buffer size to 1 if the resource is static.
-        uint fbSize = 1;
-        uint fbIndex = 0;
-
-        if (Flags.Has(GraphicsResourceFlags.Buffered))
-        {
-            fbSize = GetMaxFrameBufferSize(Device.FrameBufferSize);
-            fbIndex = Math.Min(fbSize - 1, Device.FrameBufferIndex);
-        }
-
-        OnResizeTexture(in newDimensions, newFormat, fbSize, fbIndex, Device.Renderer.FrameID);
+        OnResizeTexture(in newDimensions, newFormat);
         LastFrameResizedID = Device.Renderer.FrameID;
         OnResize?.Invoke(this);
     }
 
-    protected abstract void OnResizeTexture(in TextureDimensions dimensions, GraphicsFormat format, uint frameBufferSize, uint frameBufferIndex, ulong frameID);
+    protected abstract void OnResizeTexture(ref readonly TextureDimensions dimensions, GraphicsFormat format);
 
     /// <summary>Generates mip maps for the texture via the current <see cref="GraphicsTexture"/>, if allowed.</summary>
     /// <param name="priority">The priority of the copy operation.</param>

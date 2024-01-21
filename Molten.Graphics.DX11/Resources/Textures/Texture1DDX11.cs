@@ -59,14 +59,16 @@ public unsafe class Texture1DDX11 : TextureDX11, ITexture1D
         };
     }
 
-    protected override void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle, uint handleIndex)
+    protected override ResourceHandleDX11<ID3D11Resource> CreateTexture(DeviceDX11 device)
     {
         SubresourceData* subData = GetImmutableData(Desc.Usage);
 
         fixed(Texture1DDesc* pDesc = &Desc)
             Device.Ptr->CreateTexture1D(pDesc, subData, ref NativeTexture);
 
-        handle.NativePtr = (ID3D11Resource*)NativeTexture;
+        EngineUtil.Free(ref subData);
+
+        return new ResourceHandleDX11<ID3D11Resource>(this, (ID3D11Resource*)NativeTexture);
     }
 
     protected override void UpdateDescription(TextureDimensions dimensions, GraphicsFormat newFormat)

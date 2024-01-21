@@ -104,7 +104,7 @@ public unsafe class DepthSurfaceDX11 : Texture2DDX11, IDepthStencilSurface
         }
     }
 
-    protected override void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle, uint handleIndex)
+    protected override ResourceHandleDX11<ID3D11Resource> CreateTexture(DeviceDX11 device)
     {
         NativeUtil.ReleasePtr(ref _depthView);
         NativeUtil.ReleasePtr(ref _readOnlyView);
@@ -113,20 +113,21 @@ public unsafe class DepthSurfaceDX11 : Texture2DDX11, IDepthStencilSurface
         Desc.Height = Math.Max(1, Desc.Height);
 
         // Create render target texture
-        base.CreateTexture(device, handle, handleIndex);
+        ResourceHandleDX11<ID3D11Resource> handle = base.CreateTexture(device);
 
         _depthDesc.Flags = 0; // DsvFlag.None;
         SubresourceData* subData = null;
-        ID3D11Resource* res = handle.NativePtr;
 
         fixed(DepthStencilViewDesc* pDesc = &_depthDesc)
-            device.Ptr->CreateDepthStencilView(res, pDesc, ref _depthView);
+            device.Ptr->CreateDepthStencilView(handle, pDesc, ref _depthView);
 
         // Create read-only depth view for passing to shaders.
         _depthDesc.Flags = (uint)GetReadOnlyFlags();
         fixed (DepthStencilViewDesc* pDesc = &_depthDesc)
-            device.Ptr->CreateDepthStencilView(res, pDesc, ref _readOnlyView);
+            device.Ptr->CreateDepthStencilView(handle, pDesc, ref _readOnlyView);
         _depthDesc.Flags = 0U; // (uint)DsvFlag.None;
+
+        return handle;
     }
 
     protected override void UpdateDescription(TextureDimensions dimensions, GraphicsFormat newFormat)

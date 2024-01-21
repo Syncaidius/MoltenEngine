@@ -23,17 +23,18 @@ public unsafe class RenderSurface2DDX11 : Texture2DDX11, IRenderSurface2D
         Name = $"Surface_{name ?? GetType().Name}";
     }
 
-    protected override ResourceHandleDX11<ID3D11Resource> CreateHandle()
+    protected override ResourceHandleDX11<ID3D11Resource> CreateTexture(DeviceDX11 device)
     {
-        return new SurfaceHandleDX11(this);
-    }
+        ID3D11Texture2D1* ptrTex = null;
+        fixed (Texture2DDesc1* pDesc = &Desc)
+            Device.Ptr->CreateTexture2D1(pDesc, null, ref ptrTex);
 
-    protected override void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle, uint handleIndex)
-    {
-        base.CreateTexture(device, handle, handleIndex);
+        SurfaceHandleDX11 handle = new SurfaceHandleDX11(this)
+        {
+            NativePtr = (ID3D11Resource*)ptrTex,
+        };
 
-        SurfaceHandleDX11 rsHandle = handle as SurfaceHandleDX11;
-        ref RenderTargetViewDesc1 desc = ref rsHandle.RTV.Desc;
+        ref RenderTargetViewDesc1 desc = ref handle.RTV.Desc;
         desc.Format = DxgiFormat;
 
         SetRTVDescription(ref desc);
@@ -59,7 +60,8 @@ public unsafe class RenderSurface2DDX11 : Texture2DDX11, IRenderSurface2D
             };
         }
 
-        rsHandle.RTV.Create();
+        handle.RTV.Create();
+        return handle;
     }
 
     protected virtual void SetRTVDescription(ref RenderTargetViewDesc1 desc) { }

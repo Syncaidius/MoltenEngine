@@ -4,16 +4,16 @@ namespace Molten.Graphics.DX11;
 
 public abstract unsafe class ResourceHandleDX11 : GraphicsResourceHandle
 {
-    public static implicit operator ID3D11Resource*(ResourceHandleDX11 handle)
-    {
-        return (ID3D11Resource*)handle.Ptr;
-    }
-
     internal ResourceHandleDX11(GraphicsResource resource) : base(resource)
     {
         Device = resource.Device as DeviceDX11;
         SRV = new SRViewDX11(this);
         UAV = new UAViewDX11(this);
+    }
+
+    public static implicit operator ID3D11Resource*(ResourceHandleDX11 handle)
+    {
+        return (ID3D11Resource*)handle.Ptr;
     }
 
     public override void Dispose()
@@ -37,6 +37,12 @@ public unsafe class ResourceHandleDX11<T> : ResourceHandleDX11
     internal ResourceHandleDX11(GraphicsResource resource) :
         base(resource)
     { }
+
+    internal ResourceHandleDX11(GraphicsResource resource, T* ptr) :
+        base(resource)
+    {
+        _ptr = ptr;
+    }
 
     public override void Dispose()
     {

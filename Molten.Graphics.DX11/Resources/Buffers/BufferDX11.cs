@@ -10,17 +10,11 @@ namespace Molten.Graphics.DX11;
 /// </summary>
 public unsafe class BufferDX11 : GraphicsBuffer
 {
-    ResourceHandleDX11<ID3D11Buffer>[] _handles;
-    ResourceHandleDX11<ID3D11Buffer> _curHandle;
+    ResourceHandleDX11<ID3D11Buffer> _handle;
     protected BufferDesc Desc;
 
     void* _initialData;
     uint _initialBytes;
-
-    /// <summary>
-    /// A list of handles that need to be disposed once the GPU is finished with them.
-    /// </summary>
-    List<ResourceHandleDX11<ID3D11Buffer>> _oldHandles;
 
     /// <summary>
     /// Creates a new instance of <see cref="BufferDX11"/> with the specified parameters.
@@ -49,8 +43,6 @@ public unsafe class BufferDX11 : GraphicsBuffer
             NativeMemory.Copy(initialData, _initialData, _initialBytes);
         }
 
-        _oldHandles = new List<ResourceHandleDX11<ID3D11Buffer>>();
-
         ResourceFormat = format;
         D3DFormat = format.ToApi();
 
@@ -62,32 +54,14 @@ public unsafe class BufferDX11 : GraphicsBuffer
         throw new NotImplementedException();
     }
 
-    protected override void OnNextFrame(GraphicsQueue queue, uint frameBufferIndex, ulong frameID)
-    {
-        _curHandle = _handles[frameBufferIndex];
-
-        // Dispose of old texture handles from any previous resize calls.
-        uint resizeAge = (uint)(frameID - LastFrameResizedID);
-        if (resizeAge > Device.FrameBufferSize)
-        {
-            foreach (ResourceHandleDX11<ID3D11Buffer> handle in _oldHandles)
-                handle.Dispose();
-
-            _oldHandles.Clear();
-        }
-    }
-
-    protected override sealed void OnCreateResource(uint frameBufferSize, uint frameBufferIndex, ulong frameID)
+    protected override sealed void OnCreateResource()
     {
         DeviceDX11 device = Device as DeviceDX11;
-        _handles = new ResourceHandleDX11<ID3D11Buffer>[frameBufferSize];
-
-        for (uint i = 0; i < frameBufferSize; i++)
-            _handles[i] = new ResourceHandleDX11<ID3D11Buffer>(this);
+        _handle = new ResourceHandleDX11<ID3D11Buffer>(this);
 
         if (Flags.IsImmutable() && _initialData == null)
             throw new GraphicsResourceException(this, "Initial data cannot be null when buffer mode is Immutable.");
-            
+
         Desc = new BufferDesc();
         Desc.ByteWidth = (uint)SizeInBytes;
         Desc.StructureByteStride = 0;
@@ -117,10 +91,7 @@ public unsafe class BufferDX11 : GraphicsBuffer
         if (Desc.MiscFlags == (uint)ResourceMiscFlag.BufferStructured)
             Desc.StructureByteStride = Stride;
 
-        for (int i = 0; i < _handles.Length; i++)
-            CreateBuffer(device, _handles[i]);
-
-        _curHandle = _handles[frameBufferIndex];
+        CreateBuffer(device, _handle);
     }
 
     private void CreateBuffer(DeviceDX11 device, ResourceHandleDX11<ID3D11Buffer> handle)
@@ -181,13 +152,6 @@ public unsafe class BufferDX11 : GraphicsBuffer
         }
     }
 
-    protected override void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
-    {
-        _oldHandles.AddRange(_handles);
-        OnCreateResource(frameBufferSize, frameBufferIndex, frameID);
-        _curHandle = _handles[frameBufferIndex];
-    }
-
     protected void SetDebugName(string debugName)
     {
         if (!string.IsNullOrWhiteSpace(debugName))
@@ -201,13 +165,8 @@ public unsafe class BufferDX11 : GraphicsBuffer
     /// <inheritdoc/>
     protected override void OnGraphicsRelease()
     {
-        if (_handles != null)
-        {
-            for (int i = 0; i < _handles.Length; i++)
-                _handles[i].Dispose();
-
-            _curHandle = null;
-        }
+        _handle?.Dispose();
+        _handle = null;
 
         // Just in case the initial data was never used before disposal.
         EngineUtil.Free(ref _initialData);
@@ -217,7 +176,7 @@ public unsafe class BufferDX11 : GraphicsBuffer
     internal ResourceMiscFlag ResourceFlags => (ResourceMiscFlag)Desc.MiscFlags;
 
     /// <inheritdoc/>
-    public override ResourceHandleDX11<ID3D11Buffer> Handle => _curHandle;
+    public override ResourceHandleDX11<ID3D11Buffer> Handle => _handle;
 
     /// <inheritdoc/>
     public override GraphicsFormat ResourceFormat { get; protected set; }

@@ -28,12 +28,11 @@ public unsafe abstract class SwapChainSurfaceDX11 : RenderSurface2DDX11, ISwapCh
         _presentParams[0] = new PresentParameters();
     }
 
-    protected override void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle, uint handleIndex)
+    protected override ResourceHandleDX11<ID3D11Resource> CreateTexture(DeviceDX11 device)
     {
         // Resize the swap chain if needed.
         if (NativeSwapChain != null)
         {
-            FreeOldHandles(device.Renderer.FrameID);
             WinHResult result = NativeSwapChain->ResizeBuffers(Device.FrameBufferSize, Width, Height, GraphicsFormat.Unknown.ToApi(), 0U);
             NativeSwapChain->GetDesc1(ref _swapDesc);
         }
@@ -55,28 +54,32 @@ public unsafe abstract class SwapChainSurfaceDX11 : RenderSurface2DDX11, ISwapCh
          */
         void* ppSurface = null;
         Guid riid = ID3D11Texture2D1.Guid;
-        WinHResult hr = NativeSwapChain->GetBuffer(handleIndex, &riid, &ppSurface);
+        WinHResult hr = NativeSwapChain->GetBuffer(0, &riid, &ppSurface);
         DxgiError err = hr.ToEnum<DxgiError>();
-
-        SurfaceHandleDX11 rsHandle = handle as SurfaceHandleDX11;
-        rsHandle.RTV.Desc.Format = DxgiFormat;
 
         if (err == DxgiError.Ok)
         {
-            rsHandle.RTV.Desc = new RenderTargetViewDesc1()
+            SurfaceHandleDX11 handle = new SurfaceHandleDX11(this)
+            {
+                NativePtr = (ID3D11Resource*)ppSurface,
+            };
+
+            handle.RTV.Desc = new RenderTargetViewDesc1()
             {
                 Format = _swapDesc.Format,
                 ViewDimension = RtvDimension.Texture2D,
             };
 
-            handle.NativePtr = (ID3D11Resource*)ppSurface;
-            rsHandle.RTV.Create();
+            handle.RTV.Create();
             Viewport = new ViewportF(0, 0, Width, Height);
+            return handle;
         }
         else
         {
             Device.Log.Error($"Error creating resource for SwapChainSurface '{Name}': {err}");
         }
+
+        return null;
     }
 
     protected abstract void OnCreateSwapchain(ref Texture2DDesc1 desc);
@@ -91,11 +94,6 @@ public unsafe abstract class SwapChainSurfaceDX11 : RenderSurface2DDX11, ISwapCh
     private void VSync_OnChanged(bool oldValue, bool newValue)
     {
         _vsync = newValue ? 1U : 0;
-    }
-
-    protected override uint GetMaxFrameBufferSize(uint frameBufferSize)
-    {
-        return 1;
     }
 
     DxgiError _lastError;

@@ -17,7 +17,7 @@ public class ResourceCopyTask : GraphicsResourceTask<GraphicsResource>
     protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
     {
         if (Resource is GraphicsBuffer buffer && buffer.BufferType == GraphicsBufferType.Staging)
-            Resource.Ensure(queue);
+            Resource.Apply(queue);
 
         queue.CopyResource(Resource, Destination);
 

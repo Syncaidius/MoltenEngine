@@ -99,7 +99,9 @@ public partial class SpriteBatcher : IDisposable
         ClipStack = new Rectangle[256];
         Reset();
 
-        _buffer = renderer.Device.CreateStructuredBuffer<GpuData>(GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.Buffered, dataCapacity);
+
+        throw new NotImplementedException("Implement per-frame buffer");
+        _buffer = renderer.Device.CreateStructuredBuffer<GpuData>(GraphicsResourceFlags.CpuWrite, dataCapacity);
 
         ShaderCompileResult result = renderer.Device.LoadEmbeddedShader("Molten.Assets", "sprite.mfx");
         _matDefaultNoTexture = result["sprite-no-texture"];

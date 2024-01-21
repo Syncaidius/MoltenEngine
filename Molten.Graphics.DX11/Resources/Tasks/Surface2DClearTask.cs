@@ -16,7 +16,7 @@ internal class Surface2DClearTask : GraphicsResourceTask<RenderSurface2DDX11>
 
     protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
     {
-        Resource.Ensure(queue);
+        Resource.Apply(queue);
         Resource.OnClear(queue as GraphicsQueueDX11, Color);
         return true;
     }

@@ -161,7 +161,7 @@ public abstract class GraphicsQueue : EngineObject
     /// <exception cref="GraphicsResourceException"></exception>
     public unsafe GraphicsStream MapResource(GraphicsResource resource, uint subresource, ulong offsetBytes, GraphicsMapType mapType)
     {
-        resource.Ensure(this);
+        resource.Apply(this);
         ResourceMap map = GetResourcePtr(resource, subresource, mapType);
         GraphicsStream stream = new GraphicsStream(this, resource, ref map);
         stream.Position = (long)offsetBytes;

@@ -65,6 +65,13 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
     public override void Sync(GraphicsCommandListFlags flags)
     {
         throw new NotImplementedException();
+
+        // TODO This should just call Wait() on the current frame's fence?
+        // TODO Refactor and strip out previous attempt at frame-buffering
+        //      -- Implement frame-buffering at renderer level (multiple textures, command lists, etc).
+        //      -- Move Draw commands to GraphicsCommandList
+        //      -- Queues will be responsible for producing and processing command lists
+        //      -- Renderer will keep track of swap chains, per-frame resources (command lists, staging buffers, etc).
     }
 
     public override void Begin(GraphicsCommandListFlags flags = GraphicsCommandListFlags.None)

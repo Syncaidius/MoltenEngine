@@ -8,16 +8,10 @@ public delegate void TextureEvent(TextureDX11 texture);
 
 public unsafe abstract partial class TextureDX11 : GraphicsTexture
 {
-    ResourceHandleDX11<ID3D11Resource>[] _handles;
-    ResourceHandleDX11<ID3D11Resource> _curHandle;
+    ResourceHandleDX11<ID3D11Resource> _handle;
 
     ShaderResourceViewDesc1 _srvDesc;
     UnorderedAccessViewDesc1 _uavDesc;
-
-    /// <summary>
-    /// A list of handles that need to be disposed once the GPU is finished with them.
-    /// </summary>
-    List<ResourceHandleDX11<ID3D11Resource>> _oldHandles;
 
     internal TextureDX11(DeviceDX11 device, 
         TextureDimensions dimensions, 
@@ -29,7 +23,6 @@ public unsafe abstract partial class TextureDX11 : GraphicsTexture
         base(device, dimensions, aaLevel, sampleQuality, format, flags | GraphicsResourceFlags.GpuRead, name)
     {
         Device = device;
-        _oldHandles = new List<ResourceHandleDX11<ID3D11Resource>>();
     }
 
     protected void SetDebugName(ID3D11Resource* resource, string debugName)
@@ -55,79 +48,42 @@ public unsafe abstract partial class TextureDX11 : GraphicsTexture
         return result;
     }
 
-    protected override void OnNextFrame(GraphicsQueue queue, uint frameBufferIndex, ulong frameID)
+    protected override void OnCreateResource()
     {
-        _curHandle = _handles[frameBufferIndex];
-        FreeOldHandles(frameID);
-    }
-
-    protected void FreeOldHandles(ulong frameID)
-    {
-        // Dispose of old texture handles from any previous resize calls.
-        uint resizeAge = (uint)(frameID - LastFrameResizedID);
-        if (resizeAge > Device.FrameBufferSize)
-        {
-            foreach (ResourceHandleDX11<ID3D11Resource> handle in _oldHandles)
-                handle.Dispose();
-
-            _oldHandles.Clear();
-        }
-    }
-
-    protected virtual ResourceHandleDX11<ID3D11Resource> CreateHandle()
-    {
-        return new ResourceHandleDX11<ID3D11Resource>(this);
-    }
-
-    protected override void OnCreateResource(uint frameBufferSize, uint frameBufferIndex, ulong frameID)
-    {
-        _handles = new ResourceHandleDX11<ID3D11Resource>[frameBufferSize];
+        _handle?.Dispose();
 
         if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
             SetSRVDescription(ref _srvDesc);
 
-        if(Flags.Has(GraphicsResourceFlags.UnorderedAccess))
+        if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
             SetUAVDescription(ref _srvDesc, ref _uavDesc);
 
-        for (uint i = 0; i < frameBufferSize; i++)
+
+        _handle = CreateTexture(Device);
+
+        SetDebugName(_handle.NativePtr, $"{Name}");
+
+        if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
         {
-            ResourceHandleDX11<ID3D11Resource> handle = CreateHandle();
-            _handles[i] = handle;
-            CreateTexture(Device, handle, i);
-
-            SetDebugName(handle.NativePtr, $"{Name}_FI{i}");
-
-            if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
-            {
-                handle.SRV.Desc = _srvDesc;
-                handle.SRV.Create();
-            }
-
-            if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
-            {
-                handle.UAV.Desc = _uavDesc;
-                handle.UAV.Create();
-            }
+            _handle.SRV.Desc = _srvDesc;
+            _handle.SRV.Create();
         }
 
-        _curHandle = _handles[frameBufferIndex];
+        if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
+        {
+            _handle.UAV.Desc = _uavDesc;
+            _handle.UAV.Create();
+        }
     }
 
-    protected abstract void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle, uint handleIndex);
+    protected abstract ResourceHandleDX11<ID3D11Resource> CreateTexture(DeviceDX11 device);
 
-    protected override void OnResizeTexture(in TextureDimensions dimensions, GraphicsFormat format, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
+    protected override void OnResizeTexture(ref readonly TextureDimensions dimensions, GraphicsFormat format)
     {
         UpdateDescription(dimensions, format);
         Dimensions = dimensions;
 
-        _oldHandles.AddRange(_handles);
-        OnCreateResource(frameBufferSize, frameBufferIndex, frameID);
-        _curHandle = _handles[frameBufferIndex];
-    }
-
-    protected override void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
-    {
-        OnResizeTexture(Dimensions, ResourceFormat, frameBufferSize, frameBufferIndex, frameID);
+        OnCreateResource();
     }
 
     protected SubresourceData* GetImmutableData(Usage usage)
@@ -170,8 +126,7 @@ public unsafe abstract partial class TextureDX11 : GraphicsTexture
 
     protected override void OnGraphicsRelease()
     {
-        for (int i = 0; i < _handles.Length; i++)
-            _handles[i].Dispose();
+        _handle?.Dispose();
     }
 
     protected abstract void UpdateDescription(TextureDimensions dimensions, GraphicsFormat newFormat);
@@ -181,7 +136,7 @@ public unsafe abstract partial class TextureDX11 : GraphicsTexture
 
     public GraphicsFormat DataFormat => (GraphicsFormat)DxgiFormat;
 
-    public override ResourceHandleDX11<ID3D11Resource> Handle => _curHandle;
+    public override ResourceHandleDX11<ID3D11Resource> Handle => _handle;
 
     public new DeviceDX11 Device { get; }
 }

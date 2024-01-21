@@ -6,8 +6,7 @@ namespace Molten.Graphics.Vulkan;
 public unsafe class BufferVK : GraphicsBuffer
 {
     BufferCreateInfo _desc;
-    ResourceHandleVK<Buffer, BufferHandleVK>[] _handles;
-    ResourceHandleVK<Buffer, BufferHandleVK> _curHandle;
+    ResourceHandleVK<Buffer, BufferHandleVK> _handle;
     MemoryAllocationVK _memory;
 
     internal BufferVK(GraphicsDevice device,
@@ -26,26 +25,11 @@ public unsafe class BufferVK : GraphicsBuffer
         throw new NotImplementedException();
     }
 
-    protected override void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
-    {
-        throw new NotImplementedException();
-    }
-
-    protected override void OnNextFrame(GraphicsQueue queue, uint frameBufferIndex, ulong frameID)
-    {
-        _curHandle = _handles[frameBufferIndex];
-        _curHandle.UpdateUsage(frameID);
-    }
-
-    protected override void OnCreateResource(uint frameBufferSize, uint frameBufferIndex, ulong frameID)
+    protected override void OnCreateResource()
     {
         DeviceVK device = Device as DeviceVK;
-        _handles = new ResourceHandleVK<Buffer, BufferHandleVK>[frameBufferSize];
+        _handle = new ResourceHandleVK<Buffer, BufferHandleVK>(this, true, CreateBuffer);
 
-        for (uint i = 0; i < frameBufferSize; i++)
-            _handles[i] = new ResourceHandleVK<Buffer, BufferHandleVK>(this, true, CreateBuffer);
-
-        _curHandle = _handles[frameBufferIndex];
         BufferUsageFlags usageFlags = BufferUsageFlags.None;
         MemoryPropertyFlags memFlags = MemoryPropertyFlags.None;
 
@@ -97,8 +81,7 @@ public unsafe class BufferVK : GraphicsBuffer
         _desc.PQueueFamilyIndices[0] = (Device.Queue as GraphicsQueueVK).Index;
         _desc.QueueFamilyIndexCount = 1;
 
-        foreach(ResourceHandleVK<Buffer, BufferHandleVK> handle in _handles)
-            CreateBuffer(device, handle.SubHandle, memFlags);
+        CreateBuffer(device, _handle.SubHandle, memFlags);
     }
 
     private void CreateBuffer(DeviceVK device, BufferHandleVK subHandle, MemoryPropertyFlags memFlags)
@@ -121,19 +104,14 @@ public unsafe class BufferVK : GraphicsBuffer
     protected override void OnGraphicsRelease()
     {
         DeviceVK device = Device as DeviceVK;
-        for (int i = 0; i < KnownFrameBufferSize; i++)
-        {
-            if (_handles[i].SubHandle.ViewPtr != null)
-                device.VK.DestroyBufferView(device, *_handles[i].SubHandle.ViewPtr, null);
+        if (_handle.SubHandle.ViewPtr != null)
+            device.VK.DestroyBufferView(device, *_handle.SubHandle.ViewPtr, null);
 
-            if (_handles[i].NativePtr != null)
-                device.VK.DestroyBuffer(device, *_handles[i].NativePtr, null);
-
-            _handles[i].Dispose();
-        }
+        if (_handle.NativePtr != null)
+            device.VK.DestroyBuffer(device, *_handle.NativePtr, null);
     }
 
-    public override unsafe ResourceHandleVK<Buffer, BufferHandleVK> Handle => _curHandle;
+    public override unsafe ResourceHandleVK<Buffer, BufferHandleVK> Handle => _handle;
 
     public override GraphicsFormat ResourceFormat { get; protected set; }
 }

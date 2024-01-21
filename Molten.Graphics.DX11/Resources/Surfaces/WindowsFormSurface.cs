@@ -151,9 +151,9 @@ public class WindowsFormSurface : SwapChainSurfaceDX11, INativeSurface
         }
     }
 
-    protected override void OnResizeTexture(in TextureDimensions dimensions, GraphicsFormat format, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
+    protected override void OnResizeTexture(ref readonly TextureDimensions dimensions, GraphicsFormat format)
     {
-        base.OnResizeTexture(dimensions, format, frameBufferSize, frameBufferIndex, frameID);
+        base.OnResizeTexture(dimensions, format);
         RequestFormResize(dimensions.Width, dimensions.Height);
     }
 
@@ -383,9 +383,9 @@ public class WindowsFormSurface : SwapChainSurfaceDX11, INativeSurface
 
         if (_requestedTexDim.Width != Width || _requestedTexDim.Height != Height)
         {
-            uint fbMax = GetMaxFrameBufferSize(Device.FrameBufferSize);
+            uint fbMax = Device.FrameBufferSize;
             uint fbIndex = Math.Min(Device.FrameBufferIndex, fbMax - 1);
-            base.OnResizeTexture(_requestedTexDim, ResourceFormat, fbMax, fbIndex, Device.Renderer.FrameID);
+            base.OnResizeTexture(ref _requestedTexDim, ResourceFormat);
             InvokeOnResize();
         }
 

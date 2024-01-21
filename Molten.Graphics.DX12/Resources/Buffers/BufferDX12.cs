@@ -24,7 +24,7 @@ public class BufferDX12 : GraphicsBuffer
         Offset = offset;
     }
 
-    protected unsafe override void OnCreateResource(uint frameBufferSize, uint frameBufferIndex, ulong frameID)
+    protected unsafe override void OnCreateResource()
     {
         _handle?.Dispose();
 
@@ -172,21 +172,6 @@ public class BufferDX12 : GraphicsBuffer
     {
         // TODO check through existing allocations to see if we can re-use one.
         return new BufferDX12(this, offset, stride, numElements, Flags, BufferType, alignment);
-    }
-
-    protected override void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
-    {
-        // TODO This should be left up to the renderer to handle. E.g. initializing 3 render targets for 3 swapchain buffers.
-        //   - Device.Map() should handle memory and resource allocation based on the resoruce flags.
-        //     -- E.g. if a resource is dynamic, it should be allocated a new area of memory for each map call.
-        //     -- 
-
-        throw new NotImplementedException();
-    }
-
-    protected override void OnNextFrame(GraphicsQueue queue, uint frameBufferIndex, ulong frameID)
-    {
-        throw new NotImplementedException();
     }
 
     protected override void OnGraphicsRelease()

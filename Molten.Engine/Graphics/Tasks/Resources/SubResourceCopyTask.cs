@@ -35,7 +35,7 @@ public class SubResourceCopyTask : GraphicsResourceTask<GraphicsResource>
             throw new ResourceCopyException(Resource, DestResource, "The destination resource must have GPU write access for writing the copied data.");
 
         if (Resource is GraphicsBuffer buffer && buffer.BufferType == GraphicsBufferType.Staging)
-            Resource.Ensure(queue);
+            Resource.Apply(queue);
 
         queue.CopyResourceRegion(Resource, SrcSubResource, SrcRegion, DestResource, DestSubResource, DestStart);
         queue.Profiler.SubResourceCopyCalls++;

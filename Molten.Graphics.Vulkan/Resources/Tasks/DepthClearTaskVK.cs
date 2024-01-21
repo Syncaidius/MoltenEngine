@@ -30,7 +30,7 @@ internal class DepthClearTaskVK : GraphicsResourceTask<DepthSurfaceVK>
             Resource.ClearValue = null;
 
             GraphicsQueueVK vkCmd = queue as GraphicsQueueVK;
-            Resource.Ensure(queue);
+            Resource.Apply(queue);
 
             vkCmd.Sync(GraphicsCommandListFlags.SingleSubmit);
             Resource.Transition(vkCmd, ImageLayout.Undefined, ImageLayout.TransferDstOptimal);

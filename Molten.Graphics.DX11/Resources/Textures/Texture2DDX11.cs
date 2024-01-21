@@ -37,8 +37,8 @@ public unsafe class Texture2DDX11 : TextureDX11, ITexture2D
         };
     }
 
-    protected override void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle, uint handleIndex)
-    {
+    protected override ResourceHandleDX11<ID3D11Resource> CreateTexture(DeviceDX11 device)
+    { 
         SubresourceData* subData = GetImmutableData(Desc.Usage);
 
         ID3D11Texture2D1* ptrTex = null;
@@ -46,7 +46,8 @@ public unsafe class Texture2DDX11 : TextureDX11, ITexture2D
             Device.Ptr->CreateTexture2D1(pDesc, subData, ref ptrTex);
 
         EngineUtil.Free(ref subData);
-        handle.NativePtr = (ID3D11Resource*)ptrTex;
+
+        return new ResourceHandleDX11<ID3D11Resource>(this, (ID3D11Resource*)ptrTex);
     }
 
     protected override void SetSRVDescription(ref ShaderResourceViewDesc1 desc)

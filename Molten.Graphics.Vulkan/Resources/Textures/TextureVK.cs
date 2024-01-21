@@ -1,4 +1,5 @@
-﻿using Silk.NET.Vulkan;
+﻿using Silk.NET.Direct3D.Compilers;
+using Silk.NET.Vulkan;
 
 namespace Molten.Graphics.Vulkan;
 
@@ -7,8 +8,7 @@ public unsafe abstract class TextureVK : GraphicsTexture
     ImageCreateInfo _info;
     ImageViewCreateInfo _viewInfo;
 
-    ResourceHandleVK<Image, ImageHandleVK>[] _handles;
-    ResourceHandleVK<Image, ImageHandleVK> _curHandle;
+    ResourceHandleVK<Image, ImageHandleVK> _handle;
 
     protected TextureVK(DeviceVK device, TextureDimensions dimensions,
         AntiAliasLevel aaLevel, MSAAQuality sampleQuality, GraphicsFormat format, GraphicsResourceFlags flags, string name) :
@@ -17,32 +17,18 @@ public unsafe abstract class TextureVK : GraphicsTexture
         Device = device;
     }
 
-    protected override void OnNextFrame(GraphicsQueue queue, uint frameBufferIndex, ulong frameID)
+    protected void SetHandle(ResourceHandleVK<Image, ImageHandleVK> handle)
     {
-        SetHandle(frameBufferIndex);
+        _handle = handle;
     }
 
-    protected void SetHandle(uint index)
-    {
-        _curHandle = _handles[index];
-    }
-
-    protected override sealed void OnCreateResource(uint frameBufferSize, uint frameBufferIndex, ulong frameID)
+    protected override sealed void OnCreateResource()
     {
         // In Vulkan, the CPU either has read AND write access, or none at all.
         // If either of the CPU access flags were provided, we need to add both.
         if (Flags.Has(GraphicsResourceFlags.CpuRead) || Flags.Has(GraphicsResourceFlags.CpuWrite))
             Flags |= GraphicsResourceFlags.CpuRead | GraphicsResourceFlags.CpuWrite;
 
-        _handles = new ResourceHandleVK<Image, ImageHandleVK>[frameBufferSize];
-
-        // Don't allocate memory for Image handles if the texture is a swapchain surface.
-        // Swapchain image creation/disposal is controlled entirely by the underlying Vulkan implementation.
-        bool allocImagePtr = !(this is ISwapChainSurface);
-        for (uint i = 0; i < frameBufferSize; i++)
-            _handles[i] = new ResourceHandleVK<Image, ImageHandleVK>(this, allocImagePtr, CreateImage);
-
-        _curHandle = _handles[frameBufferIndex];
 
         ImageUsageFlags flags = ImageUsageFlags.None;
         if (Flags.Has(GraphicsResourceFlags.GpuRead))
@@ -119,16 +105,21 @@ public unsafe abstract class TextureVK : GraphicsTexture
         else
             memFlags |= MemoryPropertyFlags.DeviceLocalBit;
 
-        CreateImages(Device, _handles, memFlags, ref _info, ref _viewInfo);
+        _handle = CreateImageHandle();
+        CreateImage(Device, _handle?.SubHandle, memFlags, ref _info, ref _viewInfo);
     }
 
-    protected virtual void CreateImages(DeviceVK device, ResourceHandleVK<Image, ImageHandleVK>[] handles, MemoryPropertyFlags memFlags, ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo)
+    protected virtual ResourceHandleVK<Image, ImageHandleVK> CreateImageHandle()
     {
-        for (int i = 0; i < handles.Length; i++)
-            CreateImage(device, handles[i].SubHandle, memFlags);
+        return new ResourceHandleVK<Image, ImageHandleVK>(this, true, CreateImage);
     }
 
-    protected void CreateImage(DeviceVK device, ImageHandleVK subHandle, MemoryPropertyFlags memFlags)
+    protected virtual void CreateImage(DeviceVK device, ImageHandleVK subHandle, MemoryPropertyFlags memFlags, 
+        ref ImageCreateInfo imgInfo, ref ImageViewCreateInfo viewInfo)
+    {
+        CreateImage(device, subHandle, memFlags);
+    }
+
     {
         Result r = device.VK.CreateImage(device, _info, null, subHandle.Ptr);
         if (!r.Check(device, () => "Failed to create image resource"))
@@ -151,12 +142,7 @@ public unsafe abstract class TextureVK : GraphicsTexture
             return;
     }
 
-    protected override void OnFrameBufferResized(uint lastFrameBufferSize, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
-    {
-        throw new NotImplementedException();
-    }
-
-    protected override void OnResizeTexture(in TextureDimensions dimensions, GraphicsFormat format, uint frameBufferSize, uint frameBufferIndex, ulong frameID)
+    protected override void OnResizeTexture(ref readonly TextureDimensions dimensions, GraphicsFormat format)
     {
         throw new NotImplementedException();
     }
@@ -174,7 +160,7 @@ public unsafe abstract class TextureVK : GraphicsTexture
             NewLayout = newLayout,
             SrcQueueFamilyIndex = Vk.QueueFamilyIgnored,
             DstQueueFamilyIndex = Vk.QueueFamilyIgnored,
-            Image = *_curHandle.NativePtr,
+            Image = *_handle.NativePtr,
             SubresourceRange = _viewInfo.SubresourceRange,
         };
 
@@ -228,13 +214,11 @@ public unsafe abstract class TextureVK : GraphicsTexture
 
     protected override void OnGraphicsRelease()
     {
-        for (int i = 0; i < KnownFrameBufferSize; i++)
-            _handles[i].Dispose();
-
-        _curHandle = null;
+        _handle?.Dispose();
+        _handle = null;
     }
 
-    public override ResourceHandleVK<Image, ImageHandleVK> Handle => _curHandle;
+    public override ResourceHandleVK<Image, ImageHandleVK> Handle => _handle;
 
     public new DeviceVK Device { get; }
 }

@@ -20,17 +20,17 @@ public unsafe class RenderSurface1DDX11 : Texture1DDX11, IRenderSurface1D
         Name = $"Surface_{name ?? GetType().Name}";
     }
 
-    protected override ResourceHandleDX11<ID3D11Resource> CreateHandle()
+    protected override ResourceHandleDX11<ID3D11Resource> CreateTexture(DeviceDX11 device)
     {
-        return new SurfaceHandleDX11(this);
-    }
+        fixed (Texture1DDesc* pDesc = &Desc)
+            Device.Ptr->CreateTexture1D(pDesc, null, ref NativeTexture);
 
-    protected override void CreateTexture(DeviceDX11 device, ResourceHandleDX11<ID3D11Resource> handle, uint handleIndex)
-    {
-        base.CreateTexture(device, handle, handleIndex);
+        SurfaceHandleDX11 handle = new SurfaceHandleDX11(this)
+        {
+            NativePtr = (ID3D11Resource*)NativeTexture,
+        };
 
-        SurfaceHandleDX11 rsHandle = handle as SurfaceHandleDX11;
-        ref RenderTargetViewDesc1 desc = ref rsHandle.RTV.Desc;
+        ref RenderTargetViewDesc1 desc = ref handle.RTV.Desc;
         desc.Format = DxgiFormat;
 
         SetRTVDescription(ref desc);
@@ -43,7 +43,8 @@ public unsafe class RenderSurface1DDX11 : Texture1DDX11, IRenderSurface1D
             FirstArraySlice = 0,
         };
 
-        rsHandle.RTV.Create();
+        handle.RTV.Create();
+        return handle;
     }
 
     protected virtual void SetRTVDescription(ref RenderTargetViewDesc1 desc) { }
