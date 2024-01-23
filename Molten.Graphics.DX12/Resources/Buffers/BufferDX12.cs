@@ -6,6 +6,8 @@ namespace Molten.Graphics.DX12;
 public class BufferDX12 : GraphicsBuffer
 {
     ResourceHandleDX12 _handle;
+    ResourceBarrier _barrier;
+    ResourceStates _barrierState;
 
     public BufferDX12(DeviceDX12 device, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type, uint alignment) :
         base(device, stride, numElements, flags, type, alignment)
@@ -191,4 +193,9 @@ public class BufferDX12 : GraphicsBuffer
     /// Gets the root <see cref="BufferDX12"/> instance. This is the top-most buffer, regardless of how many nested sub-buffers we allocated.
     /// </summary>
     internal BufferDX12 RootBuffer { get; private set; }
+
+    /// <summary>
+    /// Gets the internal resource barrier state of the current <see cref="BufferDX12"/>.
+    /// </summary>
+    internal ResourceStates BarrierState { get; set; }
 }

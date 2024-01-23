@@ -1,5 +1,7 @@
 ﻿using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
+using System.Reflection.Metadata;
+using System.Threading;
 
 namespace Molten.Graphics.DX12;
 
@@ -54,6 +56,24 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
         //       See: https://www.3dgep.com/learning-directx-12-4/#Generate_Mipmaps_Compute_Shader
 
         throw new NotImplementedException();
+    }
+
+    internal void Transition(BufferDX12 buffer, ResourceStates newState)
+    {
+        ResourceBarrier barrier = new()
+        {
+            Flags = ResourceBarrierFlags.None,
+            Type = ResourceBarrierType.Transition,
+            Transition = new ResourceTransitionBarrier()
+            {
+                PResource = buffer.Handle,
+                StateAfter = newState,
+                StateBefore = buffer.BarrierState,
+                Subresource = 0,
+            },
+        };        
+
+        _cmd.Handle->ResourceBarrier(1, &barrier);
     }
 
     protected override void OnResetState()
