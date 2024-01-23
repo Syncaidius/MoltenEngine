@@ -10,9 +10,6 @@ public unsafe abstract partial class TextureDX11 : GraphicsTexture
 {
     ResourceHandleDX11<ID3D11Resource> _handle;
 
-    ShaderResourceViewDesc1 _srvDesc;
-    UnorderedAccessViewDesc1 _uavDesc;
-
     internal TextureDX11(DeviceDX11 device, 
         TextureDimensions dimensions, 
         AntiAliasLevel aaLevel, 
@@ -53,10 +50,10 @@ public unsafe abstract partial class TextureDX11 : GraphicsTexture
         _handle?.Dispose();
 
         if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
-            SetSRVDescription(ref _srvDesc);
+            SetSRVDescription(ref _handle.SRV.Desc);
 
         if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
-            SetUAVDescription(ref _srvDesc, ref _uavDesc);
+            SetUAVDescription(ref _handle.SRV.Desc, ref _handle.UAV.Desc);
 
 
         _handle = CreateTexture(Device);
@@ -64,16 +61,10 @@ public unsafe abstract partial class TextureDX11 : GraphicsTexture
         SetDebugName(_handle.NativePtr, $"{Name}");
 
         if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
-        {
-            _handle.SRV.Desc = _srvDesc;
             _handle.SRV.Create();
-        }
 
         if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
-        {
-            _handle.UAV.Desc = _uavDesc;
             _handle.UAV.Create();
-        }
     }
 
     protected abstract ResourceHandleDX11<ID3D11Resource> CreateTexture(DeviceDX11 device);

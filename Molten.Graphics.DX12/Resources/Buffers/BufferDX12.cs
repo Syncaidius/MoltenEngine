@@ -9,7 +9,7 @@ public class BufferDX12 : GraphicsBuffer
     ResourceBarrier _barrier;
     ResourceStates _barrierState;
 
-    public BufferDX12(DeviceDX12 device, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type, uint alignment) :
+    internal BufferDX12(DeviceDX12 device, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type, uint alignment) :
         base(device, stride, numElements, flags, type, alignment)
     {
         Device = device;
