@@ -91,10 +91,13 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
         base.Begin(flags);
 
         CommandAllocatorDX12 allocator = _cmdAllocators.Prepare();
-        _cmd = allocator.Allocate(null);
-        Device.Frame.BranchCount++;
+        if (_cmd == null || _cmd.Flags.HasFlag(GraphicsCommandListFlags.Deferred))
+        {
+            _cmd = allocator.Allocate(null);
+            Device.Frame.BranchCount++;
 
-        Device.Frame.Track(_cmd);
+            Device.Frame.Track(_cmd);
+        }
 
         _cmd.Reset(allocator, _pipelineState);
     }
@@ -105,6 +108,12 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
 
         if (_cmd.Flags.HasFlag(GraphicsCommandListFlags.Deferred))
             return _cmd;
+
+        Execute(_cmd);
+        _cmd.Fence.Wait();
+
+        CommandAllocatorDX12 allocator = _cmdAllocators.Prepare();
+        _cmd.Reset(allocator, _pipelineState);
 
         return null;
     }
