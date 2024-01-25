@@ -48,15 +48,13 @@ public unsafe abstract partial class TextureDX11 : GraphicsTexture
     protected override void OnCreateResource()
     {
         _handle?.Dispose();
+        _handle = CreateTexture(Device);
 
         if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
             SetSRVDescription(ref _handle.SRV.Desc);
 
         if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
             SetUAVDescription(ref _handle.SRV.Desc, ref _handle.UAV.Desc);
-
-
-        _handle = CreateTexture(Device);
 
         SetDebugName(_handle.NativePtr, $"{Name}");
 
@@ -122,7 +120,7 @@ public unsafe abstract partial class TextureDX11 : GraphicsTexture
 
     protected abstract void UpdateDescription(TextureDimensions dimensions, GraphicsFormat newFormat);
 
-    /// <summary>Gets the format of the texture.</summary>
+    /// <summary>Gets the DXGI format of the texture.</summary>
     public Format DxgiFormat => ResourceFormat.ToApi();
 
     public GraphicsFormat DataFormat => (GraphicsFormat)DxgiFormat;

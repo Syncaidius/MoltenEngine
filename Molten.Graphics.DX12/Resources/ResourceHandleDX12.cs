@@ -4,9 +4,9 @@ namespace Molten.Graphics.DX12;
 
 public unsafe class ResourceHandleDX12 : GraphicsResourceHandle
 {
-    ID3D12Resource* _ptr;
+    ID3D12Resource1* _ptr;
 
-    internal ResourceHandleDX12(GraphicsResource resource, ID3D12Resource* ptr) : base(resource)
+    internal ResourceHandleDX12(GraphicsResource resource, ID3D12Resource1* ptr) : base(resource)
     {
         _ptr = ptr;
         Device = resource.Device as DeviceDX12;
@@ -19,9 +19,14 @@ public unsafe class ResourceHandleDX12 : GraphicsResourceHandle
         NativeUtil.ReleasePtr(ref _ptr);
     }
 
-    public static implicit operator ID3D12Resource*(ResourceHandleDX12 handle)
+    public static implicit operator ID3D12Resource1*(ResourceHandleDX12 handle)
     {
         return handle._ptr;
+    }
+
+    public static implicit operator ID3D12Resource*(ResourceHandleDX12 handle)
+    {
+        return (ID3D12Resource*)handle._ptr;
     }
 
     internal ResourceViewDX12<ShaderResourceViewDesc> SRV { get; }
@@ -36,7 +41,7 @@ public unsafe class ResourceHandleDX12 : GraphicsResourceHandle
 public class ResourceHandleDX12<D> : ResourceHandleDX12
     where D : unmanaged
 {
-    internal unsafe ResourceHandleDX12(GraphicsResource resource, ID3D12Resource* ptr) :
+    internal unsafe ResourceHandleDX12(GraphicsResource resource, ID3D12Resource1* ptr) :
         base(resource, ptr)
     {
         View = new ResourceViewDX12<D>(this);

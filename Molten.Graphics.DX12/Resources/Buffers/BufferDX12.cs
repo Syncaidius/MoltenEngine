@@ -31,7 +31,7 @@ public class BufferDX12 : GraphicsBuffer
         _handle?.Dispose();
 
         HeapFlags heapFlags = HeapFlags.None;
-        ResourceFlags flags = ResourceFlags.None;
+        ResourceFlags flags = Flags.ToResourceFlags();
         HeapType heapType = Flags.ToHeapType();
         ResourceStates stateFlags = Flags.ToResourceState();
         if (ParentBuffer == null && BufferType == GraphicsBufferType.Unknown)
@@ -63,21 +63,21 @@ public class BufferDX12 : GraphicsBuffer
                 Flags = flags,
             };
 
-            Guid guid = ID3D12Resource.Guid;
+            Guid guid = ID3D12Resource1.Guid;
             void* ptr = null;
             HResult hr = Device.Ptr->CreateCommittedResource(heapProp, heapFlags, desc, stateFlags, null, &guid, &ptr);
             if (!Device.Log.CheckResult(hr, () => $"Failed to create {desc.Dimension} resource"))
                 return;
 
-            _handle = new ResourceHandleDX12(this, (ID3D12Resource*)ptr);
+            _handle = new ResourceHandleDX12(this, (ID3D12Resource1*)ptr);
         }
         else
         {
-            _handle = OnCreateHandle((ID3D12Resource*)RootBuffer.Handle.Ptr);
+            _handle = OnCreateHandle((ID3D12Resource1*)RootBuffer.Handle.Ptr);
         }
     }
 
-    private unsafe ResourceHandleDX12 OnCreateHandle(ID3D12Resource* ptr)
+    private unsafe ResourceHandleDX12 OnCreateHandle(ID3D12Resource1* ptr)
     {
         switch (BufferType)
         {

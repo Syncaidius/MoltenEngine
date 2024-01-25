@@ -24,6 +24,11 @@ public unsafe class DeviceDX12 : DeviceDXGI
         CapabilitiesDX12 = new CapabilitiesDX12();
     }
 
+    internal ProtectedSessionDX12 CreateProtectedSession()
+    {
+        return new ProtectedSessionDX12(this);
+    }
+
     protected override bool OnInitialize()
     {
         HResult r = _builder.CreateDevice(this, out PtrRef);

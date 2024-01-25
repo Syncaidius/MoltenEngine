@@ -76,6 +76,24 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
         _cmd.Handle->ResourceBarrier(1, &barrier);
     }
 
+    internal void Transition(TextureDX12 texture, ResourceStates newState)
+    {
+        ResourceBarrier barrier = new()
+        {
+            Flags = ResourceBarrierFlags.None,
+            Type = ResourceBarrierType.Transition,
+            Transition = new ResourceTransitionBarrier()
+            {
+                PResource = texture.Handle,
+                StateAfter = newState,
+                StateBefore = texture.BarrierState,
+                Subresource = 0,
+            },
+        };
+
+        _cmd.Handle->ResourceBarrier(1, &barrier);
+    }
+
     protected override void OnResetState()
     {
         throw new NotImplementedException();
