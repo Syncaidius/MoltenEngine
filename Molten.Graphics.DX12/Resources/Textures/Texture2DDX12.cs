@@ -14,8 +14,11 @@ public unsafe class Texture2DDX12 : TextureDX12, ITexture2D
         uint arraySize = 1,
         AntiAliasLevel aaLevel = AntiAliasLevel.None,
         MSAAQuality msaa = MSAAQuality.Default,
-        string name = null)
-        : base(device, ResourceDimension.Texture2D, new TextureDimensions(width, height, 1, mipCount, arraySize, aaLevel, msaa), format, flags, name)
+        string name = null,
+        ProtectedSessionDX12 protectedSession = null)
+        : base(device, ResourceDimension.Texture2D, 
+            new TextureDimensions(width, height, 1, mipCount, arraySize, aaLevel, msaa), 
+            format, flags, name, protectedSession)
     { }
 
     protected override void SetSRVDescription(ref ShaderResourceViewDesc desc)

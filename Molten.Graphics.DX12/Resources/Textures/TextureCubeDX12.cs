@@ -11,8 +11,9 @@ public unsafe class TextureCubeDX12 : Texture2DDX12, ITextureCube
     const int CUBE_SLICE_COUNT = 6;
 
     internal TextureCubeDX12(DeviceDX12 device, uint width, uint height, GraphicsResourceFlags flags, 
-        GraphicsFormat format = GraphicsFormat.R8G8B8A8_UNorm, uint mipCount = 1, uint cubeCount = 1, string name = null)
-        : base(device, width, height, flags, format, mipCount, CUBE_SLICE_COUNT * cubeCount, AntiAliasLevel.None, MSAAQuality.Default, name)
+        GraphicsFormat format = GraphicsFormat.R8G8B8A8_UNorm, uint mipCount = 1, uint cubeCount = 1, string name = null,
+        ProtectedSessionDX12 protectedSession = null)
+        : base(device, width, height, flags, format, mipCount, CUBE_SLICE_COUNT * cubeCount, AntiAliasLevel.None, MSAAQuality.Default, name, protectedSession)
     {
         CubeCount = cubeCount;
     }

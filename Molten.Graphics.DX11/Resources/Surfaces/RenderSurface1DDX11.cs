@@ -4,8 +4,6 @@ namespace Molten.Graphics.DX11;
 
 public unsafe class RenderSurface1DDX11 : Texture1DDX11, IRenderSurface1D
 {
-    RTViewDX11[] _rtvs;
-
     internal RenderSurface1DDX11(
         DeviceDX11 device,
         uint width,

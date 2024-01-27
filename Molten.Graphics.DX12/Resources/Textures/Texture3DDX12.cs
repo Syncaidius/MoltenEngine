@@ -27,8 +27,9 @@ public unsafe class Texture3DDX12 : TextureDX12, ITexture3D
         GraphicsResourceFlags flags,
         GraphicsFormat format = GraphicsFormat.R8G8B8A8_UNorm,
         uint mipCount = 1,
-        string name = null)
-        : base(device, ResourceDimension.Texture3D, new TextureDimensions(width, height, depth, mipCount, 1), format, flags, name)
+        string name = null,
+        ProtectedSessionDX12 protectedSession = null)
+        : base(device, ResourceDimension.Texture3D, new TextureDimensions(width, height, depth, mipCount, 1), format, flags, name, protectedSession)
     {
 
     }

@@ -47,6 +47,15 @@ public class ResourceHandleDX12<D> : ResourceHandleDX12
         View = new ResourceViewDX12<D>(this);
     }
 
+    internal unsafe ResourceHandleDX12(GraphicsResource resource, ID3D12Resource1* ptr, ref D desc) :
+        base(resource, ptr)
+    {
+        View = new ResourceViewDX12<D>(this)
+        {
+            Desc = desc,
+        };
+    }
+
     /// <summary>
     /// An additional, unique view of the resource, with a specific description.
     /// </summary>

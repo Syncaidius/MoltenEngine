@@ -11,11 +11,9 @@ public class Texture1DDX12 : TextureDX12, ITexture1D
         GraphicsFormat format = GraphicsFormat.R8G8B8A8_UNorm,
         uint mipCount = 1,
         uint arraySize = 1,
-        AntiAliasLevel aaLevel = AntiAliasLevel.None,
-        MSAAQuality aaQuality = MSAAQuality.Default,
         string name = null,
         ProtectedSessionDX12 protectedSession = null)
-        : base(device, ResourceDimension.Texture1D, new TextureDimensions(width, 1, 1, mipCount, arraySize, aaLevel, aaQuality),
+        : base(device, ResourceDimension.Texture1D, new TextureDimensions(width, 1, 1, mipCount, arraySize),
             format, flags, name, protectedSession)
     { }
 
