@@ -268,7 +268,7 @@ public abstract partial class GraphicsDevice : EngineObject
     public ShaderSampler CreateSampler(ref ShaderSamplerParameters parameters)
     {
         ShaderSampler sampler = OnCreateSampler(ref parameters);
-        Cache.Object<ShaderSampler, ShaderSamplerParameters>(ref sampler);
+        Cache.Object(ref sampler);
         return sampler;
     }
 

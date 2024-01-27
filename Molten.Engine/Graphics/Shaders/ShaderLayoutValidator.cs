@@ -2,12 +2,12 @@
 
 public class ShaderLayoutValidator
 {
-    static ShaderType[] _validationIndex = new ShaderType[] {
+    static readonly ShaderType[] _validationIndex = [
             ShaderType.Vertex,
             ShaderType.Hull,
             ShaderType.Domain,
             ShaderType.Geometry,
-            ShaderType.Pixel};
+            ShaderType.Pixel];
 
     public bool Validate(ShaderCompilerContext context,
         PassCompileResult pResult)

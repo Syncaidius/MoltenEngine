@@ -19,7 +19,7 @@ public unsafe class SamplerDX12 : ShaderSampler
             MaxAnisotropy = Math.Max(1, parameters.MaxAnisotropy),
             MaxLOD = parameters.MaxMipMapLod,
             MinLOD = parameters.MinMipMapLod,
-            MipLODBias = parameters.LodBias
+            MipLODBias = parameters.LodBias,
         };
 
         ref Color4 bColor = ref parameters.BorderColor;

@@ -16,13 +16,23 @@ public class ShaderPassDX12 : HlslPass
         DeviceDX12 device = Device as DeviceDX12;
 
         _stateRasterizer = new RasterizerStateDX12(device, ref parameters);
-        Device.Cache.Object<RasterizerStateDX12, RasterizerDesc>(ref _stateRasterizer);
+        Device.Cache.Object(ref _stateRasterizer);
 
         _stateBlend = new BlendStateDX12(device, ref parameters);
-        Device.Cache.Object<BlendStateDX12, BlendStateDX12.CombinedDesc>(ref _stateBlend);
+        Device.Cache.Object(ref _stateBlend);
 
         _stateDepth = new DepthStateDX12(device, ref parameters);
-        Device.Cache.Object<DepthStateDX12, DepthStateDX12.CombinedDesc>(ref _stateDepth);
+        Device.Cache.Object(ref _stateDepth);
+    }
+
+    internal unsafe ShaderBytecode GetBytecode(ShaderType type)
+    {
+        ShaderComposition comp = this[type];
+        if (comp == null)
+            return default;
+
+        ShaderBytecode* ptr = (ShaderBytecode*)comp.PtrShader;
+        return *ptr;
     }
 
     internal RasterizerStateDX12 RasterizerState => _stateRasterizer;
