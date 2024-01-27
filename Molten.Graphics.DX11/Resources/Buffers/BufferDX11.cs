@@ -80,7 +80,7 @@ public unsafe class BufferDX11 : GraphicsBuffer
             Desc.BindFlags = (uint)(Flags.ToBindFlags() | BufferType.ToBindFlags());
             Desc.MiscFlags = (uint)BufferType.ToMiscFlags();
 
-            if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
+            if (!Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
                 Desc.BindFlags |= (uint)BindFlag.ShaderResource;
 
             if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
@@ -118,7 +118,7 @@ public unsafe class BufferDX11 : GraphicsBuffer
     protected virtual void CreateViews(DeviceDX11 device, ResourceHandleDX11<ID3D11Buffer> handle)
     {
         // Create shader resource view (SRV), if shader access is permitted.
-        if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
+        if (!Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
         {
             handle.SRV.Desc = new ShaderResourceViewDesc1()
             {

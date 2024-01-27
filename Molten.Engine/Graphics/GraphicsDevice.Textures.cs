@@ -4,7 +4,7 @@ public abstract partial class GraphicsDevice
 {
     public GraphicsTexture CreateStagingTexture(ITexture src)
     {
-        GraphicsResourceFlags flags = GraphicsResourceFlags.AllReadWrite | GraphicsResourceFlags.NoShaderAccess;
+        GraphicsResourceFlags flags = GraphicsResourceFlags.AllReadWrite | GraphicsResourceFlags.DenyShaderAccess;
         string name = src.Name + "_staging";
         ITexture result = src switch
         {

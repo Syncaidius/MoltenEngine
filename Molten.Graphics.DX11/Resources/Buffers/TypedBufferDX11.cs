@@ -51,7 +51,7 @@ internal unsafe class TypedBufferDX11 : BufferDX11
 
     protected override void CreateViews(DeviceDX11 device, ResourceHandleDX11<ID3D11Buffer> handle)
     {
-        if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
+        if (!Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
         {
             handle.SRV.Desc = new ShaderResourceViewDesc1()
             {

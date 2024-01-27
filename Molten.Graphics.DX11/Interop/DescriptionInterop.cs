@@ -55,7 +55,7 @@ internal static class DescriptionInterop
         if (flags.Has(GraphicsResourceFlags.UnorderedAccess))
             result |= BindFlag.UnorderedAccess;
 
-        if (!flags.Has(GraphicsResourceFlags.NoShaderAccess))
+        if (!flags.Has(GraphicsResourceFlags.DenyShaderAccess))
             result |= BindFlag.ShaderResource;
 
         return result;

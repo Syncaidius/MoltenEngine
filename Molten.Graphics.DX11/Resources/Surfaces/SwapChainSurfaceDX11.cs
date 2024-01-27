@@ -20,7 +20,7 @@ public unsafe abstract class SwapChainSurfaceDX11 : RenderSurface2DDX11, ISwapCh
 
     internal SwapChainSurfaceDX11(DeviceDX11 device, uint width, uint height, uint mipCount, GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm)
         : base(device, width, height, 
-              GraphicsResourceFlags.NoShaderAccess | GraphicsResourceFlags.None | GraphicsResourceFlags.GpuWrite,
+              GraphicsResourceFlags.DenyShaderAccess | GraphicsResourceFlags.None | GraphicsResourceFlags.GpuWrite,
               format, mipCount, 1, AntiAliasLevel.None, MSAAQuality.Default)
     {
         _dispatchQueue = new ThreadedQueue<Action>();

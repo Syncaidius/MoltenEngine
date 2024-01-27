@@ -17,7 +17,7 @@ public abstract class GraphicsResource : GraphicsObject, IGraphicsResource
         // Only staging resources have CPU-write access.
         if (Flags.Has(GraphicsResourceFlags.CpuWrite))
         {
-            if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
+            if (!Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
                 throw new GraphicsResourceException(this, "Staging textures cannot allow shader access. Add GraphicsResourceFlags.NoShaderAccess flag.");
 
             // Staging buffers cannot have any other flags aside from 

@@ -21,7 +21,7 @@ public class Texture1DDX12 : TextureDX12, ITexture1D
 
     protected override void SetSRVDescription(ref ShaderResourceViewDesc desc)
     {
-        throw new NotImplementedException();
+        
     }
 
     protected override void SetUAVDescription(ref ShaderResourceViewDesc srvDesc, ref UnorderedAccessViewDesc desc)

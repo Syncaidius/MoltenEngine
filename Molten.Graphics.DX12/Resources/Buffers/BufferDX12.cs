@@ -45,7 +45,7 @@ public class BufferDX12 : GraphicsBuffer
                 VisibleNodeMask = 1,
             };
 
-            if (Flags.Has(GraphicsResourceFlags.NoShaderAccess))
+            if (Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
                 flags |= ResourceFlags.DenyShaderResource;
 
             if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
@@ -124,7 +124,7 @@ public class BufferDX12 : GraphicsBuffer
         //      
         //      If not, we throw an exception stating this.
 
-        if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
+        if (!Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
         {
             _handle.SRV.Desc = new ShaderResourceViewDesc()
             {

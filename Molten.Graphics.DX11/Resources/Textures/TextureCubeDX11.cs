@@ -19,7 +19,7 @@ public unsafe class TextureCubeDX11 : Texture2DDX11, ITextureCube
             MipLevels = mipCount,
             ArraySize = ArraySize,
             Format = format.ToApi(),
-            BindFlags = (uint)(flags.Has(GraphicsResourceFlags.NoShaderAccess) ? BindFlag.None : BindFlag.ShaderResource),
+            BindFlags = (uint)(flags.Has(GraphicsResourceFlags.DenyShaderAccess) ? BindFlag.None : BindFlag.ShaderResource),
             CPUAccessFlags = (uint)Flags.ToCpuFlags(),
             SampleDesc = new SampleDesc(1, 0),
             Usage = Flags.ToUsageFlags(),

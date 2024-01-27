@@ -11,7 +11,7 @@ internal static class ResourceInterop
         if (flags.Has(GraphicsResourceFlags.UnorderedAccess))
             result |= ResourceFlags.AllowUnorderedAccess;
 
-        if (flags.Has(GraphicsResourceFlags.NoShaderAccess))
+        if (flags.Has(GraphicsResourceFlags.DenyShaderAccess))
             result |= ResourceFlags.DenyShaderResource;
 
         if (flags.Has(GraphicsResourceFlags.Shared))

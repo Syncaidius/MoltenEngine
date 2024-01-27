@@ -50,7 +50,7 @@ public unsafe abstract partial class TextureDX11 : GraphicsTexture
         _handle?.Dispose();
         _handle = CreateTexture(Device);
 
-        if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
+        if (!Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
             SetSRVDescription(ref _handle.SRV.Desc);
 
         if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
@@ -58,7 +58,7 @@ public unsafe abstract partial class TextureDX11 : GraphicsTexture
 
         SetDebugName(_handle.NativePtr, $"{Name}");
 
-        if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
+        if (!Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
             _handle.SRV.Create();
 
         if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))

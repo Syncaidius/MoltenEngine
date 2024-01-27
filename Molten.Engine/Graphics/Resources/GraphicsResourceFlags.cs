@@ -40,7 +40,7 @@ public enum GraphicsResourceFlags
     /// <summary>
     /// Do not allow shader access. For example in DX11 this would prevent a shader resource view (SRV) from being bound to the resource.
     /// </summary>
-    NoShaderAccess = 1 << 5,
+    DenyShaderAccess = 1 << 5,
 
     /// <summary>
     /// Allows the resource to be shared between logical devices, such as ID3D11Device, ID3D12Device or vkDevice instances.

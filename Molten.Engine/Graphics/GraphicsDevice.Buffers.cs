@@ -5,7 +5,7 @@ public abstract partial class GraphicsDevice
     public GraphicsBuffer CreateVertexBuffer<T>(GraphicsResourceFlags flags, uint vertexCapacity, T[] initialData = null)
         where T : unmanaged, IVertexType
     {
-        flags |= GraphicsResourceFlags.NoShaderAccess;
+        flags |= GraphicsResourceFlags.DenyShaderAccess;
         GraphicsBuffer buffer = CreateBuffer(GraphicsBufferType.Vertex, flags, GraphicsFormat.Unknown, vertexCapacity, initialData);
         buffer.VertexLayout = LayoutCache.GetVertexLayout<T>();
 
@@ -34,13 +34,13 @@ public abstract partial class GraphicsDevice
 
     public GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint indexCapacity, uint[] initialData = null)
     {
-        flags |= GraphicsResourceFlags.NoShaderAccess;
+        flags |= GraphicsResourceFlags.DenyShaderAccess;
         return CreateBuffer(GraphicsBufferType.Index, flags, GraphicsFormat.R32_UInt, indexCapacity, initialData);
     }
 
     public GraphicsBuffer CreateIndexBuffer(GraphicsResourceFlags flags, uint indexCapacity, byte[] initialData = null)
     {
-        flags |= GraphicsResourceFlags.NoShaderAccess;
+        flags |= GraphicsResourceFlags.DenyShaderAccess;
         return CreateBuffer(GraphicsBufferType.Index, flags, GraphicsFormat.R8_UInt, indexCapacity, initialData);
     }
 
@@ -58,7 +58,7 @@ public abstract partial class GraphicsDevice
 
     public GraphicsBuffer CreateStagingBuffer(bool allowCpuRead, bool allowCpuWrite, uint byteCapacity)
     {
-        GraphicsResourceFlags flags = GraphicsResourceFlags.GpuWrite | GraphicsResourceFlags.NoShaderAccess;
+        GraphicsResourceFlags flags = GraphicsResourceFlags.GpuWrite | GraphicsResourceFlags.DenyShaderAccess;
 
         if (allowCpuRead)
             flags |= GraphicsResourceFlags.CpuRead;

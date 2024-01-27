@@ -73,14 +73,6 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
     {
         _handle?.Dispose();
 
-        if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
-            SetSRVDescription(ref _handle.SRV.Desc);
-
-        if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
-            SetUAVDescription(ref _handle.SRV.Desc, ref _handle.UAV.Desc);
-
-        _handle?.Dispose();
-
         HeapFlags heapFlags = HeapFlags.None;
         ResourceFlags flags = Flags.ToResourceFlags();
         HeapType heapType = Flags.ToHeapType();
@@ -95,7 +87,7 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
             VisibleNodeMask = 1,
         };
 
-        if (Flags.Has(GraphicsResourceFlags.NoShaderAccess))
+        if (Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
             flags |= ResourceFlags.DenyShaderResource;
 
         if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
@@ -114,6 +106,12 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
         }
 
         _handle = new ResourceHandleDX12(this, (ID3D12Resource1*)ptr);
+
+        if (!Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
+            SetSRVDescription(ref _handle.SRV.Desc);
+
+        if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
+            SetUAVDescription(ref _handle.SRV.Desc, ref _handle.UAV.Desc);
 
         //SetDebugName(_handle.NativePtr, $"{Name}");
     }

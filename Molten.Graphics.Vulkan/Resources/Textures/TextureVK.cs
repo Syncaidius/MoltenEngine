@@ -40,7 +40,7 @@ public unsafe abstract class TextureVK : GraphicsTexture
         if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
             flags |= ImageUsageFlags.StorageBit;
 
-        if (!Flags.Has(GraphicsResourceFlags.NoShaderAccess))
+        if (!Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
             flags |= ImageUsageFlags.SampledBit;
 
         _info = new ImageCreateInfo(StructureType.ImageCreateInfo);

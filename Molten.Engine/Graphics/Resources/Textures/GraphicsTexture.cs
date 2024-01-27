@@ -45,7 +45,7 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
         // Validate RT mip-maps
         if (Flags.Has(GraphicsResourceFlags.MipMapGeneration))
         {
-            if (Flags.Has(GraphicsResourceFlags.NoShaderAccess) || !(this is IRenderSurface2D))
+            if (Flags.Has(GraphicsResourceFlags.DenyShaderAccess) || !(this is IRenderSurface2D))
                 throw new GraphicsResourceException(this, "Mip-map generation is only available on render-surface shader resources.");
         }
 
