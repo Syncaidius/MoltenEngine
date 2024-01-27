@@ -9,13 +9,11 @@ public unsafe class DepthSurfaceDX11 : Texture2DDX11, IDepthStencilSurface
     ID3D11DepthStencilView* _depthView;
     ID3D11DepthStencilView* _readOnlyView;
     DepthStencilViewDesc _depthDesc;
-    DepthFormat _depthFormat;
-    ViewportF _vp;
 
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="renderer"></param>
+    /// <param name="device"></param>
     /// <param name="width"></param>
     /// <param name="height"></param>
     /// <param name="format"></param>
@@ -36,7 +34,7 @@ public unsafe class DepthSurfaceDX11 : Texture2DDX11, IDepthStencilSurface
         string name = "surface")
         : base(device, width, height, flags, format.ToGraphicsFormat(), mipCount, arraySize, aaLevel, msaa, name)
     {
-        _depthFormat = format;
+        DepthFormat = format;
         Desc.ArraySize = arraySize;
         Desc.Format = format.ToGraphicsFormat().ToApi();
         _depthDesc = new DepthStencilViewDesc();
@@ -73,28 +71,17 @@ public unsafe class DepthSurfaceDX11 : Texture2DDX11, IDepthStencilSurface
     protected override void SetSRVDescription(ref ShaderResourceViewDesc1 desc)
     {
         base.SetSRVDescription(ref desc);
-
-        switch (_depthFormat)
-        {
-            default:
-            case DepthFormat.R24G8_Typeless:
-                desc.Format = Format.FormatR24UnormX8Typeless;
-                break;
-
-            case DepthFormat.R32_Typeless:
-                desc.Format = Format.FormatR32Float;
-                break;
-        }
+        desc.Format = DepthFormat.ToSRVFormat().ToApi();
     }
 
     private void UpdateViewport()
     {
-        _vp = new ViewportF(0, 0, Desc.Width, Desc.Height);
+        Viewport = new ViewportF(0, 0, Desc.Width, Desc.Height);
     }
 
     private DsvFlag GetReadOnlyFlags()
     {
-        switch (_depthFormat)
+        switch (DepthFormat)
         {
             default:
             case DepthFormat.R24G8_Typeless:
@@ -165,8 +152,8 @@ public unsafe class DepthSurfaceDX11 : Texture2DDX11, IDepthStencilSurface
     internal ID3D11DepthStencilView* ReadOnlyView => _readOnlyView;
 
     /// <summary>Gets the depth-specific format of the surface.</summary>
-    public DepthFormat DepthFormat => _depthFormat;
+    public DepthFormat DepthFormat { get; }
 
     /// <summary>Gets the viewport of the <see cref="DepthSurfaceDX11"/>.</summary>
-    public ViewportF Viewport => _vp;
+    public ViewportF Viewport { get; private set; }
 }

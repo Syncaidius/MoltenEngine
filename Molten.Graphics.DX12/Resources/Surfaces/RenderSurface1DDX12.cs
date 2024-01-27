@@ -1,5 +1,4 @@
 ﻿using Silk.NET.Direct3D12;
-using Silk.NET.DXGI;
 
 namespace Molten.Graphics.DX12;
 
