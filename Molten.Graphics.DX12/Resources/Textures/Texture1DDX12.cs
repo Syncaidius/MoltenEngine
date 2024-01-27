@@ -11,15 +11,13 @@ public class Texture1DDX12 : TextureDX12, ITexture1D
         GraphicsFormat format = GraphicsFormat.R8G8B8A8_UNorm,
         uint mipCount = 1,
         uint arraySize = 1,
-        AntiAliasLevel aaLevel = AntiAliasLevel.None, 
+        AntiAliasLevel aaLevel = AntiAliasLevel.None,
         MSAAQuality aaQuality = MSAAQuality.Default,
         string name = null,
         ProtectedSessionDX12 protectedSession = null)
         : base(device, ResourceDimension.Texture1D, new TextureDimensions(width, 1, 1, mipCount, arraySize, aaLevel, aaQuality),
             format, flags, name, protectedSession)
-    {
-
-    }
+    { }
 
     protected override void SetSRVDescription(ref ShaderResourceViewDesc desc)
     {
@@ -38,10 +36,12 @@ public class Texture1DDX12 : TextureDX12, ITexture1D
     {
         desc.Format = srvDesc.Format;
         desc.ViewDimension = UavDimension.Texture1Darray;
-        desc.Buffer = new BufferUav()
+        desc.Texture2DArray = new Tex2DArrayUav()
         {
-            FirstElement = 0,
-            NumElements = (uint)(Desc.Width * Desc.DepthOrArraySize),
+            ArraySize = Desc.DepthOrArraySize,
+            FirstArraySlice = srvDesc.Texture2DArray.FirstArraySlice,
+            MipSlice = 0,
+            PlaneSlice = 0
         };
     }
 }

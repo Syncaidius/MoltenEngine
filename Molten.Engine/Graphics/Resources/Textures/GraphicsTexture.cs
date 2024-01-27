@@ -21,6 +21,9 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
     protected GraphicsTexture(GraphicsDevice device, ref TextureDimensions dimensions, GraphicsFormat format, GraphicsResourceFlags flags, string name)
         : base(device, flags)
     {
+        if(dimensions.IsCubeMap && dimensions.ArraySize % 6 != 0)
+            throw new ArgumentException("The array size of a cube map must be a multiple of 6.", nameof(dimensions.ArraySize));
+
         LastFrameResizedID = device.Renderer.FrameID;
         ValidateFlags();
 

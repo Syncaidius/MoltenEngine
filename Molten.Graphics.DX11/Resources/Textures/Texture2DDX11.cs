@@ -87,12 +87,6 @@ public unsafe class Texture2DDX11 : TextureDX11, ITexture2D
             MipSlice = 0,
             PlaneSlice = 0
         };
-
-        desc.Buffer = new BufferUav()
-        {
-            FirstElement = 0,
-            NumElements = Desc.Width * Desc.Height * Desc.ArraySize,
-        };
     }
 
     protected override void UpdateDescription(TextureDimensions dimensions, GraphicsFormat newFormat)

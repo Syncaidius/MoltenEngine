@@ -47,6 +47,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CI", "CI", "{6E72C37A-1919-4843-B2B3-E0ED74C7EFB5}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\build.yml = .github\workflows\build.yml
+		.github\workflows\doc-gen.yml = .github\workflows\doc-gen.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Molten.Audio.OpenAL", "Molten.Audio.OpenAL\Molten.Audio.OpenAL.csproj", "{0476DF39-B5A9-42B4-86E8-F7BB50832FA0}"

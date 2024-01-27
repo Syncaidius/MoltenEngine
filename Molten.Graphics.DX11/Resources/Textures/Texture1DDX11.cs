@@ -51,10 +51,11 @@ public unsafe class Texture1DDX11 : TextureDX11, ITexture1D
     {
         desc.Format = srvDesc.Format;
         desc.ViewDimension = UavDimension.Texture1Darray;
-        desc.Buffer = new BufferUav()
+        desc.Texture1DArray = new Tex1DArrayUav()
         {
-            FirstElement = 0,
-            NumElements = Desc.Width * Desc.ArraySize,
+            ArraySize = Desc.ArraySize,
+            MipSlice = 0,
+            FirstArraySlice = 0,
         };
     }
 

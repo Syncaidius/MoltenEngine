@@ -78,6 +78,8 @@ public unsafe class Texture3DDX11 : TextureDX11, ITexture3D
         desc.Texture3D = new Tex3DUav()
         {
             MipSlice = 0,
+            FirstWSlice = 0,
+            WSize = _desc.Depth,
         };
 
         desc.Buffer = new BufferUav()
