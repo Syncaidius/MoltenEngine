@@ -101,6 +101,21 @@ public unsafe class RawStream : Stream
     }
 
     /// <summary>
+    /// Writes an array of values to the current <see cref="RawStream"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of element to write.</typeparam>
+    /// <param name="values">The array of values from which to write to the current <see cref="RawStream"/>.</param>
+    /// <param name="startIndex">The start index within <paramref name="values"/> to start copying.</param>
+    /// <param name="count">The number of elements to write from <paramref name="values"/> to the current <see cref="RawStream"/>.</param>
+    /// <exception cref="RawStreamException"></exception>
+    public void WriteRange<T>(T[] values, ulong startIndex, ulong count)
+        where T : unmanaged
+    {
+        fixed (T* ptr = &values[startIndex])
+            WriteRange(ptr, sizeof(T) * (long)count);
+    }
+
+    /// <summary>
     /// 
     /// </summary>
     /// <param name="ptrData"></param>
@@ -113,6 +128,11 @@ public unsafe class RawStream : Stream
 
         Buffer.MemoryCopy(ptrData, _ptrData, numBytes, numBytes);
         Position += numBytes;
+    }
+
+    public void WriteRange(void* ptrData, ulong numBytes)
+    {
+        WriteRange(ptrData, (long)numBytes);
     }
 
     /// <summary>
