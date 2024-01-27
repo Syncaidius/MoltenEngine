@@ -80,14 +80,6 @@ public unsafe class TextureCubeDX11 : Texture2DDX11, ITextureCube
         Device.Tasks.Push<GraphicsTexture, TextureResizeTask>(priority, this, task);
     }
 
-    public void Resize(GraphicsPriority priority, uint newWidth, uint newMipMapCount)
-    {
-        Resize(priority, newWidth, Height, newMipMapCount);
-    }
-
-    /// <summary>Gets information about the texture.</summary>
-    internal ref Texture2DDesc1 Description => ref Desc;
-
     /// <summary>Gets the number of cube maps stored in the texture. This is greater than 1 if the texture is a cube-map array.</summary>
     public uint CubeCount { get; private set; }
 }

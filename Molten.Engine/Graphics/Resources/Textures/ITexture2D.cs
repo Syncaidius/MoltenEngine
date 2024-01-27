@@ -8,6 +8,7 @@ public interface ITexture2D : ITexture
     /// <summary>
     /// Changes the current texture's dimensions and format.
     /// </summary>
+    /// <param name="priority">The priority of the resize operation.</param>
     /// <param name="newWidth">The new width.</param>
     /// <param name="newHeight">The new height.</param>
     void Resize(GraphicsPriority priority, uint newWidth, uint newHeight);
@@ -15,6 +16,7 @@ public interface ITexture2D : ITexture
     /// <summary>
     /// Changes the current texture's dimensions and format.
     /// </summary>
+    /// <param name="priority">The priority of the resize operation.</param>
     /// <param name="newWidth">The new width.</param>
     /// <param name="newHeight">The new height.</param>
     /// <param name="newMipMapCount">The new mip-map level count.</param>
