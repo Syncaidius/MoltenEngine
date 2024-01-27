@@ -12,8 +12,6 @@ internal unsafe class RawBufferDX11 : BufferDX11
     /// <param name="device">The graphics device to bind the buffer to.</param>
     /// <param name="flags"></param>
     /// <param name="numElements"></param>
-    /// <param name="shaderResource"></param>
-    /// <param name="unorderedAccess">If true, the buffer is given Read-Write access and a UAV is created for it. This is known as an RWStructuredBuffer in HLSL.</param>
     internal RawBufferDX11(
         DeviceDX11 device,
         GraphicsResourceFlags flags,

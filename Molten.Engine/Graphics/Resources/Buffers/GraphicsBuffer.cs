@@ -5,6 +5,15 @@ public abstract class GraphicsBuffer : GraphicsResource
     List<GraphicsBuffer> _allocations;
     List<GraphicsBuffer> _freeAllocations;
 
+    /// <summary>
+    /// Creates a new instance of <see cref="GraphicsBuffer"/>.
+    /// </summary>
+    /// <param name="device">The <see cref="GraphicsDevice"/> that the buffer is bound to.</param>
+    /// <param name="stride">The number of bytes per buffer element, in bytes.</param>
+    /// <param name="numElements">The number of elements in the buffer.</param>
+    /// <param name="flags">Resource flags which define how the buffer can be used.</param>
+    /// <param name="type">The type of buffer.</param>
+    /// <param name="alignment">The alignment of the buffer, in bytes.</param>
     protected GraphicsBuffer(GraphicsDevice device, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type, uint alignment) :
         base(device, flags)
     {

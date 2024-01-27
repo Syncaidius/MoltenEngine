@@ -18,6 +18,15 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
     TextureDimensions _dimensions;
     GraphicsFormat _format;
 
+    /// <summary>
+    /// Creates a new instance of <see cref="GraphicsTexture"/>.
+    /// </summary>
+    /// <param name="device">The <see cref="GraphicsTexture"/> that the buffer is bound to.</param>
+    /// <param name="dimensions">The dimensions of the texture.</param>
+    /// <param name="format">The <see cref="GraphicsFormat"/> of the texture.</param>
+    /// <param name="flags">Resource flags which define how the texture can be used.</param>
+    /// <param name="name">The name of the texture. This is mainly used for debug purposes.</param>
+    /// <exception cref="ArgumentException"></exception>
     protected GraphicsTexture(GraphicsDevice device, ref TextureDimensions dimensions, GraphicsFormat format, GraphicsResourceFlags flags, string name)
         : base(device, flags)
     {
