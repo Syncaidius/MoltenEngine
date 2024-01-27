@@ -15,11 +15,9 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
     protected TextureDX12(DeviceDX12 device,
         ResourceDimension resourceDimension,
         TextureDimensions dimensions,
-        AntiAliasLevel aaLevel, 
-        MSAAQuality sampleQuality, 
         GraphicsFormat format, GraphicsResourceFlags flags, string name,
         ProtectedSessionDX12 protectedSession = null) : 
-        base(device, dimensions, aaLevel, sampleQuality, format, flags, name)
+        base(device, ref dimensions, format, flags, name)
     {
         Device = device;
         _protectedSession = protectedSession;
@@ -49,8 +47,8 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
             Layout = TextureLayout.LayoutUnknown,
             SampleDesc = new SampleDesc()
             {
-                Count = (uint)aaLevel,
-                Quality = (uint)sampleQuality,
+                Count = (uint)dimensions.MultiSampleLevel,
+                Quality = (uint)dimensions.SampleQuality,
             },
             SamplerFeedbackMipRegion = new MipRegion() // Sampler feedback info: https://microsoft.github.io/DirectX-Specs/d3d/SamplerFeedback.html
         };
@@ -106,6 +104,15 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
         }
 
         _handle = new ResourceHandleDX12(this, (ID3D12Resource1*)ptr);
+
+        _handle.SRV.Desc = new ShaderResourceViewDesc
+        {
+            Format = DxgiFormat,
+            Shader4ComponentMapping = (uint)(ShaderComponentMapping.FromMemoryComponent0 | 
+                ShaderComponentMapping.FromMemoryComponent1 | 
+                ShaderComponentMapping.FromMemoryComponent2 | 
+                ShaderComponentMapping.FromMemoryComponent3),
+        };
 
         if (!Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
             SetSRVDescription(ref _handle.SRV.Desc);

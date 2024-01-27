@@ -6,7 +6,7 @@ public class Texture1DVK : TextureVK, ITexture1D
 {
     internal Texture1DVK(DeviceVK device, uint width, uint mipCount, uint arraySize, 
         GraphicsFormat format, GraphicsResourceFlags flags, string name) : 
-        base(device, new TextureDimensions(width, 1, 1, mipCount, arraySize), AntiAliasLevel.None, MSAAQuality.Default, format,flags, name)
+        base(device, new TextureDimensions(width, 1, 1, mipCount, arraySize), format,flags, name)
     {
 
     }

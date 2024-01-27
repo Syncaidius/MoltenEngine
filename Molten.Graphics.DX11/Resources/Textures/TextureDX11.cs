@@ -12,12 +12,10 @@ public unsafe abstract partial class TextureDX11 : GraphicsTexture
 
     internal TextureDX11(DeviceDX11 device, 
         TextureDimensions dimensions, 
-        AntiAliasLevel aaLevel, 
-        MSAAQuality sampleQuality, 
         GraphicsFormat format, 
         GraphicsResourceFlags flags, 
         string name) :
-        base(device, dimensions, aaLevel, sampleQuality, format, flags | GraphicsResourceFlags.GpuRead, name)
+        base(device, ref dimensions, format, flags | GraphicsResourceFlags.GpuRead, name)
     {
         Device = device;
     }

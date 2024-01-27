@@ -18,8 +18,7 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
     TextureDimensions _dimensions;
     GraphicsFormat _format;
 
-    protected GraphicsTexture(GraphicsDevice device, TextureDimensions dimensions, AntiAliasLevel aaLevel,
-        MSAAQuality sampleQuality, GraphicsFormat format, GraphicsResourceFlags flags, string name)
+    protected GraphicsTexture(GraphicsDevice device, ref TextureDimensions dimensions, GraphicsFormat format, GraphicsResourceFlags flags, string name)
         : base(device, flags)
     {
         LastFrameResizedID = device.Renderer.FrameID;
@@ -30,8 +29,8 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
 
         Name = string.IsNullOrWhiteSpace(name) ? $"{GetType().Name}_{Width}x{Height}" : name;
 
-        MultiSampleLevel = aaLevel > AntiAliasLevel.Invalid ? aaLevel : AntiAliasLevel.None;
-        SampleQuality = msaaSupport != MSAASupport.NotSupported ? sampleQuality : MSAAQuality.Default;
+        MultiSampleLevel = dimensions.MultiSampleLevel > AntiAliasLevel.Invalid ? dimensions.MultiSampleLevel : AntiAliasLevel.None;
+        SampleQuality = msaaSupport != MSAASupport.NotSupported ? dimensions.SampleQuality : MSAAQuality.Default;
         ResourceFormat = format;
     }
 

@@ -32,8 +32,7 @@ public unsafe class Texture3DDX11 : TextureDX11, ITexture3D
         GraphicsFormat format = GraphicsFormat.R8G8B8A8_UNorm,
         uint mipCount = 1,
         string name = null)
-        : base(device, new TextureDimensions(width, height, depth, mipCount, 1), 
-              AntiAliasLevel.None, MSAAQuality.Default, format, flags, name)
+        : base(device, new TextureDimensions(width, height, depth, mipCount, 1), format, flags, name)
     {
         _desc = new Texture3DDesc1()
         {

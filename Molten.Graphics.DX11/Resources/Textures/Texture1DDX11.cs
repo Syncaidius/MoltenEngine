@@ -16,8 +16,7 @@ public unsafe class Texture1DDX11 : TextureDX11, ITexture1D
         uint mipCount = 1, 
         uint arraySize = 1,
         string name = null)
-        : base(device, new TextureDimensions(width, 1, 1, mipCount, arraySize), 
-              AntiAliasLevel.None, MSAAQuality.Default, format, flags, name)
+        : base(device, new TextureDimensions(width, 1, 1, mipCount, arraySize), format, flags, name)
     {
         if (IsBlockCompressed)
             throw new NotSupportedException("1D textures do not supports block-compressed formats.");

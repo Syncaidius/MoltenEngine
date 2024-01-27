@@ -19,7 +19,7 @@ public unsafe class Texture2DDX11 : TextureDX11, ITexture2D
         AntiAliasLevel aaLevel = AntiAliasLevel.None,
         MSAAQuality msaa = MSAAQuality.Default,
         string name = null)
-        : base(device, new TextureDimensions(width, height, 1, mipCount, arraySize), aaLevel, msaa, format, flags, name)
+        : base(device, new TextureDimensions(width, height, 1, mipCount, arraySize, aaLevel, msaa), format, flags, name)
     {
         Desc = new Texture2DDesc1()
         {
