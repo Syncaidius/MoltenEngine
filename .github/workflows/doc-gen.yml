@@ -7,19 +7,19 @@ jobs:
   generate-docs:
     runs-on: windows-latest
     env:
-      DOTNET_VERSION: 7.0.x
+      DOTNET_VERSION: 8.0.x
       
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       
       - name: Install .NET [${{ env.DOTNET_VERSION }}]
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
           
       - name: Install DocFX
-        uses: crazy-max/ghaction-chocolatey@v2
+        uses: crazy-max/ghaction-chocolatey@v3
         with:
           args: install docfx
           
