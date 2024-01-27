@@ -174,37 +174,37 @@ public unsafe class DeviceDX12 : DeviceDXGI
         GraphicsResourceFlags flags = GraphicsResourceFlags.None | GraphicsResourceFlags.GpuWrite, uint mipCount = 1, 
         uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, string name = null)
     {
-        throw new NotImplementedException();
+        return new RenderSurface2DDX12(this, width, height, flags, format, mipCount, arraySize, aaLevel, MSAAQuality.Default, name);
     }
 
     public override IDepthStencilSurface CreateDepthSurface(uint width, uint height, DepthFormat format = DepthFormat.R24G8_Typeless, 
         GraphicsResourceFlags flags = GraphicsResourceFlags.None | GraphicsResourceFlags.GpuWrite, uint mipCount = 1, uint arraySize = 1, 
         AntiAliasLevel aaLevel = AntiAliasLevel.None, string name = null)
     {
-        throw new NotImplementedException();
+        return new DepthSurfaceDX12(this, width, height, flags, format, mipCount, arraySize, aaLevel, MSAAQuality.Default, name);
     }
 
     public override ITexture1D CreateTexture1D(uint width, uint mipCount, uint arraySize, GraphicsFormat format, GraphicsResourceFlags flags, string name = null)
     {
-        throw new NotImplementedException();
+        return new Texture1DDX12(this, width, flags, format, mipCount, arraySize, name);
     }
 
     public override ITexture2D CreateTexture2D(uint width, uint height, uint mipCount, uint arraySize, GraphicsFormat format, 
         GraphicsResourceFlags flags, AntiAliasLevel aaLevel = AntiAliasLevel.None, MSAAQuality aaQuality = MSAAQuality.Default, string name = null)
     {
-        throw new NotImplementedException();
+        return new Texture2DDX12(this, width, height, flags, format, mipCount, arraySize, aaLevel, aaQuality, name);
     }
 
     public override ITexture3D CreateTexture3D(uint width, uint height, uint depth, uint mipCount, GraphicsFormat format, 
         GraphicsResourceFlags flags, string name = null)
     {
-        throw new NotImplementedException();
+        return new Texture3DDX12(this, width, height, depth, flags, format, mipCount, name);
     }
 
     public override ITextureCube CreateTextureCube(uint width, uint height, uint mipCount, GraphicsFormat format, uint cubeCount = 1, uint arraySize = 1, 
         GraphicsResourceFlags flags = GraphicsResourceFlags.None, string name = null)
     {
-        throw new NotImplementedException();
+        return new TextureCubeDX12(this, width, height, flags, format, mipCount, cubeCount, arraySize, name);
     }
 
     /// <summary>

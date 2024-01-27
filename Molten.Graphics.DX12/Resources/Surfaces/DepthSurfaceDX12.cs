@@ -1,9 +1,8 @@
 ﻿using Silk.NET.Direct3D12;
-using Silk.NET.DXGI;
 
-namespace Molten.Graphics.DX12.Resources.Surfaces;
+namespace Molten.Graphics.DX12;
 
-internal class DepthSurfaceDX12 : Texture2DDX12, IDepthStencilSurface
+public class DepthSurfaceDX12 : Texture2DDX12, IDepthStencilSurface
 {
     /// <summary>
     /// 
