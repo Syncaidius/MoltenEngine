@@ -41,6 +41,7 @@ public class DepthSurfaceDX12 : Texture2DDX12, IDepthStencilSurface
         base.OnCreateResource();
         UpdateViewport();
     }
+
     private void UpdateViewport()
     {
         Viewport = new ViewportF(0, 0, Desc.Width, Desc.Height);
