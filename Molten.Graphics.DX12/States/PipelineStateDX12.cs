@@ -48,6 +48,13 @@ internal unsafe class PipelineStateDX12 : GraphicsObject<DeviceDX12>, IEquatable
             DS = pass.GetBytecode(ShaderType.Domain),
             HS = pass.GetBytecode(ShaderType.Hull),
             PS = pass.GetBytecode(ShaderType.Pixel),
+
+            NodeMask = 0,               // TODO Set this to the node mask of the device.
+            CachedPSO = default,        // TODO Implement PSO caching
+            DSVFormat = Format.FormatUnknown,
+            IBStripCutValue = IndexBufferStripCutValue.ValueDisabled,
+            StreamOutput = default,     // TODO Implement stream output
+            SampleDesc = default,       // TODO Implement multisampling
         };
 
         // Find out how many render targets to expect.

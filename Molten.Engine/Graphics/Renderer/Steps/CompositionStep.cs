@@ -17,7 +17,7 @@ internal class CompositionStep : RenderStep
         _surfaceLighting = renderer.Surfaces[MainSurfaceType.Lighting];
         _surfaceEmissive = renderer.Surfaces[MainSurfaceType.Emissive];
 
-        ShaderCompileResult result = renderer.Device.LoadEmbeddedShader("Molten.Assets", "gbuffer_compose.mfx");
+        ShaderCompileResult result = renderer.Device.LoadEmbeddedShader("Molten.Assets", "gbuffer_compose.json");
         _fxCompose = result["gbuffer-compose"];
 
         _valLighting = _fxCompose["mapLighting"];

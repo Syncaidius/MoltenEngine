@@ -41,7 +41,7 @@ internal unsafe class HlslDxcCompiler : DxcCompiler
         return true;
     }
 
-    public override bool BuildStructure(ShaderCompilerContext context, HlslShader shader, ShaderCodeResult result, ShaderComposition composition)
+    protected override bool BuildStructure(ShaderCompilerContext context, HlslShader shader, ShaderCodeResult result, ShaderComposition composition)
     {
         for (int r = 0; r < result.Reflection.BoundResources.Count; r++)
         {

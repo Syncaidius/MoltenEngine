@@ -1,0 +1,23 @@
+[
+  {
+    "name": "skybox-default",
+    "author": "James Yarwood",
+    "description": "The default material for rendering static skyboxes.",
+    "file": "skybox.hlsl",
+    "passes": [
+      {
+        "name": "main",
+        "iterations": 1,
+        "vertex": "VS",
+        "fragment": "PS",
+        "parameters": {
+          "rasterizer": "NoCulling",
+          "IsDepthEnabled": true,
+          "DepthWriteEnabled": true,
+          "WritePermission": "ReadOnly",
+          "DepthComparison": "LessEqual"
+        }
+      }
+    ]
+  }
+]

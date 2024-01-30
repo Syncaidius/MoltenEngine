@@ -41,5 +41,5 @@ public enum ShaderType
     /// Library shader. Required for DirectX Raytracing (DXR) shaders.
     /// See: https://docs.microsoft.com/en-us/windows/win32/direct3d12/direct3d-12-raytracing-hlsl-shaders
     /// </summary>
-    Lib = 7,
+    Lib = 16,
 }

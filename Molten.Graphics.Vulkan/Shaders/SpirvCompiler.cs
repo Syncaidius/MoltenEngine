@@ -75,7 +75,7 @@ internal class SpirvCompiler : DxcCompiler
         return shader;
     }
 
-    public override bool BuildStructure(ShaderCompilerContext context, HlslShader shader, ShaderCodeResult result, ShaderComposition composition)
+    protected override bool BuildStructure(ShaderCompilerContext context, HlslShader shader, ShaderCodeResult result, ShaderComposition composition)
     {
         throw new NotImplementedException();
     }

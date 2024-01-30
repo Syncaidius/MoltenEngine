@@ -1,28 +1,4 @@
-<shader>
-    <name>gbuffer</name>
-    <description>Standard deferred rendering g-buffer material.</description>
-    <pass>
-        <name>main</name>
-        <iterations>1</iterations>
-        <vertex>VS</vertex>
-        <fragment>PS</fragment>
-        <state preset="default"/>
-    </pass>
-</shader>
-
-<shader>
-    <name>gbuffer-sans-nmap</name>
-    <description>Deferred rendering g-buffer material, without normal mapping.</description>
-    <pass>
-        <name>main</name>
-        <iterations>1</iterations>
-        <vertex>VS</vertex>
-        <fragment>PS</fragment>
-        <state preset="default"/>
-    </pass>
-</shader>
-
-#include "gbuffer_common.mfx"
+#include "gbuffer_common.hlsl"
 
 struct VS_IN
 {

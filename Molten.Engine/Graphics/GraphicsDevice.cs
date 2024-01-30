@@ -306,7 +306,7 @@ public abstract partial class GraphicsDevice : EngineObject
             return new ShaderCompileResult();
         }
 
-        return Renderer.Compiler.Compile(src, filename, ShaderCompileFlags.EmbeddedFile, assembly, nameSpace);
+        return Renderer.Compiler.Compile(src, filename, ShaderCompileFlags.None, assembly, nameSpace);
     }
 
     /// <summary>Compiles a set of shaders from the provided source string.</summary>
@@ -315,16 +315,13 @@ public abstract partial class GraphicsDevice : EngineObject
     /// <returns></returns>
     public ShaderCompileResult CompileShaders(ref string source, string filename = null)
     {
-        ShaderCompileFlags flags = ShaderCompileFlags.EmbeddedFile;
-
         if (!string.IsNullOrWhiteSpace(filename))
         {
             FileInfo fInfo = new FileInfo(filename);
             DirectoryInfo dir = fInfo.Directory;
-            flags = ShaderCompileFlags.None;
         }
 
-        return Renderer.Compiler.Compile(source, filename, flags, null, null);
+        return Renderer.Compiler.Compile(source, filename, ShaderCompileFlags.None, null, null);
     }
 
     /// <summary>

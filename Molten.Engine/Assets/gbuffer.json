@@ -1,0 +1,65 @@
+[
+  {
+    "name": "gbuffer",
+    "description": "Standard deferred rendering g-buffer material.",
+    "file": "gbuffer.hlsl",
+    "passes": [
+      {
+        "name": "main",
+        "iterations": 1,
+        "entry": {
+          "vertex": "VS",
+          "fragment": "PS"
+        },
+        "parameters": {
+          "blend": "default",
+          "depth": "default",
+          "rasterizer": "default"
+        }
+      }
+    ]
+  },
+
+  {
+    "name": "gbuffer-sans-nmap",
+    "description": "Deferred rendering g-buffer material, without normal mapping.",
+    "file": "gbuffer.hlsl",
+    "passes": [
+      {
+        "name": "main",
+        "iterations": 1,
+        "entry": {
+          "vertex": "VS",
+          "fragment": "PS"
+        },
+        "parameters": {
+          "blend": "default",
+          "depth": "default",
+          "rasterizer": "default"
+        }
+      }
+    ]
+  },
+
+  {
+    "name": "gbuffer-compose",
+    "description": "Composes the individual outputs of the G-Buffer (color, normals, emissive, shadows, etc) into the final result.",
+    "file": "gbuffer.hlsl",
+    "passes": [
+      {
+        "name": "main",
+        "iterations": 1,
+        "entry": {
+          "vertex": "VS",
+          "geometry": "GS",
+          "fragment": "PS"
+        },
+        "parameters": {
+          "blend": "PreMultipliedAlpha",
+          "depth": "default",
+          "rasterizer": "ScissorTest"
+        }
+      }
+    ]
+  }
+]

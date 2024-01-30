@@ -1,32 +1,29 @@
 ﻿namespace Molten.Graphics;
 
-internal class ShaderDefinition
+public class ShaderDefinition
 {
-    public string Name;
+    public string Name { get; set; }
 
-    public string Description;
+    public string Description { get; set; }
 
-    public string Author;
+    public string Author { get; set; }
 
-    internal ShaderPassDefinition AddPass()
-    {
-        ShaderPassDefinition pass = new ShaderPassDefinition();
-        Passes.Add(pass);
-        return pass;
-    }
+    public string Version { get; set; } = "1.0.0";
 
-    public List<ShaderPassDefinition> Passes { get; } = new List<ShaderPassDefinition>();
+    public string File { get; set; }
+
+    public ShaderPassDefinition[] Passes { get; set; } = new ShaderPassDefinition[0];
 }
 
-internal class ShaderPassDefinition
+public class ShaderPassDefinition
 {
-    public string Name;
+    public string Name { get; set; }
 
-    public Dictionary<ShaderType, string> EntryPoints { get; } = new Dictionary<ShaderType, string>();
+    public int Iterations { get; set; } = 1;
+
+    public ShaderEntryPointDefinition Entry { get; set; } = new ShaderEntryPointDefinition();
 
     public ShaderPassParameters Parameters = new ShaderPassParameters(GraphicsStatePreset.Default, PrimitiveTopology.Triangle);
 
     public ShaderSamplerParameters[] Samplers = new ShaderSamplerParameters[0];
-
-    public int Iterations = 1;
 }

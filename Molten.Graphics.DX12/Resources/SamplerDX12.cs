@@ -4,12 +4,12 @@ namespace Molten.Graphics.DX12;
 
 public unsafe class SamplerDX12 : ShaderSampler
 {
-    SamplerDesc _desc;
+    StaticSamplerDesc _desc;
 
     internal unsafe SamplerDX12(DeviceDX12 device, ref ShaderSamplerParameters parameters) :
         base(device, ref parameters)
     {
-        _desc = new SamplerDesc()
+        _desc = new StaticSamplerDesc()
         {
             AddressU = parameters.AddressU.ToApi(),
             AddressV = parameters.AddressV.ToApi(),
@@ -17,16 +17,14 @@ public unsafe class SamplerDX12 : ShaderSampler
             ComparisonFunc = parameters.Comparison.ToApi(),
             Filter = Filter.MinMagMipLinear,
             MaxAnisotropy = Math.Max(1, parameters.MaxAnisotropy),
-            MaxLOD = parameters.MaxMipMapLod,
             MinLOD = parameters.MinMipMapLod,
+            MaxLOD = parameters.MaxMipMapLod,
             MipLODBias = parameters.LodBias,
+            BorderColor = StaticBorderColor.TransparentBlack,
+            ShaderRegister = 0,
+            RegisterSpace = 0,
+            ShaderVisibility = ShaderVisibility.Pixel,
         };
-
-        ref Color4 bColor = ref parameters.BorderColor;
-        _desc.BorderColor[0] = bColor.R;
-        _desc.BorderColor[1] = bColor.G;
-        _desc.BorderColor[2] = bColor.B;
-        _desc.BorderColor[3] = bColor.A;
 
         // Figure out which DX11 filter mode to use. 
         if (parameters.MaxAnisotropy > 0)
@@ -64,5 +62,5 @@ public unsafe class SamplerDX12 : ShaderSampler
 
     protected override void OnGraphicsRelease() { }
 
-    internal ref SamplerDesc Desc => ref _desc;
+    internal ref StaticSamplerDesc Desc => ref _desc;
 }

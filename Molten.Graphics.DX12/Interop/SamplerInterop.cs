@@ -8,11 +8,6 @@ internal static class SamplerInterop
         return (ComparisonFunc)val;
     }
 
-    public static Filter FromApi(this SamplerFilter val)
-    {
-        return (Filter)val;
-    }
-
     public static TextureAddressMode ToApi(this SamplerAddressMode mode)
     {
         return (TextureAddressMode)mode;
@@ -25,11 +20,6 @@ internal static class SamplerInterop
     public static ComparisonMode FromApi(this ComparisonFunc val)
     {
         return (ComparisonMode)val;
-    }
-
-    public static SamplerFilter FromApi(this Filter val)
-    {
-        return (SamplerFilter)val;
     }
 
     public static SamplerAddressMode FromApi(this TextureAddressMode mode)

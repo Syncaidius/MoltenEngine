@@ -202,8 +202,7 @@ public unsafe class FxcCompiler : ShaderCompiler
     /// <param name="context"></param>
     /// <param name="result"></param>
     /// <returns></returns>
-    public override ShaderCodeResult CompileSource(string entryPoint, ShaderType type,
-        ShaderCompilerContext context)
+    protected override ShaderCodeResult CompileNativeSource(string entryPoint, ShaderType type, ShaderCompilerContext context)
     {
         Encoding encoding = CodePagesEncodingProvider.Instance.GetEncoding(1252); // Ansi codepage
         NativeStringEncoding nativeEncoding = NativeStringEncoding.LPStr;
@@ -251,7 +250,7 @@ public unsafe class FxcCompiler : ShaderCompiler
         return null;
     }
 
-    public override bool BuildStructure(ShaderCompilerContext context,
+    protected override bool BuildStructure(ShaderCompilerContext context,
         HlslShader shader, ShaderCodeResult result, ShaderComposition composition)
     {
         for (int r = 0; r < result.Reflection.BoundResources.Count; r++)

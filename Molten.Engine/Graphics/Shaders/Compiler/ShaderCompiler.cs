@@ -1,4 +1,5 @@
 ﻿using Molten.IO;
+using Newtonsoft.Json;
 using System.Collections.Concurrent;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -11,16 +12,14 @@ namespace Molten.Graphics;
 /// </summary>
 public abstract class ShaderCompiler : EngineObject
 {
-    ShaderLayoutValidator _layoutValidator = new ShaderLayoutValidator();
+    ShaderLayoutValidator _layoutValidator = new ();
     ShaderType[] _mandatoryShaders = { ShaderType.Vertex, ShaderType.Pixel };
     string[] _newLineSeparator = { "\n", Environment.NewLine };
     string[] _includeReplacements = { "#include", "<", ">", "\"" };
-    Regex _includeCommas = new Regex("(#include) \"([^\"]*)\"");
-    Regex _includeBrackets = new Regex("(#include) <([.+])>");
-    Regex _regexHeader = new Regex($"<shader>(.|\n)*?</shader>");
+    Regex _includeCommas = new("(#include) \"([^\"]*)\"");
+    Regex _includeBrackets = new("(#include) <([.+])>");
 
     ConcurrentDictionary<string, ShaderSource> _sources;
-    Dictionary<ShaderNodeType, ShaderNodeParser> _nodeParsers;
 
     Assembly _defaultIncludeAssembly;
     string _defaultIncludePath;
@@ -37,48 +36,19 @@ public abstract class ShaderCompiler : EngineObject
         Renderer = renderer;
         _defaultIncludePath = includePath;
         _defaultIncludeAssembly = includeAssembly;
-
-        _nodeParsers = new Dictionary<ShaderNodeType, ShaderNodeParser>();
         _sources = new ConcurrentDictionary<string, ShaderSource>();
-
-        InitializeNodeParsers();
-    }
-
-    internal List<string> GetHeaders(in string source)
-    {
-        List<string> headers = new List<string>();
-        Match m = _regexHeader.Match(source);
-
-        while (m.Success)
-        {
-            headers.Add(m.Value);
-            m = m.NextMatch();
-        }
-
-        return headers;
-    }
-
-    private ShaderDefinition ParseDefinition(string xml, ShaderCompilerContext context)
-    {
-        XmlDocument doc = new XmlDocument();
-        doc.LoadXml(xml);
-
-        XmlNode rootNode = doc.ChildNodes[0];
-        ShaderDefinition header = new ShaderDefinition();
-        ParseNode(header, null, rootNode, context);
-        return header;
     }
 
     private bool ValidateDefinition(ShaderDefinition def, ShaderCompilerContext context)
     {
-        if (def.Passes.Count == 0)
+        if (def.Passes.Length == 0)
         {
             context.AddError($"Shader '{def.Name}' is invalid: No passes defined");
             return false;
         }
         else
         {
-            if (def.Passes[0].EntryPoints.TryGetValue(ShaderType.Vertex, out string epVertex))
+            if (def.Passes[0].Entry.Points.TryGetValue(ShaderType.Vertex, out string epVertex))
             {
                 if (string.IsNullOrWhiteSpace(epVertex))
                 {
@@ -91,31 +61,14 @@ public abstract class ShaderCompiler : EngineObject
         return true;
     }
 
-    public HlslShader BuildShader(ShaderCompilerContext context, RenderService renderer, string xmlDef)
+    private HlslShader BuildShader(ShaderCompilerContext context, RenderService renderer, ShaderDefinition def)
     {
-        ShaderDefinition def;
-
-        try
-        {
-            def = ParseDefinition(xmlDef, context);
-        }
-        catch (Exception e)
-        {
-            context.AddError($"{context.Source.Filename ?? "Shader definition error"}: {e.Message}");
-            renderer.Device.Log.Error(e);
-            return null;
-        }
-
-        bool valid = ValidateDefinition(def, context);
-        if (!valid)
-            return null;
-
         HlslShader shader = new HlslShader(renderer.Device, def, context.Source.Filename);
 
         // Proceed to compiling each shader pass.
         foreach (ShaderPassDefinition passDef in def.Passes)
         {
-            BuildPass(context, shader, def, passDef);
+            BuildPass(context, shader, passDef);
             if (context.HasErrors)
                 return null;
         }
@@ -131,15 +84,15 @@ public abstract class ShaderCompiler : EngineObject
         return shader;
     }
 
-    private unsafe void BuildPass(ShaderCompilerContext context, HlslShader parent, ShaderDefinition def, ShaderPassDefinition passDef)
+    private unsafe void BuildPass(ShaderCompilerContext context, HlslShader parent, ShaderPassDefinition passDef)
     {
         HlslPass pass = Renderer.Device.CreateShaderPass(parent, passDef.Name ?? "Unnamed pass");
         PassCompileResult result = new PassCompileResult(pass);
 
         // Compile each stage of the material pass.
-        foreach (ShaderType epType in passDef.EntryPoints.Keys)
+        foreach (ShaderType epType in passDef.Entry.Points.Keys)
         {
-            context.EntryPoint = passDef.EntryPoints[epType];
+            context.EntryPoint = passDef.Entry.Points[epType];
             context.Type = epType;
 
             if (string.IsNullOrWhiteSpace(context.EntryPoint))
@@ -155,18 +108,16 @@ public abstract class ShaderCompiler : EngineObject
             // If not, compile it.
             if (!context.Shaders.TryGetValue(context.EntryPoint, out ShaderCodeResult cResult))
             {
-                cResult = CompileSource(context.EntryPoint, epType, context);
+                cResult = CompileNativeSource(context.EntryPoint, epType, context);
                 if (cResult != null)
                 {
-                    if (Validate(pass, context, cResult))
-                    {
-                        context.Shaders.Add(context.EntryPoint, cResult);
-                    }
-                    else
+                    if (!Validate(pass, context, cResult))
                     {
                         context.AddError($"{context.Source.Filename}: Validation failed for '{epType}' stage of shader pass.");
                         return;
-                    }
+                    } 
+                    
+                    context.Shaders.Add(context.EntryPoint, cResult);
                 }
                 else
                 {
@@ -185,6 +136,15 @@ public abstract class ShaderCompiler : EngineObject
 
         if (!context.HasErrors)
         {
+            if(passDef.Parameters.Blend != BlendPreset.Default)
+                passDef.Parameters.ApplyBlendPreset(passDef.Parameters.Blend);
+
+            if (passDef.Parameters.Rasterizer != RasterizerPreset.Default)
+                passDef.Parameters.ApplyRasterizerPreset(passDef.Parameters.Rasterizer);
+
+            if (passDef.Parameters.Depth != DepthStencilPreset.Default)
+                passDef.Parameters.ApplyDepthPreset(passDef.Parameters.Depth);
+
             if (!ValidatePass(pass, ref passDef.Parameters, context))
                 return;
 
@@ -196,7 +156,6 @@ public abstract class ShaderCompiler : EngineObject
                 ShaderCodeResult fcr = result[ShaderType.Geometry];
                 pass.GeometryPrimitive = fcr.Reflection.GSInputPrimitive;
             }
-
 
             // Validate I/O structure of each shader stage.
             if (_layoutValidator.Validate(context, result))
@@ -221,6 +180,7 @@ public abstract class ShaderCompiler : EngineObject
                 for (int i = 0; i < passDef.Samplers.Length; i++)
                 {
                     ref ShaderSamplerParameters sp = ref passDef.Samplers[i];
+                    sp.ApplyPreset(sp.Preset);
                     pass.Samplers[i] = Renderer.Device.CreateSampler(ref sp);
                 }
 
@@ -252,94 +212,77 @@ public abstract class ShaderCompiler : EngineObject
         return layout;
     }
 
-    public abstract ShaderCodeResult CompileSource(string entryPoint, ShaderType type, ShaderCompilerContext context);
+    protected abstract ShaderCodeResult CompileNativeSource(string entryPoint, ShaderType type, ShaderCompilerContext context);
 
-    public abstract bool BuildStructure(ShaderCompilerContext context, HlslShader shader, ShaderCodeResult result, ShaderComposition composition);
+    protected abstract bool BuildStructure(ShaderCompilerContext context, HlslShader shader, ShaderCodeResult result, ShaderComposition composition);
 
-    /// <summary>
-    /// Registers all <see cref="ShaderNodeParser"/> types in the assembly.
-    /// </summary>
-    private void InitializeNodeParsers()
+    internal ShaderCompileResult Compile(string jsonDef, string filename, ShaderCompileFlags flags, Assembly assembly, string nameSpace)
     {
-        // Find custom and additional node parsers
-        Assembly nodeAssembly = GetType().Assembly;
-        List<Type> nParserList = ReflectionHelper.FindType<ShaderNodeParser>(nodeAssembly).ToList();
-
-        // Find default/common node parsers.
-        IEnumerable<Type> defaultNodeParsers = ReflectionHelper.FindTypeInParentAssembly<ShaderNodeParser>();
-        nParserList.AddRange(defaultNodeParsers);
-
-        foreach (Type t in nParserList)
-        {
-            BindingFlags bFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-            ShaderNodeParser nParser = Activator.CreateInstance(t, bFlags, null, null, null) as ShaderNodeParser;
-
-            if (_nodeParsers.ContainsKey(nParser.NodeType))
-            {
-                string ntName = nParser.GetType().Name;
-                string existingName = _nodeParsers[nParser.NodeType].GetType().Name;
-                Log.Warning($"Failed to register node parser '{ntName}' for node type '{nParser.NodeType}' as '{existingName}' is already registered.");
-            }
-            else
-            {
-                // Replace existing parser for this node type
-                _nodeParsers[nParser.NodeType] = nParser;
-            }
-        }
-
-        // Validate parsers to find missing ones.
-        ShaderNodeType[] nTypes = Enum.GetValues<ShaderNodeType>();
-        foreach (ShaderNodeType t in nTypes)
-        {
-            if (!_nodeParsers.ContainsKey(t))
-                Log.Error($"Shader compiler '{GetType()}' doesn't provide node parser for '{t}' nodes. May prevent shader compilation.");
-        }
-    }
-
-    public ShaderCompileResult Compile(string source, string filename, ShaderCompileFlags flags, Assembly assembly, string nameSpace)
-    {
+        bool isEmbedded = !string.IsNullOrWhiteSpace(nameSpace);
         ShaderCompilerContext context = new ShaderCompilerContext(this);
         context.Flags = flags;
-        string finalSource = source;
 
         if (assembly != null && string.IsNullOrWhiteSpace(nameSpace))
             throw new InvalidOperationException("nameSpace parameter cannot be null or empty when assembly parameter is set");
 
-        int originalLineCount = source.Split(_newLineSeparator, StringSplitOptions.None).Length;
-
         // Check the source for all supportead class types.
-        List<string> nodeHeaders = GetHeaders(in source);
-
-        // Remove the XML Molten headers from the source.
-        // This reduces the source we need to check through to find other header types.
-        foreach (string h in nodeHeaders)
+        ShaderDefinition[] definitions = null;
+        try
         {
-            // Find the header in the original source string, so we can get an accurate line number.
-            int index = source.IndexOf(h);
-            string[] lines = source.Substring(0, index).Split(_newLineSeparator, StringSplitOptions.None);
-            string[] hLines = h.Split(_newLineSeparator, StringSplitOptions.None);
-            int endLine = lines.Length + (hLines.Length - 1);
+            definitions = JsonConvert.DeserializeObject<ShaderDefinition[]>(jsonDef);
 
-            if (string.IsNullOrWhiteSpace(filename))
-                finalSource = finalSource.Replace(h, $"#line {endLine}");
-            else
-                finalSource = finalSource.Replace(h, $"#line {endLine} \"{filename}\"");
+            foreach (ShaderDefinition def in definitions)
+            {
+                if (!ValidateDefinition(def, context))
+                    continue;
+
+                string hlsl = "";
+
+                // Attempt to load the file that was given in the shader definition.
+                if (isEmbedded)
+                {
+                    using (Stream stream = EmbeddedResource.TryGetStream($"{nameSpace}.{filename}"))
+                    {
+                        if (stream == null)
+                        {
+                            context.AddError($"Embedded shader '{nameSpace}.{filename}' was not found in assembly '{assembly.FullName}'");
+                            continue;
+                        }
+
+                        using (StreamReader reader = new StreamReader(stream))
+                            hlsl = reader.ReadToEnd();
+                    }
+                }
+                else
+                {
+                    using (FileStream stream = new FileStream(filename, FileMode.Open, FileAccess.Read))
+                    {
+                        using (StreamReader reader = new StreamReader(stream))
+                            hlsl = reader.ReadToEnd();
+                    }
+                }
+
+                context.Source = ParseSource(context, filename, ref hlsl, isEmbedded, assembly, nameSpace);
+
+                HlslShader shader = BuildShader(context, Renderer, def);
+                if (shader != null)
+                    context.Result.AddShader(shader);
+                else
+                    context.AddError($"{filename}: {nameof(ShaderCompiler)}.Build() did not return a result (null)");
+            }
+        }
+        catch (Exception ex)
+        {
+            context.AddError($"Failed to deserialize shader definition: {ex.Message}");
         }
 
-        bool isEmbedded = (flags & ShaderCompileFlags.EmbeddedFile) == ShaderCompileFlags.EmbeddedFile;
-        context.Source = ParseSource(context, filename, ref finalSource, isEmbedded, assembly, nameSpace, originalLineCount);
+        // Log all context messages.
+        string msgPrefix;
+        if(isEmbedded)
+            msgPrefix = $"{nameSpace}.{filename}: "; 
+        else
+            msgPrefix = string.IsNullOrWhiteSpace(filename) ? "" : $"{filename}: ";
 
-        // Compile any headers that matching _subCompiler keys (e.g. material or compute)
-        foreach (string header in nodeHeaders)
-        {
-            HlslShader shader = BuildShader(context, Renderer, header);
-            if (shader != null)
-                context.Result.AddShader(shader);
-            else
-                context.AddError($"{filename}: {nameof(ShaderCompiler)}.Build() did not return a result (null)");
-        }
-
-        string msgPrefix = string.IsNullOrWhiteSpace(filename) ? "" : $"{filename}: ";
         foreach (ShaderCompilerMessage msg in context.Messages)
             Log.WriteLine($"{msgPrefix}{msg.Text}");
 
@@ -347,8 +290,9 @@ public abstract class ShaderCompiler : EngineObject
     }
 
     private ShaderSource ParseSource(ShaderCompilerContext context, string filename, ref string hlsl,
-        bool isEmbedded, Assembly assembly, string nameSpace, int originalLineCount)
+        bool isEmbedded, Assembly assembly, string nameSpace)
     {
+        int originalLineCount = hlsl.Split(_newLineSeparator, StringSplitOptions.None).Length;
         ShaderSource source = new ShaderSource(filename, in hlsl, isEmbedded, originalLineCount, assembly, nameSpace);
 
         // See for info: https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-appendix-pre-include
@@ -371,33 +315,6 @@ public abstract class ShaderCompiler : EngineObject
         }
 
         return null;
-    }
-
-    internal void ParseNode(ShaderDefinition header, ShaderPassDefinition passHeader, XmlNode parentNode, ShaderCompilerContext context)
-    {
-        foreach (XmlNode node in parentNode.ChildNodes)
-        {
-            string nodeName = node.Name.ToLower();
-
-            // Skip XML comments.
-            if (nodeName == "#comment")
-                continue;
-
-            if (!Enum.TryParse(nodeName, true, out ShaderNodeType nodeType))
-            {
-                context.AddWarning($"Node '{nodeName}' is invalid");
-                continue;
-            }
-
-            ShaderNodeParser parser = null;
-            if (!_nodeParsers.TryGetValue(nodeType, out parser))
-            {
-                context.AddWarning($"The node '{nodeName}' is not supported by compiler '{this.GetType().Name}'");
-                continue;
-            }
-
-            parser.Parse(header, passHeader, context, node);
-        }
     }
 
     private ShaderSource GetDependencySource(ShaderSource source, string key, out Stream stream,
@@ -499,15 +416,13 @@ public abstract class ShaderCompiler : EngineObject
 
                     fStream.Dispose();
 
-                    int depLineCount = depSource.Split(_newLineSeparator, StringSplitOptions.None).Length;
                     dependency = ParseSource(context, depFilename, ref depSource, source.IsEmbedded,
-                        assembly, source.ParentNamespace, depLineCount);
+                        assembly, source.ParentNamespace);
                     source.Dependencies.Add(dependency);
                     dependencies.Add(depFilename);
                 }
                 else
                 {
-
                     context.AddError($"{source.Filename}: The include '{depFilename}' was not found");
                 }
             }

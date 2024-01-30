@@ -132,7 +132,6 @@ public abstract class HlslPass : GraphicsObject, IEnumerable<ShaderComposition>,
     /// <summary>
     /// Gets or sets the depth write permission. the default value is <see cref="GraphicsDepthWritePermission.Enabled"/>.
     /// </summary>
-    [ShaderNode(ShaderNodeParseType.Enum)]
     public GraphicsDepthWritePermission WritePermission { get; set; } = GraphicsDepthWritePermission.Enabled;
 
     /// <summary>

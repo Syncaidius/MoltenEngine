@@ -41,7 +41,7 @@ public class ShaderSource : EngineObject
     }
 
     /// <summary>
-    /// Gets the filename that the current <see cref="HlslSource"/> represents.
+    /// Gets the filename that the current <see cref="ShaderSource"/> represents.
     /// </summary>
     public string Filename { get; private set; }
 

@@ -1,0 +1,155 @@
+[
+  {
+    "name": "sprite-texture",
+    "author": "James Yarwood",
+    "description": "The default material for rendering sprites in a SpriteBatch with a texture",
+    "file": "sprite.hlsl",
+    "passes": [
+      {
+        "name": "main",
+        "iterations": 1,
+        "vertex": "VS",
+        "geometry": "GS",
+        "fragment": "PS",
+        "parameters": {
+          "blend": "PreMultipliedAlpha",
+          "depth": "ZDisabled",
+          "rasterizer": "ScissorTest",
+          "Topology": "Point"
+        }
+      }
+    ]
+  },
+
+  {
+    "name": "sprite-no-texture",
+    "author": "James Yarwood",
+    "description": "The default material for rendering sprites in a SpriteBatch with no texture.",
+    "file": "sprite.hlsl",
+    "passes": [
+      {
+        "name": "main",
+        "iterations": 1,
+        "vertex": "VS",
+        "geometry": "GS",
+        "fragment": "PS_NoTexture",
+        "parameters": {
+          "blend": "PreMultipliedAlpha",
+          "depth": "ZDisabled",
+          "rasterizer": "ScissorTest",
+          "Topology": "Point"
+        }
+      }
+    ]
+  },
+
+  {
+    "name": "circle",
+    "author": "James Yarwood",
+    "description": "The default material for rendering an un-textured circle from a single point",
+    "file": "sprite.hlsl",
+    "passes": [
+      {
+        "name": "main",
+        "iterations": 1,
+        "vertex": "VS",
+        "geometry": "GS",
+        "fragment": "PS_Circle",
+        "parameters": {
+          "blend": "PreMultipliedAlpha",
+          "depth": "ZDisabled",
+          "rasterizer": "ScissorTest",
+          "Topology": "Point"
+        }
+      }
+    ]
+  },
+
+  {
+    "name": "circle-no-texture",
+    "author": "James Yarwood",
+    "description": "The default material for rendering an un-textured circle from a single point",
+    "file": "sprite.hlsl",
+    "passes": [
+      {
+        "name": "main",
+        "iterations": 1,
+        "vertex": "VS",
+        "geometry": "GS",
+        "fragment": "PS_Circle_NoTex",
+        "parameters": {
+          "blend": "PreMultipliedAlpha",
+          "depth": "ZDisabled",
+          "rasterizer": "ScissorTest",
+          "Topology": "Point"
+        }
+      }
+    ]
+  },
+
+  {
+    "name": "line",
+    "author": "James Yarwood",
+    "description": "The default material for rendering an un-textured circle from a single point",
+    "file": "sprite.hlsl",
+    "passes": [
+      {
+        "name": "main",
+        "iterations": 1,
+        "vertex": "VS",
+        "geometry": "GS",
+        "fragment": "PS_Line",
+        "parameters": {
+          "blend": "PreMultipliedAlpha",
+          "depth": "ZDisabled",
+          "rasterizer": "ScissorTest",
+          "Topology": "Point"
+        }
+      }
+    ]
+  },
+
+  {
+    "name": "grid",
+    "author": "James Yarwood",
+    "description": "The default material for rendering an un-textured circle from a single point",
+    "file": "sprite.hlsl",
+    "passes": [
+      {
+        "name": "main",
+        "iterations": 1,
+        "vertex": "VS",
+        "geometry": "GS",
+        "fragment": "PS_Grid",
+        "parameters": {
+          "blend": "PreMultipliedAlpha",
+          "depth": "ZDisabled",
+          "rasterizer": "ScissorTest",
+          "Topology": "Point"
+        }
+      }
+    ]
+  },
+
+  {
+    "name": "sprite-msdf",
+    "author": "James Yarwood",
+    "description": "The default material for signed-distance field textures/sprites in a SpriteBatch",
+    "file": "sprite_sdf.hlsl",
+    "passes": [
+      {
+        "name": "main",
+        "iterations": 1,
+        "vertex": "VS",
+        "geometry": "GS",
+        "fragment": "PS_MSDF",
+        "parameters": {
+          "blend": "PreMultipliedAlpha",
+          "depth": "ZDisabled",
+          "rasterizer": "ScissorTest",
+          "Topology": "Point"
+        }
+      }
+    ]
+  }
+]

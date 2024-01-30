@@ -106,7 +106,7 @@ public partial class SpriteBatcher : IDisposable
             return device.CreateStructuredBuffer<GpuData>(GraphicsResourceFlags.CpuWrite, FlushCapacity);
         });
 
-        ShaderCompileResult result = device.LoadEmbeddedShader("Molten.Assets", "sprite.mfx");
+        ShaderCompileResult result = device.LoadEmbeddedShader("Molten.Assets", "sprite.json");
         _matDefaultNoTexture = result["sprite-no-texture"];
         _matDefault = result["sprite-texture"];
         _matCircle = result["circle"];
@@ -115,7 +115,7 @@ public partial class SpriteBatcher : IDisposable
         _matGrid = result["grid"];
         //_matDefaultMS = result[ShaderClassType.Material, "sprite-texture-ms"] as Material;
 
-        ShaderCompileResult resultSdf = device.LoadEmbeddedShader("Molten.Assets", "sprite_sdf.mfx");
+        ShaderCompileResult resultSdf = device.LoadEmbeddedShader("Molten.Assets", "sprite_sdf.json");
         _matMsdf = resultSdf["sprite-msdf"];
 
         _checkers = new CheckerCallback[7];

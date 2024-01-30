@@ -13,7 +13,7 @@ internal class SkyboxStep : RenderStep
     {
         _skyboxData = new ObjectRenderData();
 
-        ShaderCompileResult result = renderer.Device.LoadEmbeddedShader("Molten.Assets", "skybox.mfx");
+        ShaderCompileResult result = renderer.Device.LoadEmbeddedShader("Molten.Assets", "skybox.json");
         _fxSky = result["skybox-default"];
 
         MakeSphere(4, 4, out Vertex[] vertices, out uint[] indices);

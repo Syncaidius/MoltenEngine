@@ -26,27 +26,33 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\gbuffer.mfx" />
-    <None Remove="Assets\gbuffer_common.mfx" />
-    <None Remove="Assets\gbuffer_compose.mfx" />
-    <None Remove="Assets\light_common.mfx" />
-    <None Remove="Assets\light_point.mfx" />
-    <None Remove="Assets\skybox.mfx" />
-    <None Remove="Assets\sprite.mfx" />
-    <None Remove="Assets\sprite_common.mfx" />
-    <None Remove="Assets\sprite_sdf.mfx" />
+    <None Remove="Assets\gbuffer.hlsl" />
+    <None Remove="Assets\gbuffer.json" />
+    <None Remove="Assets\gbuffer_common.hlsl" />
+    <None Remove="Assets\gbuffer_compose.hlsl" />
+    <None Remove="Assets\light_common.hlsl" />
+    <None Remove="Assets\light_point.hlsl" />
+    <None Remove="Assets\light_point.json" />
+    <None Remove="Assets\skybox.hlsl" />
+    <None Remove="Assets\skybox.json" />
+    <None Remove="Assets\sprite.hlsl" />
+    <None Remove="Assets\sprite.json" />
+    <None Remove="Assets\sprite_sdf.hlsl" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Assets\gbuffer.mfx" />
-    <EmbeddedResource Include="Assets\gbuffer_common.mfx" />
-    <EmbeddedResource Include="Assets\gbuffer_compose.mfx" />
-    <EmbeddedResource Include="Assets\light_common.mfx" />
-    <EmbeddedResource Include="Assets\light_point.mfx" />
-    <EmbeddedResource Include="Assets\skybox.mfx" />
-    <EmbeddedResource Include="Assets\sprite.mfx" />
-    <EmbeddedResource Include="Assets\sprite_common.mfx" />
-    <EmbeddedResource Include="Assets\sprite_sdf.mfx" />
+    <EmbeddedResource Include="Assets\gbuffer.hlsl" />
+    <EmbeddedResource Include="Assets\gbuffer.json" />
+    <EmbeddedResource Include="Assets\gbuffer_common.hlsl" />
+    <EmbeddedResource Include="Assets\gbuffer_compose.hlsl" />
+    <EmbeddedResource Include="Assets\light_common.hlsl" />
+    <EmbeddedResource Include="Assets\light_point.hlsl" />
+    <EmbeddedResource Include="Assets\light_point.json" />
+    <EmbeddedResource Include="Assets\skybox.json" />
+    <EmbeddedResource Include="Assets\skybox.hlsl" />
+    <EmbeddedResource Include="Assets\sprite.json" />
+    <EmbeddedResource Include="Assets\sprite.hlsl" />
+    <EmbeddedResource Include="Assets\sprite_sdf.hlsl" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,6 @@
-﻿namespace Molten.Graphics;
+﻿using Newtonsoft.Json;
+
+namespace Molten.Graphics;
 
 public partial struct ShaderPassParameters
 {
@@ -9,64 +11,58 @@ public partial struct ShaderPassParameters
         /// <summary>
         /// Gets or sets the comparison function for the current depth-stencil facing.
         /// </summary>
-        [ShaderNode(ShaderNodeParseType.Enum)]
         public ComparisonFunction Comparison;
 
         /// <summary>
         /// Gets or sets the stencil pass operation for the current depth-stencil facing.
         /// </summary>
-        [ShaderNode(ShaderNodeParseType.Enum)]
         public DepthStencilOperation StencilPass;
 
         /// <summary>
         /// Gets or sets the stencil fail operation for the current depth-stencil facing.
         /// </summary>
-        [ShaderNode(ShaderNodeParseType.Enum)]
         public DepthStencilOperation StencilFail;
 
         /// <summary>
         /// Gets or sets the depth fail operation for the current depth-stencil facing.
         /// </summary>
-        [ShaderNode(ShaderNodeParseType.Enum)]
         public DepthStencilOperation DepthFail;
 
         /// <summary>Gets or sets the stencil reference value. The default value is 0.</summary>
-        [ShaderNode(ShaderNodeParseType.UInt32)]
         public uint StencilReference { get; set; }
     }
 
     public struct SurfaceBlend
     {
-        [ShaderNode(ShaderNodeParseType.Bool)]
         public bool BlendEnable;
 
-        [ShaderNode(ShaderNodeParseType.Bool)]
         public bool LogicOpEnable;
 
-        [ShaderNode(ShaderNodeParseType.Enum)]
         public BlendType SrcBlend;
 
-        [ShaderNode(ShaderNodeParseType.Enum)]
         public BlendType DestBlend;
 
-        [ShaderNode(ShaderNodeParseType.Enum)]
         public BlendOperation BlendOp;
 
-        [ShaderNode(ShaderNodeParseType.Enum)]
         public BlendType SrcBlendAlpha;
 
-        [ShaderNode(ShaderNodeParseType.Enum)]
         public BlendType DestBlendAlpha;
 
-        [ShaderNode(ShaderNodeParseType.Enum)]
         public BlendOperation BlendOpAlpha;
 
-        [ShaderNode(ShaderNodeParseType.Enum)]
         public LogicOperation LogicOp;
 
-        [ShaderNode(ShaderNodeParseType.Enum)]
         public ColorWriteFlags RenderTargetWriteMask;
     }
+
+    [JsonProperty("blend")]
+    public BlendPreset Blend { get; set; }
+
+    [JsonProperty("rasterizer")]
+    public RasterizerPreset Rasterizer { get; set; }
+
+    [JsonProperty("depth")]
+    public DepthStencilPreset Depth { get; set; }
 
     /// <summary>
     /// The number of X compute groups to use when dispatching a compute <see cref="HlslPass"/>. Ignored for render <see cref="HlslPass"/>es.
@@ -130,22 +126,18 @@ public partial struct ShaderPassParameters
     }
 
     #region Blend parameters
-    [ShaderNode(ShaderNodeParseType.Bool)]
     public bool AlphaToCoverageEnable;
 
-    [ShaderNode(ShaderNodeParseType.Bool)]
     public bool IndependentBlendEnable;
 
     /// <summary>
     /// Gets or sets the blend sample mask.
     /// </summary>
-    [ShaderNode(ShaderNodeParseType.UInt32)]
     public uint BlendSampleMask;
 
     /// <summary>
     /// Gets or sets the blend factor.
     /// </summary>
-    [ShaderNode(ShaderNodeParseType.Color)]
     public Color4 BlendFactor;
 
     /// <summary>
@@ -207,37 +199,31 @@ public partial struct ShaderPassParameters
     /// <summary>
     /// Gets or sets whether or not depth-mapping is enabled.
     /// </summary>
-    [ShaderNode(ShaderNodeParseType.Bool)]
     public bool IsDepthEnabled;
 
     /// <summary>
     /// Gets or sets whether or not stencil-mapping is enabled.
     /// </summary>
-    [ShaderNode(ShaderNodeParseType.Bool)]
     public bool IsStencilEnabled;
 
     /// <summary>
     /// Gets or sets the depth write flags.
     /// </summary>
-    [ShaderNode(ShaderNodeParseType.Bool)]
     public bool DepthWriteEnabled;
 
     /// <summary>
     /// Gets or sets the depth comparison function.
     /// </summary>
-    [ShaderNode(ShaderNodeParseType.Enum)]
     public ComparisonFunction DepthComparison;
 
     /// <summary>
     /// Gets or sets the stencil read mask.
     /// </summary>
-    [ShaderNode(ShaderNodeParseType.Bool)]
     public byte StencilReadMask;
 
     /// <summary>
     /// Gets or sets the stencil write mask.
     /// </summary>
-    [ShaderNode(ShaderNodeParseType.Byte)]
     public byte StencilWriteMask;
 
     /// <summary>
@@ -245,89 +231,68 @@ public partial struct ShaderPassParameters
     /// <para>This property should throw a <see cref="NotSupportedException"/>, 
     /// if <see cref="GraphicsCapabilities.DepthBoundsTesting"/> is false in <see cref="GraphicsDevice.Adapter"/>.</para>
     /// </summary>
-    [ShaderNode(ShaderNodeParseType.Bool)]
     public bool DepthBoundsTestEnabled;
 
     /// <summary>
     /// Gets or sets the maximum bounds during depth bounds testing.
     /// <para>This value may be ignored if <see cref="DepthBoundsTestEnabled"/> is false, or bounds testing is unsupported.</para>
     /// </summary>
-    [ShaderNode(ShaderNodeParseType.Float)]
     public float MaxDepthBounds;
 
     /// <summary>
     /// Gets or sets the minimum bounds during depth bounds testing.
     /// <para>This value may be ignored if <see cref="DepthBoundsTestEnabled"/> is false, or bounds testing is unsupported.</para>
     /// </summary>
-    [ShaderNode(ShaderNodeParseType.Float)]
     public float MinDepthBounds;
 
     /// <summary>Gets the description for the front-face depth operation description.</summary>
-    [ShaderNode(ShaderNodeParseType.Object)]
     public Face DepthFrontFace;
 
     /// <summary>Gets the description for the back-face depth operation description.</summary>
-    [ShaderNode(ShaderNodeParseType.Object)]
     public Face DepthBackFace;
     #endregion
 
     #region Rasterizer Parameters
-    [ShaderNode(ShaderNodeParseType.Enum)]
     public RasterizerCullingMode Cull;
 
-    [ShaderNode(ShaderNodeParseType.Int32)]
     public int DepthBias;
 
-    [ShaderNode(ShaderNodeParseType.Float)]
     public float DepthBiasClamp;
 
-    [ShaderNode(ShaderNodeParseType.Bool)]
     public bool DepthBiasEnabled;
 
-    [ShaderNode(ShaderNodeParseType.Enum)]
     public RasterizerFillingMode Fill;
 
-    [ShaderNode(ShaderNodeParseType.Float)]
     public float LineWidth; 
 
     /// <summary>
     /// Gets or sets whether or not anti-aliased line rasterization is enabled.
     /// </summary>
-    [ShaderNode(ShaderNodeParseType.Bool)]
     public bool IsAALineEnabled;
 
-    [ShaderNode(ShaderNodeParseType.Bool)]
     public bool IsDepthClipEnabled;
 
-    [ShaderNode(ShaderNodeParseType.Bool)]
     public bool IsFrontCounterClockwise;
 
-    [ShaderNode(ShaderNodeParseType.Bool)]
     public bool IsMultisampleEnabled;
 
     /// <summary>
     /// If true, primitives are discarded immediately before the rasterization stage.
     /// </summary>
-    [ShaderNode(ShaderNodeParseType.Bool)]
     public bool RasterizerDiscardEnabled;
 
     /// <summary>
     /// Gets or sets whether scissor-test rasterization is enabled. 
     /// <para>This involves skipping the rasterization of pixels outside defined scissor bounds.</para>
     /// </summary>
-    [ShaderNode(ShaderNodeParseType.Bool)]
     public bool IsScissorEnabled;
 
-    [ShaderNode(ShaderNodeParseType.Float)]
     public float SlopeScaledDepthBias;
 
-    [ShaderNode(ShaderNodeParseType.Bool)]
     public ConservativeRasterizerMode ConservativeRaster;
 
-    [ShaderNode(ShaderNodeParseType.UInt32)]
     public uint ForcedSampleCount;
 
-    [ShaderNode(ShaderNodeParseType.Enum)]
     public PrimitiveTopology Topology;
     #endregion
 }

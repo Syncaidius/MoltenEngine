@@ -15,7 +15,7 @@ internal class LightingStep : RenderStep
         _lightBuffer = renderer.Device.CreateStructuredBuffer<LightData>(GraphicsResourceFlags.CpuWrite, maxLights);
 
         // Load shaders
-        ShaderCompileResult result = renderer.Device.LoadEmbeddedShader("Molten.Assets", "light_point.mfx");
+        ShaderCompileResult result = renderer.Device.LoadEmbeddedShader("Molten.Assets", "light_point.json");
         _matPoint = result["light-point"];
         _matDebugPoint = result["light-point-debug"];
     }

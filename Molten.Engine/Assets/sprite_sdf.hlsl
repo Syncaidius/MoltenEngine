@@ -1,20 +1,4 @@
-<shader>
-    <name value="sprite-msdf" />
-    <author value="James Yarwood"/>
-	<description>The default material for signed-distance field textures/sprites in a SpriteBatch</description>
-	<pass>
-        <name value="main"/>
-        <iterations value="1"/>
-        <vertex value="VS"/>
-        <geometry value="GS"/>
-        <fragment value="PS_MSDF" />
-        <state blend="PreMultipliedAlpha" depth="ZDisabled" rasterizer="ScissorTest">
-            <topology>point</topology>
-        </state>
-	</pass>
-</shader>
-
-#include "sprite_common.mfx";
+#include "sprite.hlsl"
 
 float pxRange = 2;
 

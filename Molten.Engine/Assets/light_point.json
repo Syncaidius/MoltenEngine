@@ -1,0 +1,94 @@
+[
+  {
+    "name": "light-point",
+    "description": "Default shader for deferred point lighting.",
+    "file": "light_point.hlsl",
+    "passes": [
+      {
+        "name": "main",
+        "iterations": 1,
+        "entry": {
+          "vertex": "VS",
+          "hull": "HS",
+          "domain": "DS",
+          "fragment": "PS"
+        },
+        "parameters": {
+          "blend": "additive",
+          "fill": "solid",
+          "cull": "front",
+          "IsFrontCounterClockwise": false,
+          "IsDepthClipEnabled": false,
+          "IsAALineEnabled": false,
+          "IsMultisampleEnabled": false,
+          "IsScissorEnabled": false,
+          "StencilReference": 0,
+          "DepthComparison": "GreaterEqual",
+          "depthwriteenabled": "Zero",
+          "writepermission": "ReadOnly",
+          "IsDepthEnabled": true,
+          "isstencilenabled": true,
+          "DepthFrontFace": {
+            "comparison": "Equal",
+            "depthfail": "Keep",
+            "stencilfail": "Keep",
+            "stencilpass": "Keep"
+          },
+          "DepthBackFace": {
+            "comparison": "Equal",
+            "depthfail": "Keep",
+            "stencilfail": "Keep",
+            "stencilpass": "Keep"
+          },
+          "Topology": "PatchListWith1ControlPoint"
+        }
+      }
+    ],
+    "samplers": [
+      {
+        "slot": 1,
+        "comparison": "Always",
+        "filter": "MinMagMipPoint",
+        "maxanisotropy": 1
+      }
+    ]
+  },
+
+{
+    "name": "light-point-debug",
+    "description": "Debug shader for deferred point lighting.",
+    "file": "light_point.hlsl",
+    "passes": [
+      {
+        "name": "main",
+        "iterations": 1,
+        "entry": {
+          "vertex": "VS",
+          "hull": "HS",
+          "domain": "DS",
+          "fragment": "PS_Debug"
+        },
+        "parameters": {
+          "blend": "additive",
+          "depth": "defaultNoStencil",
+          "fill": "wireframe",
+          "cull": "back",
+          "IsFrontCounterClockwise": false,
+          "IsDepthClipEnabled": true,
+          "IsAALineEnabled": false,
+          "IsMultisampleEnabled": false,
+          "IsScissorEnabled": false,
+          "Topology": "PatchListWith1ControlPoint"
+        }
+      }
+    ],
+    "samplers": [
+      {
+        "slot": 1,
+        "comparison": "Always",
+        "filter": "MinMagMipPoint",
+        "maxanisotropy": 1
+      }
+    ]
+  }
+]
