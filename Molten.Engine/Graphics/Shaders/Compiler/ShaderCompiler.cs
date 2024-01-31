@@ -243,7 +243,7 @@ public abstract class ShaderCompiler : EngineObject
                 // Attempt to load the file that was given in the shader definition.
                 if (isEmbedded)
                 {
-                    using (Stream stream = EmbeddedResource.TryGetStream($"{nameSpace}.{filename}"))
+                    using (Stream stream = EmbeddedResource.TryGetStream($"{nameSpace}.{def.File}"))
                     {
                         if (stream == null)
                         {
@@ -264,7 +264,7 @@ public abstract class ShaderCompiler : EngineObject
                     }
                 }
 
-                context.Source = ParseSource(context, filename, ref hlsl, isEmbedded, assembly, nameSpace);
+                context.Source = ParseSource(context, def.File, ref hlsl, isEmbedded, assembly, nameSpace);
 
                 HlslShader shader = BuildShader(context, Renderer, def);
                 if (shader != null)

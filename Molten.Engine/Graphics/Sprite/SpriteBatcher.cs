@@ -113,10 +113,8 @@ public partial class SpriteBatcher : IDisposable
         _matCircleNoTexture = result["circle-no-texture"];
         _matLine = result["line"];
         _matGrid = result["grid"];
+        _matMsdf = result["sprite-msdf"];
         //_matDefaultMS = result[ShaderClassType.Material, "sprite-texture-ms"] as Material;
-
-        ShaderCompileResult resultSdf = device.LoadEmbeddedShader("Molten.Assets", "sprite_sdf.json");
-        _matMsdf = resultSdf["sprite-msdf"];
 
         _checkers = new CheckerCallback[7];
         _checkers[(int)RangeType.None] = NoCheckRange;
