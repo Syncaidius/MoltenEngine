@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using System.Collections.Concurrent;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Xml;
 
 namespace Molten.Graphics;
 
@@ -68,6 +67,9 @@ public abstract class ShaderCompiler : EngineObject
         // Proceed to compiling each shader pass.
         foreach (ShaderPassDefinition passDef in def.Passes)
         {
+            if (!passDef.Entry.Validate(context))
+                return null;
+
             BuildPass(context, shader, passDef);
             if (context.HasErrors)
                 return null;

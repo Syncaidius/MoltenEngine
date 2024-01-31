@@ -8,9 +8,11 @@
       {
         "name": "main",
         "iterations": 1,
-        "vertex": "VS",
-        "geometry": "GS",
-        "fragment": "PS",
+        "entry": {
+          "vertex": "VS",
+          "geometry": "GS",
+          "fragment": "PS"
+        },
         "parameters": {
           "blend": "PreMultipliedAlpha",
           "depth": "ZDisabled",
@@ -30,9 +32,11 @@
       {
         "name": "main",
         "iterations": 1,
-        "vertex": "VS",
-        "geometry": "GS",
-        "fragment": "PS_NoTexture",
+        "entry": {
+          "vertex": "VS",
+          "geometry": "GS",
+          "fragment": "PS_NoTexture"
+        },
         "parameters": {
           "blend": "PreMultipliedAlpha",
           "depth": "ZDisabled",
@@ -52,9 +56,11 @@
       {
         "name": "main",
         "iterations": 1,
-        "vertex": "VS",
-        "geometry": "GS",
-        "fragment": "PS_Circle",
+        "entry": {
+          "vertex": "VS",
+          "geometry": "GS",
+          "fragment": "PS_Circle"
+        },
         "parameters": {
           "blend": "PreMultipliedAlpha",
           "depth": "ZDisabled",
@@ -74,9 +80,11 @@
       {
         "name": "main",
         "iterations": 1,
-        "vertex": "VS",
-        "geometry": "GS",
-        "fragment": "PS_Circle_NoTex",
+        "entry": {
+          "vertex": "VS",
+          "geometry": "GS",
+          "fragment": "PS_Circle_NoTex"
+        },
         "parameters": {
           "blend": "PreMultipliedAlpha",
           "depth": "ZDisabled",
@@ -96,9 +104,11 @@
       {
         "name": "main",
         "iterations": 1,
-        "vertex": "VS",
-        "geometry": "GS",
-        "fragment": "PS_Line",
+        "entry": {
+          "vertex": "VS",
+          "geometry": "GS",
+          "fragment": "PS_Line"
+        },
         "parameters": {
           "blend": "PreMultipliedAlpha",
           "depth": "ZDisabled",
@@ -118,9 +128,11 @@
       {
         "name": "main",
         "iterations": 1,
-        "vertex": "VS",
-        "geometry": "GS",
-        "fragment": "PS_Grid",
+        "entry": {
+          "vertex": "VS",
+          "geometry": "GS",
+          "fragment": "PS_Grid"
+        },
         "parameters": {
           "blend": "PreMultipliedAlpha",
           "depth": "ZDisabled",
@@ -140,9 +152,11 @@
       {
         "name": "main",
         "iterations": 1,
-        "vertex": "VS",
-        "geometry": "GS",
-        "fragment": "PS_MSDF",
+        "entry": {
+          "vertex": "VS",
+          "geometry": "GS",
+          "fragment": "PS_MSDF"
+        },
         "parameters": {
           "blend": "PreMultipliedAlpha",
           "depth": "ZDisabled",

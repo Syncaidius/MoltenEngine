@@ -14,16 +14,3 @@ public class ShaderDefinition
 
     public ShaderPassDefinition[] Passes { get; set; } = new ShaderPassDefinition[0];
 }
-
-public class ShaderPassDefinition
-{
-    public string Name { get; set; }
-
-    public int Iterations { get; set; } = 1;
-
-    public ShaderEntryPointDefinition Entry { get; set; } = new ShaderEntryPointDefinition();
-
-    public ShaderPassParameters Parameters = new ShaderPassParameters(GraphicsStatePreset.Default, PrimitiveTopology.Triangle);
-
-    public ShaderSamplerParameters[] Samplers = new ShaderSamplerParameters[0];
-}

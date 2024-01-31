@@ -8,8 +8,10 @@
       {
         "name": "main",
         "iterations": 1,
-        "vertex": "VS",
-        "fragment": "PS",
+        "entry": {
+          "vertex": "VS",
+          "fragment": "PS"
+        },
         "parameters": {
           "rasterizer": "NoCulling",
           "IsDepthEnabled": true,
