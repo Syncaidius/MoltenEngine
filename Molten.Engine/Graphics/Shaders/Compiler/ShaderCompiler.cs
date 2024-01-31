@@ -40,20 +40,27 @@ public abstract class ShaderCompiler : EngineObject
 
     private bool ValidateDefinition(ShaderDefinition def, ShaderCompilerContext context)
     {
+        if(string.IsNullOrWhiteSpace(def.File))
+        {
+            context.AddError($"Shader '{def.Name}' is invalid: No entry file defined");
+            return false;
+        }
+
         if (def.Passes.Length == 0)
         {
             context.AddError($"Shader '{def.Name}' is invalid: No passes defined");
             return false;
         }
-        else
+
+        ShaderPassDefinition firstPass = def.Passes[0];
+        if (string.IsNullOrWhiteSpace(firstPass.Entry.Vertex))
         {
-            if (def.Passes[0].Entry.Points.TryGetValue(ShaderType.Vertex, out string epVertex))
+            if (string.IsNullOrWhiteSpace(firstPass.Entry.Pixel) 
+                && string.IsNullOrWhiteSpace(firstPass.Entry.Geometry) 
+                && string.IsNullOrWhiteSpace(firstPass.Entry.Compute))
             {
-                if (string.IsNullOrWhiteSpace(epVertex))
-                {
-                    context.AddError($"Shader '{def.Name} is invalid: First pass must define a vertex shader (VS) entry point");
-                    return false;
-                }
+                context.AddError("Shader '{def.Name}' is invalid: A vertex entry-point is defined, so a geometry, pixel or compute entry-point must also be defined for output.");
+                return false;
             }
         }
 
@@ -67,9 +74,6 @@ public abstract class ShaderCompiler : EngineObject
         // Proceed to compiling each shader pass.
         foreach (ShaderPassDefinition passDef in def.Passes)
         {
-            if (!passDef.Entry.Validate(context))
-                return null;
-
             BuildPass(context, shader, passDef);
             if (context.HasErrors)
                 return null;

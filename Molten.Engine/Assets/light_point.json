@@ -54,7 +54,7 @@
     ]
   },
 
-{
+  {
     "name": "light-point-debug",
     "description": "Debug shader for deferred point lighting.",
     "file": "light_point.hlsl",

@@ -10,25 +10,6 @@ public class ShaderEntryPointDefinition
     string _ds;
     string _cs;
 
-    public bool Validate(ShaderCompilerContext context)
-    {
-        if (string.IsNullOrWhiteSpace(_vs))
-        {
-            if (string.IsNullOrWhiteSpace(_cs))
-            {
-                context.AddError("Pass must have a vertex or compute shader entry-point.");
-                return false;
-            }
-            else if (string.IsNullOrWhiteSpace(_ps) && string.IsNullOrWhiteSpace(_gs))
-            {
-                context.AddError("If a vertex entry-point is defined, a geometry or pixel entry-point must also be defined.");
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     /// <summary>
     /// Gets or sets the vertex shader entry point.
     /// </summary>

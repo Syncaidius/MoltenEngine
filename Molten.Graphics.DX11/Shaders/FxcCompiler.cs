@@ -473,12 +473,12 @@ HlslShader shader, string bufferName, string[] varNames)
                 }
                 else
                 {
-                    context.AddMessage($"Constant buffers with the same name ('{localName}') do not match. Differing layouts.");
+                    context.AddError($"Constant buffers with the same name ('{localName}') do not match. Differing layouts.");
                 }
             }
             else
             {
-                context.AddMessage($"Constant buffer creation failed. A resource with the name '{localName}' already exists!");
+                context.AddError($"Constant buffer creation failed. A resource with the name '{localName}' already exists!");
             }
         }
         else

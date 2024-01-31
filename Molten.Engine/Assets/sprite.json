@@ -50,7 +50,7 @@
   {
     "name": "circle",
     "author": "James Yarwood",
-    "description": "The default material for rendering an un-textured circle from a single point",
+    "description": "The default material for rendering a textured circle from a single point",
     "file": "sprite.hlsl",
     "passes": [
       {
@@ -98,7 +98,7 @@
   {
     "name": "line",
     "author": "James Yarwood",
-    "description": "The default material for rendering an un-textured circle from a single point",
+    "description": "The default material for rendering an un-textured line from a single point",
     "file": "sprite.hlsl",
     "passes": [
       {
@@ -122,7 +122,7 @@
   {
     "name": "grid",
     "author": "James Yarwood",
-    "description": "The default material for rendering an un-textured circle from a single point",
+    "description": "The default material for rendering a line grid from a single point",
     "file": "sprite.hlsl",
     "passes": [
       {
