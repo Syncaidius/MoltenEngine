@@ -326,43 +326,6 @@ public unsafe class FxcCompiler : ShaderCompiler
         return true;
     }
 
-    protected bool HasConstantBuffer(ShaderCompilerContext context,
-HlslShader shader, string bufferName, string[] varNames)
-    {
-        foreach (ConstantBufferDX11 buffer in shader.ConstBuffers)
-        {
-            if (buffer == null)
-                continue;
-
-            if (buffer.BufferName == bufferName)
-            {
-                if (buffer.Variables.Length != varNames.Length)
-                {
-                    context.AddMessage($"Shader '{bufferName}' constant buffer does not have the correct number of variables ({varNames.Length})",
-                        ShaderCompilerMessage.Kind.Error);
-                    return false;
-                }
-
-                for (int i = 0; i < buffer.Variables.Length; i++)
-                {
-                    GraphicsConstantVariable variable = buffer.Variables[i];
-                    string expectedName = varNames[i];
-
-                    if (variable.Name != expectedName)
-                    {
-                        context.AddMessage($"Shader '{bufferName}' constant variable #{i + 1} is incorrect: Named '{variable.Name}' instead of '{expectedName}'",
-                            ShaderCompilerMessage.Kind.Error);
-                        return false;
-                    }
-                }
-
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     private void OnBuildRWStructuredVariable
         (ShaderCompilerContext context,
         HlslShader shader, ShaderResourceInfo info)
