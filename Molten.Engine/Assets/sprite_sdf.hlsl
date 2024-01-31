@@ -1,6 +1,9 @@
 #include "sprite.hlsl"
 
-float pxRange = 2;
+cbuffer cbSdfParameters : register(b1)
+{
+    float pxRange = 2;
+}
 
 float median(float r, float g, float b) {
 	return max(min(r, g), min(max(r, g), b));

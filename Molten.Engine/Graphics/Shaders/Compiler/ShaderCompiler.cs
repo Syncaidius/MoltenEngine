@@ -251,7 +251,7 @@ public abstract class ShaderCompiler : EngineObject
                     {
                         if (stream == null)
                         {
-                            context.AddError($"Embedded shader '{nameSpace}.{filename}' was not found in assembly '{assembly.FullName}'");
+                            context.AddError($"Embedded shader '{nameSpace}.{def.File}' was not found in assembly '{assembly.FullName}'");
                             continue;
                         }
 
@@ -261,7 +261,15 @@ public abstract class ShaderCompiler : EngineObject
                 }
                 else
                 {
-                    using (FileStream stream = new FileStream(filename, FileMode.Open, FileAccess.Read))
+                    // If the specified def.File is is not an absolute path, use the directory of the definition file as a root.
+                    string entryPath = def.File;
+                    if (!Path.IsPathFullyQualified(entryPath))
+                    {
+                        FileInfo mainPath = new FileInfo(filename);
+                        entryPath = $"{mainPath.DirectoryName}/{def.File}";
+                    }
+
+                    using (FileStream stream = new FileStream(entryPath, FileMode.Open, FileAccess.Read))
                     {
                         using (StreamReader reader = new StreamReader(stream))
                             hlsl = reader.ReadToEnd();

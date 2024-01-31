@@ -27,7 +27,7 @@ public class StressTest : MoltenExample
     protected override void OnLoadContent(ContentLoadBatch loader)
     {
         base.OnLoadContent(loader);
-        _hShader = loader.Load<HlslShader>("assets/BasicColor.mfx");
+        _hShader = loader.Load<HlslShader>("assets/BasicColor.json");
 
 
         loader.OnCompleted += Loader_OnCompleted;
