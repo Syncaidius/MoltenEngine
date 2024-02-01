@@ -2,7 +2,8 @@
 
 namespace Molten.Font;
 
-/// <summary>A sub-table for the <see cref="Kern"/> font table.</summary>
+/// <summary>A sub-table for the <see cref="Kern"/> font table.
+/// <para>See: https://learn.microsoft.com/en-us/typography/opentype/spec/kern</para></summary>
 public class KerningTable : FontSubTable
 {
     public ushort Version { get; private set; }
@@ -26,7 +27,7 @@ public class KerningTable : FontSubTable
 
     /// <summary>
     /// Gets the value of nPairs minus the largest power of two less than or equal to nPairs, and then multiplied by the size in bytes of an entry in the table.<para/>
-    /// Only available when <see cref="KerningTableFlags.Format0"/> is present.
+    /// Only available when Kern is format 0.
     /// </summary>
     public ushort RangeShift { get; private set; }
 
@@ -43,7 +44,7 @@ public class KerningTable : FontSubTable
 
         switch (Format)
         {
-            case 0:
+            case 0: // Format 0 - Ordered List of Kerning Pairs
                 ushort numPairs = reader.ReadUInt16();
                 SearchRange = reader.ReadUInt16();
                 EntrySelector = reader.ReadUInt16();
@@ -61,7 +62,11 @@ public class KerningTable : FontSubTable
                 }
                 break;
 
-            case 2:
+            case 1: // Format 1 - State Table for Contextual Kerning
+                // TODO Add support for format 1 kerning tables. See: https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6kern.html
+                break;
+
+            case 2: // Format 2 - Simple n x m Array of Kerning Values
                 ushort rowWidth = reader.ReadUInt16();
                 ushort leftClassTableOffset = reader.ReadUInt16();
                 ushort rightClasstableOffset = reader.ReadUInt16();
@@ -89,6 +94,10 @@ public class KerningTable : FontSubTable
 
                 // TODO translate into KerningPair instances -- Need a test font with format2 kerning tables.
                 break;
+
+            case 3: // Format 3 - Simple n x m Array of Kerning Indices
+                // TODO Add support for format 3 kerning tables. See: https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6kern.html
+                break;
         }
     }
 
@@ -101,50 +110,4 @@ public class KerningTable : FontSubTable
 
         return classTable;
     }
-}
-
-public class KerningPair
-{
-    /// <summary>
-    /// Gets the glyph index (ID) for the left-hand glyph in the kerning pair.
-    /// </summary>
-    public ushort Left { get; internal set; }
-
-    /// <summary>
-    /// Gets the glyph index (ID) for the right-hand glyph in the kerning pair.
-    /// </summary>
-    public ushort Right { get; internal set; }
-
-    /// <summary>
-    /// Gets the kerning value for the above pair, in FUnits. <para/>
-    /// If this value is greater than zero, the characters will be moved apart. If this value is less than zero, the character will be moved closer together.
-    /// </summary>
-    public short Value { get; internal set; }
-}
-
-public enum KerningTableFlags : byte
-{
-    None = 0,
-
-    Horizonal = 1,
-
-    Minimum = 2,
-
-    /// <summary>
-    /// If set to 1, kerning is perpendicular to the flow of the text. <para/>
-    /// If the text is normally written horizontally, kerning will be done in the up and down directions. <para/>
-    /// If kerning values are positive, the text will be kerned upwards; if they are negative, the text will be kerned downwards. If the text is normally written vertically, kerning will be done in the left and right directions. If kerning values are positive, the text will be kerned to the right; if they are negative, the text will be kerned to the left. <para/>
-    /// The value 0x8000 in the kerning data resets the cross-stream kerning back to 0.
-    /// </summary>
-    CrossStream = 4,
-
-    Override = 8,
-
-    Reserved4 = 16,
-
-    Reserved5 = 32,
-
-    Reserved6 = 64,
-
-    Reserved7 = 128,
 }

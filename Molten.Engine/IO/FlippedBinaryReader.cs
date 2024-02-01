@@ -101,13 +101,12 @@ public class FlippedBinaryReader : EnhancedBinaryReader
     public override decimal ReadDecimal()
     {
         // TODO test this
-        _decimalBuffer = new int[4]
-        {
+        _decimalBuffer = [
             BitConverter.ToInt32(ReadReverse(4), 4),
             BitConverter.ToInt32(ReadReverse(4), 4),
             BitConverter.ToInt32(ReadReverse(4), 4),
             BitConverter.ToInt32(ReadReverse(4), 4),
-        };
+        ];
         Array.Reverse(_decimalBuffer);
         return new decimal(_decimalBuffer);
     }

@@ -255,13 +255,12 @@ public class FontReader : IDisposable
     private TableHeader ReadTableHeader(EnhancedBinaryReader reader)
     {
         uint tagCode = reader.ReadUInt32();
-        char[] tagChars = new char[4]
-        {
+        char[] tagChars = [
             (char)((tagCode & 0xff000000) >> 24),
             (char)((tagCode & 0xff0000) >> 16),
             (char)((tagCode & 0xff00) >> 8),
             (char)(tagCode & 0xff)
-        };
+        ];
 
         return new TableHeader()
         {

@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 
 namespace Molten.Graphics;
+
 public class ShaderPassDefinition
 {
     public string Name { get; set; }
