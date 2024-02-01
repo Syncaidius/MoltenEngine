@@ -9,25 +9,7 @@ public class FlippedBinaryReader : EnhancedBinaryReader
     byte[] _flipBuffer;
     int[] _decimalBuffer;
 
-    public FlippedBinaryReader(Stream input) : base(input)
-    {
-        _flipBuffer = new byte[8];
-        _decimalBuffer = new int[4];
-    }
-
-    public FlippedBinaryReader(Stream input, Encoding encoding) : base(input, encoding)
-    {
-        _flipBuffer = new byte[8];
-        _decimalBuffer = new int[4];
-    }
-
-    public FlippedBinaryReader(Stream input, Encoding encoding, bool leaveOpen) : base(input, encoding, leaveOpen)
-    {
-        _flipBuffer = new byte[8];
-        _decimalBuffer = new int[4];
-    }
-
-    public FlippedBinaryReader(Stream input, bool leaveOpen) : base(input, leaveOpen)
+    public FlippedBinaryReader(Stream input, Encoding encoding = null, bool leaveOpen = false) : base(input, encoding, leaveOpen)
     {
         _flipBuffer = new byte[8];
         _decimalBuffer = new int[4];

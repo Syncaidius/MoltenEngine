@@ -8,16 +8,8 @@ public class EnhancedBinaryReader : BinaryReader
 {
     protected readonly byte[] _arrayBuffer;
 
-    public EnhancedBinaryReader(Stream input) : base(input)
-    {
-        _arrayBuffer = new byte[1024];
-    }
-
-    public EnhancedBinaryReader(Stream input, Encoding encoding) : this(input, new UTF8Encoding(), false) { }
-
-    public EnhancedBinaryReader(Stream input, bool leaveOpen) : this(input, new UTF8Encoding(), leaveOpen) { }
-
-    public EnhancedBinaryReader(Stream input, Encoding encoding, bool leaveOpen) : base(input, encoding, leaveOpen)
+    public EnhancedBinaryReader(Stream input, Encoding encoding = null, bool leaveOpen = false) :
+        base(input, encoding ?? Encoding.UTF8, leaveOpen)
     {
         _arrayBuffer = new byte[1024];
     }

@@ -234,9 +234,9 @@ public class FontReader : IDisposable
     private EnhancedBinaryReader GetReader(Stream stream, bool leaveOpen)
     {
         if (BitConverter.IsLittleEndian)
-            return new FlippedBinaryReader(stream, leaveOpen);
+            return new FlippedBinaryReader(stream, null, leaveOpen);
         else
-            return new EnhancedBinaryReader(stream, leaveOpen);
+            return new EnhancedBinaryReader(stream, null, leaveOpen);
     }
 
     private void FillTableStream(TableHeader header)
