@@ -32,7 +32,7 @@ public class StressTestInstanced : MoltenExample
     protected override void OnLoadContent(ContentLoadBatch loader)
     {
         base.OnLoadContent(loader);
-        _hShader = loader.Load<HlslShader>("assets/BasicColorInstanced.mfx");
+        _hShader = loader.Load<HlslShader>("assets/BasicColorInstanced.json");
 
         loader.OnCompleted += Loader_OnCompleted;
     }

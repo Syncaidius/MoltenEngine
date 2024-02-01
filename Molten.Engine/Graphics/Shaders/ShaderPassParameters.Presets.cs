@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics;
 
-public partial struct ShaderPassParameters
+public partial class ShaderPassParameters
 {
     public void ApplyPreset(GraphicsStatePreset preset)
     {

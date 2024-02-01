@@ -1,0 +1,21 @@
+﻿[
+	{
+		"name": "position-texture",
+		"author": "James Yarwood",
+		"description": "A simple shader which renders 3D meshes with position and 2D UV data.",
+		"file": "BasicTexture.hlsl",
+		"passes": [
+			{
+				"name": "main",
+				"iterations": 1,
+				"entry": {
+					"vertex": "VS",
+					"fragment": "PS"
+				},
+				"parameters": {
+					"blend": "PreMultipliedAlpha"
+				}
+			}
+		]
+	}
+]

@@ -1,0 +1,18 @@
+﻿[
+  {
+    "name": "position-texture-array-1d",
+    "author": "James Yarwood",
+    "description": "A simple material which renders meshes with position and 1D texture array coordinate data.",
+    "file": "BasicTextureArray1D.hlsl",
+    "passes": [
+      {
+        "name": "main",
+        "iterations": 1,
+        "entry": {
+          "vertex": "VS",
+          "fragment": "PS"
+        }
+      }
+    ]
+  }
+]

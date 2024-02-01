@@ -12,7 +12,7 @@ public class Texture2DArray : MoltenExample
     {
         base.OnLoadContent(loader);
 
-        _hShader = loader.Load<HlslShader>("assets/BasicTextureArray2D.mfx");
+        _hShader = loader.Load<HlslShader>("assets/BasicTextureArray2D.json");
         _hTexture = loader.Load<ITexture2D>("assets/128.dds", parameters: new TextureParameters()
         {
             PartCount = 3,

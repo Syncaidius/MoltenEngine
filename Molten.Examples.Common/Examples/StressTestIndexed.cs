@@ -15,7 +15,7 @@ public class StressTestIndexed : MoltenExample
         base.OnLoadContent(loader);
 
         _objects = new List<SceneObject>();
-        _hShader = loader.Load<HlslShader>("assets/BasicColor.mfx");
+        _hShader = loader.Load<HlslShader>("assets/BasicColor.json");
         loader.OnCompleted += Loader_OnCompleted;
     }
 

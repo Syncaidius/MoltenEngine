@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics;
 
-public partial struct ShaderPassParameters
+public partial class ShaderPassParameters
 {
     public const int MAX_SURFACES = 8;
 
@@ -118,6 +118,8 @@ public partial struct ShaderPassParameters
     /// The blend state for the output surface at slot 7, if any.
     /// </summary>
     public SurfaceBlend Surface7;
+
+    public ShaderPassParameters() : this(GraphicsStatePreset.Default, PrimitiveTopology.Triangle) { }
 
     public ShaderPassParameters(GraphicsStatePreset preset, PrimitiveTopology topology)
     {

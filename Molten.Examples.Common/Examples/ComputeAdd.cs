@@ -27,8 +27,8 @@ public class ComputeAdd : MoltenExample
     {
         base.OnLoadContent(loader);
 
-        _hShader = loader.Load<HlslShader>("assets/BasicTexture.mfx");
-        _hComputeShader = loader.Load<HlslShader>("assets/ComputeAdd.mfx");
+        _hShader = loader.Load<HlslShader>("assets/BasicTexture.json");
+        _hComputeShader = loader.Load<HlslShader>("assets/ComputeAdd.json");
         _hTexture = loader.Load<ITexture2D>("assets/png_test.png");
         loader.OnCompleted += Loader_OnCompleted;
     }

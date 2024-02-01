@@ -14,7 +14,7 @@ public class SaveTexture : MoltenExample
     {
         base.OnLoadContent(loader);
 
-        _hShader = loader.Load<HlslShader>("assets/BasicTexture.mfx");
+        _hShader = loader.Load<HlslShader>("assets/BasicTexture.json");
         _hTexture = loader.Load<ITexture2D>("assets/dds_dxt5.dds");
         _hTexData = loader.Load<TextureData>("assets/dds_dxt5.dds");
         loader.OnCompleted += Loader_OnCompleted;

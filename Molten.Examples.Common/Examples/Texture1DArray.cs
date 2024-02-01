@@ -12,7 +12,7 @@ public class Texture1DArray : MoltenExample
     {
         base.OnLoadContent(loader);
 
-        _hShader = loader.Load<HlslShader>("assets/BasicTexture1D.mfx");
+        _hShader = loader.Load<HlslShader>("assets/BasicTexture1D.json");
         _hTexture = loader.Load<ITexture1D>("assets/1d_1.png");
         loader.OnCompleted += Loader_OnCompleted;
     }

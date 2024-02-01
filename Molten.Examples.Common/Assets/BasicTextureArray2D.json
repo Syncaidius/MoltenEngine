@@ -1,0 +1,18 @@
+﻿[
+  {
+    "name": "position-texture-array-2d",
+    "author": "James Yarwood",
+    "description": "A simple material which renders meshes with position and 2D texture array coordinate data.",
+    "file": "BasicTextureArray2D.hlsl",
+    "passes": [
+      {
+        "name": "main",
+        "iterations": 1,
+        "entry": {
+          "vertex": "VS",
+          "fragment": "PS"
+        }
+      }
+    ]
+  }
+]

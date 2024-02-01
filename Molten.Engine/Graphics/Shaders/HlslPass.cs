@@ -41,21 +41,6 @@ public abstract class HlslPass : GraphicsObject, IEnumerable<ShaderComposition>,
         _compositions = new Dictionary<ShaderType, ShaderComposition>();
     }
 
-    internal void Initialize(GraphicsStatePreset preset, PrimitiveTopology topology)
-    {
-        Initialize(preset, topology, Vector3UI.Zero);
-    }
-
-    internal void Initialize(GraphicsStatePreset preset, PrimitiveTopology topology, Vector3UI computeGroups)
-    {
-        ShaderPassParameters p = new ShaderPassParameters(preset, topology);
-        p.GroupsX = computeGroups.X;
-        p.GroupsY = computeGroups.Y;
-        p.GroupsZ = computeGroups.Z;
-
-        Initialize(ref p);
-    }
-
     internal void Initialize(ref ShaderPassParameters parameters)
     {
         ComputeGroups = new Vector3UI(parameters.GroupsX, parameters.GroupsY, parameters.GroupsZ);

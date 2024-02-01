@@ -22,7 +22,7 @@ public class SpriteBatching : MoltenExample
     {
         base.OnLoadContent(loader);
 
-        _hShader = loader.Load<HlslShader>("assets/BasicTexture.mfx");
+        _hShader = loader.Load<HlslShader>("assets/BasicTexture.json");
         _hTexMesh = loader.Load<ITexture2D>("assets/logo_512_bc7.dds", parameters: new TextureParameters()
         {
             GenerateMipmaps = true,

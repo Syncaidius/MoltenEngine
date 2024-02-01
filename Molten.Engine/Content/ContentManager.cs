@@ -76,6 +76,7 @@ public class ContentManager : EngineObject
             Converters = new List<JsonConverter>(),
             CheckAdditionalContent = false,
             Formatting = Formatting.Indented,
+            NullValueHandling = NullValueHandling.Include,
         };
 
         AddCustomJsonConverters(_jsonSettings, engine.Settings.JsonConverters);
