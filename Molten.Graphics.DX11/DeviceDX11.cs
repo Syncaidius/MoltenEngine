@@ -16,6 +16,7 @@ public unsafe class DeviceDX11 : DeviceDXGI
     ID3D11Device5* _native;
     DeviceBuilderDX11 _builder;
     GraphicsManagerDXGI _displayManager;
+    FxcCompiler _shaderCompiler;
 
     GraphicsQueueDX11 _queue;
     List<GraphicsQueueDX11> _cmdDeferred;
@@ -83,6 +84,9 @@ public unsafe class DeviceDX11 : DeviceDXGI
             _debugInfo->PushEmptyStorageFilter();
         }
 
+        Assembly includeAssembly = GetType().Assembly;
+        _shaderCompiler = new FxcCompiler(this, "\\Assets\\HLSL\\include\\", includeAssembly);
+
         _queue = new GraphicsQueueDX11(this, deviceContext);
         return true;
     }
@@ -145,10 +149,11 @@ public unsafe class DeviceDX11 : DeviceDXGI
     /// <summary>Disposes of the <see cref="DeviceDX11"/> and any deferred contexts and resources bound to it.</summary>
     protected override void OnDispose(bool immediate)
     {
-        _queue.Dispose();
+        _queue?.Dispose();
+        _shaderCompiler?.Dispose(true);
 
         // TODO dispose of all bound IGraphicsResource
-        LayoutCache.Dispose();
+        LayoutCache?.Dispose();
 
         if (_debug != null)
         {
@@ -311,6 +316,11 @@ public unsafe class DeviceDX11 : DeviceDXGI
             return new BufferDX11(this, type, flags, format, stride, numElements, 1, ptrData, initialBytes);
     }
 
+    public override IConstantBuffer CreateConstantBuffer(ConstantBufferInfo info)
+    {
+        return new ConstantBufferDX11(this, info);
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static implicit operator ID3D11Device5(DeviceDX11 device)
     {
@@ -337,5 +347,9 @@ public unsafe class DeviceDX11 : DeviceDXGI
     /// <inheritdoc/>
     public override GraphicsQueueDX11 Queue => _queue;
 
+    /// <inheritdoc/>
     public override ShaderLayoutCache LayoutCache => _layoutCache;
+
+    /// <inheritdoc/>
+    public override FxcCompiler Compiler => _shaderCompiler;
 }

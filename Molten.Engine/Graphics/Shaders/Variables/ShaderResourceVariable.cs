@@ -22,9 +22,16 @@ public abstract class ShaderResourceVariable : ShaderVariable
                 if (value != null)
                 {
                     if (value is GraphicsResource res && ValidateResource(res))
-                        _resource = res;
+                    {
+                        if (ExpectedFormat != GraphicsFormat.Unknown && res.ResourceFormat != ExpectedFormat)
+                            Parent.Device.Log.Error($"Resource format mismatch. Expected '{ExpectedFormat}' but got '{res.ResourceFormat}'.");
+                        else
+                            _resource = res;
+                    }
                     else
-                        Parent.Device.Log.Warning($"Cannot set '{value.GetType().Name}' object on resource variable '{Name}'");
+                    {
+                        Parent.Device.Log.Error($"Cannot set non-resource '{value.GetType().Name}' object on resource variable '{Name}'");
+                    }
                 }
                 else
                 {
@@ -33,6 +40,11 @@ public abstract class ShaderResourceVariable : ShaderVariable
             }
         }
     }
+
+    /// <summary>
+    /// Gets the expected format of the <see cref="Value"/> resource.
+    /// </summary>
+    public GraphicsFormat ExpectedFormat { get; internal set; }
 }
 
 public class ShaderResourceVariable<T> : ShaderResourceVariable

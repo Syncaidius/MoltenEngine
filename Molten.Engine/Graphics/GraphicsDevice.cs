@@ -365,7 +365,7 @@ public abstract partial class GraphicsDevice : EngineObject
             return new ShaderCompileResult();
         }
 
-        return Renderer.Compiler.Compile(src, filename, ShaderCompileFlags.None, assembly, nameSpace);
+        return Compiler.Compile(src, filename, ShaderCompileFlags.None, assembly, nameSpace);
     }
 
     /// <summary>Compiles a set of shaders from the provided source string.</summary>
@@ -380,7 +380,7 @@ public abstract partial class GraphicsDevice : EngineObject
             DirectoryInfo dir = fInfo.Directory;
         }
 
-        return Renderer.Compiler.Compile(source, filename, ShaderCompileFlags.None, null, null);
+        return Compiler.Compile(source, filename, ShaderCompileFlags.None, null, null);
     }
 
     /// <summary>
@@ -481,4 +481,9 @@ public abstract partial class GraphicsDevice : EngineObject
     /// Gets the task manager of the current <see cref="GraphicsDevice"/>.
     /// </summary>
     public GraphicsTaskManager Tasks { get; }
+
+    /// <summary>
+    /// Gets the shader compiler bound to the current <see cref="GraphicsDevice"/>.
+    /// </summary>
+    public abstract ShaderCompiler Compiler { get; }
 }

@@ -18,7 +18,6 @@ public unsafe class RendererVK : RenderService
     InstanceLoaderVK _instanceLoader;
     Instance* _instance;
     DebugUtilsMessengerEXT* _debugMessengerHandle;
-    SpirvCompiler _shaderCompiler;
 
     public RendererVK()
     {
@@ -105,11 +104,7 @@ public unsafe class RendererVK : RenderService
         return result;
     }
 
-    protected override void OnInitializeRenderer(EngineSettings settings)
-    {
-        Assembly includeAssembly = GetType().Assembly;
-        _shaderCompiler = new SpirvCompiler(VK, this, "\\Assets\\HLSL\\include\\", includeAssembly, SpirvCompileTarget.Vulkan1_1);
-    }
+    protected override void OnInitializeRenderer(EngineSettings settings) { }
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate Bool32 DebugMessengerCallback(DebugUtilsMessageSeverityFlagsEXT messageSeverity,
@@ -193,7 +188,6 @@ public unsafe class RendererVK : RenderService
 
     protected override void OnDisposeBeforeRender()
     {
-        _shaderCompiler.Dispose();
         _displayManager.Dispose();
         _instanceLoader.Dispose();
 
@@ -228,9 +222,6 @@ public unsafe class RendererVK : RenderService
     /// Gets the main <see cref="DeviceVK"/>.
     /// </summary>
     internal DeviceVK NativeDevice { get; private set; }
-
-    /// <inheritdoc/>
-    protected override DxcCompiler Compiler => _shaderCompiler;
 
     internal VersionVK ApiVersion { get; }
 }

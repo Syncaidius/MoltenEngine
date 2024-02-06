@@ -69,6 +69,8 @@ public abstract partial class GraphicsDevice
         return CreateBuffer<byte>(GraphicsBufferType.Staging, flags, GraphicsFormat.Unknown, byteCapacity, null);
     }
 
+    public abstract IConstantBuffer CreateConstantBuffer(ConstantBufferInfo info);
+
     protected abstract GraphicsBuffer CreateBuffer<T>(GraphicsBufferType type, GraphicsResourceFlags flags, GraphicsFormat format,
         uint numElements, T[] initialData) where T : unmanaged;
 }

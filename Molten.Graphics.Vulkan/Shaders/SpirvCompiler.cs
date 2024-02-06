@@ -14,11 +14,11 @@ internal class SpirvCompiler : DxcCompiler
     ReflectionLogAdapter _logger;
     SpirvReflection _reflector;
 
-    public SpirvCompiler(Vk vk, RenderService renderer, string includePath, Assembly includeAssembly, SpirvCompileTarget spirvTarget) : 
-        base(renderer, includePath, includeAssembly)
+    public SpirvCompiler(Vk vk, DeviceVK device, string includePath, Assembly includeAssembly, SpirvCompileTarget spirvTarget) : 
+        base(device, includePath, includeAssembly)
     {
         _vk = vk;
-        _logger = new ReflectionLogAdapter(renderer.Log);
+        _logger = new ReflectionLogAdapter(device.Log);
         _reflector = new SpirvReflection(_logger);
 
         string cTarget = null;
@@ -73,11 +73,6 @@ internal class SpirvCompiler : DxcCompiler
             EngineUtil.Free(ref shader);
 
         return shader;
-    }
-
-    protected override bool BuildStructure(ShaderCompilerContext context, HlslShader shader, ShaderCodeResult result, ShaderComposition composition)
-    {
-        throw new NotImplementedException();
     }
 
     protected override unsafe ShaderReflection OnBuildReflection(ShaderCompilerContext context, IDxcBlob* byteCode, DxcBuffer* reflectionBuffer)
@@ -597,5 +592,10 @@ internal class SpirvCompiler : DxcCompiler
         }
 
         return ShaderSVType.Undefined;
+    }
+
+    protected override void OnBuildRWStructuredVariable(ShaderCompilerContext context, HlslShader shader, ShaderResourceInfo info)
+    {
+        throw new NotImplementedException();
     }
 }

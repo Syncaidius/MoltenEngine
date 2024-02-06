@@ -16,7 +16,6 @@ public unsafe class RendererDX12 : RenderService
     D3D12 _api;
     GraphicsManagerDXGI _displayManager;
     ID3D12Debug6* _debug;
-    HlslDxcCompiler _shaderCompiler;
 
     public RendererDX12() { }
 
@@ -69,16 +68,11 @@ public unsafe class RendererDX12 : RenderService
         return result;
     }
 
-    protected override void OnInitializeRenderer(EngineSettings settings)
-    {
-        Assembly includeAssembly = GetType().Assembly;
-        _shaderCompiler = new HlslDxcCompiler(this, "\\Assets\\HLSL\\include\\", includeAssembly);
-    }
+    protected override void OnInitializeRenderer(EngineSettings settings) { }
 
     protected override void OnDisposeBeforeRender()
     {
         NativeUtil.ReleasePtr(ref _debug);
-        _shaderCompiler?.Dispose();
         _displayManager?.Dispose();
         _api?.Dispose();
     }
@@ -86,8 +80,6 @@ public unsafe class RendererDX12 : RenderService
     internal DeviceDX12 NativeDevice { get; private set; }
 
     internal DeviceBuilderDX12 Builder { get; private set; }
-
-    protected override DxcCompiler Compiler => _shaderCompiler;
 
     internal D3D12 Api => _api;
 

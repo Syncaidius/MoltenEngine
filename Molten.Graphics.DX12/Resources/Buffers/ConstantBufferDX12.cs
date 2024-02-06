@@ -5,7 +5,6 @@ namespace Molten.Graphics.DX12;
 internal unsafe class ConstantBufferDX12 : BufferDX12, IConstantBuffer, IEquatable<ConstantBufferDX12>
 {
     internal D3DCBufferType Type;
-    internal GraphicsConstantVariable[] Variables;
     internal Dictionary<string, GraphicsConstantVariable> _varLookup;
     byte* _constData;
 
@@ -58,4 +57,6 @@ internal unsafe class ConstantBufferDX12 : BufferDX12, IConstantBuffer, IEquatab
     public bool IsDirty { get; set; }
 
     internal byte* DataPtr => _constData;
+
+    public GraphicsConstantVariable[] Variables { get; }
 }

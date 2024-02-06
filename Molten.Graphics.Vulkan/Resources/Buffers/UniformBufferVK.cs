@@ -2,9 +2,9 @@
 
 public unsafe class UniformBufferVK : BufferVK, IConstantBuffer, IEquatable<UniformBufferVK>
 {
-    internal GraphicsConstantVariable[] Variables;
     internal bool DirtyVariables;
-    internal Dictionary<string, GraphicsConstantVariable> _varLookup;
+
+    Dictionary<string, GraphicsConstantVariable> _varLookup;
     byte* _constData;
 
     internal UniformBufferVK(GraphicsDevice device, ConstantBufferInfo info) : 
@@ -48,4 +48,6 @@ public unsafe class UniformBufferVK : BufferVK, IConstantBuffer, IEquatable<Unif
     public string BufferName { get; }
 
     public bool IsDirty { get; set; }
+
+    public GraphicsConstantVariable[] Variables { get; }
 }

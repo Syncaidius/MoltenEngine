@@ -39,13 +39,13 @@ public unsafe abstract class DxcCompiler : ShaderCompiler
     /// <summary>
     /// Creates a new instance of <see cref="DxcCompiler"/>.
     /// </summary>
-    /// <param name="renderer">The renderer which owns the compiler.</param>
+    /// <param name="device">The device which owns the compiler.</param>
     /// <param name="includePath">The default path for engine/game HLSL include files.</param>
     /// <param name="includeAssembly"></param>
-    public DxcCompiler(RenderService renderer, string includePath, Assembly includeAssembly) : 
-        base(renderer, includePath, includeAssembly)
+    public DxcCompiler(GraphicsDevice device, string includePath, Assembly includeAssembly) : 
+        base(device, includePath, includeAssembly)
     {
-        Model = renderer.Device.Capabilities.MaxShaderModel.Clamp(MIN_SHADER_MODEL, MAX_SHADER_MODEL);
+        Model = Device.Capabilities.MaxShaderModel.Clamp(MIN_SHADER_MODEL, MAX_SHADER_MODEL);
         _sourceBlobs = new Dictionary<ShaderSource, DxcBuffer>();
         _baseArgs = new Dictionary<DxcCompilerArg, string>();
 

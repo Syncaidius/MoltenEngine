@@ -1,8 +1,10 @@
 ﻿using Molten.Collections;
+using Molten.Graphics.Dxc;
 using Molten.Graphics.Dxgi;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
 using Silk.NET.DXGI;
+using System.Reflection;
 using Feature = Silk.NET.Direct3D12.Feature;
 
 namespace Molten.Graphics.DX12;
@@ -15,6 +17,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
     ID3D12InfoQueue1* _debugInfo;
     uint _debugCookieID;
     ShaderLayoutCache<ShaderIOLayoutDX12> _layoutCache;
+    HlslDxcCompiler _shaderCompiler;
 
     internal DeviceDX12(RendererDX12 renderer, GraphicsManagerDXGI manager, IDXGIAdapter4* adapter, DeviceBuilderDX12 deviceBuilder) :
         base(renderer, manager, adapter)
@@ -59,6 +62,9 @@ public unsafe class DeviceDX12 : DeviceDXGI
         };
 
         _cmdDirect = new CommandQueueDX12(Log, this, _builder, ref cmdDesc);
+
+        Assembly includeAssembly = GetType().Assembly;
+        _shaderCompiler = new HlslDxcCompiler(this, "\\Assets\\HLSL\\include\\", includeAssembly);
 
         return true;
     }
@@ -113,7 +119,8 @@ public unsafe class DeviceDX12 : DeviceDXGI
 
     protected override void OnDispose(bool immediate)
     {
-        _cmdDirect.Dispose();
+        _shaderCompiler?.Dispose();
+        _cmdDirect?.Dispose();
 
         if (_debugInfo != null)
         {
@@ -163,6 +170,11 @@ public unsafe class DeviceDX12 : DeviceDXGI
         }
 
         return buffer;
+    }
+
+    public override IConstantBuffer CreateConstantBuffer(ConstantBufferInfo info)
+    {
+        return new ConstantBufferDX12(this, info);
     }
 
     protected override INativeSurface OnCreateFormSurface(string formTitle, string formName, uint width, uint height,
@@ -241,7 +253,12 @@ public unsafe class DeviceDX12 : DeviceDXGI
     /// </summary>
     internal CapabilitiesDX12 CapabilitiesDX12 { get; }
 
+    /// <inheritdoc/>
     public new RendererDX12 Renderer { get; }
 
+    /// <inheritdoc/>
     public override ShaderLayoutCache LayoutCache => _layoutCache;
+
+    /// <inheritdoc/>
+    public override DxcCompiler Compiler => _shaderCompiler;
 }

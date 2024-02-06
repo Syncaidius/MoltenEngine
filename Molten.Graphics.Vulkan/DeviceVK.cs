@@ -1,9 +1,11 @@
 ﻿using Molten.Collections;
+using Molten.Graphics.Dxc;
 using Silk.NET.Core;
 using Silk.NET.Core.Native;
 using Silk.NET.GLFW;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
+using System.Reflection;
 using Queue = Silk.NET.Vulkan.Queue;
 using Semaphore = Silk.NET.Vulkan.Semaphore;
 
@@ -17,6 +19,7 @@ public unsafe class DeviceVK : GraphicsDevice
     DisplayManagerVK _manager;
     List<DisplayOutputVK> _outputs;
     List<DisplayOutputVK> _activeOutputs;
+    SpirvCompiler _shaderCompiler;
 
     PhysicalDeviceMemoryProperties2 _memProperties;
 
@@ -257,6 +260,10 @@ public unsafe class DeviceVK : GraphicsDevice
             return true;
         }
 
+
+        Assembly includeAssembly = GetType().Assembly;
+        _shaderCompiler = new SpirvCompiler(VK, this, "\\Assets\\HLSL\\include\\", includeAssembly, SpirvCompileTarget.Vulkan1_1);
+
         return false;
     }
 
@@ -299,8 +306,10 @@ public unsafe class DeviceVK : GraphicsDevice
 
     protected override void OnDispose(bool immediate)
     {
+        _shaderCompiler?.Dispose();
+
         // Dispose of fences
-        for(int i = 0; i < _fences.Count; i++)
+        for (int i = 0; i < _fences.Count; i++)
             _fences[i].Dispose();
 
         _fences.Clear();
@@ -459,6 +468,11 @@ public unsafe class DeviceVK : GraphicsDevice
         return buffer;
     }
 
+    public override IConstantBuffer CreateConstantBuffer(ConstantBufferInfo info)
+    {
+        throw new NotImplementedException();
+    }
+
     protected override INativeSurface OnCreateControlSurface(string controlTitle, string controlName, uint mipCount = 1)
     {
         throw new NotImplementedException();
@@ -592,4 +606,7 @@ public unsafe class DeviceVK : GraphicsDevice
     internal MemoryManagerVK Memory => _memory;
 
     public override ShaderLayoutCache LayoutCache => throw new NotImplementedException();
+
+    /// <inheritdoc/>
+    public override DxcCompiler Compiler => _shaderCompiler;
 }

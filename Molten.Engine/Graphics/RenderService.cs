@@ -372,11 +372,6 @@ public abstract class RenderService : EngineService
 
     internal SurfaceManager Surfaces { get; }
 
-    /// <summary>
-    /// Gets the <see cref="ShaderCompiler"/> that is bound to the current <see cref="RenderService"/>.
-    /// </summary>
-    protected internal abstract ShaderCompiler Compiler { get; }
-
     internal SpriteBatcher SpriteBatch { get; private set; }
 
     /// <summary>

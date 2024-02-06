@@ -11,7 +11,6 @@ public class RendererDX11 : RenderService
     D3D11 _api;
     GraphicsManagerDXGI _displayManager;
     DeviceBuilderDX11 _deviceBuilder;
-    FxcCompiler _shaderCompiler;
 
     internal static Guid WKPDID_D3DDebugObjectName = new Guid(0x429b8c22, 0x9188, 0x4b0c, 0x87, 0x42, 0xac, 0xb0, 0xbf, 0x85, 0xc2, 0x00);
 
@@ -57,20 +56,13 @@ public class RendererDX11 : RenderService
         return result;
     }
 
-    protected override void OnInitializeRenderer(EngineSettings settings)
-    {
-        Assembly includeAssembly = GetType().Assembly;       
-        _shaderCompiler = new FxcCompiler(this, Log, "\\Assets\\HLSL\\include\\", includeAssembly);
-    }
+    protected override void OnInitializeRenderer(EngineSettings settings) { }
 
     protected override void OnDisposeBeforeRender()
     {
-        _shaderCompiler?.Dispose();
         _displayManager?.Dispose();
         _api?.Dispose();
     }
 
     internal DeviceDX11 NativeDevice { get; private set; }
-
-    protected override ShaderCompiler Compiler => _shaderCompiler;
 }

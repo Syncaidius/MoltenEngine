@@ -5,8 +5,8 @@ namespace Molten.Graphics.DX11;
 internal unsafe class ConstantBufferDX11 : BufferDX11, IConstantBuffer, IEquatable<ConstantBufferDX11>
 {
     internal D3DCBufferType Type;
-    internal GraphicsConstantVariable[] Variables;
-    internal Dictionary<string, GraphicsConstantVariable> _varLookup;
+
+    Dictionary<string, GraphicsConstantVariable> _varLookup;
     byte* _constData;
 
     internal ConstantBufferDX11(DeviceDX11 device, ConstantBufferInfo info)
@@ -27,6 +27,14 @@ internal unsafe class ConstantBufferDX11 : BufferDX11, IConstantBuffer, IEquatab
 
         // Generate hash for comparing constant buffers.
         Desc.ByteWidth = info.Size;
+    }
+
+    public override bool Equals(object obj)
+    {
+        if(obj is ConstantBufferDX11 cBuffer)
+            return Equals(cBuffer);
+        else
+            return false;
     }
 
     public bool Equals(ConstantBufferDX11 other)
@@ -63,4 +71,6 @@ internal unsafe class ConstantBufferDX11 : BufferDX11, IConstantBuffer, IEquatab
     public bool IsDirty { get; set; }
 
     internal byte* DataPtr => _constData;
+
+    public GraphicsConstantVariable[] Variables { get; }
 }
