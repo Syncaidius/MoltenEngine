@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0-android</TargetFramework>
+	<ProduceReferenceAssembly>True</ProduceReferenceAssembly>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
