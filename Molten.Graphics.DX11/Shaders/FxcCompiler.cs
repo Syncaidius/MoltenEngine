@@ -250,17 +250,6 @@ public unsafe class FxcCompiler : ShaderCompiler
         return null;
     }
 
-    protected override void OnBuildRWStructuredVariable(ShaderCompilerContext context, HlslShader shader, ShaderResourceInfo info)
-    {
-        RWVariable rwBuffer = GetVariableResource<RWVariable<BufferDX11>>(context, shader, info);
-        uint bindPoint = info.BindPoint;
-
-        if (bindPoint >= shader.UAVs.Length)
-            EngineUtil.ArrayResize(ref shader.UAVs, bindPoint + 1);
-
-        shader.UAVs[bindPoint] = rwBuffer;
-    }
-
     protected override unsafe void* BuildNativeShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes)
     {
         ID3D10Blob* dx11ByteCode = (ID3D10Blob*)byteCode;

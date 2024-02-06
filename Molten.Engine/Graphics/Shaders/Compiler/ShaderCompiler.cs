@@ -651,7 +651,7 @@ public abstract class ShaderCompiler : EngineObject
     }
 
     protected T GetVariableResource<T>(ShaderCompilerContext context, HlslShader shader, ShaderResourceInfo info)
-    where T : ShaderVariable, new()
+        where T : ShaderVariable, new()
     {
         ShaderVariable existing = null;
         T bVar = null;
@@ -681,7 +681,16 @@ public abstract class ShaderCompiler : EngineObject
         return bVar;
     }
 
-    protected abstract void OnBuildRWStructuredVariable(ShaderCompilerContext context, HlslShader shader, ShaderResourceInfo info);
+    protected void OnBuildRWStructuredVariable(ShaderCompilerContext context, HlslShader shader, ShaderResourceInfo info)
+    {
+        RWVariable rwBuffer = GetVariableResource<RWVariable<GraphicsBuffer>>(context, shader, info);
+        uint bindPoint = info.BindPoint;
+
+        if (bindPoint >= shader.UAVs.Length)
+            EngineUtil.ArrayResize(ref shader.UAVs, bindPoint + 1);
+
+        shader.UAVs[bindPoint] = rwBuffer;
+    }
 
     protected unsafe abstract void* BuildNativeShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes);
 

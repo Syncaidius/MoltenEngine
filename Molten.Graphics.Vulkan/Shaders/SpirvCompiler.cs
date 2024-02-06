@@ -593,9 +593,4 @@ internal class SpirvCompiler : DxcCompiler
 
         return ShaderSVType.Undefined;
     }
-
-    protected override void OnBuildRWStructuredVariable(ShaderCompilerContext context, HlslShader shader, ShaderResourceInfo info)
-    {
-        throw new NotImplementedException();
-    }
 }

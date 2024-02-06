@@ -41,17 +41,6 @@ internal unsafe class HlslDxcCompiler : DxcCompiler
         return true;
     }
 
-    protected override void OnBuildRWStructuredVariable(ShaderCompilerContext context, HlslShader shader, ShaderResourceInfo info)
-    {
-        RWVariable rwBuffer = GetVariableResource<RWVariable<BufferDX12>>(context, shader, info);
-        uint bindPoint = info.BindPoint;
-
-        if (bindPoint >= shader.UAVs.Length)
-            EngineUtil.ArrayResize(ref shader.UAVs, bindPoint + 1);
-
-        shader.UAVs[bindPoint] = rwBuffer;
-    }
-
     protected override ShaderReflection OnBuildReflection(ShaderCompilerContext context, IDxcBlob* byteCode, DxcBuffer* reflectionBuffer)
     {
         Guid guidReflection = ID3D12ShaderReflection.Guid;
