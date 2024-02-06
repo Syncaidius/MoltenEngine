@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0-windows</TargetFramework>
-	<ProduceReferenceAssembly>True</ProduceReferenceAssembly>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
@@ -21,6 +20,7 @@
     <PackageIcon>logo_128.png</PackageIcon>
     <Version>0.8.0</Version>
     <Authors>James Yarwood</Authors>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 	
   <ItemGroup>

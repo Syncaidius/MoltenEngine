@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-	<ProduceReferenceAssembly>True</ProduceReferenceAssembly>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
@@ -22,6 +21,7 @@
     <Version>0.8.0</Version>
     <Authors>James Yarwood</Authors>
     <AssemblyName>Molten.Graphics.Dxc</AssemblyName>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 	
   <ItemGroup>

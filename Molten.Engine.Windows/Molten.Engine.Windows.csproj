@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0-windows</TargetFramework>
-	<ProduceReferenceAssembly>True</ProduceReferenceAssembly>
 	  <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
