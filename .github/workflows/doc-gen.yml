@@ -2,6 +2,7 @@ name: Generate Documentation
 on:
   push:
     branches: [master, NewDocGen]
+  workflow_dispatch:
     
 jobs:
   generate-docs:
