@@ -161,6 +161,16 @@ public unsafe class DeviceDX11 : DeviceDXGI
         base.OnDispose(immediate);
     }
 
+    public override GraphicsFormatSupportFlags GetFormatSupport(GraphicsFormat format)
+    {
+        uint value = 0;
+        HResult hr = _native->CheckFormatSupport((Format)format, &value);
+        if (!Log.CheckResult(hr, () => "Failed to create pipeline state object (PSO)"))
+            return GraphicsFormatSupportFlags.None;
+
+        return (GraphicsFormatSupportFlags)value;
+    }
+
     protected override void OnBeginFrame(ThreadedList<ISwapChainSurface> surfaces)
     {
         
@@ -176,7 +186,7 @@ public unsafe class DeviceDX11 : DeviceDXGI
     }
 
     public override IDepthStencilSurface CreateDepthSurface(uint width, uint height, 
-        DepthFormat format = DepthFormat.R24G8_Typeless, 
+        DepthFormat format = DepthFormat.R24G8, 
         GraphicsResourceFlags flags = GraphicsResourceFlags.GpuWrite, 
         uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, string name = null)
     {

@@ -1,10 +1,10 @@
 ﻿using Silk.NET.Core.Native;
 
-namespace Molten.Graphics.DX12;
+namespace Molten;
 
-internal static class LoggerExtensions
+public static class LoggerExtensions
 {
-    internal static bool CheckResult(this Logger log, HResult r, Func<string> msg = null)
+    public static bool CheckResult(this Logger log, HResult r, Func<string> msg = null)
     {
         if (r.IsFailure)
         {

@@ -92,6 +92,11 @@ public unsafe class DeviceVK : GraphicsDevice
         ActiveOutputs = _activeOutputs.AsReadOnly();
     }
 
+    public override GraphicsFormatSupportFlags GetFormatSupport(GraphicsFormat format)
+    {
+        throw new NotImplementedException();
+    }
+
     internal RenderPassVK GetRenderPass(IRenderSurfaceVK[] surfaces, DepthSurfaceVK depthSurface)
     {
         foreach(RenderPassVK pass in _renderPasses)
@@ -460,7 +465,7 @@ public unsafe class DeviceVK : GraphicsDevice
     }
 
     public override IDepthStencilSurface CreateDepthSurface(uint width, uint height,
-        DepthFormat format = DepthFormat.R24G8_Typeless, 
+        DepthFormat format = DepthFormat.R24G8, 
         GraphicsResourceFlags flags = GraphicsResourceFlags.None | GraphicsResourceFlags.GpuWrite, 
         uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, string name = null)
     {

@@ -25,12 +25,6 @@
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
     <CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="t4_angles - Copy.cs" />
-    <Compile Remove="t4_quaternions - Copy.cs" />
-    <Compile Remove="t4_vector - Copy.cs" />
-  </ItemGroup>
 	
   <ItemGroup>
     <None Include="..\Images\logo_128.png">

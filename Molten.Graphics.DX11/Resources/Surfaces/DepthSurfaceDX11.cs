@@ -26,7 +26,7 @@ public unsafe class DepthSurfaceDX11 : Texture2DDX11, IDepthStencilSurface
         uint width, 
         uint height,
         GraphicsResourceFlags flags = GraphicsResourceFlags.GpuWrite,
-        DepthFormat format = DepthFormat.R24G8_Typeless,
+        DepthFormat format = DepthFormat.R24G8,
         uint mipCount = 1, 
         uint arraySize = 1, 
         AntiAliasLevel aaLevel = AntiAliasLevel.None,
@@ -84,9 +84,9 @@ public unsafe class DepthSurfaceDX11 : Texture2DDX11, IDepthStencilSurface
         switch (DepthFormat)
         {
             default:
-            case DepthFormat.R24G8_Typeless:
+            case DepthFormat.R24G8:
                 return DsvFlag.Depth | DsvFlag.Stencil;
-            case DepthFormat.R32_Typeless:
+            case DepthFormat.R32:
                 return DsvFlag.Depth;
         }
     }

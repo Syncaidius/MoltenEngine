@@ -22,7 +22,7 @@ public class DepthSurfaceDX12 : Texture2DDX12, IDepthStencilSurface
         uint width,
         uint height,
         GraphicsResourceFlags flags = GraphicsResourceFlags.GpuWrite,
-        DepthFormat format = DepthFormat.R24G8_Typeless,
+        DepthFormat format = DepthFormat.R24G8,
         uint mipCount = 1,
         uint arraySize = 1,
         AntiAliasLevel aaLevel = AntiAliasLevel.None,

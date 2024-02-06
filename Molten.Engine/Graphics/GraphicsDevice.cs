@@ -33,6 +33,18 @@ public abstract partial class GraphicsDevice : EngineObject
     ThreadedList<GraphicsObject> _disposals;
     ThreadedList<ISwapChainSurface> _outputSurfaces;
 
+    static GraphicsFormat[] _formats;
+    static Dictionary<string, GraphicsFormat> _formatsByName;
+    static readonly string[] _formatTypes = ["unorm", "snorm", "uint", "sint", "float"];
+
+    static GraphicsDevice()
+    {
+        _formats = Enum.GetValues<GraphicsFormat>();
+        _formatsByName = new Dictionary<string, GraphicsFormat>();
+        for (int i = 0; i < _formats.Length; i++)
+            _formatsByName.Add(_formats[i].ToString().ToLower(), _formats[i]);
+    }
+
     /// <summary>
     /// Creates a new instance of <see cref="GraphicsDevice"/>.
     /// </summary>
@@ -57,6 +69,53 @@ public abstract partial class GraphicsDevice : EngineObject
         BufferingMode_OnChanged(bufferingMode.Value, bufferingMode.Value);
         bufferingMode.OnChanged += BufferingMode_OnChanged;
     }
+
+    public GraphicsFormat GetBestFormat(string formatName, GraphicsFormatSupportFlags flags)
+    {
+        formatName = formatName.ToLower();
+
+        // First look for exact matches and take the first one, if available.
+        string[] matches = _formatsByName.Keys.Where(x => x == formatName).ToArray();
+        if (matches.Length > 0)
+        {
+            // Check if device supports format.
+            if (IsFormatSupported(_formatsByName[matches[0]], flags))
+                return _formatsByName[matches[0]];
+        }
+        else // Now find partial matches.
+        {
+            matches = _formatsByName.Keys.Where(x => x.Contains(formatName)).ToArray();
+            for(int i = 0; i < _formatTypes.Length; i++)
+            {
+                string format = $"{formatName}_{_formatTypes[i]}";
+                if (_formatsByName.TryGetValue(format, out GraphicsFormat result))
+                {
+                    if (IsFormatSupported(result, flags))
+                        return result;
+                }
+            }
+        }
+
+        return GraphicsFormat.Unknown;
+    }
+
+    /// <summary>
+    /// Gets whether or not the provided <see cref="GraphicsFormatSupportFlags"/> are supported
+    /// by the current <see cref="GraphicsDevice"/> for the specified <see cref="GraphicsFormat"/>.
+    /// </summary>
+    /// <param name="format">The <see cref="GraphicsFormat"/> to check for support.</param>
+    /// <param name="flags">The support flags to be checked.</param>
+    /// <returns></returns>
+    public bool IsFormatSupported(GraphicsFormat format, GraphicsFormatSupportFlags flags)
+    {
+        if(flags == GraphicsFormatSupportFlags.None)
+            throw new Exception("Cannot check for support with no flags.");
+
+        GraphicsFormatSupportFlags support = GetFormatSupport(format);
+        return (support & flags) == flags;
+    }
+
+    public abstract GraphicsFormatSupportFlags GetFormatSupport(GraphicsFormat format);
 
     /// <summary> Invoked when the minimum supported frame-buffer size needs to be known.
     /// </summary>

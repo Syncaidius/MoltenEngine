@@ -3,6 +3,7 @@ using Molten.Graphics.Dxgi;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
 using Silk.NET.DXGI;
+using Feature = Silk.NET.Direct3D12.Feature;
 
 namespace Molten.Graphics.DX12;
 
@@ -60,6 +61,22 @@ public unsafe class DeviceDX12 : DeviceDXGI
         _cmdDirect = new CommandQueueDX12(Log, this, _builder, ref cmdDesc);
 
         return true;
+    }
+
+    public override GraphicsFormatSupportFlags GetFormatSupport(GraphicsFormat format)
+    {
+        uint sizeOf = (uint)sizeof(FeatureDataFormatSupport);
+        void* pData = null;
+
+        HResult r = _native->CheckFeatureSupport(Feature.FormatSupport, pData, sizeOf);
+        if (!Log.CheckResult(r))
+        {
+            Log.Error($"Failed to retrieve format '{format}' support. Code: {r}");
+            return GraphicsFormatSupportFlags.None;
+        }
+
+        FeatureDataFormatSupport* supportData = (FeatureDataFormatSupport*)pData;
+        return (GraphicsFormatSupportFlags)supportData->Support1;
     }
 
     private void ProcessDebugMessage(MessageCategory category, MessageSeverity severity, MessageID id, byte* pDescription, void* prContext)
@@ -177,7 +194,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
         return new RenderSurface2DDX12(this, width, height, flags, format, mipCount, arraySize, aaLevel, MSAAQuality.Default, name);
     }
 
-    public override IDepthStencilSurface CreateDepthSurface(uint width, uint height, DepthFormat format = DepthFormat.R24G8_Typeless, 
+    public override IDepthStencilSurface CreateDepthSurface(uint width, uint height, DepthFormat format = DepthFormat.R24G8, 
         GraphicsResourceFlags flags = GraphicsResourceFlags.None | GraphicsResourceFlags.GpuWrite, uint mipCount = 1, uint arraySize = 1, 
         AntiAliasLevel aaLevel = AntiAliasLevel.None, string name = null)
     {

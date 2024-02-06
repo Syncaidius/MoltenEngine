@@ -6,7 +6,7 @@ public abstract partial class GraphicsDevice
         GraphicsResourceFlags flags = GraphicsResourceFlags.GpuWrite,
         uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, string name = null);
 
-    public abstract IDepthStencilSurface CreateDepthSurface(uint width, uint height, DepthFormat format = DepthFormat.R24G8_Typeless,
+    public abstract IDepthStencilSurface CreateDepthSurface(uint width, uint height, DepthFormat format = DepthFormat.R24G8,
         GraphicsResourceFlags flags = GraphicsResourceFlags.GpuWrite,
         uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, string name = null);
 

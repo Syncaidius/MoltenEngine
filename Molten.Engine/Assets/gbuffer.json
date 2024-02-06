@@ -14,7 +14,13 @@
         "parameters": {
           "blend": "default",
           "depth": "default",
-          "rasterizer": "default"
+          "rasterizer": "default",
+          "outputs": {
+            "0": "R8G8B8A8",
+            "1": "R11G11B10",
+            "2": "R8G8B8A8",
+            "depth": "R24G8"
+          }
         }
       }
     ]

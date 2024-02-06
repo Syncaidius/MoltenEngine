@@ -42,7 +42,7 @@ public class SurfaceManager : IDisposable
         RegisterMainSurface(MainSurfaceType.Composition1, width, height, GraphicsFormat.R16G16B16A16_Float);
         RegisterMainSurface(MainSurfaceType.Composition2, width, height, GraphicsFormat.R16G16B16A16_Float);
         RegisterMainSurface(MainSurfaceType.Lighting, width, height, GraphicsFormat.R16G16B16A16_Float);
-        _depthSurface = new DepthSurfaceTracker(_renderer.Device, _aaLevels, width, height, DepthFormat.R24G8_Typeless);
+        _depthSurface = new DepthSurfaceTracker(_renderer.Device, _aaLevels, width, height, DepthFormat.R24G8);
     }
 
     internal void ClearIfFirstUse(IRenderSurface2D surface, Color color)

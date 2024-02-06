@@ -296,5 +296,7 @@ public partial class ShaderPassParameters
     public uint ForcedSampleCount;
 
     public PrimitiveTopology Topology;
+
+    public Dictionary<string, string> Outputs { get; set; } = new();
     #endregion
 }
