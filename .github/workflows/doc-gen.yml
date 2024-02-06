@@ -19,16 +19,16 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
           
-      - name: Install DocFX
-        run: dotnet tool install -g docfx
+      #- name: Install DocFX
+      #  run: dotnet tool install -g docfx
           
-      - name: Install dependencies
-        run: dotnet restore
+      #- name: Install dependencies
+     #   run: dotnet restore
         
-      - name: DocFX Build
-        working-directory: docs
-        run: docfx .\docfx.json
-        continue-on-error: false
+     # - name: DocFX Build
+      #  working-directory: docs
+      #  run: docfx .\docfx.json
+     #   continue-on-error: false
         
       - name: Publish
         if: github.event_name == 'push'
