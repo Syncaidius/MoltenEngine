@@ -171,7 +171,7 @@ internal class ShaderStructureBuilder
                 break;
         }
 
-        if (passDef.Parameters.Inputs.TryGetValue($"t{info.BindPoint}", out string format))
+        if (passDef.Parameters.Formats.TryGetValue($"t{info.BindPoint}", out string format))
             obj.ExpectedFormat = shader.Device.GetBestFormat(format, supportFlags);
 
         if (info.BindPoint >= shader.Resources.Length)

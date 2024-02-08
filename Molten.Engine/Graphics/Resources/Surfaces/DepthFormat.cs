@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics;
 
-public enum DepthFormat
+public enum DepthFormat : byte
 {
     R24G8 = 0,
 

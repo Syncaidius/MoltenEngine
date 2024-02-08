@@ -18,15 +18,15 @@ internal class PipelineStateBuilderDX12
         _desc = new GraphicsPipelineStateDesc()
         {
             Flags = PipelineStateFlags.None,
-            RasterizerState = pass.RasterizerState.Desc,
-            BlendState = pass.BlendState.Description.Desc,
-            SampleMask = pass.BlendState.Description.BlendSampleMask,
-            DepthStencilState = pass.DepthState.Description.Desc,
-            VS = pass.GetBytecode(ShaderType.Vertex),
-            GS = pass.GetBytecode(ShaderType.Geometry),
-            DS = pass.GetBytecode(ShaderType.Domain),
-            HS = pass.GetBytecode(ShaderType.Hull),
-            PS = pass.GetBytecode(ShaderType.Pixel),
+            RasterizerState = _pass.RasterizerState.Desc,
+            BlendState = _pass.BlendState.Description.Desc,
+            SampleMask = _pass.BlendState.Description.BlendSampleMask,
+            DepthStencilState = _pass.DepthState.Description.Desc,
+            VS = _pass.GetBytecode(ShaderType.Vertex),
+            GS = _pass.GetBytecode(ShaderType.Geometry),
+            DS = _pass.GetBytecode(ShaderType.Domain),
+            HS = _pass.GetBytecode(ShaderType.Hull),
+            PS = _pass.GetBytecode(ShaderType.Pixel),
 
             PRootSignature = null,
             NodeMask = 0,               // TODO Set this to the node mask of the device.
@@ -38,7 +38,7 @@ internal class PipelineStateBuilderDX12
         };
 
         // Find out how many render targets to expect.
-        ShaderComposition ps = pass[ShaderType.Pixel];
+        ShaderComposition ps = _pass[ShaderType.Pixel];
         if (ps != null)
             _desc.NumRenderTargets = (uint)ps.OutputLayout.Metadata.Length;
     }
@@ -48,8 +48,23 @@ internal class PipelineStateBuilderDX12
         if (_pass == null)
             throw new Exception("Begin() must be called before any configuration methods are called.");
 
-        if (_desc.NumRenderTargets != surfaces.Length)
-            throw new Exception($"Pipeline state is expecting {_desc.NumRenderTargets} surfaces, but received {surfaces.Length}.");
+        if (!_pass.HasComposition(ShaderType.Pixel))
+        {
+            _pass.Device.Log.Error($"The current pass '{_pass.Parent.Name}/{_pass.Name}' does not have a pixel shader, so no render targets can be set.");
+            return;
+        }
+        else if (_desc.NumRenderTargets != surfaces.Length)
+        {
+            _pass.Device.Log.Error($"The current pass '{_pass.Parent.Name}/{_pass.Name}' is expecting {_desc.NumRenderTargets} surfaces, but received {surfaces.Length}.");
+            return;
+        }
+
+        if(_pass.FormatLayout.ValidateFormats(surfaces) > -1)
+        {
+            _pass.Device.Log.Error($"The current pass '{_pass.Parent.Name}/{_pass.Name}' has a format layout mismatch with the provided surfaces.");
+            _pass.FormatLayout.LogDifference(_pass.Device.Log, surfaces);
+            return;
+        }
 
         for (int i = 0; i < _desc.NumRenderTargets; i++)
             _desc.RTVFormats[i] = surfaces[i].ResourceFormat.ToApi();
@@ -57,6 +72,11 @@ internal class PipelineStateBuilderDX12
 
     internal unsafe PipelineStateDX12 End()
     {
+        if(_pass == null)
+            throw new Exception("Begin() must be called before End() is called.");
+
+        // TODO validate _desc before proceeding. e.g. _desc.RTVFormats is set.
+
         DeviceDX12 device = _pass.Device as DeviceDX12;
 
         Guid guid = ID3D12PipelineState.Guid;

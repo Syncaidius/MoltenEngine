@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Molten.Graphics.Shaders;
+using System.Collections;
 
 namespace Molten.Graphics;
 
@@ -20,6 +21,8 @@ public abstract class HlslPass : GraphicsObject, IEnumerable<ShaderComposition>,
     public ShaderSampler[] Samplers;
     Dictionary<ShaderType, ShaderComposition> _compositions;
     public unsafe void* InputByteCode;
+
+    ShaderFormatLayout _formatLayout;
 
     /// <summary>
     /// Invoked when the current <see cref="HlslPass"/> has finished its draw/dispatch call.
@@ -88,6 +91,11 @@ public abstract class HlslPass : GraphicsObject, IEnumerable<ShaderComposition>,
         return _compositions.Keys.GetEnumerator();
     }
 
+    public bool HasComposition(ShaderType type)
+    {
+        return _compositions.ContainsKey(type);
+    }
+
     /// <summary>
     /// Gets a <see cref="ShaderComposition"/> from the current <see cref="HlslPass"/>. 
     /// <para>Returns null if no composition exists for the specified <see cref="ShaderType"/>.</para>
@@ -149,4 +157,9 @@ public abstract class HlslPass : GraphicsObject, IEnumerable<ShaderComposition>,
     /// Gets the vertex <see cref="PrimitiveTopology"/> that the current <see cref="HlslPass"/> will use when rendering mesh vertices.
     /// </summary>
     public PrimitiveTopology Topology { get; private set; }
+
+    /// <summary>
+    /// Gets the format layout used by the pixel/fragment stage of the current <see cref="HlslPass"/>, if present.
+    /// </summary>
+    public ref ShaderFormatLayout FormatLayout => ref _formatLayout;
 }

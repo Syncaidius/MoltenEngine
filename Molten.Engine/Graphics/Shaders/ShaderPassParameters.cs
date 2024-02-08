@@ -297,8 +297,6 @@ public partial class ShaderPassParameters
 
     public PrimitiveTopology Topology;
 
-    public Dictionary<string, string> Inputs { get; set; } = new();
-
-    public Dictionary<string, string> Outputs { get; set; } = new();
+    public Dictionary<string, string> Formats { get; set; } = new();
     #endregion
 }
