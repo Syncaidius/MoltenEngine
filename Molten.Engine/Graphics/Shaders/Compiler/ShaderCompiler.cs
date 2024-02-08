@@ -11,7 +11,8 @@ namespace Molten.Graphics;
 /// </summary>
 public abstract class ShaderCompiler : EngineObject
 {
-    ShaderLayoutValidator _layoutValidator = new ();
+    ShaderLayoutValidator _layoutValidator;
+    ShaderStructureBuilder _structureBuilder;
     ShaderType[] _mandatoryShaders = { ShaderType.Vertex, ShaderType.Pixel };
     string[] _newLineSeparator = { "\n", Environment.NewLine };
     string[] _includeReplacements = { "#include", "<", ">", "\"" };
@@ -33,9 +34,92 @@ public abstract class ShaderCompiler : EngineObject
     {
         Model = ShaderModel.Model5_0;
         Device = device;
+        _layoutValidator = new ShaderLayoutValidator();
+        _structureBuilder = new ShaderStructureBuilder();
         _defaultIncludePath = includePath;
         _defaultIncludeAssembly = includeAssembly;
         _sources = new ConcurrentDictionary<string, ShaderSource>();
+    }
+
+    internal ShaderCompileResult Compile(string jsonDef, string filename, ShaderCompileFlags flags, Assembly assembly, string nameSpace)
+    {
+        bool isEmbedded = !string.IsNullOrWhiteSpace(nameSpace);
+        ShaderCompilerContext context = new ShaderCompilerContext(this);
+        context.Flags = flags;
+
+        if (assembly != null && string.IsNullOrWhiteSpace(nameSpace))
+            throw new InvalidOperationException("nameSpace parameter cannot be null or empty when assembly parameter is set");
+
+        // Check the source for all supportead class types.
+        ShaderDefinition[] definitions = null;
+        try
+        {
+            definitions = JsonConvert.DeserializeObject<ShaderDefinition[]>(jsonDef);
+
+            foreach (ShaderDefinition def in definitions)
+            {
+                if (!ValidateDefinition(def, context))
+                    continue;
+
+                string hlsl = "";
+
+                // Attempt to load the file that was given in the shader definition.
+                if (isEmbedded)
+                {
+                    using (Stream stream = EmbeddedResource.TryGetStream($"{nameSpace}.{def.File}"))
+                    {
+                        if (stream == null)
+                        {
+                            context.AddError($"Embedded shader '{nameSpace}.{def.File}' was not found in assembly '{assembly.FullName}'");
+                            continue;
+                        }
+
+                        using (StreamReader reader = new StreamReader(stream))
+                            hlsl = reader.ReadToEnd();
+                    }
+                }
+                else
+                {
+                    // If the specified def.File is is not an absolute path, use the directory of the definition file as a root.
+                    string entryPath = def.File;
+                    if (!Path.IsPathFullyQualified(entryPath))
+                    {
+                        FileInfo mainPath = new FileInfo(filename);
+                        entryPath = $"{mainPath.DirectoryName}/{def.File}";
+                    }
+
+                    using (FileStream stream = new FileStream(entryPath, FileMode.Open, FileAccess.Read))
+                    {
+                        using (StreamReader reader = new StreamReader(stream))
+                            hlsl = reader.ReadToEnd();
+                    }
+                }
+
+                context.Source = ParseSource(context, def.File, ref hlsl, isEmbedded, assembly, nameSpace);
+
+                HlslShader shader = BuildShader(context, def);
+                if (shader != null)
+                    context.Result.AddShader(shader);
+                else
+                    context.AddError($"{filename}: {nameof(ShaderCompiler)}.Build() did not return a result (null)");
+            }
+        }
+        catch (Exception ex)
+        {
+            context.AddError($"Failed to deserialize shader definition: {ex.Message}");
+        }
+
+        // Log all context messages.
+        string msgPrefix;
+        if (isEmbedded)
+            msgPrefix = $"{nameSpace}.{filename}: ";
+        else
+            msgPrefix = string.IsNullOrWhiteSpace(filename) ? "" : $"{filename}: ";
+
+        foreach (ShaderCompilerMessage msg in context.Messages)
+            Log.WriteLine($"{msgPrefix}{msg.Text}");
+
+        return context.Result;
     }
 
     private bool ValidateDefinition(ShaderDefinition def, ShaderCompilerContext context)
@@ -176,7 +260,7 @@ public abstract class ShaderCompiler : EngineObject
 
                     if (comp != null)
                     {
-                        if (!BuildStructure(context, pass.Parent, result[type], comp))
+                        if (!_structureBuilder.Build(context, pass.Parent, result[type], comp))
                             context.AddError($"Invalid {typeName} shader structure for '{comp.EntryPoint}' in pass '{result.Pass.Name}'.");
                     }
                 }
@@ -218,219 +302,6 @@ public abstract class ShaderCompiler : EngineObject
         return layout;
     }
 
-    protected abstract ShaderCodeResult CompileNativeSource(string entryPoint, ShaderType type, ShaderCompilerContext context);
-
-    protected bool BuildStructure(ShaderCompilerContext context, HlslShader shader, ShaderCodeResult result, ShaderComposition composition)
-    {
-        for (int r = 0; r < result.Reflection.BoundResources.Count; r++)
-        {
-            ShaderResourceInfo bindInfo = result.Reflection.BoundResources[r];
-            uint bindPoint = bindInfo.BindPoint;
-
-            switch (bindInfo.Type)
-            {
-                case ShaderInputType.CBuffer:
-                    ConstantBufferInfo bufferInfo = result.Reflection.ConstantBuffers[bindInfo.Name];
-
-                    // Skip binding info buffers
-                    if (bufferInfo.Type != ConstantBufferType.ResourceBindInfo)
-                    {
-                        if (bindPoint >= shader.ConstBuffers.Length)
-                            Array.Resize(ref shader.ConstBuffers, (int)bindPoint + 1);
-
-                        if (shader.ConstBuffers[bindPoint] != null && shader.ConstBuffers[bindPoint].BufferName != bindInfo.Name)
-                            context.AddMessage($"Shader constant buffer '{shader.ConstBuffers[bindPoint].BufferName}' was overwritten by buffer '{bindInfo.Name}' at the same register (b{bindPoint}).",
-                                ShaderCompilerMessage.Kind.Warning);
-
-                        shader.ConstBuffers[bindPoint] = GetConstantBuffer(context, shader, bufferInfo);
-                        composition.ConstBufferIds.Add(bindPoint);
-                    }
-
-                    break;
-
-                case ShaderInputType.Texture:
-                    OnBuildTextureVariable(context, shader, bindInfo);
-                    composition.ResourceIds.Add(bindInfo.BindPoint);
-                    break;
-
-                case ShaderInputType.Sampler:
-                    bool isComparison = bindInfo.HasInputFlags(ShaderInputFlags.ComparisonSampler);
-                    ShaderSamplerVariable sampler = GetVariableResource<ShaderSamplerVariable>(context, shader, bindInfo);
-
-                    if (bindPoint >= shader.SamplerVariables.Length)
-                    {
-                        int oldLength = shader.SamplerVariables.Length;
-                        EngineUtil.ArrayResize(ref shader.SamplerVariables, bindPoint + 1);
-                        for (int i = oldLength; i < shader.SamplerVariables.Length; i++)
-                            shader.SamplerVariables[i] = (i == bindPoint ? sampler : ShaderVariable.Create<ShaderSamplerVariable>(shader, bindInfo.Name));
-                    }
-                    else
-                    {
-                        shader.SamplerVariables[bindPoint] = sampler;
-                    }
-                    composition.SamplerIds.Add(bindPoint);
-                    break;
-
-                case ShaderInputType.Structured:
-                    ShaderResourceVariable bVar = GetVariableResource<ShaderResourceVariable<GraphicsBuffer>>(context, shader, bindInfo);
-                    if (bindPoint >= shader.Resources.Length)
-                        EngineUtil.ArrayResize(ref shader.Resources, bindPoint + 1);
-
-                    shader.Resources[bindPoint] = bVar;
-                    composition.ResourceIds.Add(bindPoint);
-                    break;
-
-                case ShaderInputType.UavRWStructured:
-                    OnBuildRWStructuredVariable(context, shader, bindInfo);
-                    composition.UnorderedAccessIds.Add(bindPoint);
-                    break;
-
-                case ShaderInputType.UavRWTyped:
-                    OnBuildRWTypedVariable(context, shader, bindInfo);
-                    composition.UnorderedAccessIds.Add(bindPoint);
-                    break;
-            }
-        }
-
-        return true;
-    }
-
-    private unsafe IConstantBuffer GetConstantBuffer(ShaderCompilerContext context,
-    HlslShader shader, ConstantBufferInfo info)
-    {
-        string localName = info.Name;
-
-        if (localName == "$Globals")
-            localName += $"_{shader.Name}";
-
-        IConstantBuffer cBuffer = Device.CreateConstantBuffer(info);
-
-        // Duplication checks.
-        if (context.TryGetResource(localName, out IConstantBuffer existing))
-        {
-            // Check for duplicates
-            if (existing != null)
-            {
-                // Compare buffers. If identical, 
-                if (existing.Equals(cBuffer))
-                {
-                    // Dispose of new buffer, use existing.
-                    cBuffer.Dispose();
-                    cBuffer = existing;
-                }
-                else
-                {
-                    context.AddError($"Constant buffers with the same name ('{localName}') do not match. Differing layouts.");
-                }
-            }
-            else
-            {
-                context.AddError($"Constant buffer creation failed. A resource with the name '{localName}' already exists!");
-            }
-        }
-        else
-        {
-            // Register all of the new buffer's variables
-            foreach (GraphicsConstantVariable v in cBuffer.Variables)
-            {
-                // Check for duplicate variables
-                if (shader.Variables.ContainsKey(v.Name))
-                {
-                    context.AddMessage($"Duplicate variable detected: {v.Name}");
-                    continue;
-                }
-
-                shader.Variables.Add(v.Name, v);
-            }
-
-            // Register the new buffer
-            context.AddResource(localName, cBuffer);
-        }
-
-        return cBuffer;
-    }
-
-    internal ShaderCompileResult Compile(string jsonDef, string filename, ShaderCompileFlags flags, Assembly assembly, string nameSpace)
-    {
-        bool isEmbedded = !string.IsNullOrWhiteSpace(nameSpace);
-        ShaderCompilerContext context = new ShaderCompilerContext(this);
-        context.Flags = flags;
-
-        if (assembly != null && string.IsNullOrWhiteSpace(nameSpace))
-            throw new InvalidOperationException("nameSpace parameter cannot be null or empty when assembly parameter is set");
-
-        // Check the source for all supportead class types.
-        ShaderDefinition[] definitions = null;
-        try
-        {
-            definitions = JsonConvert.DeserializeObject<ShaderDefinition[]>(jsonDef);
-
-            foreach (ShaderDefinition def in definitions)
-            {
-                if (!ValidateDefinition(def, context))
-                    continue;
-
-                string hlsl = "";
-
-                // Attempt to load the file that was given in the shader definition.
-                if (isEmbedded)
-                {
-                    using (Stream stream = EmbeddedResource.TryGetStream($"{nameSpace}.{def.File}"))
-                    {
-                        if (stream == null)
-                        {
-                            context.AddError($"Embedded shader '{nameSpace}.{def.File}' was not found in assembly '{assembly.FullName}'");
-                            continue;
-                        }
-
-                        using (StreamReader reader = new StreamReader(stream))
-                            hlsl = reader.ReadToEnd();
-                    }
-                }
-                else
-                {
-                    // If the specified def.File is is not an absolute path, use the directory of the definition file as a root.
-                    string entryPath = def.File;
-                    if (!Path.IsPathFullyQualified(entryPath))
-                    {
-                        FileInfo mainPath = new FileInfo(filename);
-                        entryPath = $"{mainPath.DirectoryName}/{def.File}";
-                    }
-
-                    using (FileStream stream = new FileStream(entryPath, FileMode.Open, FileAccess.Read))
-                    {
-                        using (StreamReader reader = new StreamReader(stream))
-                            hlsl = reader.ReadToEnd();
-                    }
-                }
-
-                context.Source = ParseSource(context, def.File, ref hlsl, isEmbedded, assembly, nameSpace);
-
-                HlslShader shader = BuildShader(context, def);
-                if (shader != null)
-                    context.Result.AddShader(shader);
-                else
-                    context.AddError($"{filename}: {nameof(ShaderCompiler)}.Build() did not return a result (null)");
-            }
-        }
-        catch (Exception ex)
-        {
-            context.AddError($"Failed to deserialize shader definition: {ex.Message}");
-        }
-
-        // Log all context messages.
-        string msgPrefix;
-        if(isEmbedded)
-            msgPrefix = $"{nameSpace}.{filename}: "; 
-        else
-            msgPrefix = string.IsNullOrWhiteSpace(filename) ? "" : $"{filename}: ";
-
-        foreach (ShaderCompilerMessage msg in context.Messages)
-            Log.WriteLine($"{msgPrefix}{msg.Text}");
-
-        return context.Result;
-    }
-
     private ShaderSource ParseSource(ShaderCompilerContext context, string filename, ref string hlsl,
         bool isEmbedded, Assembly assembly, string nameSpace)
     {
@@ -459,8 +330,7 @@ public abstract class ShaderCompiler : EngineObject
         return null;
     }
 
-    private ShaderSource GetDependencySource(ShaderSource source, string key, out Stream stream,
-        string embeddedName = null, Assembly parentAssembly = null)
+    private ShaderSource GetDependencySource(ShaderSource source, string key, out Stream stream, string embeddedName = null, Assembly parentAssembly = null)
     {
         stream = null;
         ShaderSource dependency;
@@ -577,120 +447,7 @@ public abstract class ShaderCompiler : EngineObject
         }
     }
 
-    private void OnBuildTextureVariable(ShaderCompilerContext context,
-    HlslShader shader, ShaderResourceInfo info)
-    {
-        ShaderResourceVariable obj = null;
-
-        switch (info.Dimension)
-        {
-            case ShaderResourceDimension.Texture1DArray:
-            case ShaderResourceDimension.Texture1D:
-                obj = GetVariableResource<ShaderResourceVariable<ITexture1D>>(context, shader, info);
-                break;
-
-            case ShaderResourceDimension.Texture2DMS:
-            case ShaderResourceDimension.Texture2DMSArray:
-            case ShaderResourceDimension.Texture2DArray:
-            case ShaderResourceDimension.Texture2D:
-                obj = GetVariableResource<ShaderResourceVariable<ITexture2D>>(context, shader, info);
-                break;
-
-            case ShaderResourceDimension.Texture3D:
-                obj = GetVariableResource<ShaderResourceVariable<ITexture3D>>(context, shader, info);
-                break;
-
-            case ShaderResourceDimension.TextureCube:
-                obj = GetVariableResource<ShaderResourceVariable<ITextureCube>>(context, shader, info);
-                break;
-        }
-
-        if (info.BindPoint >= shader.Resources.Length)
-            EngineUtil.ArrayResize(ref shader.Resources, info.BindPoint + 1);
-
-        //store the resource variable
-        shader.Resources[info.BindPoint] = obj;
-    }
-
-    private void OnBuildRWTypedVariable(
-    ShaderCompilerContext context,
-    HlslShader shader, ShaderResourceInfo info)
-    {
-        RWVariable resource = null;
-        uint bindPoint = info.BindPoint;
-
-        switch (info.Dimension)
-        {
-            case ShaderResourceDimension.Texture1DArray:
-            case ShaderResourceDimension.Texture1D:
-                resource = GetVariableResource<RWVariable<ITexture1D>>(context, shader, info);
-                break;
-
-            case ShaderResourceDimension.Texture2DMS:
-            case ShaderResourceDimension.Texture2DMSArray:
-            case ShaderResourceDimension.Texture2DArray:
-            case ShaderResourceDimension.Texture2D:
-                resource = GetVariableResource<RWVariable<ITexture2D>>(context, shader, info);
-                break;
-
-            case ShaderResourceDimension.Texture3D:
-                resource = GetVariableResource<RWVariable<ITexture3D>>(context, shader, info);
-                break;
-
-            case ShaderResourceDimension.TextureCube:
-            case ShaderResourceDimension.TextureCubeArray:
-                resource = GetVariableResource<RWVariable<ITextureCube>>(context, shader, info);
-                break;
-        }
-
-        if (bindPoint >= shader.UAVs.Length)
-            EngineUtil.ArrayResize(ref shader.UAVs, bindPoint + 1);
-
-        // Store the resource variable
-        shader.UAVs[bindPoint] = resource;
-    }
-
-    protected T GetVariableResource<T>(ShaderCompilerContext context, HlslShader shader, ShaderResourceInfo info)
-        where T : ShaderVariable, new()
-    {
-        ShaderVariable existing = null;
-        T bVar = null;
-        Type t = typeof(T);
-
-        if (shader.Variables.TryGetValue(info.Name, out existing))
-        {
-            T other = existing as T;
-
-            if (other != null)
-            {
-                // If valid, use existing buffer variable.
-                if (other.GetType() == t)
-                    bVar = other;
-            }
-            else
-            {
-                context.AddMessage($"Resource '{t.Name}' creation failed. A resource with the name '{info.Name}' already exists!");
-            }
-        }
-        else
-        {
-            bVar = ShaderVariable.Create<T>(shader, info.Name);
-            shader.Variables.Add(bVar.Name, bVar);
-        }
-
-        return bVar;
-    }
-
-    protected void OnBuildRWStructuredVariable(ShaderCompilerContext context, HlslShader shader, ShaderResourceInfo info)
-    {
-        RWVariable rwBuffer = GetVariableResource<RWVariable<GraphicsBuffer>>(context, shader, info);
-        uint bindPoint = info.BindPoint;
-
-        if (bindPoint >= shader.UAVs.Length)
-            EngineUtil.ArrayResize(ref shader.UAVs, bindPoint + 1);
-
-        shader.UAVs[bindPoint] = rwBuffer;
-    }
+    protected abstract ShaderCodeResult CompileNativeSource(string entryPoint, ShaderType type, ShaderCompilerContext context);
 
     protected unsafe abstract void* BuildNativeShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes);
 
