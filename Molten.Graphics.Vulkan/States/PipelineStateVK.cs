@@ -48,16 +48,16 @@ internal unsafe class PipelineStateVK : GraphicsObject<DeviceVK>
 
         // Populate dynamic state
         _blendState = new BlendStateVK(device, ref parameters);
-        device.Cache.Object(ref _blendState);
+        device.Cache.Check(ref _blendState);
 
         _depthState = new DepthStateVK(device, ref parameters);
-        device.Cache.Object(ref _depthState);
+        device.Cache.Check(ref _depthState);
 
         _rasterizerState = new RasterizerStateVK(device, ref parameters);
-        device.Cache.Object(ref _rasterizerState);
+        device.Cache.Check(ref _rasterizerState);
 
         _inputState = new InputAssemblyStateVK(device, ref parameters);
-        device.Cache.Object(ref _inputState);
+        device.Cache.Check(ref _inputState);
 
         DynamicState[] dynamics = new DynamicState[]
         {
@@ -66,7 +66,7 @@ internal unsafe class PipelineStateVK : GraphicsObject<DeviceVK>
         };
 
         _dynamicState = new DynamicStateVK(device, ref parameters, dynamics);
-        device.Cache.Object(ref _dynamicState);
+        device.Cache.Check(ref _dynamicState);
 
         // Setup shader stage info
         _info.PStages = EngineUtil.AllocArray<PipelineShaderStageCreateInfo>((uint)pass.CompositionCount);
@@ -89,7 +89,7 @@ internal unsafe class PipelineStateVK : GraphicsObject<DeviceVK>
         }
 
         _pipelineLayout = new PipelineLayoutVK(device, pass.DescriptorLayout);
-        device.Cache.Object(ref _pipelineLayout);
+        device.Cache.Check(ref _pipelineLayout);
 
         _info.PMultisampleState = null;                         // TODO initialize
         _info.BasePipelineIndex = 0;                            // TODO initialize

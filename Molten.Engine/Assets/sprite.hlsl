@@ -216,15 +216,15 @@ float4 PS_Grid( PS_IN input ) : SV_Target
     float thickness = sd.data.xy;
     float result;
 
-    for(float ix = 0.0; ix < 1.0; ix += cellSize.x)
+    for (float ix = 0.0; ix < 1.0; ix += cellSize.x)
     {
         result += 1.0 - smoothstep(0.0, thickness, abs(input.uvLocal.x - ix));
     }
 
-    for(float iy = 0.0; iy < 1.0; iy += cellSize.y)
+    for (float iy = 0.0; iy < 1.0; iy += cellSize.y)
     {
         result += 1.0 - smoothstep(0.0, thickness, abs(input.uvLocal.y - iy));
     }
 
-    return (sd.col * (1-result)) + (sd.col2 * result);
+    return (sd.col * (1 - result)) + (sd.col2 * result);
 }

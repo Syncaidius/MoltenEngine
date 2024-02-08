@@ -10,7 +10,7 @@ public abstract class ShaderLayoutCache : EngineObject
     ConcurrentDictionary<ulong, ShaderIOLayout> _cache;
 
     /// <summary>
-    /// Creates a new instance of <see cref="ObjectCache{K, V}"/>
+    /// Creates a new instance of <see cref="ShaderLayoutCache"/>
     /// </summary>
     public ShaderLayoutCache()
     {

@@ -260,7 +260,7 @@ public abstract class ShaderCompiler : EngineObject
 
                     if (comp != null)
                     {
-                        if (!_structureBuilder.Build(context, pass.Parent, result[type], comp))
+                        if (!_structureBuilder.Build(context, result[type].Reflection, comp, passDef))
                             context.AddError($"Invalid {typeName} shader structure for '{comp.EntryPoint}' in pass '{result.Pass.Name}'.");
                     }
                 }

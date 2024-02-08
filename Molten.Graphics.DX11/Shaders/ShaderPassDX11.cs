@@ -19,13 +19,13 @@ public class ShaderPassDX11 : HlslPass
         DeviceDX11 device = Device as DeviceDX11;
 
         _stateBlend = new BlendStateDX11(device, ref parameters);
-        Device.Cache.Object(ref _stateBlend);
+        Device.Cache.Check(ref _stateBlend);
 
         _stateRasterizer = new RasterizerStateDX11(device, ref parameters);
-        Device.Cache.Object(ref _stateRasterizer);
+        Device.Cache.Check(ref _stateRasterizer);
 
         _stateDepth = new DepthStateDX11(device, ref parameters);
-        Device.Cache.Object(ref _stateDepth);
+        Device.Cache.Check(ref _stateDepth);
     }
 
     internal DepthStateDX11 DepthState => _stateDepth;

@@ -1,4 +1,5 @@
-﻿using Molten.Collections;
+﻿using Molten.Cache;
+using Molten.Collections;
 using Molten.IO;
 using System.Reflection;
 
@@ -59,7 +60,7 @@ public abstract partial class GraphicsDevice : EngineObject
         Profiler = new GraphicsDeviceProfiler();
         Tasks = new GraphicsTaskManager(this);
 
-        Cache = new GraphicsObjectCache();
+        Cache = new ObjectCache();
         _outputSurfaces = new ThreadedList<ISwapChainSurface>();
         _disposals = new ThreadedList<GraphicsObject>();
 
@@ -327,7 +328,7 @@ public abstract partial class GraphicsDevice : EngineObject
     public ShaderSampler CreateSampler(ref ShaderSamplerParameters parameters)
     {
         ShaderSampler sampler = OnCreateSampler(ref parameters);
-        Cache.Object(ref sampler);
+        Cache.Check(ref sampler);
         return sampler;
     }
 
@@ -473,9 +474,9 @@ public abstract partial class GraphicsDevice : EngineObject
     public bool IsInitialized { get; private set; }
 
     /// <summary>
-    /// Gets the <see cref="GraphicsObjectCache"/> that is bound to the current <see cref="GraphicsDevice"/>.
+    /// Gets the <see cref="ObjectCache"/> that is bound to the current <see cref="GraphicsDevice"/>.
     /// </summary>
-    public GraphicsObjectCache Cache { get; }
+    public ObjectCache Cache { get; }
 
     /// <summary>
     /// Gets the task manager of the current <see cref="GraphicsDevice"/>.

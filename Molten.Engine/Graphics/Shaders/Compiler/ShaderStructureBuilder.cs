@@ -1,17 +1,25 @@
-﻿namespace Molten.Graphics;
+﻿using System.Net;
+
+namespace Molten.Graphics;
+
+/// <summary>
+/// Responsible for building the variable structure of a <see cref="ShaderComposition"/>.
+/// </summary>
 internal class ShaderStructureBuilder
 {
-    internal bool Build(ShaderCompilerContext context, HlslShader shader, ShaderCodeResult result, ShaderComposition composition)
+    internal bool Build(ShaderCompilerContext context, ShaderReflection reflection, ShaderComposition composition, ShaderPassDefinition passDef)
     {
-        for (int r = 0; r < result.Reflection.BoundResources.Count; r++)
+        HlslShader shader = composition.Pass.Parent;
+
+        for (int r = 0; r < reflection.BoundResources.Count; r++)
         {
-            ShaderResourceInfo bindInfo = result.Reflection.BoundResources[r];
+            ShaderResourceInfo bindInfo = reflection.BoundResources[r];
             uint bindPoint = bindInfo.BindPoint;
 
             switch (bindInfo.Type)
             {
                 case ShaderInputType.CBuffer:
-                    ConstantBufferInfo bufferInfo = result.Reflection.ConstantBuffers[bindInfo.Name];
+                    ConstantBufferInfo bufferInfo = reflection.ConstantBuffers[bindInfo.Name];
 
                     // Skip binding info buffers
                     if (bufferInfo.Type != ConstantBufferType.ResourceBindInfo)
@@ -30,7 +38,7 @@ internal class ShaderStructureBuilder
                     break;
 
                 case ShaderInputType.Texture:
-                    OnBuildTextureVariable(context, shader, bindInfo);
+                    OnBuildTextureVariable(context, shader, bindInfo, passDef);
                     composition.ResourceIds.Add(bindInfo.BindPoint);
                     break;
 
@@ -49,6 +57,7 @@ internal class ShaderStructureBuilder
                     {
                         shader.SamplerVariables[bindPoint] = sampler;
                     }
+
                     composition.SamplerIds.Add(bindPoint);
                     break;
 
@@ -130,15 +139,17 @@ internal class ShaderStructureBuilder
         return cBuffer;
     }
 
-    private void OnBuildTextureVariable(ShaderCompilerContext context, HlslShader shader, ShaderResourceInfo info)
+    private void OnBuildTextureVariable(ShaderCompilerContext context, HlslShader shader, ShaderResourceInfo info, ShaderPassDefinition passDef)
     {
         ShaderResourceVariable obj = null;
+        GraphicsFormatSupportFlags supportFlags = GraphicsFormatSupportFlags.None;
 
         switch (info.Dimension)
         {
             case ShaderResourceDimension.Texture1DArray:
             case ShaderResourceDimension.Texture1D:
                 obj = GetVariableResource<ShaderResourceVariable<ITexture1D>>(context, shader, info);
+                supportFlags |= GraphicsFormatSupportFlags.Texture1D;
                 break;
 
             case ShaderResourceDimension.Texture2DMS:
@@ -146,20 +157,25 @@ internal class ShaderStructureBuilder
             case ShaderResourceDimension.Texture2DArray:
             case ShaderResourceDimension.Texture2D:
                 obj = GetVariableResource<ShaderResourceVariable<ITexture2D>>(context, shader, info);
+                supportFlags |= GraphicsFormatSupportFlags.Texture2D;
                 break;
 
             case ShaderResourceDimension.Texture3D:
                 obj = GetVariableResource<ShaderResourceVariable<ITexture3D>>(context, shader, info);
+                supportFlags |= GraphicsFormatSupportFlags.Texture3D;
                 break;
 
             case ShaderResourceDimension.TextureCube:
                 obj = GetVariableResource<ShaderResourceVariable<ITextureCube>>(context, shader, info);
+                supportFlags |= GraphicsFormatSupportFlags.Texturecube;
                 break;
         }
 
+        if (passDef.Parameters.Inputs.TryGetValue($"t{info.BindPoint}", out string format))
+            obj.ExpectedFormat = shader.Device.GetBestFormat(format, supportFlags);
+
         if (info.BindPoint >= shader.Resources.Length)
             EngineUtil.ArrayResize(ref shader.Resources, info.BindPoint + 1);
-
         //store the resource variable
         shader.Resources[info.BindPoint] = obj;
     }

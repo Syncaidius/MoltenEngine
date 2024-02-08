@@ -1,56 +1,70 @@
-﻿using System.Collections.Concurrent;
+﻿using System.Collections;
 
-namespace Molten;
+namespace Molten.Cache;
 
 /// <summary>
-/// 
+/// Provides a <see cref="EngineObject"/> caching system to help prevent duplication.
+/// <para>For accurate cache checks, <see cref="IEquatable{T}"/> should be correctly implemented.</para>
 /// </summary>
-/// <typeparam name="K">The <see cref="Type"/> of cache keys.</typeparam>
-/// <typeparam name="V">The type of <see cref="EngineObject"/> to be cached.</typeparam>
-public class ObjectCache<K, V> 
-    where V : EngineObject
+public class ObjectCache
 {
-    ConcurrentDictionary<K, V> Cache { get; }
-    ConcurrentDictionary<ulong, V> CacheByID { get; }
-
-    Func<V> _createCallback;
+    Dictionary<Type, IList> _caches = new Dictionary<Type, IList>();
 
     /// <summary>
-    /// Creates a new instance of <see cref="ObjectCache{K, V}"/>
+    /// Caches the provided object, or disposes it and replaces it with the matching cached object.
     /// </summary>
-    /// <param name="createCallback"></param>
-    public ObjectCache(Func<V> createCallback)
+    /// <typeparam name="T">The type of object to be cached.</typeparam>
+    /// <param name="obj">The object to cache-check.</param>
+    public void Check<T>(ref T obj)
+        where T : EngineObject, IEquatable<T>
     {
-        _createCallback = createCallback;
-        Cache = new ConcurrentDictionary<K, V>();
-        CacheByID = new ConcurrentDictionary<ulong, V>();
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="eoid">The engine-object-identifier (EOID) of the <typeparamref name="V"/> to be retrieved.</param>
-    /// <returns></returns>
-    internal V GetByID(ulong eoid)
-    {
-        if (CacheByID.TryGetValue(eoid, out V format))
-            return format;
-        else
-            return null;
-    }
-
-    /// <summary>Gets an object from the cache using the specified <typeparamref name="K"/> key.</summary>
-    /// <param name="key">The <typeparamref name="K"/> key of the value to be retrieved.</param>
-    /// <returns></returns>
-    internal V Get(K key)
-    {
-        if (!Cache.TryGetValue(key, out V value))
+        // Retrieve correct cache list.
+        List<T> cache;
+        if (_caches.TryGetValue(typeof(T), out IList cacheObj))
         {
-            value = _createCallback();
-            Cache.TryAdd(key, value);
-            CacheByID.TryAdd(value.EOID, value);
+            cache = cacheObj as List<T>;
+
+            // Check cache for a matching object.
+            foreach (T item in cache)
+            {
+                if (obj.Equals(item))
+                {
+                    obj.Dispose();
+                    obj = item;
+                    return;
+                }
+            }
+        }
+        else
+        {
+            cache = new List<T>();
+            _caches.Add(typeof(T), cache);
         }
 
-        return default(V);
+        // No match found. Add the provided object to the cache.
+        cache.Add(obj);
+    }
+
+    /// <summary>
+    /// Adds the provided <paramref name="obj"/> to the cache without checking for duplicates.
+    /// </summary>
+    /// <typeparam name="T">The type of <see cref="EngineObject"/> to be added.</typeparam>
+    /// <param name="obj"></param>
+    public void Add<T>(T obj)
+        where T : EngineObject, IEquatable<T>
+    {
+        // Retrieve correct cache list.
+        List<T> cache;
+        if (_caches.TryGetValue(typeof(T), out IList cacheObj))
+        {
+            cache = cacheObj as List<T>;
+        }
+        else
+        {
+            cache = new List<T>();
+            _caches.Add(typeof(T), cache);
+        }
+
+        cache.Add(obj);
     }
 }
