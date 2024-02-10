@@ -243,14 +243,14 @@ public abstract class ShaderCompiler : EngineObject
                     if (passDef.Parameters.Formats.TryGetValue($"os{slot}", out GraphicsFormat format))
                         pass.FormatLayout.RawFormats[slot] = (byte)format;
                     else
-                        context.AddError($"No 'os{slot}' format defined for output surface {i} in pass '{passDef.Name}'");
+                        context.AddError($"No 'os{slot}' format defined for output surface {i} in pass '{passDef.Name}' of '{parent.Name}'");
                 }
 
                 // Apply depth-stencil format if either depth or stencil testing is enabled.
                 if(passDef.Parameters.Formats.TryGetValue("depth", out GraphicsFormat depthFormat))
                     pass.FormatLayout.Depth = depthFormat.ToDepthFormat();
                 else if(passDef.Parameters.IsDepthEnabled || passDef.Parameters.IsStencilEnabled)
-                    context.AddError($"No 'depth' format defined for depth-stencil surface in pass '{passDef.Name}'");
+                    context.AddError($"No 'depth' format defined for depth-stencil surface in pass '{passDef.Name}' of '{parent.Name}'");
             }
         }
 

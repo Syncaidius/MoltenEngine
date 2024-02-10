@@ -11,6 +11,12 @@
 				"entry": {
 					"vertex": "VS",
 					"fragment": "PS"
+				},
+				"parameters": {
+					"formats": {
+						"os0": "R8G8B8A8_SNorm",
+						"depth": "R24G8"
+					}
 				}
 			}
 		]

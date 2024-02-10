@@ -16,9 +16,9 @@
           "depth": "default",
           "rasterizer": "default",
           "formats": {
-            "t0": "R8G8B8A8_SNorm",
-            "t1": "R11G11B10_Float",
-            "t2": "R8G8B8A8_SNorm",
+            "os0": "R8G8B8A8_SNorm",
+            "os1": "R11G11B10_Float",
+            "os2": "R8G8B8A8_SNorm",
             "depth": "R24G8"
           }
         }
@@ -36,17 +36,18 @@
         "iterations": 1,
         "entry": {
           "vertex": "VS",
-          "fragment": "PS"
+          "fragment": "PS_Basic"
         },
         "parameters": {
           "blend": "default",
           "depth": "default",
-          "rasterizer": "default"
-        },
-        "formats": {
-          "t0": "R8G8B8A8_SNorm",
-          "t2": "R8G8B8A8_SNorm",
-          "depth": "R24G8"
+          "rasterizer": "default",
+          "formats": {
+            "os0": "R8G8B8A8_SNorm",
+            "os1": "R11G11B10_Float",
+            "os2": "R8G8B8A8_SNorm",
+            "depth": "R24G8"
+          }
         }
       }
     ]
@@ -68,7 +69,12 @@
         "parameters": {
           "blend": "PreMultipliedAlpha",
           "depth": "default",
-          "rasterizer": "ScissorTest"
+          "rasterizer": "ScissorTest",
+          "formats": {
+            "os0": "R8G8B8A8_SNorm",
+            "os2": "R8G8B8A8_SNorm",
+            "depth": "R24G8"
+          }
         }
       }
     ]
