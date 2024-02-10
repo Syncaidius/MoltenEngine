@@ -32,11 +32,11 @@ internal class PipelineStateBuilderDX12
             DS = _pass.GetBytecode(ShaderType.Domain),
             HS = _pass.GetBytecode(ShaderType.Hull),
             PS = _pass.GetBytecode(ShaderType.Pixel),
+            PrimitiveTopologyType = pass.GeometryPrimitive.ToApiToplogyType(),
 
             PRootSignature = null,
             NodeMask = 0,               // TODO Set this to the node mask of the device.
             CachedPSO = default,        // TODO Implement PSO caching
-            DSVFormat = Format.FormatUnknown,
             IBStripCutValue = IndexBufferStripCutValue.ValueDisabled,
             StreamOutput = default,     // TODO Implement stream output
             SampleDesc = default,       // TODO Implement multisampling
@@ -53,6 +53,33 @@ internal class PipelineStateBuilderDX12
                     _desc.RTVFormats[i] = (Format)pass.FormatLayout.RawFormats[i];
             }
         }
+
+        // Populate depth surface format if depth and/or stencil testing is enabled
+        if (_pass.DepthState.Description.Desc.DepthEnable
+            || _pass.DepthState.Description.Desc.StencilEnable)
+        {
+            Format format = (Format)pass.FormatLayout.Depth.ToGraphicsFormat();
+            _desc.DSVFormat = format;
+        }
+    }
+
+    internal void SetSurfaces(params IRenderSurface[] surfaces)
+    {
+        if (_pass == null)
+            throw new Exception("Begin() must be called before any configuration methods are called.");
+
+        if (!_pass.HasComposition(ShaderType.Pixel))
+        {
+            _pass.Device.Log.Error($"The current pass '{_pass.Parent.Name}/{_pass.Name}' does not have a pixel shader, so no render targets can be set.");
+            return;
+        }
+        else if (_desc.NumRenderTargets != surfaces.Length)
+        {
+            _pass.Device.Log.Error($"The current pass '{_pass.Parent.Name}/{_pass.Name}' is expecting {_desc.NumRenderTargets} surfaces, but received {surfaces.Length}.");
+            return;
+        }
+
+        // TODO Pick the variant PSO from the current pass which accepts the provided surface formats.
     }
 
     internal unsafe void SetCacheBlob(CachedPipelineState cachedState)

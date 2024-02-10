@@ -30,6 +30,27 @@ internal static class ShaderInterop
         };
     }
 
+    internal static PrimitiveTopologyType ToApiToplogyType(this GeometryHullTopology topology)
+    {
+        switch (topology)
+        {
+            case GeometryHullTopology.Triangle:
+            case GeometryHullTopology.TriangleAdjacency:
+                return PrimitiveTopologyType.Triangle;
+
+            case GeometryHullTopology.Line:
+                return PrimitiveTopologyType.Line;
+
+            case GeometryHullTopology.Point:
+                return PrimitiveTopologyType.Point;
+        }
+
+        if (topology >= GeometryHullTopology.Control1PointPatch && topology <= GeometryHullTopology.Control32PointPatch)
+            return PrimitiveTopologyType.Patch;
+
+        return PrimitiveTopologyType.Undefined;
+    }
+
     public static GeometryHullTopology FromApi(this D3DPrimitiveTopology topology)
     {
         switch (topology)

@@ -199,12 +199,12 @@ public partial class ShaderPassParameters
 
     #region Depth-Stencil Parameters
     /// <summary>
-    /// Gets or sets whether or not depth-mapping is enabled.
+    /// Gets or sets whether or not depth testing is enabled.
     /// </summary>
     public bool IsDepthEnabled;
 
     /// <summary>
-    /// Gets or sets whether or not stencil-mapping is enabled.
+    /// Gets or sets whether or not stencil testing is enabled.
     /// </summary>
     public bool IsStencilEnabled;
 
