@@ -45,53 +45,28 @@ internal class PipelineStateBuilderDX12
         // Find out how many render targets to expect.
         ShaderComposition ps = _pass[ShaderType.Pixel];
         if (ps != null)
+        {
             _desc.NumRenderTargets = (uint)ps.OutputLayout.Metadata.Length;
+            unsafe
+            {
+                for (int i = 0; i < _desc.NumRenderTargets; i++)
+                    _desc.RTVFormats[i] = (Format)pass.FormatLayout.RawFormats[i];
+            }
+        }
     }
 
-    internal void SetSurfaces(params IRenderSurface[] surfaces)
+    internal unsafe void SetCacheBlob(CachedPipelineState cachedState)
     {
-        if (_pass == null)
-            throw new Exception("Begin() must be called before any configuration methods are called.");
+        if(cachedState.PCachedBlob == null)
+            throw new Exception("The provided cached state does not contain a valid blob pointer.");
 
-        if (!_pass.HasComposition(ShaderType.Pixel))
-        {
-            _pass.Device.Log.Error($"The current pass '{_pass.Parent.Name}/{_pass.Name}' does not have a pixel shader, so no render targets can be set.");
-            return;
-        }
-        else if (_desc.NumRenderTargets != surfaces.Length)
-        {
-            _pass.Device.Log.Error($"The current pass '{_pass.Parent.Name}/{_pass.Name}' is expecting {_desc.NumRenderTargets} surfaces, but received {surfaces.Length}.");
-            return;
-        }
-
-        if(_pass.FormatLayout.ValidateFormats(surfaces) > -1)
-        {
-            _pass.Device.Log.Error($"The current pass '{_pass.Parent.Name}/{_pass.Name}' has a format layout mismatch with the provided surfaces.");
-            _pass.FormatLayout.LogDifference(_pass.Device.Log, surfaces);
-            return;
-        }
-
-        for (int i = 0; i < _desc.NumRenderTargets; i++)
-            _desc.RTVFormats[i] = surfaces[i].ResourceFormat.ToApi();
+        _desc.CachedPSO = cachedState;
     }
 
     internal unsafe PipelineStateDX12 End()
     {
         if(_pass == null)
             throw new Exception("Begin() must be called before End() is called.");
-
-        // If render targets are expected, validate the formats.
-        if(_desc.NumRenderTargets > 0)
-        {
-            for (int i = 0; i < _desc.NumRenderTargets; i++)
-            {
-                if (_desc.RTVFormats[0] == Format.FormatUnknown)
-                {
-                    _pass.Device.Log.Error($"The current pass '{_pass.Parent.Name}/{_pass.Name}' has not had any render targets set.");
-                    return null;
-                }
-            }
-        }
 
         DeviceDX12 device = _pass.Device as DeviceDX12;
 

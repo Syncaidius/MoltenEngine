@@ -34,18 +34,6 @@ public abstract partial class GraphicsDevice : EngineObject
     ThreadedList<GraphicsObject> _disposals;
     ThreadedList<ISwapChainSurface> _outputSurfaces;
 
-    static GraphicsFormat[] _formats;
-    static Dictionary<string, GraphicsFormat> _formatsByName;
-    static readonly string[] _formatTypes = ["unorm", "snorm", "uint", "sint", "float"];
-
-    static GraphicsDevice()
-    {
-        _formats = Enum.GetValues<GraphicsFormat>();
-        _formatsByName = new Dictionary<string, GraphicsFormat>();
-        for (int i = 0; i < _formats.Length; i++)
-            _formatsByName.Add(_formats[i].ToString().ToLower(), _formats[i]);
-    }
-
     /// <summary>
     /// Creates a new instance of <see cref="GraphicsDevice"/>.
     /// </summary>

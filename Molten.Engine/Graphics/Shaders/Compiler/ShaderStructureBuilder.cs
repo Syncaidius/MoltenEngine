@@ -171,13 +171,16 @@ internal class ShaderStructureBuilder
                 break;
         }
 
+        // Set the expected format.
         if (passDef.Parameters.Formats.TryGetValue($"t{info.BindPoint}", out GraphicsFormat format))
             obj.ExpectedFormat = format;
         else
             context.AddError($"Format 't{info.BindPoint}' not defined for texture ('{info.Name}') in pass '{passDef.Name}'");
 
+        // Ensure the parent shader's resource array is large enough to store the new resource bind-point.
         if (info.BindPoint >= shader.Resources.Length)
             EngineUtil.ArrayResize(ref shader.Resources, info.BindPoint + 1);
+
         //store the resource variable
         shader.Resources[info.BindPoint] = obj;
     }

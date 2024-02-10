@@ -36,9 +36,9 @@ cbuffer Common : register(b1)
 
 cbuffer Object : register(b2)
 {
-	float4x4 wvp : packoffset(c0);
-	float4x4 world : packoffset(c4);
-	float emissivePower : packoffset(c8);
+    float4x4 wvp : packoffset(c0);
+    float4x4 world : packoffset(c4);
+    float emissivePower : packoffset(c8);
 }
 
 SamplerState texSampler : register(s1);
@@ -50,37 +50,39 @@ Texture2D<float> mapDepth		: register(t4);
 
 static const float2 g_SpecPowerRange = { 10.0, 250.0 };
 
-struct MATERIAL{
-	float3 colorData;
-	float4 worldPos;
-	float3 normal;
-	float3 specular;
-	float2 uv;
-	float depth;
+struct MATERIAL
+{
+    float3 colorData;
+    float4 worldPos;
+    float3 normal;
+    float3 specular;
+    float2 uv;
+    float depth;
 };
 
-MATERIAL UnpackGBuffer(float3 screenPos){
-	MATERIAL o = (MATERIAL)0;
+MATERIAL UnpackGBuffer(float3 screenPos)
+{
+    MATERIAL o = (MATERIAL) 0;
 
 	// Obtain screen position
-	screenPos.xy /= screenPos.z;
+    screenPos.xy /= screenPos.z;
 
 	// Obtain textureCoordinates corresponding to the current pixel
 	// The screen coordinates are in [-1,1]*[1,-1]
 	// The texture coordinates need to be in [0,1]*[0,1]
-	o.uv = 0.5f * (float2(screenPos.x, -screenPos.y) + 1);
-	o.uv *= maxSurfaceUV;
+    o.uv = 0.5f * (float2(screenPos.x, -screenPos.y) + 1);
+    o.uv *= maxSurfaceUV;
 
 	// Get color and specular
-	float4 colorData = mapDiffuse.Sample(texSampler, o.uv);
-	float3 normalData = mapNormal.Sample(texSampler, o.uv);
-	float4 specData = mapSpecular.Sample(texSampler, o.uv);
+    float4 colorData = mapDiffuse.Sample(texSampler, o.uv);
+    float3 normalData = mapNormal.Sample(texSampler, o.uv);
+    float4 specData = mapSpecular.Sample(texSampler, o.uv);
 
 	// Tranform normal back into [-1,1] range
-	o.normal = 2.0f * normalData.xyz - 1.0f;
+    o.normal = 2.0f * normalData.xyz - 1.0f;
 
-	o.colorData = colorData.rgb;
-	o.specular = specData.rgb;
+    o.colorData = colorData.rgb;
+    o.specular = specData.rgb;
 
 	// UNUSED
 	// colorData.a
@@ -88,16 +90,16 @@ MATERIAL UnpackGBuffer(float3 screenPos){
 	// there is no normal.a because of 11,11,10 bit channels.
 
 	// Read depth
-	o.depth = mapDepth.Sample(texSampler, o.uv).r;
+    o.depth = mapDepth.Sample(texSampler, o.uv).r;
 
 	// Compute screen-space position
-	o.worldPos.xy = screenPos.xy;
-	o.worldPos.z = o.depth;
-	o.worldPos.w = 1.0f;
+    o.worldPos.xy = screenPos.xy;
+    o.worldPos.z = o.depth;
+    o.worldPos.w = 1.0f;
 
 	// Transform to world space
-	o.worldPos = mul(o.worldPos, invViewProjection);
-	o.worldPos /= o.worldPos.w;
+    o.worldPos = mul(o.worldPos, invViewProjection);
+    o.worldPos /= o.worldPos.w;
 
-	return o;
+    return o;
 }

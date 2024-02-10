@@ -19,7 +19,8 @@
           "rasterizer": "ScissorTest",
           "Topology": "Point",
           "formats": {
-            "t0": "R8G8B8A8_SNorm",
+            "t1": "R8G8B8A8_SNorm",
+            "os0": "R8G8B8A8_UNorm",
             "depth": "R24G8"
           }
         }
@@ -47,7 +48,8 @@
           "rasterizer": "ScissorTest",
           "Topology": "Point",
           "formats": {
-            "t0": "R8G8B8A8_SNorm",
+            "t1": "R8G8B8A8_SNorm",
+            "os0": "R8G8B8A8_UNorm",
             "depth": "R24G8"
           }
         }
@@ -75,7 +77,8 @@
           "rasterizer": "ScissorTest",
           "Topology": "Point",
           "formats": {
-            "t0": "R8G8B8A8_SNorm",
+            "t1": "R8G8B8A8_SNorm",
+            "os0": "R8G8B8A8_UNorm",
             "depth": "R24G8"
           }
         }
@@ -103,7 +106,8 @@
           "rasterizer": "ScissorTest",
           "Topology": "Point",
           "formats": {
-            "t0": "R8G8B8A8_SNorm",
+            "t1": "R8G8B8A8_SNorm",
+            "os0": "R8G8B8A8_UNorm",
             "depth": "R24G8"
           }
         }
@@ -131,7 +135,8 @@
           "rasterizer": "ScissorTest",
           "Topology": "Point",
           "formats": {
-            "t0": "R8G8B8A8_SNorm",
+            "t1": "R8G8B8A8_SNorm",
+            "os0": "R8G8B8A8_UNorm",
             "depth": "R24G8"
           }
         }
@@ -159,7 +164,8 @@
           "rasterizer": "ScissorTest",
           "Topology": "Point",
           "formats": {
-            "t0": "R8G8B8A8_SNorm",
+            "t1": "R8G8B8A8_SNorm",
+            "os0": "R8G8B8A8_UNorm",
             "depth": "R24G8"
           }
         }
@@ -187,7 +193,8 @@
           "rasterizer": "ScissorTest",
           "Topology": "Point",
           "formats": {
-            "t0": "R8G8B8A8_SNorm",
+            "t1": "R8G8B8A8_SNorm",
+            "os0": "R8G8B8A8_UNorm",
             "depth": "R24G8"
           }
         }

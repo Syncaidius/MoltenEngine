@@ -199,7 +199,7 @@ public abstract class ShaderCompiler : EngineObject
             if (string.IsNullOrWhiteSpace(context.EntryPoint))
             {
                 if (_mandatoryShaders.Contains(epType))
-                    context.AddError($"Mandatory '{epType}' point for  shader is missing.");
+                    context.AddError($"Mandatory {epType} entry-point for shader is missing.");
 
                 continue;
             }
@@ -214,7 +214,7 @@ public abstract class ShaderCompiler : EngineObject
                 {
                     if (!Validate(pass, context, cResult))
                     {
-                        context.AddError($"{context.Source.Filename}: Validation failed for '{epType}' stage of shader pass.");
+                        context.AddError($"{context.Source.Filename}: Validation failed for {epType} stage of shader pass.");
                         return;
                     } 
                     
@@ -236,14 +236,21 @@ public abstract class ShaderCompiler : EngineObject
 
             if(epType == ShaderType.Pixel)
             {
+                // Apply output surface formats.
                 for(int i = 0; i < sc.OutputLayout.Metadata.Length; i++)
                 {
                     uint slot = sc.OutputLayout.Metadata[i].SemanticIndex;
-                    if (passDef.Parameters.Formats.TryGetValue($"rt{slot}", out GraphicsFormat format))
+                    if (passDef.Parameters.Formats.TryGetValue($"os{slot}", out GraphicsFormat format))
                         pass.FormatLayout.RawFormats[slot] = (byte)format;
                     else
                         context.AddError($"No format defined for output surface 'os{slot}' in pass '{passDef.Name}'");
                 }
+
+                // Apply depth-stencil format.
+                if(passDef.Parameters.Formats.TryGetValue("depth", out GraphicsFormat depthFormat))
+                    pass.FormatLayout.Depth = depthFormat.ToDepthFormat();
+                else
+                    context.AddError($"No 'depth' format defined in pass '{passDef.Name}'");
             }
         }
 

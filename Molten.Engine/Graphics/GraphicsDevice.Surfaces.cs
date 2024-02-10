@@ -2,7 +2,7 @@
 
 public abstract partial class GraphicsDevice
 {
-    public abstract IRenderSurface2D CreateSurface(uint width, uint height, GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm, 
+    public abstract IRenderSurface2D CreateSurface(uint width, uint height, GraphicsFormat format = GraphicsFormat.R8G8B8A8_UNorm, 
         GraphicsResourceFlags flags = GraphicsResourceFlags.GpuWrite,
         uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, string name = null);
 
