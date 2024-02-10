@@ -10,34 +10,34 @@ public unsafe struct ShaderFormatLayout : IEquatable<ShaderFormatLayout>
     public ulong FormatMask;
 
     [FieldOffset(0)]
-    fixed byte RawFormats[8];
+    public fixed byte RawFormats[8];
 
     [FieldOffset(0)]
-    GraphicsFormat Target0;
+    public GraphicsFormat Target0;
 
     [FieldOffset(1)]
-    GraphicsFormat Target1;
+    public GraphicsFormat Target1;
 
     [FieldOffset(2)]
-    GraphicsFormat Target2;
+    public GraphicsFormat Target2;
 
     [FieldOffset(3)]
-    GraphicsFormat Target3;
+    public GraphicsFormat Target3;
 
     [FieldOffset(4)]
-    GraphicsFormat Target4;
+    public GraphicsFormat Target4;
 
     [FieldOffset(5)]
-    GraphicsFormat Target5;
+    public GraphicsFormat Target5;
 
     [FieldOffset(6)]
-    GraphicsFormat Target6;
+    public GraphicsFormat Target6;
 
     [FieldOffset(7)]
-    GraphicsFormat Target7;
+    public GraphicsFormat Target7;
 
     [FieldOffset(8)]
-    DepthFormat Depth;
+    public DepthFormat Depth;
 
     public bool Equals(ShaderFormatLayout other)
     {

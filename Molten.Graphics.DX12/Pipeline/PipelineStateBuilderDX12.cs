@@ -9,6 +9,11 @@ internal class PipelineStateBuilderDX12
     GraphicsPipelineStateDesc _desc;
     ShaderPassDX12 _pass;
 
+    /// <summary>
+    /// Begins construction of a new pipeline state object (PSO) for the provided shader pass.
+    /// </summary>
+    /// <param name="pass"></param>
+    /// <exception cref="Exception"></exception>
     internal void Begin(ShaderPassDX12 pass)
     {
         if (_pass != null)
@@ -75,7 +80,18 @@ internal class PipelineStateBuilderDX12
         if(_pass == null)
             throw new Exception("Begin() must be called before End() is called.");
 
-        // TODO validate _desc before proceeding. e.g. _desc.RTVFormats is set.
+        // If render targets are expected, validate the formats.
+        if(_desc.NumRenderTargets > 0)
+        {
+            for (int i = 0; i < _desc.NumRenderTargets; i++)
+            {
+                if (_desc.RTVFormats[0] == Format.FormatUnknown)
+                {
+                    _pass.Device.Log.Error($"The current pass '{_pass.Parent.Name}/{_pass.Name}' has not had any render targets set.");
+                    return null;
+                }
+            }
+        }
 
         DeviceDX12 device = _pass.Device as DeviceDX12;
 
