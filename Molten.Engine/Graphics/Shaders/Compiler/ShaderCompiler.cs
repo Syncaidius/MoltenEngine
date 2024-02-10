@@ -179,6 +179,17 @@ public abstract class ShaderCompiler : EngineObject
         HlslPass pass = Device.CreateShaderPass(parent, passDef.Name ?? "Unnamed pass");
         PassCompileResult result = new PassCompileResult(pass);
 
+        // Populate the format lookup of the pass parameters.
+        foreach (KeyValuePair<string, string> p in passDef.Parameters.RawFormats)
+        {
+            if (Enum.TryParse(p.Value, true, out GraphicsFormat format))
+                passDef.Parameters.Formats[p.Key] = format;
+            else if (Enum.TryParse(p.Value, true, out DepthFormat depthFormat))
+                passDef.Parameters.Formats[p.Key] = depthFormat.ToGraphicsFormat();
+            else
+                context.AddError($"Invalid format '{p.Value}' for '{p.Key}' in pass '{passDef.Name}'");
+        }
+
         // Compile each stage of the material pass.
         foreach (ShaderType epType in passDef.Entry.Points.Keys)
         {
@@ -222,6 +233,18 @@ public abstract class ShaderCompiler : EngineObject
             sc.PtrShader = BuildNativeShader(pass, epType, cResult.ByteCode, cResult.NumBytes);
             sc.InputLayout = BuildIO(cResult, ShaderIOLayoutType.Input);
             sc.OutputLayout = BuildIO(cResult, ShaderIOLayoutType.Output);
+
+            if(epType == ShaderType.Pixel)
+            {
+                for(int i = 0; i < sc.OutputLayout.Metadata.Length; i++)
+                {
+                    uint slot = sc.OutputLayout.Metadata[i].SemanticIndex;
+                    if (passDef.Parameters.Formats.TryGetValue($"rt{slot}", out GraphicsFormat format))
+                        pass.FormatLayout.RawFormats[slot] = (byte)format;
+                    else
+                        context.AddError($"No format defined for output surface 'os{slot}' in pass '{passDef.Name}'");
+                }
+            }
         }
 
         if (!context.HasErrors)

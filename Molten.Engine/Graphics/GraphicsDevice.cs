@@ -71,35 +71,6 @@ public abstract partial class GraphicsDevice : EngineObject
         bufferingMode.OnChanged += BufferingMode_OnChanged;
     }
 
-    public GraphicsFormat GetBestFormat(string formatName, GraphicsFormatSupportFlags flags)
-    {
-        formatName = formatName.ToLower();
-
-        // First look for exact matches and take the first one, if available.
-        string[] matches = _formatsByName.Keys.Where(x => x == formatName).ToArray();
-        if (matches.Length > 0)
-        {
-            // Check if device supports format.
-            if (IsFormatSupported(_formatsByName[matches[0]], flags))
-                return _formatsByName[matches[0]];
-        }
-        else // Now find partial matches.
-        {
-            matches = _formatsByName.Keys.Where(x => x.Contains(formatName)).ToArray();
-            for(int i = 0; i < _formatTypes.Length; i++)
-            {
-                string format = $"{formatName}_{_formatTypes[i]}";
-                if (_formatsByName.TryGetValue(format, out GraphicsFormat result))
-                {
-                    if (IsFormatSupported(result, flags))
-                        return result;
-                }
-            }
-        }
-
-        return GraphicsFormat.Unknown;
-    }
-
     /// <summary>
     /// Gets whether or not the provided <see cref="GraphicsFormatSupportFlags"/> are supported
     /// by the current <see cref="GraphicsDevice"/> for the specified <see cref="GraphicsFormat"/>.

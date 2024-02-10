@@ -531,6 +531,12 @@ public static class GraphicsFormatExtensions
             case GraphicsFormat.D24_UNorm_S8_UInt:
                 return DepthFormat.R24G8;
 
+            case GraphicsFormat.R16_Typeless:
+                return DepthFormat.R16;
+
+            case GraphicsFormat.R32G8X24_Typeless:
+                return DepthFormat.R32G8X24;
+
             case GraphicsFormat.R32_Float:
             case GraphicsFormat.D32_Float:
                 return DepthFormat.R32;

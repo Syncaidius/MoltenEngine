@@ -49,26 +49,6 @@ public abstract class HlslPass : GraphicsObject, IEnumerable<ShaderComposition>,
         ComputeGroups = new Vector3UI(parameters.GroupsX, parameters.GroupsY, parameters.GroupsZ);
         Topology = parameters.Topology;
 
-        if (_compositions.TryGetValue(ShaderType.Pixel, out ShaderComposition ps))
-        {
-            // Set render target output formats
-            for (int i = 0; i < ps.OutputLayout.Metadata.Length; i++)
-            {
-                if (parameters.Formats.TryGetValue($"rt{i}", out string format))
-                {
-                    GraphicsFormat best = Device.GetBestFormat(format, GraphicsFormatSupportFlags.RenderTarget);
-                    if (best == GraphicsFormat.Unknown)
-                        Device.Log.Error($"The format '{format}' is invalid or not supported for render surface usage.");
-                    else
-                        FormatLayout.RawFormats[i] = (byte)best;
-                }
-                else
-                {
-                    FormatLayout.RawFormats[i] = (byte)GraphicsFormat.R8G8B8A8_SNorm;
-                }
-            }
-        }
-
         OnInitialize(ref parameters);
     }
 

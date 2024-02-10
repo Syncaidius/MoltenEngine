@@ -297,6 +297,10 @@ public partial class ShaderPassParameters
 
     public PrimitiveTopology Topology;
 
-    public Dictionary<string, string> Formats { get; set; } = new();
+    [JsonProperty("formats")]
+    public Dictionary<string, string> RawFormats { get; set; } = new();
+
+    [JsonIgnore]
+    public Dictionary<string, GraphicsFormat> Formats { get; } = new();
     #endregion
 }
