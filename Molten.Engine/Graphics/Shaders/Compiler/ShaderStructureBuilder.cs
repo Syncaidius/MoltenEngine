@@ -173,9 +173,17 @@ internal class ShaderStructureBuilder
         if (passDef.Parameters.Formats.TryGetValue($"t{info.BindPoint}", out GraphicsFormat format))
         {
             if (!shader.Device.IsFormatSupported(format, supportFlags))
-                context.AddError($"Format 't{info.BindPoint}' is not supported for texture ('{info.Name}') in pass '{passDef.Name}'");
-
-            obj.ExpectedFormat = format;
+            {
+                GraphicsFormatSupportFlags supported = shader.Device.GetFormatSupport(format);
+                context.AddError($"Format 't{info.BindPoint}' not supported for texture ('{info.Name}') in pass '{passDef.Name}'");
+                context.AddError($"\tFormat: {format}");
+                context.AddError($"\tSupported: {supported}");
+                context.AddError($"\tRequired support: {supportFlags}");
+            }
+            else
+            {
+                obj.ExpectedFormat = format;
+            }
         }
         else
         {
