@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace Molten.Graphics;
+﻿namespace Molten.Graphics;
 
 /// <summary>
 /// Responsible for building the variable structure of a <see cref="ShaderComposition"/>.
@@ -173,9 +171,16 @@ internal class ShaderStructureBuilder
 
         // Set the expected format.
         if (passDef.Parameters.Formats.TryGetValue($"t{info.BindPoint}", out GraphicsFormat format))
+        {
+            if (!shader.Device.IsFormatSupported(format, supportFlags))
+                context.AddError($"Format 't{info.BindPoint}' is not supported for texture ('{info.Name}') in pass '{passDef.Name}'");
+
             obj.ExpectedFormat = format;
+        }
         else
+        {
             context.AddError($"Format 't{info.BindPoint}' not defined for texture ('{info.Name}') in pass '{passDef.Name}'");
+        }
 
         // Ensure the parent shader's resource array is large enough to store the new resource bind-point.
         if (info.BindPoint >= shader.Resources.Length)

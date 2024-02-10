@@ -36,7 +36,6 @@ internal class PipelineStateBuilderDX12
 
             PRootSignature = null,
             NodeMask = 0,               // TODO Set this to the node mask of the device.
-            CachedPSO = default,        // TODO Implement PSO caching
             IBStripCutValue = IndexBufferStripCutValue.ValueDisabled,
             StreamOutput = default,     // TODO Implement stream output
             SampleDesc = default,       // TODO Implement multisampling
