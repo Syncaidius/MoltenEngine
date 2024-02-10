@@ -1,4 +1,5 @@
-﻿using Silk.NET.Direct3D12;
+﻿using Silk.NET.Core.Native;
+using Silk.NET.Direct3D12;
 
 namespace Molten.Graphics.DX12;
 
@@ -33,6 +34,18 @@ internal unsafe class PipelineStateDX12 : GraphicsObject<DeviceDX12>, IEquatable
         _stateRasterizer = pass.RasterizerState;
 
         IsTemplate = isTemplate;
+    }
+
+    public CachedPipelineState GetCachedBlob()
+    {
+        ID3D10Blob* blob;
+        _handle->GetCachedBlob(&blob);
+
+        return new CachedPipelineState()
+        {
+           PCachedBlob = blob,
+           CachedBlobSizeInBytes = blob->GetBufferSize(),
+        };
     }
 
     public bool Equals(PipelineStateDX12 other)

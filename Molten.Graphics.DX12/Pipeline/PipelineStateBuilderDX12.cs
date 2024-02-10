@@ -42,7 +42,7 @@ internal class PipelineStateBuilderDX12
             SampleDesc = default,       // TODO Implement multisampling
         };
 
-        // Find out how many render targets to expect.
+        // Populate render target formats if a pixel shader is present in the pass.
         ShaderComposition ps = _pass[ShaderType.Pixel];
         if (ps != null)
         {
