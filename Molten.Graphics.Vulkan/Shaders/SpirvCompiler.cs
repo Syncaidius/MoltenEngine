@@ -324,12 +324,12 @@ internal class SpirvCompiler : DxcCompiler
             ShaderParameterInfo p = new ShaderParameterInfo()
             {
                 ComponentType = GetRegisterType(v.Type),
-                Mask = ShaderComponentMaskFlags.All,
+                Mask = ShaderComponentMaskFlags.All, // TODO populate
                 ReadWriteMask = ShaderComponentMaskFlags.All,
                 MinPrecision = GetMinPrecision(v.Type),
                 Register = v.Binding.HasValue ? v.Binding.Value : 0,
                 SemanticIndex = v.Binding.HasValue ? v.Binding.Value : 0,
-                Stream = 0,
+                Stream = 0, // TODO populate - Needed for geometry stream output
             };
 
             ProcessDecorations(p, v);

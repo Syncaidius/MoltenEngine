@@ -58,7 +58,7 @@ public class ShaderParameterInfo : IDisposable
     /// </summary>
     public ShaderMinPrecision MinPrecision;
 
-    unsafe void IDisposable.Dispose()
+    public unsafe void Dispose()
     {
         SilkMarshal.FreeString((nint)SemanticNamePtr);
     }

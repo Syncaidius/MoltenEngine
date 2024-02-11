@@ -59,6 +59,12 @@ public class ShaderReflection : IDisposable
         foreach (ReflectionPtr ptr in _disposablePointers)
             ptr.Dispose();
 
+        foreach(ShaderParameterInfo param in InputParameters)
+            param.Dispose();
+
+        foreach (ShaderParameterInfo param in OutputParameters)
+            param.Dispose();
+
         _disposablePointers.Clear();
     }
 }

@@ -31,7 +31,20 @@ public unsafe abstract class ShaderIOLayout : EngineObject, IEquatable<ShaderIOL
 
         public uint Register;
 
+        /// <summary>
+        /// The type of each component within the element. e.g. A float4 would have a component type of float32.
+        /// </summary>
         public ShaderRegisterType ComponentType;
+
+        /// <summary>
+        /// The number of components in the element. e.g. A float4 would have a component count of 4.
+        /// </summary>
+        public uint ComponentCount;
+
+        /// <summary>
+        /// Gets the stream-output stream ID. This should be ignored if the element isn't a GS output element.
+        /// </summary>
+        public uint StreamOutput;
     }
 
     static IntPtrComparer _ptrComparer = new IntPtrComparer();
@@ -133,7 +146,9 @@ public unsafe abstract class ShaderIOLayout : EngineObject, IEquatable<ShaderIOL
                 SystemValueType = pInfo.SystemValueType,
                 SemanticIndex = pInfo.SemanticIndex,
                 Register = pInfo.Register,
-                ComponentType = pInfo.ComponentType
+                ComponentType = pInfo.ComponentType,
+                ComponentCount = pInfo.Mask.GetComponentCount(),
+                StreamOutput = pInfo.Stream,
             };
         }
     }

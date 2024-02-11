@@ -2,6 +2,7 @@
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
 using Silk.NET.DXGI;
+using System.Runtime.InteropServices;
 
 namespace Molten.Graphics.DX12.Pipeline;
 
@@ -40,6 +41,7 @@ internal class PipelineStateBuilderDX12
     internal unsafe PipelineStateDX12 Build(
         ShaderPassDX12 pass, 
         PipelineInputLayoutDX12 layout, 
+        IndexBufferStripCutValue indexStripCutValue = IndexBufferStripCutValue.ValueDisabled,
         CachedPipelineState? cachedState = null)
     {
         CacheInfo cacheInfo = new()
@@ -70,8 +72,6 @@ internal class PipelineStateBuilderDX12
             PRootSignature = null,
             NodeMask = 0,               // TODO Set this to the node mask of the device.
             IBStripCutValue = IndexBufferStripCutValue.ValueDisabled,
-            StreamOutput = default,     // TODO Set this based on the OutputLayout of a Geometry shader stage. If a pixel shader is present, we don't set this.
-            SampleDesc = default,       // TODO Implement multisampling
         };
 
         // Check if cache data can be set.
@@ -91,10 +91,41 @@ internal class PipelineStateBuilderDX12
         if (ps != null)
         {
             desc.NumRenderTargets = (uint)ps.OutputLayout.Metadata.Length;
-            unsafe
+
+            for (int i = 0; i < desc.NumRenderTargets; i++)
+                desc.RTVFormats[i] = (Format)pass.FormatLayout.RawFormats[i];
+        }
+        else // ... If no pixel shader is present, but a geometry shader is, populate the stream output format.
+        {
+            ShaderComposition gs = pass[ShaderType.Geometry];
+            if (gs != null)
             {
-                for (int i = 0; i < desc.NumRenderTargets; i++)
-                    desc.RTVFormats[i] = (Format)pass.FormatLayout.RawFormats[i];
+                int numEntries = gs.OutputLayout.Metadata.Length;   
+                SODeclarationEntry* entries = stackalloc SODeclarationEntry[numEntries];
+                for(int i = 0; i < numEntries; i++)
+                {
+                    ref ShaderIOLayout.ElementMetadata meta = ref gs.OutputLayout.Metadata[i];
+
+                    entries[i] = new SODeclarationEntry()
+                    {
+                        Stream = meta.StreamOutput,
+                        SemanticName = (byte*)SilkMarshal.StringToPtr(meta.Name, NativeStringEncoding.UTF8),
+                        SemanticIndex = meta.SemanticIndex,
+                        StartComponent = 0, // TODO populate StartComponent
+                        ComponentCount = (byte)meta.ComponentCount,
+                        OutputSlot = 0, // TODO populate - 0 to 3 only.
+                    };
+                }
+
+                // TODO populate this properly.
+                desc.StreamOutput = new StreamOutputDesc()
+                {
+                    RasterizedStream = pass.RasterizedStreamOutput,
+                    NumEntries = (byte)numEntries, 
+                    NumStrides = 0,
+                    PBufferStrides = null,
+                    PSODeclaration = entries,
+                };
             }
         }
 
@@ -104,6 +135,12 @@ internal class PipelineStateBuilderDX12
         {
             Format format = (Format)pass.FormatLayout.Depth.ToGraphicsFormat();
             desc.DSVFormat = format;
+        }
+
+        // Check multi-sample settings
+        if(pass.RasterizerState.Desc.MultisampleEnable)
+        {
+            desc.SampleDesc = default;       // TODO Implement multisampling
         }
 
         // TODO implement a PSO-specific cache in this class to optimally check for duplicate PSOs
@@ -134,6 +171,13 @@ internal class PipelineStateBuilderDX12
         // Add the new pipeline state to the cache.
         cacheInfo.EOID = state.EOID;
         _cache.Add(ref cacheInfo);
+
+        // Free all GS stream output semantic name pointers, if any.
+        for(int i = 0; i < desc.StreamOutput.NumEntries; i++)
+        {
+            SODeclarationEntry* entry = &desc.StreamOutput.PSODeclaration[i];
+            SilkMarshal.Free((IntPtr)entry->SemanticName);
+        }
 
         return state;
     }

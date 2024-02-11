@@ -279,6 +279,11 @@ public partial class ShaderPassParameters
     public bool IsMultisampleEnabled;
 
     /// <summary>
+    /// The buffer/stream ID to use for rasterized stream output in a geometry shader. The default value is 0.
+    /// </summary>
+    public uint RasterizedStreamOutput;
+
+    /// <summary>
     /// If true, primitives are discarded immediately before the rasterization stage.
     /// </summary>
     public bool RasterizerDiscardEnabled;

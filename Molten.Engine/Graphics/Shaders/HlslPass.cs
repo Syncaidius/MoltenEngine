@@ -48,6 +48,7 @@ public abstract class HlslPass : GraphicsObject, IEnumerable<ShaderComposition>,
     {
         ComputeGroups = new Vector3UI(parameters.GroupsX, parameters.GroupsY, parameters.GroupsZ);
         Topology = parameters.Topology;
+        RasterizedStreamOutput = parameters.RasterizedStreamOutput;
 
         OnInitialize(ref parameters);
     }
@@ -157,6 +158,12 @@ public abstract class HlslPass : GraphicsObject, IEnumerable<ShaderComposition>,
     /// Gets the vertex <see cref="PrimitiveTopology"/> that the current <see cref="HlslPass"/> will use when rendering mesh vertices.
     /// </summary>
     public PrimitiveTopology Topology { get; private set; }
+
+    /// <summary>
+    /// Gets the buffer/stream ID to use when outputting from a geometry shader stream to a pixel/fragment shader. 
+    /// <para>This is ignored if a pixel/fragment shader is not present.</para>
+    /// </summary>
+    public uint RasterizedStreamOutput { get; private set; }
 
     /// <summary>
     /// Gets the format layout used by the pixel/fragment stage of the current <see cref="HlslPass"/>, if present.

@@ -16,25 +16,31 @@ public class VertexElementAttribute : Attribute
             customSemantic = null;
 
         CustomSemantic = customSemantic;
+        ComponentCount = type.GetComponentCount();
     }
 
-    /// <summary>The element type.</summary>
-    public VertexElementType Type;
+    /// <summary>Gets the element type.</summary>
+    public VertexElementType Type { get; }
 
     /// <summary>Gets the vertex element usage.</summary>
-    public VertexElementUsage Usage;
+    public VertexElementUsage Usage { get; }
 
-    /// <summary>The custom semantic name given to the element, if any.</summary>
-    public string CustomSemantic;
+    /// <summary>Gets the custom semantic name given to the element, if any.</summary>
+    public string CustomSemantic { get; }
 
-    /// <summary>Gets or sets the semantic slot of the element (e.g. usage as a position with slot 0 would create SV_POSITION0 in hlsl).</summary>
-    public uint SemanticIndex;
+    /// <summary>Gets the semantic slot of the element (e.g. usage as a position with slot 0 would create SV_POSITION0 in hlsl).</summary>
+    public uint SemanticIndex { get; }
 
     /// <summary>Gets the data classification of the element.</summary>
-    public VertexInputType Classification;
+    public VertexInputType Classification { get; }
 
     /// <summary>
     /// Gets the instance step rate of the current vertex element.
     /// </summary>
-    public uint InstanceStepRate;
+    public uint InstanceStepRate { get; }
+
+    /// <summary>
+    /// Gets the number of components in the element.
+    /// </summary>
+    public uint ComponentCount { get; }
 }
