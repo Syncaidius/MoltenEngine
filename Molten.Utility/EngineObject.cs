@@ -23,7 +23,7 @@ public abstract class EngineObject : IDisposable
     public EngineObject()
     {
         EOID = ((ulong)Thread.CurrentThread.ManagedThreadId << 32) | _idCounter++;
-        Name = $"EO {EOID} - {this.GetType().Name}";
+        Name = $"EO {EOID} - {GetType().Name}";
     }
 
     public override string ToString()

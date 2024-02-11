@@ -1,4 +1,5 @@
-﻿using Silk.NET.Core.Native;
+﻿using Molten.Cache;
+using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
 using Silk.NET.DXGI;
 
@@ -6,106 +7,133 @@ namespace Molten.Graphics.DX12.Pipeline;
 
 internal class PipelineStateBuilderDX12
 {
-    GraphicsPipelineStateDesc _desc;
-    ShaderPassDX12 _pass;
-
-    /// <summary>
-    /// Begins construction of a new pipeline state object (PSO) for the provided shader pass.
-    /// </summary>
-    /// <param name="pass"></param>
-    /// <exception cref="Exception"></exception>
-    internal void Begin(ShaderPassDX12 pass)
+    public struct CacheInfo : IEquatable<CacheInfo>
     {
-        if (_pass != null)
-            throw new Exception("Cannot call Begin() again before End() is called");
+        public ShaderPassDX12 Pass;
 
-        _pass = pass;
-        _desc = new GraphicsPipelineStateDesc()
+        public PipelineInputLayoutDX12 InputLayout;
+
+        /// <summary>
+        /// The engine object ID of the pipeline state represented by the current <see cref="CacheInfo"/>. 
+        /// <para>Not included in equality checks.</para>
+        /// </summary>
+        public ulong EOID;
+
+       public bool Equals(CacheInfo other)
+        {
+           return Pass == other.Pass
+               && InputLayout == other.InputLayout;
+       }
+
+        public override bool Equals(object obj)
+        {
+            if(obj is CacheInfo other)
+                return Equals(other);
+
+            return false;
+        }
+    }
+
+    TypedObjectCache<CacheInfo> _cache = new();
+    Dictionary<ulong, PipelineStateDX12> _states = new();
+
+    internal unsafe PipelineStateDX12 Build(
+        ShaderPassDX12 pass, 
+        PipelineInputLayoutDX12 layout, 
+        CachedPipelineState? cachedState = null)
+    {
+        CacheInfo cacheInfo = new()
+        {
+            Pass = pass,
+            InputLayout = layout
+        };
+
+        // Return the cached pipeline state.
+        if(_cache.Check(ref cacheInfo))
+            return _states[cacheInfo.EOID];
+
+        // Proceed to create new pipeline state.
+        GraphicsPipelineStateDesc desc = new()
         {
             Flags = PipelineStateFlags.None,
-            RasterizerState = _pass.RasterizerState.Desc,
-            BlendState = _pass.BlendState.Description.Desc,
-            SampleMask = _pass.BlendState.Description.BlendSampleMask,
-            DepthStencilState = _pass.DepthState.Description.Desc,
-            VS = _pass.GetBytecode(ShaderType.Vertex),
-            GS = _pass.GetBytecode(ShaderType.Geometry),
-            DS = _pass.GetBytecode(ShaderType.Domain),
-            HS = _pass.GetBytecode(ShaderType.Hull),
-            PS = _pass.GetBytecode(ShaderType.Pixel),
+            RasterizerState = pass.RasterizerState.Desc,
+            BlendState = pass.BlendState.Description.Desc,
+            SampleMask = pass.BlendState.Description.BlendSampleMask,
+            DepthStencilState = pass.DepthState.Description.Desc,
+            VS = pass.GetBytecode(ShaderType.Vertex),
+            GS = pass.GetBytecode(ShaderType.Geometry),
+            DS = pass.GetBytecode(ShaderType.Domain),
+            HS = pass.GetBytecode(ShaderType.Hull),
+            PS = pass.GetBytecode(ShaderType.Pixel),
             PrimitiveTopologyType = pass.GeometryPrimitive.ToApiToplogyType(),
 
             PRootSignature = null,
             NodeMask = 0,               // TODO Set this to the node mask of the device.
             IBStripCutValue = IndexBufferStripCutValue.ValueDisabled,
-            StreamOutput = default,     // TODO Implement stream output
+            StreamOutput = default,     // TODO Set this based on the OutputLayout of a Geometry shader stage. If a pixel shader is present, we don't set this.
             SampleDesc = default,       // TODO Implement multisampling
         };
 
+        // Check if cache data can be set.
+        if(cachedState.HasValue)
+        {
+            if (cachedState.Value.PCachedBlob == null)
+                throw new Exception("The provided cached state does not contain a valid blob pointer.");
+
+            if (cachedState.Value.CachedBlobSizeInBytes == 0)
+                throw new Exception("The provided cached state cannot have a blob size of 0.");
+
+            desc.CachedPSO = cachedState.Value;
+        }
+
         // Populate render target formats if a pixel shader is present in the pass.
-        ShaderComposition ps = _pass[ShaderType.Pixel];
+        ShaderComposition ps = pass[ShaderType.Pixel];
         if (ps != null)
         {
-            _desc.NumRenderTargets = (uint)ps.OutputLayout.Metadata.Length;
+            desc.NumRenderTargets = (uint)ps.OutputLayout.Metadata.Length;
             unsafe
             {
-                for (int i = 0; i < _desc.NumRenderTargets; i++)
-                    _desc.RTVFormats[i] = (Format)pass.FormatLayout.RawFormats[i];
+                for (int i = 0; i < desc.NumRenderTargets; i++)
+                    desc.RTVFormats[i] = (Format)pass.FormatLayout.RawFormats[i];
             }
         }
 
         // Populate depth surface format if depth and/or stencil testing is enabled
-        if (_pass.DepthState.Description.Desc.DepthEnable
-            || _pass.DepthState.Description.Desc.StencilEnable)
+        if (pass.DepthState.Description.Desc.DepthEnable
+            || pass.DepthState.Description.Desc.StencilEnable)
         {
             Format format = (Format)pass.FormatLayout.Depth.ToGraphicsFormat();
-            _desc.DSVFormat = format;
-        }
-    }
-
-    internal void SetSurfaces(params IRenderSurface[] surfaces)
-    {
-        if (_pass == null)
-            throw new Exception("Begin() must be called before any configuration methods are called.");
-
-        if (!_pass.HasComposition(ShaderType.Pixel))
-        {
-            _pass.Device.Log.Error($"The current pass '{_pass.Parent.Name}/{_pass.Name}' does not have a pixel shader, so no render targets can be set.");
-            return;
-        }
-        else if (_desc.NumRenderTargets != surfaces.Length)
-        {
-            _pass.Device.Log.Error($"The current pass '{_pass.Parent.Name}/{_pass.Name}' is expecting {_desc.NumRenderTargets} surfaces, but received {surfaces.Length}.");
-            return;
+            desc.DSVFormat = format;
         }
 
-        // TODO Pick the variant PSO from the current pass which accepts the provided surface formats.
-    }
+        // TODO implement a PSO-specific cache in this class to optimally check for duplicate PSOs
+        //  - Create a struct named StateCacheData which contains:
+        //      -- shader pass:
+        //          -- This contains the blend, depth and raster states
+        //          -- RTV formats
+        //          -- DSV format
+        //          -- Root signature - Generated from shader input layout(s)
+        //          -- Sampler desc - Provided by shader
+        //      -- input layout - Set via SetInputLayout()
+        //      -- Stream output - Set via SetStreamOutput<T>(buffer) where T : IVertexType
+        //      -- Multisample desc - ??? Could be provided by render surface or graphics settings, or SetMultisampleLevel(int sampleCount, int quality)
 
-    internal unsafe void SetCacheBlob(CachedPipelineState cachedState)
-    {
-        if(cachedState.PCachedBlob == null)
-            throw new Exception("The provided cached state does not contain a valid blob pointer.");
+        // TODO Check our PSO cache for a matching state
+        // TODO Implement a multi-level cache so we can bucket PSO objects by each individual property we need to check.
+        //      For example: Dictionary<HlslPass, Dictionary<InputLayout, ...>>();
 
-        _desc.CachedPSO = cachedState;
-    }
-
-    internal unsafe PipelineStateDX12 End()
-    {
-        if(_pass == null)
-            throw new Exception("Begin() must be called before End() is called.");
-
-        DeviceDX12 device = _pass.Device as DeviceDX12;
-
+        DeviceDX12 device = pass.Device as DeviceDX12;
         Guid guid = ID3D12PipelineState.Guid;
         void* ptr = null;
-        HResult hr = device.Ptr->CreateGraphicsPipelineState(_desc, &guid, &ptr);
+        HResult hr = device.Ptr->CreateGraphicsPipelineState(desc, &guid, &ptr);
         if (!device.Log.CheckResult(hr, () => "Failed to create pipeline state object (PSO)"))
             return null;
 
         PipelineStateDX12 state = new PipelineStateDX12(device, (ID3D12PipelineState*)ptr);
 
-        // Check cache for a matching state.
-        device.Cache.Check(ref state);
+        // Add the new pipeline state to the cache.
+        cacheInfo.EOID = state.EOID;
+        _cache.Add(ref cacheInfo);
 
         return state;
     }

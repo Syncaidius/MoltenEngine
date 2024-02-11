@@ -12,10 +12,12 @@ public class ObjectCache
 
     /// <summary>
     /// Caches the provided object, or disposes it and replaces it with the matching cached object.
+    /// <para>Returns false if a match was not found in the cache. 
+    /// Returns true if a match was found and the provided object was replaced with a cached one.</para>
     /// </summary>
     /// <typeparam name="T">The type of object to be cached.</typeparam>
     /// <param name="obj">The object to cache-check.</param>
-    public void Check<T>(ref T obj)
+    public bool Check<T>(ref T obj)
         where T : EngineObject, IEquatable<T>
     {
         // Retrieve correct cache list.
@@ -31,7 +33,7 @@ public class ObjectCache
                 {
                     obj.Dispose();
                     obj = item;
-                    return;
+                    return true;
                 }
             }
         }
@@ -43,6 +45,7 @@ public class ObjectCache
 
         // No match found. Add the provided object to the cache.
         cache.Add(obj);
+        return false;
     }
 
     /// <summary>
@@ -50,7 +53,7 @@ public class ObjectCache
     /// </summary>
     /// <typeparam name="T">The type of <see cref="EngineObject"/> to be added.</typeparam>
     /// <param name="obj"></param>
-    public void Add<T>(T obj)
+    public void Add<T>(ref readonly T obj)
         where T : EngineObject, IEquatable<T>
     {
         // Retrieve correct cache list.
