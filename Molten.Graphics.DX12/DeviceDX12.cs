@@ -11,13 +11,14 @@ namespace Molten.Graphics.DX12;
 
 public unsafe class DeviceDX12 : DeviceDXGI
 {
-    ID3D12Device10* _native;
+    ID3D12Device10* _handle;
     DeviceBuilderDX12 _builder;
     CommandQueueDX12 _cmdDirect;
     ID3D12InfoQueue1* _debugInfo;
     uint _debugCookieID;
     ShaderLayoutCache<ShaderIOLayoutDX12> _layoutCache;
     HlslDxcCompiler _shaderCompiler;
+    uint _nodeCount;
 
     internal DeviceDX12(RendererDX12 renderer, GraphicsManagerDXGI manager, IDXGIAdapter4* adapter, DeviceBuilderDX12 deviceBuilder) :
         base(renderer, manager, adapter)
@@ -39,12 +40,14 @@ public unsafe class DeviceDX12 : DeviceDXGI
         if (!Renderer.Log.CheckResult(r, () => $"Failed to initialize {nameof(DeviceDX12)}"))
             return false;
 
+        _nodeCount = _handle->GetNodeCount();
+
         // Now we need to retrieve a debug info queue from the device.
         if (Settings.EnableDebugLayer)
         {
             void* ptr = null;
             Guid guidDebugInfo = ID3D12InfoQueue1.Guid;
-            _native->QueryInterface(&guidDebugInfo, &ptr);
+            _handle->QueryInterface(&guidDebugInfo, &ptr);
             _debugInfo = (ID3D12InfoQueue1*)ptr;
             _debugInfo->PushEmptyStorageFilter();
 
@@ -74,7 +77,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
         uint sizeOf = (uint)sizeof(FeatureDataFormatSupport);
         void* pData = null;
 
-        HResult r = _native->CheckFeatureSupport(Feature.FormatSupport, pData, sizeOf);
+        HResult r = _handle->CheckFeatureSupport(Feature.FormatSupport, pData, sizeOf);
         if (!Log.CheckResult(r))
         {
             Log.Error($"Failed to retrieve format '{format}' support. Code: {r}");
@@ -239,12 +242,12 @@ public unsafe class DeviceDX12 : DeviceDXGI
     /// <summary>
     /// The underlying, native device pointer.
     /// </summary>
-    internal ID3D12Device10* Ptr => _native;
+    internal ID3D12Device10* Ptr => _handle;
 
     /// <summary>
     /// Gets a protected reference to the underlying device pointer.
     /// </summary>
-    protected ref ID3D12Device10* PtrRef => ref _native;
+    protected ref ID3D12Device10* PtrRef => ref _handle;
 
     public override CommandQueueDX12 Queue => _cmdDirect;
 
@@ -261,4 +264,11 @@ public unsafe class DeviceDX12 : DeviceDXGI
 
     /// <inheritdoc/>
     public override DxcCompiler Compiler => _shaderCompiler;
+
+    /// <summary>
+    /// Gets the number of GPU nodes in the current <see cref="DeviceDX12"/>.
+    /// <para>For more info on GPU nodes, 
+    /// see: https://ubm-twvideo01.s3.amazonaws.com/o1/vault/gdc2016/Presentations/Juha_Sjoholm_DX12_Explicit_Multi_GPU.pdf</para>
+    /// </summary>
+    internal uint NodeCount => _nodeCount;
 }

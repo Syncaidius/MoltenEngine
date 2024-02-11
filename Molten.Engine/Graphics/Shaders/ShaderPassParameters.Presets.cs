@@ -114,8 +114,8 @@ public partial class ShaderPassParameters
     public void ApplyRasterizerPreset(RasterizerPreset preset)
     {
         // Revert to defaults first
-        Fill = RasterizerFillingMode.Solid;
-        Cull = RasterizerCullingMode.Back;
+        FillMode = RasterizerFillingMode.Solid;
+        CullMode = RasterizerCullingMode.Back;
         IsFrontCounterClockwise = false;
         DepthBias = 0;
         DepthBiasEnabled = false;
@@ -132,7 +132,7 @@ public partial class ShaderPassParameters
         switch (preset)
         {
             case RasterizerPreset.Wireframe:
-                Fill = RasterizerFillingMode.Wireframe;
+                FillMode = RasterizerFillingMode.Wireframe;
                 break;
 
             case RasterizerPreset.ScissorTest:
@@ -140,7 +140,7 @@ public partial class ShaderPassParameters
                 break;
 
             case RasterizerPreset.NoCulling:
-                Cull = RasterizerCullingMode.None;
+                CullMode = RasterizerCullingMode.None;
                 break;
 
             case RasterizerPreset.DefaultMultisample:

@@ -21,8 +21,8 @@ internal unsafe class RasterizerStateDX11 : GraphicsObject<DeviceDX11>, IEquatab
         _desc.DepthClipEnable = parameters.IsDepthClipEnabled;
         _desc.AntialiasedLineEnable = parameters.IsAALineEnabled;
         _desc.ScissorEnable = parameters.IsScissorEnabled;
-        _desc.FillMode = parameters.Fill.ToApi();
-        _desc.CullMode = parameters.Cull.ToApi();
+        _desc.FillMode = parameters.FillMode.ToApi();
+        _desc.CullMode = parameters.CullMode.ToApi();
         _desc.DepthBias = parameters.DepthBiasEnabled ? parameters.DepthBias : 0;
         _desc.DepthBiasClamp = parameters.DepthBiasEnabled ? parameters.DepthBiasClamp : 0;
         _desc.SlopeScaledDepthBias = parameters.SlopeScaledDepthBias;

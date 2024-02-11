@@ -255,7 +255,10 @@ public partial class ShaderPassParameters
     #endregion
 
     #region Rasterizer Parameters
-    public RasterizerCullingMode Cull;
+    /// <summary>
+    /// The rasterizer culling mode.
+    /// </summary>
+    public RasterizerCullingMode CullMode;
 
     public int DepthBias;
 
@@ -263,7 +266,7 @@ public partial class ShaderPassParameters
 
     public bool DepthBiasEnabled;
 
-    public RasterizerFillingMode Fill;
+    public RasterizerFillingMode FillMode;
 
     public float LineWidth; 
 
@@ -300,6 +303,9 @@ public partial class ShaderPassParameters
 
     public uint ForcedSampleCount;
 
+    /// <summary>
+    /// The topology to use when rendering the current pass.
+    /// </summary>
     public PrimitiveTopology Topology;
 
     [JsonProperty("formats")]

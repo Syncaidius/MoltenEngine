@@ -14,8 +14,8 @@ public unsafe class RasterizerStateVK : GraphicsObject<DeviceVK>, IEquatable<Ras
         {
             SType = StructureType.PipelineRasterizationStateCreateInfo,
             PNext = null,
-            PolygonMode = parameters.Fill.ToApi(),
-            CullMode = parameters.Cull.ToApi(),
+            PolygonMode = parameters.FillMode.ToApi(),
+            CullMode = parameters.CullMode.ToApi(),
             DepthBiasClamp = parameters.DepthBiasClamp,
             DepthBiasSlopeFactor = parameters.SlopeScaledDepthBias,
             DepthClampEnable = parameters.DepthBiasEnabled,

@@ -19,8 +19,8 @@ internal unsafe class RasterizerStateDX12 : GraphicsObject<DeviceDX12>, IEquatab
         _desc.MultisampleEnable = parameters.IsMultisampleEnabled;
         _desc.DepthClipEnable = parameters.IsDepthClipEnabled;
         _desc.AntialiasedLineEnable = parameters.IsAALineEnabled;
-        _desc.FillMode = parameters.Fill.ToApi();
-        _desc.CullMode = parameters.Cull.ToApi();
+        _desc.FillMode = parameters.FillMode.ToApi();
+        _desc.CullMode = parameters.CullMode.ToApi();
         _desc.DepthBias = parameters.DepthBiasEnabled ? parameters.DepthBias : 0;
         _desc.DepthBiasClamp = parameters.DepthBiasEnabled ? parameters.DepthBiasClamp : 0;
         _desc.SlopeScaledDepthBias = parameters.SlopeScaledDepthBias;
