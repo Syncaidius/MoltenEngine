@@ -51,7 +51,6 @@ public class TypedObjectCache<T>
     /// <summary>
     /// Adds the provided <paramref name="obj"/> to the cache without checking for duplicates.
     /// </summary>
-    /// <typeparam name="T">The type of <see cref="EngineObject"/> to be added.</typeparam>
     /// <param name="obj"></param>
     public void Add(ref readonly T obj)
     {

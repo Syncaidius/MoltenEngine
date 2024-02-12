@@ -2,7 +2,6 @@
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
 using Silk.NET.DXGI;
-using System.Runtime.InteropServices;
 
 namespace Molten.Graphics.DX12.Pipeline;
 
@@ -13,12 +12,6 @@ internal class PipelineStateBuilderDX12
         public ShaderPassDX12 Pass;
 
         public PipelineInputLayoutDX12 InputLayout;
-
-        /// <summary>
-        /// The engine object ID of the pipeline state represented by the current <see cref="CacheInfo"/>. 
-        /// <para>Not included in equality checks.</para>
-        /// </summary>
-        public ulong EOID;
 
        public bool Equals(CacheInfo other)
         {
@@ -35,7 +28,7 @@ internal class PipelineStateBuilderDX12
         }
     }
 
-    TypedObjectCache<CacheInfo> _cache = new();
+    KeyedObjectCache<CacheInfo, PipelineStateDX12> _cache = new();
     Dictionary<ulong, PipelineStateDX12> _states = new();
 
     internal unsafe PipelineStateDX12 Build(
@@ -44,6 +37,7 @@ internal class PipelineStateBuilderDX12
         IndexBufferStripCutValue indexStripCutValue = IndexBufferStripCutValue.ValueDisabled,
         CachedPipelineState? cachedState = null)
     {
+        PipelineStateDX12 result = null;
         CacheInfo cacheInfo = new()
         {
             Pass = pass,
@@ -51,12 +45,13 @@ internal class PipelineStateBuilderDX12
         };
 
         // Return the cached pipeline state.
-        if(_cache.Check(ref cacheInfo))
-            return _states[cacheInfo.EOID];
+        if (_cache.Check(ref cacheInfo, ref result))
+            return result;
 
         // Proceed to create new pipeline state.
         GraphicsPipelineStateDesc desc = new()
         {
+            InputLayout = layout.Desc,
             Flags = PipelineStateFlags.None,
             RasterizerState = pass.RasterizerState.Desc,
             BlendState = pass.BlendState.Description.Desc,
@@ -68,7 +63,7 @@ internal class PipelineStateBuilderDX12
             HS = pass.GetBytecode(ShaderType.Hull),
             PS = pass.GetBytecode(ShaderType.Pixel),
             PrimitiveTopologyType = pass.GeometryPrimitive.ToApiToplogyType(),
-
+            
             PRootSignature = null,
             NodeMask = 0,               // TODO Set this to the node mask of the device.
             IBStripCutValue = IndexBufferStripCutValue.ValueDisabled,
@@ -109,7 +104,7 @@ internal class PipelineStateBuilderDX12
                     entries[i] = new SODeclarationEntry()
                     {
                         Stream = meta.StreamOutput,
-                        SemanticName = (byte*)SilkMarshal.StringToPtr(meta.Name, NativeStringEncoding.UTF8),
+                        SemanticName = (byte*)SilkMarshal.StringToPtr(meta.Name),
                         SemanticIndex = meta.SemanticIndex,
                         StartComponent = 0, // TODO populate StartComponent
                         ComponentCount = (byte)meta.ComponentCount,
@@ -143,22 +138,6 @@ internal class PipelineStateBuilderDX12
             desc.SampleDesc = default;       // TODO Implement multisampling
         }
 
-        // TODO implement a PSO-specific cache in this class to optimally check for duplicate PSOs
-        //  - Create a struct named StateCacheData which contains:
-        //      -- shader pass:
-        //          -- This contains the blend, depth and raster states
-        //          -- RTV formats
-        //          -- DSV format
-        //          -- Root signature - Generated from shader input layout(s)
-        //          -- Sampler desc - Provided by shader
-        //      -- input layout - Set via SetInputLayout()
-        //      -- Stream output - Set via SetStreamOutput<T>(buffer) where T : IVertexType
-        //      -- Multisample desc - ??? Could be provided by render surface or graphics settings, or SetMultisampleLevel(int sampleCount, int quality)
-
-        // TODO Check our PSO cache for a matching state
-        // TODO Implement a multi-level cache so we can bucket PSO objects by each individual property we need to check.
-        //      For example: Dictionary<HlslPass, Dictionary<InputLayout, ...>>();
-
         DeviceDX12 device = pass.Device as DeviceDX12;
         Guid guid = ID3D12PipelineState.Guid;
         void* ptr = null;
@@ -166,11 +145,10 @@ internal class PipelineStateBuilderDX12
         if (!device.Log.CheckResult(hr, () => "Failed to create pipeline state object (PSO)"))
             return null;
 
-        PipelineStateDX12 state = new PipelineStateDX12(device, (ID3D12PipelineState*)ptr);
+        result = new PipelineStateDX12(device, (ID3D12PipelineState*)ptr);
 
         // Add the new pipeline state to the cache.
-        cacheInfo.EOID = state.EOID;
-        _cache.Add(ref cacheInfo);
+        _cache.Add(ref cacheInfo, ref result);
 
         // Free all GS stream output semantic name pointers, if any.
         for(int i = 0; i < desc.StreamOutput.NumEntries; i++)
@@ -179,6 +157,6 @@ internal class PipelineStateBuilderDX12
             SilkMarshal.Free((IntPtr)entry->SemanticName);
         }
 
-        return state;
+        return result;
     }
 }
