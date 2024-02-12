@@ -99,7 +99,7 @@ internal unsafe class DepthStateDX12 : GraphicsObject<DeviceDX12>, IEquatable<De
 
     protected override void OnGraphicsRelease() { }
 
-    internal ref CombinedDesc Description => ref _desc;
+    internal ref readonly CombinedDesc Description => ref _desc;
 
     public uint StencilReference { get; set; }
 }

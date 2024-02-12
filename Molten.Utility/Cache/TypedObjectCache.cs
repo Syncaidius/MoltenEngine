@@ -51,7 +51,7 @@ public class TypedObjectCache<T>
     /// <summary>
     /// Adds the provided <paramref name="obj"/> to the cache without checking for duplicates.
     /// </summary>
-    /// <param name="obj"></param>
+    /// <param name="obj">The object to add to the cache.</param>
     public void Add(ref readonly T obj)
     {
         if(_free.Count > 0)
@@ -71,7 +71,7 @@ public class TypedObjectCache<T>
     /// <summary>
     /// Removes an object from the cache. If a match was not found to remove, the method returns false.
     /// </summary>
-    /// <param name="obj">The object ot be removed from the cache.</param>
+    /// <param name="obj">The object to remove from the cache.</param>
     /// <returns></returns>
     public bool Remove(ref readonly T obj)
     {

@@ -11,7 +11,6 @@ internal unsafe class PipelineStateDX12 : GraphicsObject<DeviceDX12>
     /// Creates a new instance of <see cref="PipelineStateDX12"/>.
     /// </summary>
     /// <param name="device"></param>
-    /// <param name="pass"></param>
     /// <param name="handle"></param>
     public PipelineStateDX12(DeviceDX12 device, ID3D12PipelineState* handle) : 
         base(device)

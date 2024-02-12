@@ -2,6 +2,7 @@
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
 using Silk.NET.DXGI;
+using System;
 
 namespace Molten.Graphics.DX12.Pipeline;
 
@@ -13,10 +14,13 @@ internal class PipelineStateBuilderDX12
 
         public PipelineInputLayoutDX12 InputLayout;
 
+        public RootSignatureDX12 RootSignature;
+
        public bool Equals(CacheInfo other)
         {
            return Pass == other.Pass
-               && InputLayout == other.InputLayout;
+               && InputLayout == other.InputLayout 
+               && RootSignature == other.RootSignature;
        }
 
         public override bool Equals(object obj)
@@ -37,11 +41,14 @@ internal class PipelineStateBuilderDX12
         IndexBufferStripCutValue indexStripCutValue = IndexBufferStripCutValue.ValueDisabled,
         CachedPipelineState? cachedState = null)
     {
+        DeviceDX12 device = pass.Device as DeviceDX12;
         PipelineStateDX12 result = null;
+
         CacheInfo cacheInfo = new()
         {
             Pass = pass,
-            InputLayout = layout
+            InputLayout = layout,
+            RootSignature = BuildRootSignature(pass, device),
         };
 
         // Return the cached pipeline state.
@@ -64,7 +71,7 @@ internal class PipelineStateBuilderDX12
             PS = pass.GetBytecode(ShaderType.Pixel),
             PrimitiveTopologyType = pass.GeometryPrimitive.ToApiToplogyType(),
             
-            PRootSignature = null,
+            PRootSignature = cacheInfo.RootSignature,
             NodeMask = 0,               // TODO Set this to the node mask of the device.
             IBStripCutValue = IndexBufferStripCutValue.ValueDisabled,
         };
@@ -138,7 +145,6 @@ internal class PipelineStateBuilderDX12
             desc.SampleDesc = default;       // TODO Implement multisampling
         }
 
-        DeviceDX12 device = pass.Device as DeviceDX12;
         Guid guid = ID3D12PipelineState.Guid;
         void* ptr = null;
         HResult hr = device.Ptr->CreateGraphicsPipelineState(desc, &guid, &ptr);
@@ -158,5 +164,147 @@ internal class PipelineStateBuilderDX12
         }
 
         return result;
+    }
+
+    private unsafe RootSignatureDX12 BuildRootSignature(ShaderPassDX12 pass, DeviceDX12 device)
+    {
+        // TODO Check root signature cache for existing root signature.
+
+        VersionedRootSignatureDesc sigDesc = new()
+        {
+            Version = device.CapabilitiesDX12.RootSignatureVersion,
+        };
+
+        sigDesc.Desc10 = new RootSignatureDesc()
+        {
+            Flags = RootSignatureFlags.None,
+            NumParameters = 0, // TODO Get this from the number of input parameters (textures, constant buffers, etc) required by the shader pass.
+            NumStaticSamplers = 0,
+            PStaticSamplers = null
+        };
+
+        switch (sigDesc.Version)
+        {
+            case D3DRootSignatureVersion.Version10:
+                PopulateRootVersion1Desc(ref sigDesc.Desc10, pass);
+                break;
+
+            case D3DRootSignatureVersion.Version11:
+                throw new NotImplementedException();
+                break;
+
+            default:
+                throw new NotSupportedException($"Unsupported root signature version: {sigDesc.Version}.");
+        }
+
+
+        // Serialize the root signature.
+        ID3D10Blob* signature = null;
+        ID3D10Blob* error = null;
+
+        HResult hr = device.Renderer.Api.SerializeVersionedRootSignature(&sigDesc, &signature, &error);
+        if (!device.Log.CheckResult(hr, () => "Failed to serialize root signature"))
+            hr.Throw();
+
+        // Create the root signature.
+        Guid guid = ID3D12RootSignature.Guid;
+        void* ptr = null;
+        hr = device.Ptr->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), &guid, &ptr);
+        if (!device.Log.CheckResult(hr, () => "Failed to create root signature"))
+            hr.Throw();
+
+        // Freeing the Desc10 parameter pointer also frees Desc11 since they share the same memory space.
+        EngineUtil.Free(ref sigDesc.Desc10.PParameters);
+        EngineUtil.Free(ref sigDesc.Desc10.PStaticSamplers);
+
+        RootSignatureDX12 result = new RootSignatureDX12(device, (ID3D12RootSignature*)ptr);
+
+        // Free allocated unmanaged memory.
+        switch(sigDesc.Version)
+        {
+            case D3DRootSignatureVersion.Version10:
+                for(int i = 0; i < sigDesc.Desc10.NumParameters; i++)
+                    EngineUtil.Free(ref sigDesc.Desc10.PParameters[i].DescriptorTable.PDescriptorRanges);
+
+                EngineUtil.Free(ref sigDesc.Desc10.PParameters);
+                break;
+
+            case D3DRootSignatureVersion.Version11:
+                for (int i = 0; i < sigDesc.Desc11.NumParameters; i++)
+                    EngineUtil.Free(ref sigDesc.Desc11.PParameters[i].DescriptorTable.PDescriptorRanges);
+
+                EngineUtil.Free(ref sigDesc.Desc11.PParameters);
+                break;
+        }
+
+        return result;
+    }
+
+    private unsafe void PopulateRootVersion1Desc(ref RootSignatureDesc desc, ShaderPassDX12 pass)
+    {
+        desc.NumParameters = (uint)pass.Parent.Resources.Length;
+        desc.PParameters = EngineUtil.AllocArray<RootParameter>(desc.NumParameters);
+
+        List<DescriptorRange> ranges = new();
+        PopulateRanges(DescriptorRangeType.Srv, ranges, pass.Parent.Resources);
+        PopulateRanges(DescriptorRangeType.Uav, ranges, pass.Parent.UAVs);
+        PopulateRanges(DescriptorRangeType.Cbv, ranges, pass.Parent.ConstBuffers);
+
+        desc.PParameters = EngineUtil.AllocArray<RootParameter>((uint)ranges.Count);
+        for(int i = 0; i < ranges.Count; i++)
+        {
+            ref RootParameter param = ref desc.PParameters[i];
+
+            param.ParameterType = RootParameterType.TypeDescriptorTable;
+            param.DescriptorTable.NumDescriptorRanges = 1;
+            param.DescriptorTable.PDescriptorRanges = EngineUtil.Alloc<DescriptorRange>();
+            param.DescriptorTable.PDescriptorRanges[0] = ranges[i];
+            param.ShaderVisibility = ShaderVisibility.All; // TODO populate according to available shader composition types.
+        }
+    }
+
+    private void PopulateRanges(DescriptorRangeType type, List<DescriptorRange> ranges, Array variables)
+    {
+        uint last = 0;
+        uint i = 0;
+        DescriptorRange r = new();
+
+        for (; i < variables.Length; i++)
+        {
+            if (variables.GetValue(i) == null)
+                continue;
+
+            // Create a new range if there was a gap.
+            uint prev = i - 1; // What the previous should be.
+            if (last == i || last == prev)
+            {
+                // Finalize previous range
+                if (last != i)
+                {
+                    r.NumDescriptors = i - r.BaseShaderRegister;
+                    r.RegisterSpace = 0; // TODO Populate - Requires reflection enhancements to support new HLSL register syntax: register(t0, space1);
+                    r.OffsetInDescriptorsFromTableStart = 0;
+
+                    ranges.Add(r);
+                }
+
+                // Start new range.
+                ranges.Add(r);
+                r = new DescriptorRange();
+                r.BaseShaderRegister = i;
+                r.RangeType = type;
+            }
+
+            last = i;
+        }
+
+        // Add last range to the list
+        if (r.NumDescriptors > 0)
+        {
+            r.NumDescriptors = i - r.BaseShaderRegister;
+            r.RegisterSpace = 0; // TODO Populate - Requires reflection enhancements to support new HLSL register syntax: register(t0, space1);
+            r.OffsetInDescriptorsFromTableStart = 0;
+            ranges.Add(r);
+        }
     }
 }

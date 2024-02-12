@@ -52,7 +52,7 @@ public class ObjectCache
     /// Adds the provided <paramref name="obj"/> to the cache without checking for duplicates.
     /// </summary>
     /// <typeparam name="T">The type of <see cref="EngineObject"/> to be added.</typeparam>
-    /// <param name="obj"></param>
+    /// <param name="obj">The object to add to the cache.</param>
     public void Add<T>(ref readonly T obj)
         where T : EngineObject, IEquatable<T>
     {

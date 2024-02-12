@@ -58,5 +58,5 @@ internal unsafe class RasterizerStateDX12 : GraphicsObject<DeviceDX12>, IEquatab
 
     protected override void OnGraphicsRelease() { }
 
-    internal ref RasterizerDesc Desc => ref _desc;
+    internal ref readonly RasterizerDesc Desc => ref _desc;
 }

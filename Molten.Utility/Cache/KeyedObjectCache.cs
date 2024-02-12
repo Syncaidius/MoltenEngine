@@ -65,8 +65,8 @@ public class KeyedObjectCache<K, V>
     /// <summary>
     /// Adds the provided <paramref name="key"/> to the cache without checking for duplicates.
     /// </summary>
-    /// <param name="key"></param>
-    /// <param name="value"></param>
+    /// <param name="key">The key of the object to add to the cache.</param>
+    /// <param name="value">The object to add to the cache.</param>
     public void Add(ref readonly K key, ref readonly V value)
     {
         int index;
@@ -93,7 +93,7 @@ public class KeyedObjectCache<K, V>
     /// <summary>
     /// Removes an object from the cache. If a match was not found to remove, the method returns false.
     /// </summary>
-    /// <param name="key">The object ot be removed from the cache.</param>
+    /// <param name="key">The object remove from the cache.</param>
     /// <returns>True if a match was removed from the cache.</returns>
     public bool Remove(ref readonly K key)
     {

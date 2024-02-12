@@ -97,9 +97,9 @@ public unsafe class BlendStateDX12 : GraphicsObject<DeviceDX12>, IEquatable<Blen
         return true;
     }
 
-    internal ref CombinedDesc Description => ref _desc;
+    internal ref readonly CombinedDesc Description => ref _desc;
 
-    internal ref Color4 BlendFactor => ref _desc.BlendFactor;
+    internal ref readonly Color4 BlendFactor => ref _desc.BlendFactor;
 
-    internal ref uint BlendSampleMask => ref _desc.BlendSampleMask;
+    internal ref readonly uint BlendSampleMask => ref _desc.BlendSampleMask;
 }
