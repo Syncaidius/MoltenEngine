@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.DX12;
 
-public class ShaderPassDX12 : HlslPass
+public class ShaderPassDX12 : HlslPass, IEquatable<ShaderPassDX12>
 {
     public ShaderPassDX12(HlslShader parent, string name) : 
         base(parent, name) { }
@@ -33,6 +33,22 @@ public class ShaderPassDX12 : HlslPass
 
         ShaderBytecode* ptr = (ShaderBytecode*)comp.PtrShader;
         return *ptr;
+    }
+
+    public bool Equals(ShaderPassDX12 other)
+    {
+        return this == other 
+            || (_stateRasterizer == other._stateRasterizer
+            && _stateBlend == other._stateBlend
+            && _stateDepth == other._stateDepth);
+    }
+
+    public override bool Equals(object obj)
+    {
+        if(obj is ShaderPassDX12 pass)
+            return Equals(pass);
+        else
+            return false;
     }
 
     internal RasterizerStateDX12 RasterizerState => _stateRasterizer;
