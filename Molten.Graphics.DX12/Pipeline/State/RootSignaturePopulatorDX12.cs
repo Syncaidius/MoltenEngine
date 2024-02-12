@@ -11,13 +11,27 @@ internal abstract class RootSignaturePopulatorDX12
     /// Invoked when the builder is being used to create a root signature description.
     /// </summary>
     /// <param name="pass"></param>
+    /// <param name="psoDesc"></param>
+    /// <param name="versionedDesc"></param>
     /// <returns></returns>
-    internal abstract void Populate(ref VersionedRootSignatureDesc versionedDesc, ShaderPassDX12 pass);
+    internal abstract void Populate(ref VersionedRootSignatureDesc versionedDesc, 
+        ref readonly GraphicsPipelineStateDesc psoDesc, 
+        ShaderPassDX12 pass);
 
     internal abstract void Free(ref VersionedRootSignatureDesc versionedDesc);
 
-    internal unsafe void PopulateStaticSamplers(ref StaticSamplerDesc* samplers, ref uint numSamplers, ShaderPassDX12 pass)
+    protected unsafe void PopulateStaticSamplers(ref StaticSamplerDesc* samplers, ref uint numSamplers, ShaderPassDX12 pass)
     {
         throw new NotImplementedException();
+    }
+
+    protected unsafe RootSignatureFlags GetFlags(ref readonly GraphicsPipelineStateDesc psoDesc, ShaderPassDX12 pass)
+    {
+        RootSignatureFlags flags = RootSignatureFlags.None;
+
+        if (psoDesc.StreamOutput.PSODeclaration != null)
+            flags |= RootSignatureFlags.AllowStreamOutput;
+
+        return flags;
     }
 }

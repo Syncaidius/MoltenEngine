@@ -3,14 +3,16 @@
 namespace Molten.Graphics.DX12;
 internal class RootSigPopulator1_0 : RootSignaturePopulatorDX12
 {
-    internal override unsafe void Populate(ref VersionedRootSignatureDesc versionedDesc, ShaderPassDX12 pass)
+    internal override unsafe void Populate(ref VersionedRootSignatureDesc versionedDesc, 
+        ref readonly GraphicsPipelineStateDesc psoDesc, 
+        ShaderPassDX12 pass)
     {
         ref RootSignatureDesc desc = ref versionedDesc.Desc10;
         PopulateStaticSamplers(ref desc.PStaticSamplers, ref desc.NumStaticSamplers, pass);
 
         desc.NumParameters = (uint)pass.Parent.Resources.Length;
         desc.PParameters = EngineUtil.AllocArray<RootParameter>(desc.NumParameters);
-        desc.Flags = RootSignatureFlags.None;
+        desc.Flags = GetFlags(in psoDesc, pass);
 
         List<DescriptorRange> ranges = new();
         PopulateRanges(DescriptorRangeType.Srv, ranges, pass.Parent.Resources);

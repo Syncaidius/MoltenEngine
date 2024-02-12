@@ -53,8 +53,6 @@ internal class PipelineStateBuilderDX12
             HS = pass.GetBytecode(ShaderType.Hull),
             PS = pass.GetBytecode(ShaderType.Pixel),
             PrimitiveTopologyType = pass.GeometryPrimitive.ToApiToplogyType(),
-            
-            PRootSignature = BuildRootSignature(pass, device),
             NodeMask = 0,               // TODO Set this to the node mask of the device.
             IBStripCutValue = IndexBufferStripCutValue.ValueDisabled,
         };
@@ -98,7 +96,7 @@ internal class PipelineStateBuilderDX12
                         SemanticIndex = meta.SemanticIndex,
                         StartComponent = 0, // TODO populate StartComponent
                         ComponentCount = (byte)meta.ComponentCount,
-                        OutputSlot = 0, // TODO populate - 0 to 3 only.
+                        OutputSlot = 0,     // TODO populate - 0 to 3 only.
                     };
                 }
 
@@ -107,8 +105,8 @@ internal class PipelineStateBuilderDX12
                 {
                     RasterizedStream = pass.RasterizedStreamOutput,
                     NumEntries = (byte)numEntries, 
-                    NumStrides = 0,
-                    PBufferStrides = null,
+                    NumStrides = 0,         // TODO Populate this.
+                    PBufferStrides = null,  // TODO Populate this.
                     PSODeclaration = entries,
                 };
             }
@@ -127,6 +125,9 @@ internal class PipelineStateBuilderDX12
         {
             desc.SampleDesc = default;       // TODO Implement multisampling
         }
+
+        RootSignatureDX12 rootSig = BuildRootSignature(pass, ref desc, device);
+        desc.PRootSignature = rootSig;
 
         Guid guid = ID3D12PipelineState.Guid;
         void* ptr = null;
@@ -149,16 +150,12 @@ internal class PipelineStateBuilderDX12
         return result;
     }
 
-    private unsafe RootSignatureDX12 BuildRootSignature(ShaderPassDX12 pass, DeviceDX12 device)
+    private unsafe RootSignatureDX12 BuildRootSignature(ShaderPassDX12 pass, ref readonly GraphicsPipelineStateDesc psoDesc, DeviceDX12 device)
     {
         // TODO Check root signature cache for existing root signature.
 
-        VersionedRootSignatureDesc sigDesc = new()
-        {
-            Version = _rootSignatureVersion,
-        };
-
-        _rootSigPopulator.Populate(ref sigDesc, pass);
+        VersionedRootSignatureDesc sigDesc = new(_rootSignatureVersion);
+        _rootSigPopulator.Populate(ref sigDesc, in psoDesc, pass);
 
         // Serialize the root signature.
         ID3D10Blob* signature = null;
