@@ -14,7 +14,7 @@ public class SaveTexture : MoltenExample
     {
         base.OnLoadContent(loader);
 
-        _hShader = loader.Load<HlslShader>("assets/BasicTexture.json");
+        _hShader = loader.Load<Shader>("assets/BasicTexture.json");
         _hTexture = loader.Load<ITexture2D>("assets/dds_dxt5.dds");
         _hTexData = loader.Load<TextureData>("assets/dds_dxt5.dds");
         loader.OnCompleted += Loader_OnCompleted;
@@ -28,7 +28,7 @@ public class SaveTexture : MoltenExample
             return;
         }
 
-        HlslShader mat = _hShader.Get<HlslShader>();
+        Shader mat = _hShader.Get<Shader>();
 
         // Manually construct a 2D texture array from the 3 textures we requested earlier
         ITexture2D tex = _hTexture.Get<ITexture2D>();

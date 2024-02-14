@@ -2,7 +2,7 @@
 
 public unsafe class PassCompileResult
 {
-    public PassCompileResult(HlslPass pass)
+    public PassCompileResult(ShaderPass pass)
     {
         Pass = pass;
         Results = new Dictionary<ShaderType, ShaderCodeResult>();
@@ -23,5 +23,5 @@ public unsafe class PassCompileResult
 
     public Dictionary<ShaderType, ShaderCodeResult> Results { get; }
 
-    public HlslPass Pass { get; }
+    public ShaderPass Pass { get; }
 }

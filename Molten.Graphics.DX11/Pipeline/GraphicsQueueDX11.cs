@@ -235,7 +235,7 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue<DeviceDX11>
         Profiler.ResourceCopyCalls++;
     }
 
-    protected override GraphicsBindResult DoRenderPass(HlslPass hlslPass, QueueValidationMode mode, Action callback)
+    protected override GraphicsBindResult DoRenderPass(ShaderPass hlslPass, QueueValidationMode mode, Action callback)
     {
         ShaderPassDX11 pass = hlslPass as ShaderPassDX11;
         D3DPrimitiveTopology passTopology = pass.Topology.ToApi();
@@ -428,7 +428,7 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue<DeviceDX11>
         return vResult;
     }
 
-    protected override GraphicsBindResult DoComputePass(HlslPass hlslPass)
+    protected override GraphicsBindResult DoComputePass(ShaderPass hlslPass)
     {
         ShaderPassDX11 pass = hlslPass as ShaderPassDX11;
         _cs.Bind(pass[ShaderType.Compute]);
@@ -514,14 +514,14 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue<DeviceDX11>
 #endif
     }
 
-    public override GraphicsBindResult Draw(HlslShader shader, uint vertexCount, uint vertexStartIndex = 0)
+    public override GraphicsBindResult Draw(Shader shader, uint vertexCount, uint vertexStartIndex = 0)
     {
         return ApplyState(shader, QueueValidationMode.Unindexed, () => 
             _handle->Draw(vertexCount, vertexStartIndex));
     }
 
     /// <inheritdoc/>
-    public override GraphicsBindResult DrawInstanced(HlslShader shader,
+    public override GraphicsBindResult DrawInstanced(Shader shader,
         uint vertexCountPerInstance,
         uint instanceCount,
         uint vertexStartIndex = 0,
@@ -532,7 +532,7 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue<DeviceDX11>
     }
 
     /// <inheritdoc/>
-    public override GraphicsBindResult DrawIndexed(HlslShader shader,
+    public override GraphicsBindResult DrawIndexed(Shader shader,
         uint indexCount,
         int vertexIndexOffset = 0,
         uint startIndex = 0)
@@ -542,7 +542,7 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue<DeviceDX11>
     }
 
     /// <inheritdoc/>
-    public override GraphicsBindResult DrawIndexedInstanced(HlslShader shader,
+    public override GraphicsBindResult DrawIndexedInstanced(Shader shader,
         uint indexCountPerInstance,
         uint instanceCount,
         uint startIndex = 0,
@@ -554,12 +554,12 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue<DeviceDX11>
     }
 
     /// <summary>
-    /// Dispatches a <see cref="HlslShader"/> as a compute shader. Any non-compute passes will be skipped.
+    /// Dispatches a <see cref="Shader"/> as a compute shader. Any non-compute passes will be skipped.
     /// </summary>
     /// <param name="shader">The shader to be dispatched.</param>
     /// <param name="groups">The number of thread groups.</param>
     /// <returns></returns>
-    public override GraphicsBindResult Dispatch(HlslShader shader, Vector3UI groups)
+    public override GraphicsBindResult Dispatch(Shader shader, Vector3UI groups)
     {
         DrawInfo.Custom.ComputeGroups = groups;
         return ApplyState(shader, QueueValidationMode.Compute, null);

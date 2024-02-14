@@ -1,11 +1,11 @@
 ﻿namespace Molten.Graphics.Vulkan;
 
-internal unsafe class ShaderPassVK : HlslPass
+internal unsafe class ShaderPassVK : ShaderPass
 {
     DescriptorPoolVK _descPool;
     DescriptorSetVK _descSet;
 
-    internal ShaderPassVK(HlslShader material, string name = null) :
+    internal ShaderPassVK(Shader material, string name = null) :
         base(material, name)
     { }
 

@@ -8,7 +8,7 @@ public class ObjectMaterialProperties : CommonShaderProperties
 
     public ShaderVariable EmissivePower { get; set; }
 
-    public ObjectMaterialProperties(HlslShader shader) : base(shader)
+    public ObjectMaterialProperties(Shader shader) : base(shader)
     {
         World = MapValue(shader, "world");
         Wvp = MapValue(shader, "wvp");

@@ -32,7 +32,7 @@ public class StressTestInstanced : MoltenExample
     protected override void OnLoadContent(ContentLoadBatch loader)
     {
         base.OnLoadContent(loader);
-        _hShader = loader.Load<HlslShader>("assets/BasicColorInstanced.json");
+        _hShader = loader.Load<Shader>("assets/BasicColorInstanced.json");
 
         loader.OnCompleted += Loader_OnCompleted;
     }
@@ -44,7 +44,7 @@ public class StressTestInstanced : MoltenExample
             return;
         }
 
-        TestMesh.Shader = _hShader.Get<HlslShader>();
+        TestMesh.Shader = _hShader.Get<Shader>();
     }
 
     private void SpawnRandomTestCube(Mesh mesh, int spawnRadius)

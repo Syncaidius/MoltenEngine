@@ -293,12 +293,12 @@ public abstract partial class GraphicsDevice : EngineObject
 
     protected abstract ShaderSampler OnCreateSampler(ref ShaderSamplerParameters parameters);
 
-    internal HlslPass CreateShaderPass(HlslShader shader, string name = null)
+    internal ShaderPass CreateShaderPass(Shader shader, string name = null)
     {
         return OnCreateShaderPass(shader, name);
     }
 
-    protected abstract HlslPass OnCreateShaderPass(HlslShader shader, string name);
+    protected abstract ShaderPass OnCreateShaderPass(Shader shader, string name);
 
     /// <summary>
     /// Loads an embedded shader from the target assembly. If an assembly is not provided, the current renderer's assembly is used instead.

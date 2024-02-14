@@ -2,7 +2,7 @@
 
 public abstract class ShaderVariable
 {
-    public static T Create<T>(HlslShader shader, string name)
+    public static T Create<T>(Shader shader, string name)
         where T : ShaderVariable, new()
     {
         T v = new T();
@@ -20,9 +20,9 @@ public abstract class ShaderVariable
     public string Name { get; protected set; }
 
     /// <summary>
-    /// Gets the <see cref="HlslShader"/> that the current <see cref="ShaderVariable"/> belongs to.
+    /// Gets the <see cref="Shader"/> that the current <see cref="ShaderVariable"/> belongs to.
     /// </summary>
-    public HlslShader Parent { get; private set; }
+    public Shader Parent { get; private set; }
 
     /// <summary>
     /// Gets or sets the value of the current <see cref="ShaderVariable"/>.

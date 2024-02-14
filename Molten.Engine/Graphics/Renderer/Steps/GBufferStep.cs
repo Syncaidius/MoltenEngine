@@ -28,7 +28,7 @@ internal class GBufferStep : RenderStep
         Renderer.RenderSceneLayer(queue, context.Layer, camera);
     }
 
-    private void SetShaderCommon(HlslShader shader, RenderCamera camera, IRenderSurface2D gBufferScene)
+    private void SetShaderCommon(Shader shader, RenderCamera camera, IRenderSurface2D gBufferScene)
     {
         shader.Scene.View.Value = camera.View;
         shader.Scene.Projection.Value = camera.Projection;

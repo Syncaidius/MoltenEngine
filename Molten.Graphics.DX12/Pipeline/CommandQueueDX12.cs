@@ -174,12 +174,12 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
         // See Also: https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/reference/tools/pix3/functions/pixscopedevent-overloads
     }
 
-    protected override GraphicsBindResult DoRenderPass(HlslPass pass, QueueValidationMode mode, Action callback)
+    protected override GraphicsBindResult DoRenderPass(ShaderPass pass, QueueValidationMode mode, Action callback)
     {
         throw new NotImplementedException();
     }
 
-    protected override GraphicsBindResult DoComputePass(HlslPass pass)
+    protected override GraphicsBindResult DoComputePass(ShaderPass pass)
     {
         throw new NotImplementedException();
     }
@@ -213,13 +213,13 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
         throw new NotImplementedException();
     }
 
-    public override GraphicsBindResult Draw(HlslShader shader, uint vertexCount, uint vertexStartIndex = 0)
+    public override GraphicsBindResult Draw(Shader shader, uint vertexCount, uint vertexStartIndex = 0)
     {
         return ApplyState(shader, QueueValidationMode.Unindexed, () =>
             _cmd.Handle->DrawInstanced(vertexCount, 1, vertexStartIndex, 0));
     }
 
-    public override GraphicsBindResult DrawInstanced(HlslShader shader, uint vertexCountPerInstance,
+    public override GraphicsBindResult DrawInstanced(Shader shader, uint vertexCountPerInstance,
         uint instanceCount,
         uint vertexStartIndex = 0,
         uint instanceStartIndex = 0)
@@ -228,19 +228,19 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
             _cmd.Handle->DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex));
     }
 
-    public override GraphicsBindResult DrawIndexed(HlslShader shader, uint indexCount, int vertexIndexOffset = 0, uint startIndex = 0)
+    public override GraphicsBindResult DrawIndexed(Shader shader, uint indexCount, int vertexIndexOffset = 0, uint startIndex = 0)
     {
         return ApplyState(shader, QueueValidationMode.Indexed, () =>
             _cmd.Handle->DrawIndexedInstanced(indexCount, 1, startIndex, vertexIndexOffset, 0));
     }
 
-    public override GraphicsBindResult DrawIndexedInstanced(HlslShader shader, uint indexCountPerInstance, uint instanceCount, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
+    public override GraphicsBindResult DrawIndexedInstanced(Shader shader, uint indexCountPerInstance, uint instanceCount, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
     {
         return ApplyState(shader, QueueValidationMode.InstancedIndexed, () =>
             _cmd.Handle->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndex, vertexIndexOffset, instanceStartIndex));
     }
 
-    public override GraphicsBindResult Dispatch(HlslShader shader, Vector3UI groups)
+    public override GraphicsBindResult Dispatch(Shader shader, Vector3UI groups)
     {
         DrawInfo.Custom.ComputeGroups = groups;
         return ApplyState(shader, QueueValidationMode.Compute, null);

@@ -32,7 +32,7 @@ public unsafe class FxcCompiler : ShaderCompiler
         _d3dCompiler.Dispose();
     }
 
-    protected override bool Validate(HlslPass pass, ShaderCompilerContext context, ShaderCodeResult result)
+    protected override bool Validate(ShaderPass pass, ShaderCompilerContext context, ShaderCodeResult result)
     {
         return true;
     }
@@ -250,7 +250,7 @@ public unsafe class FxcCompiler : ShaderCompiler
         return null;
     }
 
-    protected override unsafe void* BuildNativeShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes)
+    protected override unsafe void* BuildNativeShader(ShaderPass parent, ShaderType type, void* byteCode, nuint numBytes)
     {
         ID3D10Blob* dx11ByteCode = (ID3D10Blob*)byteCode;
         void* ptrBytecode = dx11ByteCode->GetBufferPointer();

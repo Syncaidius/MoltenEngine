@@ -56,7 +56,7 @@ internal class SpirvCompiler : DxcCompiler
 #endif
     }
 
-    protected override unsafe void* BuildNativeShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes)
+    protected override unsafe void* BuildNativeShader(ShaderPass parent, ShaderType type, void* byteCode, nuint numBytes)
     {
         IDxcBlob* blob = (IDxcBlob*)byteCode;
         byteCode = blob->GetBufferPointer();
@@ -115,7 +115,7 @@ internal class SpirvCompiler : DxcCompiler
         return result;
     }
 
-    protected override bool Validate(HlslPass pass, ShaderCompilerContext context, ShaderCodeResult result)
+    protected override bool Validate(ShaderPass pass, ShaderCompilerContext context, ShaderCodeResult result)
     {
         DeviceVK device = pass.Device as DeviceVK;
         for(int i = 0; i < result.Reflection.RequiredExtensions.Count; i++)

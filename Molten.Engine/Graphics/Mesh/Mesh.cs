@@ -131,7 +131,7 @@ public abstract class Mesh : Renderable
     /// <summary>
     /// Gets or sets the material that should be used when rendering the current <see cref="Mesh"/>.
     /// </summary>
-    public HlslShader Shader { get; set; }
+    public Shader Shader { get; set; }
 
     public float EmissivePower { get; set; } = 1.0f;
 

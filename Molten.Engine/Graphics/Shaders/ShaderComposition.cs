@@ -23,7 +23,7 @@ public unsafe class ShaderComposition : GraphicsObject
 
     void* _ptrShader;
 
-    internal ShaderComposition(HlslPass parentPass, ShaderType type) : 
+    internal ShaderComposition(ShaderPass parentPass, ShaderType type) : 
         base(parentPass.Device)
     {
         Pass = parentPass;
@@ -38,5 +38,5 @@ public unsafe class ShaderComposition : GraphicsObject
         internal set => _ptrShader = value;
     }
 
-    public HlslPass Pass { get; }
+    public ShaderPass Pass { get; }
 }

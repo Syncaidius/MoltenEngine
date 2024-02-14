@@ -7,7 +7,7 @@ internal class CompositionStep : RenderStep
     IRenderSurface2D _surfaceScene;
     IRenderSurface2D _surfaceLighting;
     IRenderSurface2D _surfaceEmissive;
-    HlslShader _fxCompose;
+    Shader _fxCompose;
     ShaderVariable _valLighting;
     ShaderVariable _valEmissive;
 

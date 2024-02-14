@@ -4,7 +4,7 @@ public class SpriteBatchMaterialProperties : CommonShaderProperties
 {
     public ShaderVariable TextureSize { get; set; }
 
-    public SpriteBatchMaterialProperties(HlslShader shader) : base(shader)
+    public SpriteBatchMaterialProperties(Shader shader) : base(shader)
     {
         TextureSize = MapValue(shader, "textureSize");
     }

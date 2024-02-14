@@ -19,8 +19,8 @@ public abstract class RenderService : EngineService
     AntiAliasLevel _requestedMultiSampleLevel = AntiAliasLevel.None;
 
     internal AntiAliasLevel MsaaLevel = AntiAliasLevel.None;
-    internal HlslShader FxStandardMesh;
-    internal HlslShader FxStandardMesh_NoNormalMap;
+    internal Shader FxStandardMesh;
+    internal Shader FxStandardMesh_NoNormalMap;
 
     /// <summary>
     /// Creates a new instance of a <see cref="RenderService"/> sub-type.

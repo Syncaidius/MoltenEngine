@@ -32,7 +32,7 @@ public class UIDemo : MoltenExample
     {
         base.OnLoadContent(loader);
 
-        _hShader = loader.Load<HlslShader>("assets/BasicTexture.json");
+        _hShader = loader.Load<Shader>("assets/BasicTexture.json");
         _hTexture = loader.Load<ITexture2D>("assets/logo_512_bc7.dds", parameters: new TextureParameters()
         {
             GenerateMipmaps = true,
@@ -55,7 +55,7 @@ public class UIDemo : MoltenExample
         }
 
 
-        HlslShader shader = _hShader.Get<HlslShader>();
+        Shader shader = _hShader.Get<Shader>();
         ITexture2D texture = _hTexture.Get<ITexture2D>();
 
         shader.SetDefaultResource(texture, 0);

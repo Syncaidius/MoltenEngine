@@ -14,7 +14,7 @@ public partial class SpriteBatcher
     /// <param name="rotation">The rotation angle, in radians.</param>
     /// <param name="texture">The texture, or null if none.</param>
     /// <param name="surfaceSlice"></param>
-    public void DrawEllipse(ref Ellipse e, Color color, float rotation = 0, ITexture2D texture = null, HlslShader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
+    public void DrawEllipse(ref Ellipse e, Color color, float rotation = 0, ITexture2D texture = null, Shader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
     {
         _ellipseStyle.FillColor = color;
         _ellipseStyle.BorderThickness = 0;
@@ -32,7 +32,7 @@ public partial class SpriteBatcher
     /// <param name="rotation">The rotation angle, in radians.</param>
     /// <param name="texture">The texture, or null if none.</param>
     /// <param name="style">The style to use when drawing the ellipse.</param>
-    public void DrawEllipse(ref Ellipse e, ref EllipseStyle style, float rotation = 0, ITexture2D texture = null, HlslShader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
+    public void DrawEllipse(ref Ellipse e, ref EllipseStyle style, float rotation = 0, ITexture2D texture = null, Shader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
     {
         DrawEllipse(ref e, DEFAULT_ORIGIN_CENTER, ref style, rotation, texture, shader, arraySlice, surfaceSlice);
     }
@@ -48,7 +48,7 @@ public partial class SpriteBatcher
     /// <param name="origin">The origin of the ellipse, between 0f and 1.0f. An origin of 0.5f,0.5f would be the center of the sprite.</param>
     /// <param name="style">The style to use when drawing the ellipse.</param>
     public unsafe void DrawEllipse(ref Ellipse e, Vector2F origin, ref EllipseStyle style, float rotation = 0, ITexture2D texture = null,
-        HlslShader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
+        Shader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
     {
         RectangleF source = texture != null ? new RectangleF(0, 0, texture.Width, texture.Height) : RectangleF.Empty;
 

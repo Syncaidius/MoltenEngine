@@ -95,12 +95,12 @@ public class GraphicsTaskManager : IDisposable
     /// <param name="groupsY">The number of Y compute thread groups.</param>
     /// <param name="groupsZ">The number of Z compute thread groups.</param>
     /// <param name="callback">A callback to run once the task is completed.</param>
-    public void Push(GraphicsTaskPriority priority, HlslShader shader, uint groupsX, uint groupsY, uint groupsZ, GraphicsTask.EventHandler callback = null)
+    public void Push(GraphicsTaskPriority priority, Shader shader, uint groupsX, uint groupsY, uint groupsZ, GraphicsTask.EventHandler callback = null)
     {
         Push(priority, shader, new Vector3UI(groupsX, groupsY, groupsZ), callback);
     }
 
-    public void Push(GraphicsTaskPriority priority, HlslShader shader, Vector3UI groups, GraphicsTask.EventHandler callback = null)
+    public void Push(GraphicsTaskPriority priority, Shader shader, Vector3UI groups, GraphicsTask.EventHandler callback = null)
     {
         ComputeTask task = Get<ComputeTask>();
         task.Shader = shader;

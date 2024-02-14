@@ -18,7 +18,7 @@ public partial class SpriteBatcher
     /// <param name="color">The color of the text.</param>
     /// <param name="shader">The shader to use when rendering the string of text.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DrawString(SpriteFont font, string text, Vector2F position, Color color, HlslShader shader = null, uint surfaceSlice = 0)
+    public void DrawString(SpriteFont font, string text, Vector2F position, Color color, Shader shader = null, uint surfaceSlice = 0)
     {
         DrawString(font, text, position, color, Vector2F.One, shader, surfaceSlice);
     }
@@ -29,7 +29,7 @@ public partial class SpriteBatcher
     /// <param name="position">The position of the text.</param>
     /// <param name="shader">The material to use when rendering the string of text.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DrawString(SpriteFont font, string text, Vector2F position, ref TextStyle style, HlslShader shader = null, uint surfaceSlice = 0)
+    public void DrawString(SpriteFont font, string text, Vector2F position, ref TextStyle style, Shader shader = null, uint surfaceSlice = 0)
     {
         DrawString(font, text, position, Vector2F.One, ref style, shader, surfaceSlice);
     }
@@ -41,7 +41,7 @@ public partial class SpriteBatcher
     /// <param name="color">The color of the text.</param>
     /// <param name="scale">The text scale. 1.0f is equivilent to the default size. 0.5f will half the size. 2.0f will double the size.</param>
     /// <param name="shader">The shader to use when rendering the string of text.</param>
-    public void DrawString(SpriteFont font, string text, Vector2F position, Color color, Vector2F scale, HlslShader shader = null, uint surfaceSlice = 0)
+    public void DrawString(SpriteFont font, string text, Vector2F position, Color color, Vector2F scale, Shader shader = null, uint surfaceSlice = 0)
     {
         if (string.IsNullOrEmpty(text))
             return;
@@ -59,7 +59,7 @@ public partial class SpriteBatcher
     /// <param name="position">The position of the text.</param>
     /// <param name="scale">The text scale. 1.0f is equivilent to the default size. 0.5f will half the size. 2.0f will double the size.</param>
     /// <param name="shader">The material to use when rendering the string of text.</param>
-    public void DrawString(SpriteFont font, string text, Vector2F position, Vector2F scale, ref TextStyle style, HlslShader shader = null, uint surfaceSlice = 0)
+    public void DrawString(SpriteFont font, string text, Vector2F position, Vector2F scale, ref TextStyle style, Shader shader = null, uint surfaceSlice = 0)
     {
         if (string.IsNullOrEmpty(text))
             return;

@@ -3,7 +3,7 @@
 public partial class SpriteBatcher
 {
     public void DrawRoundedRect(RectangleF dest, Color fillColor, float rotation,
-        Vector2F origin, float cornerRadius, HlslShader shader = null, uint surfaceSlice = 0)
+        Vector2F origin, float cornerRadius, Shader shader = null, uint surfaceSlice = 0)
     {
         RoundedRectStyle style = new RoundedRectStyle()
         {
@@ -17,7 +17,7 @@ public partial class SpriteBatcher
     }
 
     public void DrawRoundedRect(RectangleF dest, Color fillColor, float rotation,
-        Vector2F origin, CornerInfo cornerRadius, HlslShader shader = null, uint surfaceSlice = 0)
+        Vector2F origin, CornerInfo cornerRadius, Shader shader = null, uint surfaceSlice = 0)
     {
         RoundedRectStyle style = new RoundedRectStyle()
         {
@@ -31,7 +31,7 @@ public partial class SpriteBatcher
     }
 
     public void DrawRoundedRect(RectangleF dest, Color fillColor, Color borderColor, float rotation, 
-        Vector2F origin, float cornerRadius, float borderThickness = 0, HlslShader shader = null, uint surfaceSlice = 0)
+        Vector2F origin, float cornerRadius, float borderThickness = 0, Shader shader = null, uint surfaceSlice = 0)
     {
         RoundedRectStyle style = new RoundedRectStyle()
         {
@@ -45,7 +45,7 @@ public partial class SpriteBatcher
     }
 
     public void DrawRoundedRect(RectangleF dest, Color fillColor, Color borderColor, float rotation, 
-        Vector2F origin, CornerInfo cornerRadius, float borderThickness = 0, HlslShader shader = null, uint surfaceSlice = 0)
+        Vector2F origin, CornerInfo cornerRadius, float borderThickness = 0, Shader shader = null, uint surfaceSlice = 0)
     {
         RoundedRectStyle style = new RoundedRectStyle()
         {
@@ -58,7 +58,7 @@ public partial class SpriteBatcher
         DrawRoundedRect(dest, rotation, origin, ref style, shader);
     }
 
-    public void DrawRoundedRect(RectangleF dest, float rotation, Vector2F origin, ref RoundedRectStyle style, HlslShader shader = null, uint surfaceSlice = 0)
+    public void DrawRoundedRect(RectangleF dest, float rotation, Vector2F origin, ref RoundedRectStyle style, Shader shader = null, uint surfaceSlice = 0)
     {
         ref CornerInfo corners = ref style.CornerRadius;
 

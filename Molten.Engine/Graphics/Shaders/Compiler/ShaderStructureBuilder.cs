@@ -7,7 +7,7 @@ internal class ShaderStructureBuilder
 {
     internal bool Build(ShaderCompilerContext context, ShaderReflection reflection, ShaderComposition composition, ShaderPassDefinition passDef)
     {
-        HlslShader shader = composition.Pass.Parent;
+        Shader shader = composition.Pass.Parent;
 
         for (int r = 0; r < reflection.BoundResources.Count; r++)
         {
@@ -83,7 +83,7 @@ internal class ShaderStructureBuilder
         return true;
     }
 
-    private unsafe IConstantBuffer GetConstantBuffer(ShaderCompilerContext context, HlslShader shader, ConstantBufferInfo info)
+    private unsafe IConstantBuffer GetConstantBuffer(ShaderCompilerContext context, Shader shader, ConstantBufferInfo info)
     {
         string localName = info.Name;
 
@@ -137,7 +137,7 @@ internal class ShaderStructureBuilder
         return cBuffer;
     }
 
-    private void OnBuildTextureVariable(ShaderCompilerContext context, HlslShader shader, ShaderResourceInfo info, ShaderPassDefinition passDef)
+    private void OnBuildTextureVariable(ShaderCompilerContext context, Shader shader, ShaderResourceInfo info, ShaderPassDefinition passDef)
     {
         ShaderResourceVariable obj = null;
         GraphicsFormatSupportFlags supportFlags = GraphicsFormatSupportFlags.None;
@@ -194,7 +194,7 @@ internal class ShaderStructureBuilder
         shader.Resources[info.BindPoint] = obj;
     }
 
-    private void OnBuildRWTypedVariable(ShaderCompilerContext context, HlslShader shader, ShaderResourceInfo info)
+    private void OnBuildRWTypedVariable(ShaderCompilerContext context, Shader shader, ShaderResourceInfo info)
     {
         RWVariable resource = null;
         uint bindPoint = info.BindPoint;
@@ -230,7 +230,7 @@ internal class ShaderStructureBuilder
         shader.UAVs[bindPoint] = resource;
     }
 
-    private T GetVariableResource<T>(ShaderCompilerContext context, HlslShader shader, ShaderResourceInfo info)
+    private T GetVariableResource<T>(ShaderCompilerContext context, Shader shader, ShaderResourceInfo info)
         where T : ShaderVariable, new()
     {
         ShaderVariable existing = null;
@@ -261,7 +261,7 @@ internal class ShaderStructureBuilder
         return bVar;
     }
 
-    private void OnBuildRWStructuredVariable(ShaderCompilerContext context, HlslShader shader, ShaderResourceInfo info)
+    private void OnBuildRWStructuredVariable(ShaderCompilerContext context, Shader shader, ShaderResourceInfo info)
     {
         RWVariable rwBuffer = GetVariableResource<RWVariable<GraphicsBuffer>>(context, shader, info);
         uint bindPoint = info.BindPoint;

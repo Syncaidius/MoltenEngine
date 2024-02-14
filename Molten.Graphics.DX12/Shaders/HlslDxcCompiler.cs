@@ -24,7 +24,7 @@ internal unsafe class HlslDxcCompiler : DxcCompiler
 #endif
     }
 
-    protected override unsafe void* BuildNativeShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes)
+    protected override unsafe void* BuildNativeShader(ShaderPass parent, ShaderType type, void* byteCode, nuint numBytes)
     {
         IDxcBlob* blob = (IDxcBlob*)byteCode;
         byteCode = blob->GetBufferPointer();
@@ -36,7 +36,7 @@ internal unsafe class HlslDxcCompiler : DxcCompiler
         return handle;
     }
 
-    protected override bool Validate(HlslPass pass, ShaderCompilerContext context, ShaderCodeResult result)
+    protected override bool Validate(ShaderPass pass, ShaderCompilerContext context, ShaderCodeResult result)
     {
         return true;
     }

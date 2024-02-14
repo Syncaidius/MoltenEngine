@@ -2,13 +2,13 @@
 
 namespace Molten.Graphics.DX11;
 
-public class ShaderPassDX11 : HlslPass
+public class ShaderPassDX11 : ShaderPass
 {
     BlendStateDX11 _stateBlend;
     DepthStateDX11 _stateDepth;
     RasterizerStateDX11 _stateRasterizer;
 
-    public ShaderPassDX11(HlslShader shader, string name) : base(shader, name) { }
+    public ShaderPassDX11(Shader shader, string name) : base(shader, name) { }
 
     protected override void OnInitialize(ref ShaderPassParameters parameters)
     {

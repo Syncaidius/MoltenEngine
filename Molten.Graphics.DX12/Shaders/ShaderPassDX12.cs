@@ -2,9 +2,9 @@
 
 namespace Molten.Graphics.DX12;
 
-public class ShaderPassDX12 : HlslPass, IEquatable<ShaderPassDX12>
+public class ShaderPassDX12 : ShaderPass, IEquatable<ShaderPassDX12>
 {
-    public ShaderPassDX12(HlslShader parent, string name) : 
+    public ShaderPassDX12(Shader parent, string name) : 
         base(parent, name) { }
 
     RasterizerStateDX12 _stateRasterizer;

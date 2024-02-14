@@ -68,7 +68,7 @@ public class Sprite
     /// <summary>
     /// Gets or sets the <see cref="Shader"/> to use when drawing the current <see cref="Sprite"/>.
     /// </summary>
-    public HlslShader Shader { get; set; }
+    public Shader Shader { get; set; }
 
     /// <summary>
     /// Gets or sets the surface array slice to which the current <see cref="Sprite"/> should be drawn.

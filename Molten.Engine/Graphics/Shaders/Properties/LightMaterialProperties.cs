@@ -14,7 +14,7 @@ public class LightMaterialProperties : CommonShaderProperties
 
     public ShaderVariable CameraPosition { get; set; }
 
-    public LightMaterialProperties(HlslShader shader) : base(shader)
+    public LightMaterialProperties(Shader shader) : base(shader)
     {
         Data = MapValue(shader, "LightData");
         MapDiffuse = MapValue(shader, "mapDiffuse");

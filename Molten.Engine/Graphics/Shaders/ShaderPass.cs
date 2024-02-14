@@ -6,14 +6,14 @@ namespace Molten.Graphics;
 /// <summary>
 /// An a base class implementation for key shader components, such as materials, material passes or compute tasks.
 /// </summary>
-public abstract class HlslPass : GraphicsObject, IEnumerable<ShaderComposition>, IEnumerable<ShaderType>
+public abstract class ShaderPass : GraphicsObject, IEnumerable<ShaderComposition>, IEnumerable<ShaderType>
 {
     /// <summary>
-    /// A callback that is used by <see cref="HlslPass"/> when it has finished its draw/dispatch call.
+    /// A callback that is used by <see cref="ShaderPass"/> when it has finished its draw/dispatch call.
     /// </summary>
     /// <param name="pass">The pass that was completed.</param>
     /// <param name="customInfo">Custom information that can be passed between shader passes.</param>
-    public delegate void OnCompletedCallback(HlslPass pass, GraphicsQueue.CustomDrawInfo customInfo);
+    public delegate void OnCompletedCallback(ShaderPass pass, GraphicsQueue.CustomDrawInfo customInfo);
 
     /// <summary>
     /// The texture samplers to be used with the shader/component.
@@ -25,16 +25,16 @@ public abstract class HlslPass : GraphicsObject, IEnumerable<ShaderComposition>,
     ShaderFormatLayout _formatLayout;
 
     /// <summary>
-    /// Invoked when the current <see cref="HlslPass"/> has finished its draw/dispatch call.
+    /// Invoked when the current <see cref="ShaderPass"/> has finished its draw/dispatch call.
     /// </summary>
     public event OnCompletedCallback OnCompleted;
 
     /// <summary>
-    /// Creates a new instance of <see cref="HlslPass"/>. Can only be called by a derived class.
+    /// Creates a new instance of <see cref="ShaderPass"/>. Can only be called by a derived class.
     /// </summary>
-    /// <param name="parent">The parnet shader that owns this new instance of <see cref="HlslPass"/>.</param>
-    /// <param name="name">The readable name to give to the <see cref="HlslPass"/>.</param>
-    protected HlslPass(HlslShader parent, string name) : 
+    /// <param name="parent">The parnet shader that owns this new instance of <see cref="ShaderPass"/>.</param>
+    /// <param name="name">The readable name to give to the <see cref="ShaderPass"/>.</param>
+    protected ShaderPass(Shader parent, string name) : 
         base(parent.Device)
     {
         Samplers = new ShaderSampler[0];
@@ -98,7 +98,7 @@ public abstract class HlslPass : GraphicsObject, IEnumerable<ShaderComposition>,
     }
 
     /// <summary>
-    /// Gets a <see cref="ShaderComposition"/> from the current <see cref="HlslPass"/>. 
+    /// Gets a <see cref="ShaderComposition"/> from the current <see cref="ShaderPass"/>. 
     /// <para>Returns null if no composition exists for the specified <see cref="ShaderType"/>.</para>
     /// </summary>
     /// <param name="type">The type of shader composition to retrieve.</param>
@@ -113,7 +113,7 @@ public abstract class HlslPass : GraphicsObject, IEnumerable<ShaderComposition>,
     }
 
     /// <summary>
-    /// Gets the number of compositions in the current <see cref="HlslPass"/>. 
+    /// Gets the number of compositions in the current <see cref="ShaderPass"/>. 
     /// Each composition represents a shader pipeline stage. For example, vertex, geometry or fragment/pixel stages.
     /// </summary>
     public int CompositionCount => _compositions.Count;
@@ -140,22 +140,22 @@ public abstract class HlslPass : GraphicsObject, IEnumerable<ShaderComposition>,
     public bool IsEnabled { get; set; }
 
     /// <summary>
-    /// Gets the parent <see cref="HlslShader"/> that the current <see cref="HlslPass"/> belongs to.
+    /// Gets the parent <see cref="Shader"/> that the current <see cref="ShaderPass"/> belongs to.
     /// </summary>
-    public HlslShader Parent { get; }
+    public Shader Parent { get; }
 
     /// <summary>
-    /// Gets whether the current <see cref="HlslPass"/> is a compute pass.
+    /// Gets whether the current <see cref="ShaderPass"/> is a compute pass.
     /// </summary>
     public bool IsCompute { get; internal set; }
 
     /// <summary>
-    /// Gets the compute group sizes for the current <see cref="HlslPass"/>. This has no effect if <see cref="IsCompute"/> is false.
+    /// Gets the compute group sizes for the current <see cref="ShaderPass"/>. This has no effect if <see cref="IsCompute"/> is false.
     /// </summary>
     public Vector3UI ComputeGroups { get; private set; }
 
     /// <summary>
-    /// Gets the vertex <see cref="PrimitiveTopology"/> that the current <see cref="HlslPass"/> will use when rendering mesh vertices.
+    /// Gets the vertex <see cref="PrimitiveTopology"/> that the current <see cref="ShaderPass"/> will use when rendering mesh vertices.
     /// </summary>
     public PrimitiveTopology Topology { get; private set; }
 
@@ -166,7 +166,7 @@ public abstract class HlslPass : GraphicsObject, IEnumerable<ShaderComposition>,
     public uint RasterizedStreamOutput { get; private set; }
 
     /// <summary>
-    /// Gets the format layout used by the pixel/fragment stage of the current <see cref="HlslPass"/>, if present.
+    /// Gets the format layout used by the pixel/fragment stage of the current <see cref="ShaderPass"/>, if present.
     /// </summary>
     public ref ShaderFormatLayout FormatLayout => ref _formatLayout;
 }

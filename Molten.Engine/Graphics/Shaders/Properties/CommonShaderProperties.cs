@@ -5,9 +5,9 @@
 /// </summary>
 public abstract class CommonShaderProperties
 {
-    protected CommonShaderProperties(HlslShader shader) { }
+    protected CommonShaderProperties(Shader shader) { }
 
-    protected ShaderVariable MapValue(HlslShader shader, string name)
+    protected ShaderVariable MapValue(Shader shader, string name)
     {
         return shader[name] ?? new DummyShaderValue();
     }

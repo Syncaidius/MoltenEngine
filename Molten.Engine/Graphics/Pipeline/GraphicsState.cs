@@ -12,7 +12,7 @@ public class GraphicsState
         ScissorRects = new GraphicsStateArray<Rectangle>(maxRTs); // TODO More than one scissor rect can be used during a single draw call to the same output surface.
         Surfaces = new GraphicsStateValueGroup<IRenderSurface2D>(maxRTs);
         DepthSurface = new GraphicsStateValue<IDepthStencilSurface>();
-        Shader = new GraphicsStateBasicValue<HlslShader>();
+        Shader = new GraphicsStateBasicValue<Shader>();
 
         VertexBuffers = new GraphicsStateValueGroup<GraphicsBuffer>(Device.Capabilities.VertexBuffers.MaxSlots, (vb, slotID) =>
         {
@@ -65,7 +65,7 @@ public class GraphicsState
 
     public GraphicsStateValue<IDepthStencilSurface> DepthSurface { get; }
 
-    public GraphicsStateBasicValue<HlslShader> Shader { get; }
+    public GraphicsStateBasicValue<Shader> Shader { get; }
 
     public GraphicsStateValueGroup<GraphicsBuffer> VertexBuffers { get; }
 

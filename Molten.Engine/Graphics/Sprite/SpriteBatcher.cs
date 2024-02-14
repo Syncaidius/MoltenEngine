@@ -9,13 +9,13 @@ public partial class SpriteBatcher : IDisposable
 {
     protected delegate void FlushRangeCallback(uint firstRangeID, uint rangeCount, uint dataStartIndex, uint numDataInBuffer);
 
-    protected delegate HlslShader CheckerCallback(GraphicsQueue queue, ref SpriteRange range, ObjectRenderData data);
+    protected delegate Shader CheckerCallback(GraphicsQueue queue, ref SpriteRange range, ObjectRenderData data);
 
     protected struct SpriteRange
     {
         public uint VertexCount;        // 4-bytes
         public ITexture2D Texture;      // 8-bytes (64-bit reference)
-        public HlslShader Shader;       // 8-bytes (64-bit reference)
+        public Shader Shader;       // 8-bytes (64-bit reference)
         public Rectangle Clip;          // Clipping rectangle.
         public RangeType Type;          // 1-byte
 
@@ -72,14 +72,14 @@ public partial class SpriteBatcher : IDisposable
     GraphicsFrameBuffer<GraphicsBuffer> _buffer;
 
     CheckerCallback[] _checkers;
-    HlslShader _matDefault;
-    HlslShader _matDefaultMS;
-    HlslShader _matDefaultNoTexture;
-    HlslShader _matLine;
-    HlslShader _matGrid;
-    HlslShader _matCircle;
-    HlslShader _matCircleNoTexture;
-    HlslShader _matMsdf;
+    Shader _matDefault;
+    Shader _matDefaultMS;
+    Shader _matDefaultNoTexture;
+    Shader _matLine;
+    Shader _matGrid;
+    Shader _matCircle;
+    Shader _matCircleNoTexture;
+    Shader _matMsdf;
 
     /// <summary>
     /// Placeholder for internal rectangle/sprite styling.
@@ -173,7 +173,7 @@ public partial class SpriteBatcher : IDisposable
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected ref GpuData GetData(RangeType type, ITexture2D texture, HlslShader shader)
+    protected ref GpuData GetData(RangeType type, ITexture2D texture, Shader shader)
     {
         ref SpriteRange range = ref Ranges[_curRange];
         if (range.Type != type ||
@@ -231,7 +231,7 @@ public partial class SpriteBatcher : IDisposable
     }
 
     public void DrawGrid(RectangleF bounds, Vector2F cellSize, float rotation, Vector2F origin, Color cellColor, Color lineColor, float lineThickness, 
-        ITexture2D cellTexture = null, HlslShader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
+        ITexture2D cellTexture = null, Shader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
     {
         GridStyle style = new GridStyle()
         {
@@ -244,7 +244,7 @@ public partial class SpriteBatcher : IDisposable
     }
 
     public void DrawGrid(RectangleF bounds, Vector2F cellSize, float rotation, Vector2F origin, Color cellColor, 
-        Color lineColor, Vector2F lineThickness, ITexture2D cellTexture = null, HlslShader shader = null, 
+        Color lineColor, Vector2F lineThickness, ITexture2D cellTexture = null, Shader shader = null, 
         uint arraySlice = 0, uint surfaceSlice = 0)
     {
         GridStyle style = new GridStyle()
@@ -263,7 +263,7 @@ public partial class SpriteBatcher : IDisposable
         Vector2F origin, 
         ref GridStyle style, 
         ITexture2D cellTexture = null, 
-        HlslShader shader = null, 
+        Shader shader = null, 
         uint arraySlice = 0, 
         uint surfaceSlice = 0)
     {
@@ -295,7 +295,7 @@ public partial class SpriteBatcher : IDisposable
     /// <param name="shader">The shader to use when rendering the sprite.</param>
     /// <param name="arraySlice"></param>
     /// <param name="surfaceSlice"></param>
-    public void Draw(RectangleF destination, Color color, ITexture2D texture = null, HlslShader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
+    public void Draw(RectangleF destination, Color color, ITexture2D texture = null, Shader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
     {
         _rectStyle.FillColor = color;
         _rectStyle.BorderThickness.Zero();
@@ -319,7 +319,7 @@ public partial class SpriteBatcher : IDisposable
     /// <param name="color">Sets the color of the sprite. This overrides <see cref="SpriteStyle.PrimaryColor"/> of the active <see cref="SpriteStyle"/>.</param>
     /// <param name="shader">The shader to use when rendering the sprite.</param>
     /// <param name="arraySlice"></param>
-    public void Draw(RectangleF source, RectangleF destination, Color color, ITexture2D texture = null, HlslShader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
+    public void Draw(RectangleF source, RectangleF destination, Color color, ITexture2D texture = null, Shader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
     {
         _rectStyle.FillColor = color;
         _rectStyle.BorderThickness.Zero();
@@ -346,7 +346,7 @@ public partial class SpriteBatcher : IDisposable
     /// <param name="shader">The shader to use when rendering the sprite.</param>
     /// <param name="arraySlice"></param>
     /// <param name="surfaceSlice"></param>
-    public void Draw(RectangleF source, RectangleF destination, ref RectStyle style, ITexture2D texture = null, HlslShader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
+    public void Draw(RectangleF source, RectangleF destination, ref RectStyle style, ITexture2D texture = null, Shader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
     {
         Draw(texture,
             source,
@@ -366,7 +366,7 @@ public partial class SpriteBatcher : IDisposable
     /// <param name="texture"></param>
     /// <param name="shader"></param>
     /// <param name="arraySlice"></param>
-    public void Draw(RectangleF destination, ref RectStyle style, ITexture2D texture = null, HlslShader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
+    public void Draw(RectangleF destination, ref RectStyle style, ITexture2D texture = null, Shader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
     {
         RectangleF src = texture != null ? new RectangleF(0, 0, texture.Width, texture.Height) : RectangleF.Empty;
         Draw(texture, src, destination.TopLeft, destination.Size, 0, Vector2F.Zero, ref style, shader, arraySlice, surfaceSlice);
@@ -383,7 +383,7 @@ public partial class SpriteBatcher : IDisposable
     public void Draw(RectangleF destination, float rotation, Vector2F origin, 
         ref RectStyle style, 
         ITexture2D texture = null, 
-        HlslShader shader = null, 
+        Shader shader = null, 
         uint arraySlice = 0, 
         uint surfaceSlice = 0)
     {
@@ -398,7 +398,7 @@ public partial class SpriteBatcher : IDisposable
     /// <param name="shader">The shader to use when rendering the sprite.</param>
     /// <param name="arraySlice"></param>
     /// <param name="surfaceSlice"></param>
-    public void Draw(Vector2F position, ref RectStyle style, ITexture2D texture = null, HlslShader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
+    public void Draw(Vector2F position, ref RectStyle style, ITexture2D texture = null, Shader shader = null, uint arraySlice = 0, uint surfaceSlice = 0)
     {
         RectangleF src = texture != null ? new RectangleF(0, 0, texture.Width, texture.Height) : RectangleF.Empty;
         Draw(texture, src, position, new Vector2F(src.Width, src.Height), 0, Vector2F.Zero, ref style, shader, arraySlice, surfaceSlice);
@@ -430,7 +430,7 @@ public partial class SpriteBatcher : IDisposable
     /// <param name="shader">The shader to use when rendering the sprite.</param>
     /// <param name="arraySlice">The texture array slice containing the source texture.</param>
     /// <param name="surfaceSlice">The destination slice of a bound <see cref="IRenderSurface"/>. This is only used when rendering to a render surface array.</param>
-    public void Draw(Vector2F position, float rotation, Vector2F origin, ITexture2D texture, ref RectStyle style, HlslShader shader = null, float arraySlice = 0, uint surfaceSlice = 0)
+    public void Draw(Vector2F position, float rotation, Vector2F origin, ITexture2D texture, ref RectStyle style, Shader shader = null, float arraySlice = 0, uint surfaceSlice = 0)
     {
         RectangleF src = texture != null ? new RectangleF(0, 0, texture.Width, texture.Height) : RectangleF.Empty;
         Draw(texture, src, position, new Vector2F(src.Width, src.Height), rotation, origin, ref style, shader, arraySlice, surfaceSlice);
@@ -456,7 +456,7 @@ public partial class SpriteBatcher : IDisposable
         float rotation,
         Vector2F origin,
         ref RectStyle style,
-        HlslShader shader,
+        Shader shader,
         float arraySlice, uint surfaceSlice)
     {
         ref GpuData vertex = ref GetData(RangeType.Sprite, texture, shader);
@@ -570,7 +570,7 @@ public partial class SpriteBatcher : IDisposable
             if (range.Type == RangeType.None || range.VertexCount == 0)
                 continue;
 
-            HlslShader shader = range.Shader ?? _checkers[(int)range.Type](cmd, ref range, data);
+            Shader shader = range.Shader ?? _checkers[(int)range.Type](cmd, ref range, data);
 
             shader["spriteData"].Value = dataBuffer;
             shader["vertexOffset"].Value = bufferOffset;
@@ -600,7 +600,7 @@ public partial class SpriteBatcher : IDisposable
         }
     }
 
-    private HlslShader CheckSpriteRange(GraphicsQueue cmd, ref SpriteRange range, ObjectRenderData data)
+    private Shader CheckSpriteRange(GraphicsQueue cmd, ref SpriteRange range, ObjectRenderData data)
     {
         if (range.Texture != null)
             return range.Texture.IsMultisampled ? _matDefaultMS : _matDefault;
@@ -608,7 +608,7 @@ public partial class SpriteBatcher : IDisposable
             return _matDefaultNoTexture;
     }
 
-    private HlslShader CheckMsdfRange(GraphicsQueue cmd, ref SpriteRange range, ObjectRenderData data)
+    private Shader CheckMsdfRange(GraphicsQueue cmd, ref SpriteRange range, ObjectRenderData data)
     {
         if (range.Texture != null)
         {
@@ -623,22 +623,22 @@ public partial class SpriteBatcher : IDisposable
         }
     }
 
-    private HlslShader CheckLineRange(GraphicsQueue cmd, ref SpriteRange range, ObjectRenderData data)
+    private Shader CheckLineRange(GraphicsQueue cmd, ref SpriteRange range, ObjectRenderData data)
     {
         return _matLine;
     }
 
-    private HlslShader CheckEllipseRange(GraphicsQueue cmd, ref SpriteRange range, ObjectRenderData data)
+    private Shader CheckEllipseRange(GraphicsQueue cmd, ref SpriteRange range, ObjectRenderData data)
     {
         return range.Texture != null ? _matCircle : _matCircleNoTexture;
     }
 
-    private HlslShader CheckGridRange(GraphicsQueue cmd, ref SpriteRange range, ObjectRenderData data)
+    private Shader CheckGridRange(GraphicsQueue cmd, ref SpriteRange range, ObjectRenderData data)
     {
         return _matGrid; // range.Texture != null ? _matCircle : _matCircleNoTexture;
     }
 
-    private HlslShader NoCheckRange(GraphicsQueue cmd, ref SpriteRange range, ObjectRenderData data)
+    private Shader NoCheckRange(GraphicsQueue cmd, ref SpriteRange range, ObjectRenderData data)
     {
         return null;
     }

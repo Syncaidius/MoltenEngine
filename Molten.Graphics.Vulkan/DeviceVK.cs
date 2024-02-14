@@ -447,7 +447,7 @@ public unsafe class DeviceVK : GraphicsDevice
         }
     }
 
-    protected override HlslPass OnCreateShaderPass(HlslShader shader, string name)
+    protected override ShaderPass OnCreateShaderPass(Shader shader, string name)
     {
         return new ShaderPassVK(shader, name);
     }

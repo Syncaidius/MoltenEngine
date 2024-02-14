@@ -199,7 +199,7 @@ public unsafe class DeviceDX11 : DeviceDXGI
         return new DepthSurfaceDX11(this, width, height, flags, format, mipCount, arraySize, aaLevel, msaa, name);
     }
 
-    protected override HlslPass OnCreateShaderPass(HlslShader shader, string name = null)
+    protected override ShaderPass OnCreateShaderPass(Shader shader, string name = null)
     {
         return new ShaderPassDX11(shader, name);
     }

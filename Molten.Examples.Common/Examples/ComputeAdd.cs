@@ -27,8 +27,8 @@ public class ComputeAdd : MoltenExample
     {
         base.OnLoadContent(loader);
 
-        _hShader = loader.Load<HlslShader>("assets/BasicTexture.json");
-        _hComputeShader = loader.Load<HlslShader>("assets/ComputeAdd.json");
+        _hShader = loader.Load<Shader>("assets/BasicTexture.json");
+        _hComputeShader = loader.Load<Shader>("assets/ComputeAdd.json");
         _hTexture = loader.Load<ITexture2D>("assets/png_test.png");
         loader.OnCompleted += Loader_OnCompleted;
     }
@@ -41,12 +41,12 @@ public class ComputeAdd : MoltenExample
             return;
         }
 
-        HlslShader shader = _hShader.Get<HlslShader>();
+        Shader shader = _hShader.Get<Shader>();
         ITexture2D texture = _hTexture.Get<ITexture2D>();
 
 
         // Populate our compute shader with the needed buffers and data
-        HlslShader compute = _hComputeShader.Get<HlslShader>();
+        Shader compute = _hComputeShader.Get<Shader>();
         if (compute != null)
         {
             uint stride = (uint)sizeof(ComputeData);

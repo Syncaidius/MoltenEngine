@@ -5,11 +5,11 @@ namespace Molten.Content;
 
 public class ShaderProcessor : ContentProcessor<ShaderParameters>
 {
-    public override Type[] AcceptedTypes { get; } = new Type[] { typeof(HlslShader) };
+    public override Type[] AcceptedTypes { get; } = new Type[] { typeof(Shader) };
 
     public override Type[] RequiredServices { get; } = { typeof(RenderService) };
 
-    public override Type PartType { get; } = typeof(HlslShader);
+    public override Type PartType { get; } = typeof(Shader);
 
     protected override bool OnReadPart(ContentLoadHandle handle, Stream stream, ShaderParameters parameters, object existingPart, out object partAsset)
     {

@@ -12,7 +12,7 @@ public class Texture1DArray : MoltenExample
     {
         base.OnLoadContent(loader);
 
-        _hShader = loader.Load<HlslShader>("assets/BasicTexture1D.json");
+        _hShader = loader.Load<Shader>("assets/BasicTexture1D.json");
         _hTexture = loader.Load<ITexture1D>("assets/1d_1.png");
         loader.OnCompleted += Loader_OnCompleted;
     }
@@ -25,7 +25,7 @@ public class Texture1DArray : MoltenExample
             return;
         }
 
-        HlslShader shader = _hShader.Get<HlslShader>();
+        Shader shader = _hShader.Get<Shader>();
         ITexture1D texture = _hTexture.Get<ITexture1D>();
 
         shader.SetDefaultResource(texture, 0);

@@ -15,7 +15,7 @@ public class StressTestIndexed : MoltenExample
         base.OnLoadContent(loader);
 
         _objects = new List<SceneObject>();
-        _hShader = loader.Load<HlslShader>("assets/BasicColor.json");
+        _hShader = loader.Load<Shader>("assets/BasicColor.json");
         loader.OnCompleted += Loader_OnCompleted;
     }
 
@@ -27,7 +27,7 @@ public class StressTestIndexed : MoltenExample
             return;
         }
 
-        TestMesh.Shader = _hShader.Get<HlslShader>();
+        TestMesh.Shader = _hShader.Get<Shader>();
         for (int i = 0; i < CUBE_COUNT; i++)
             SpawnRandomTestCube(TestMesh, 70);
     }

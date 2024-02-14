@@ -4,8 +4,8 @@ namespace Molten.Graphics;
 
 internal class LightingStep : RenderStep
 {
-    HlslShader _matPoint;
-    HlslShader _matDebugPoint;
+    Shader _matPoint;
+    Shader _matDebugPoint;
     GraphicsBuffer _lightBuffer;
 
     protected override void OnInitialize(RenderService renderer)

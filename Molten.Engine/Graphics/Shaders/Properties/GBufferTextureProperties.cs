@@ -12,7 +12,7 @@ public class GBufferTextureProperties : CommonShaderProperties
 
     public ShaderVariable EmissiveTexture { get; set; }
 
-    public GBufferTextureProperties(HlslShader shader)  : base(shader)
+    public GBufferTextureProperties(Shader shader)  : base(shader)
     {
         DiffuseTexture = MapValue(shader, "mapDiffuse");
         DiffuseTextureMS = MapValue(shader, "mapDiffuseMS");

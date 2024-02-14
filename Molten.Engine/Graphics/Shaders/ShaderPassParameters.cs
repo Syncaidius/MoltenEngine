@@ -65,17 +65,17 @@ public partial class ShaderPassParameters
     public DepthStencilPreset Depth { get; set; }
 
     /// <summary>
-    /// The number of X compute groups to use when dispatching a compute <see cref="HlslPass"/>. Ignored for render <see cref="HlslPass"/>es.
+    /// The number of X compute groups to use when dispatching a compute <see cref="ShaderPass"/>. Ignored for render <see cref="ShaderPass"/>es.
     /// </summary>
     public uint GroupsX;
 
     /// <summary>
-    /// The number of Y compute groups to use when dispatching a compute <see cref="HlslPass"/>. Ignored for render <see cref="HlslPass"/>es.
+    /// The number of Y compute groups to use when dispatching a compute <see cref="ShaderPass"/>. Ignored for render <see cref="ShaderPass"/>es.
     /// </summary>
     public uint GroupsY;
 
     /// <summary>
-    /// The number of Z compute groups to use when dispatching a compute <see cref="HlslPass"/>. Ignored for render <see cref="HlslPass"/>es.
+    /// The number of Z compute groups to use when dispatching a compute <see cref="ShaderPass"/>. Ignored for render <see cref="ShaderPass"/>es.
     /// </summary>
     public uint GroupsZ;
 

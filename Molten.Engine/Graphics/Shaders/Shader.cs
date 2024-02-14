@@ -1,16 +1,16 @@
 ﻿namespace Molten.Graphics;
 
-public class HlslShader : GraphicsObject
+public class Shader : GraphicsObject
 {
-    public IConstantBuffer[] ConstBuffers = new IConstantBuffer[0];
-    public RWVariable[] UAVs = new RWVariable[0];
-    public ShaderResourceVariable[] Resources = new ShaderResourceVariable[0];
-    public ShaderSamplerVariable[] SamplerVariables = new ShaderSamplerVariable[0];
+    public IConstantBuffer[] ConstBuffers = [];
+    public RWVariable[] UAVs = [];
+    public ShaderResourceVariable[] Resources = [];
+    public ShaderSamplerVariable[] SamplerVariables = [];
     public Dictionary<string, ShaderVariable> Variables = new Dictionary<string, ShaderVariable>();
     
     internal GraphicsResource[] DefaultResources;
 
-    HlslPass[] _passes = new HlslPass[0];
+    ShaderPass[] _passes = [];
 
     /// <summary>
     /// Gets a description of the shader.
@@ -27,7 +27,7 @@ public class HlslShader : GraphicsObject
     /// </summary>
     public string Filename { get; }
 
-    internal HlslShader(GraphicsDevice device, ShaderDefinition def, string filename = null) : 
+    internal Shader(GraphicsDevice device, ShaderDefinition def, string filename = null) : 
         base(device)
     {
         Name = def.Name;
@@ -37,7 +37,7 @@ public class HlslShader : GraphicsObject
         Filename = filename ?? "";
     }
 
-    public void AddPass(HlslPass pass)
+    public void AddPass(ShaderPass pass)
     {
         int id = _passes?.Length ?? 0;
         Array.Resize(ref _passes, id + 1);
@@ -90,7 +90,7 @@ public class HlslShader : GraphicsObject
         }
     }
 
-    public HlslPass[] Passes => _passes;
+    public ShaderPass[] Passes => _passes;
 
     public ObjectMaterialProperties Object { get; set; }
 

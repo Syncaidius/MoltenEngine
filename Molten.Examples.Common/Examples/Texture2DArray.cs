@@ -12,7 +12,7 @@ public class Texture2DArray : MoltenExample
     {
         base.OnLoadContent(loader);
 
-        _hShader = loader.Load<HlslShader>("assets/BasicTextureArray2D.json");
+        _hShader = loader.Load<Shader>("assets/BasicTextureArray2D.json");
         _hTexture = loader.Load<ITexture2D>("assets/128.dds", parameters: new TextureParameters()
         {
             PartCount = 3,
@@ -28,7 +28,7 @@ public class Texture2DArray : MoltenExample
             return;
         }
 
-        HlslShader shader = _hShader.Get<HlslShader>();
+        Shader shader = _hShader.Get<Shader>();
         ITexture2D texture = _hTexture.Get<ITexture2D>();
 
         shader.SetDefaultResource(texture, 0);

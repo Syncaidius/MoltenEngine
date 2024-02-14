@@ -5,7 +5,7 @@
 /// </summary>
 internal class SkyboxStep : RenderStep
 {
-    HlslShader _fxSky;
+    Shader _fxSky;
     Mesh<Vertex> _sphereMesh;
     ObjectRenderData _skyboxData;
 

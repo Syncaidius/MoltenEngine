@@ -3,10 +3,10 @@
 public abstract class GraphicsQueue : EngineObject
 {
     protected delegate void CmdQueueDrawCallback();
-    protected delegate void CmdQueueDrawFailCallback(HlslPass pass, uint passNumber, GraphicsBindResult result);
+    protected delegate void CmdQueueDrawFailCallback(ShaderPass pass, uint passNumber, GraphicsBindResult result);
 
     /// <summary>
-    /// A container for storing application data to share between completion callbacks of <see cref="HlslShader"/> passes.
+    /// A container for storing application data to share between completion callbacks of <see cref="Shader"/> passes.
     /// </summary>
     public class CustomDrawInfo
     {
@@ -194,7 +194,7 @@ public abstract class GraphicsQueue : EngineObject
     protected abstract void OnResetState();
 
 
-    protected GraphicsBindResult ApplyState(HlslShader shader, QueueValidationMode mode, Action callback)
+    protected GraphicsBindResult ApplyState(Shader shader, QueueValidationMode mode, Action callback)
     {
         GraphicsBindResult vResult = GraphicsBindResult.Successful;
 
@@ -211,7 +211,7 @@ public abstract class GraphicsQueue : EngineObject
         BeginEvent($"{mode} Call");
         for (uint i = 0; i < shader.Passes.Length; i++)
         {
-            HlslPass pass = shader.Passes[i];
+            ShaderPass pass = shader.Passes[i];
             if (!pass.IsEnabled)
             {
                 SetMarker($"Pass {i} - Skipped (Disabled)");
@@ -252,9 +252,9 @@ public abstract class GraphicsQueue : EngineObject
         return vResult;
     }
 
-    protected abstract unsafe GraphicsBindResult DoRenderPass(HlslPass pass, QueueValidationMode mode, Action callback);
+    protected abstract unsafe GraphicsBindResult DoRenderPass(ShaderPass pass, QueueValidationMode mode, Action callback);
 
-    protected abstract GraphicsBindResult DoComputePass(HlslPass pass);
+    protected abstract GraphicsBindResult DoComputePass(ShaderPass pass);
 
     /// <summary>Generates mip maps for the texture via the provided <see cref="GraphicsTexture"/>, if allowed.</summary>
     /// <param name="texture">The target texture for mip-map generation.</param>
@@ -262,41 +262,41 @@ public abstract class GraphicsQueue : EngineObject
 
     /// <summary>Draw non-indexed, non-instanced primitives. 
     /// All queued compute shader dispatch requests are also processed</summary>
-    /// <param name="shader">The <see cref="HlslShader"/> to apply when drawing.</param>
+    /// <param name="shader">The <see cref="Shader"/> to apply when drawing.</param>
     /// <param name="vertexCount">The number of vertices to draw from the provided vertex buffer(s).</param>
     /// <param name="vertexStartIndex">The vertex to start drawing from.</param>
-    public abstract GraphicsBindResult Draw(HlslShader shader, uint vertexCount, uint vertexStartIndex = 0);
+    public abstract GraphicsBindResult Draw(Shader shader, uint vertexCount, uint vertexStartIndex = 0);
 
     /// <summary>Draw instanced, unindexed primitives. </summary>
-    /// <param name="shader">The <see cref="HlslShader"/> to apply when drawing.</param>
+    /// <param name="shader">The <see cref="Shader"/> to apply when drawing.</param>
     /// <param name="vertexCountPerInstance">The expected number of vertices per instance.</param>
     /// <param name="instanceCount">The expected number of instances.</param>
     /// <param name="vertexStartIndex">The index of the first vertex.</param>
     /// <param name="instanceStartIndex">The index of the first instance element</param>
-    public abstract GraphicsBindResult DrawInstanced(HlslShader shader,
+    public abstract GraphicsBindResult DrawInstanced(Shader shader,
         uint vertexCountPerInstance,
         uint instanceCount,
         uint vertexStartIndex = 0,
         uint instanceStartIndex = 0);
 
     /// <summary>Draw indexed, non-instanced primitives.</summary>
-    /// <param name="shader">The <see cref="HlslShader"/> to apply when drawing.</param>
+    /// <param name="shader">The <see cref="Shader"/> to apply when drawing.</param>
     /// <param name="vertexIndexOffset">A value added to each index before reading from the vertex buffer.</param>
     /// <param name="indexCount">The number of indices to be drawn.</param>
     /// <param name="startIndex">The index to start drawing from.</param>
-    public abstract GraphicsBindResult DrawIndexed(HlslShader shader,
+    public abstract GraphicsBindResult DrawIndexed(Shader shader,
         uint indexCount,
         int vertexIndexOffset = 0,
         uint startIndex = 0);
 
     /// <summary>Draw indexed, instanced primitives.</summary>
-    /// <param name="shader">The <see cref="HlslShader"/> to apply when drawing.</param>
+    /// <param name="shader">The <see cref="Shader"/> to apply when drawing.</param>
     /// <param name="indexCountPerInstance">The expected number of indices per instance.</param>
     /// <param name="instanceCount">The expected number of instances.</param>
     /// <param name="startIndex">The start index.</param>
     /// <param name="vertexIndexOffset">The index of the first vertex.</param>
     /// <param name="instanceStartIndex">The index of the first instance element</param>
-    public abstract GraphicsBindResult DrawIndexedInstanced(HlslShader shader,
+    public abstract GraphicsBindResult DrawIndexedInstanced(Shader shader,
         uint indexCountPerInstance,
         uint instanceCount,
         uint startIndex = 0,
@@ -304,12 +304,12 @@ public abstract class GraphicsQueue : EngineObject
         uint instanceStartIndex = 0);
 
     /// <summary>
-    /// Dispatches a <see cref="HlslShader"/> as a compute shader. Any non-compute passes will be skipped.
+    /// Dispatches a <see cref="Shader"/> as a compute shader. Any non-compute passes will be skipped.
     /// </summary>
     /// <param name="shader">The shader to be dispatched.</param>
     /// <param name="groups">The number of thread groups.</param>
     /// <returns></returns>
-    public abstract GraphicsBindResult Dispatch(HlslShader shader, Vector3UI groups);
+    public abstract GraphicsBindResult Dispatch(Shader shader, Vector3UI groups);
 
     protected GraphicsBindResult Validate(QueueValidationMode mode)
     {

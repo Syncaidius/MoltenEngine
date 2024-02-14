@@ -13,7 +13,6 @@ public abstract class ShaderCompiler : EngineObject
 {
     ShaderLayoutValidator _layoutValidator;
     ShaderStructureBuilder _structureBuilder;
-    ShaderType[] _mandatoryShaders = { ShaderType.Vertex, ShaderType.Pixel };
     string[] _newLineSeparator = { "\n", Environment.NewLine };
     string[] _includeReplacements = { "#include", "<", ">", "\"" };
     Regex _includeCommas = new("(#include) \"([^\"]*)\"");
@@ -97,7 +96,7 @@ public abstract class ShaderCompiler : EngineObject
 
                 context.Source = ParseSource(context, def.File, ref hlsl, isEmbedded, assembly, nameSpace);
 
-                HlslShader shader = BuildShader(context, def);
+                Shader shader = BuildShader(context, def);
                 if (shader != null)
                     context.Result.AddShader(shader);
                 else
@@ -151,9 +150,9 @@ public abstract class ShaderCompiler : EngineObject
         return true;
     }
 
-    private HlslShader BuildShader(ShaderCompilerContext context, ShaderDefinition def)
+    private Shader BuildShader(ShaderCompilerContext context, ShaderDefinition def)
     {
-        HlslShader shader = new HlslShader(Device, def, context.Source.Filename);
+        Shader shader = new Shader(Device, def, context.Source.Filename);
 
         // Proceed to compiling each shader pass.
         foreach (ShaderPassDefinition passDef in def.Passes)
@@ -174,9 +173,9 @@ public abstract class ShaderCompiler : EngineObject
         return shader;
     }
 
-    private unsafe void BuildPass(ShaderCompilerContext context, HlslShader parent, ShaderPassDefinition passDef)
+    private unsafe void BuildPass(ShaderCompilerContext context, Shader parent, ShaderPassDefinition passDef)
     {
-        HlslPass pass = Device.CreateShaderPass(parent, passDef.Name ?? "Unnamed pass");
+        ShaderPass pass = Device.CreateShaderPass(parent, passDef.Name ?? "Unnamed pass");
         PassCompileResult result = new PassCompileResult(pass);
 
         // Populate the format lookup of the pass parameters.
@@ -197,12 +196,7 @@ public abstract class ShaderCompiler : EngineObject
             context.Type = epType;
 
             if (string.IsNullOrWhiteSpace(context.EntryPoint))
-            {
-                if (_mandatoryShaders.Contains(epType))
-                    context.AddError($"Mandatory {epType} entry-point for shader is missing.");
-
                 continue;
-            }
 
             // Since it's not possible to have two functions in the same file with the same name, we'll just check if
             // a shader with the same entry-point name is already loaded in the context.
@@ -310,7 +304,7 @@ public abstract class ShaderCompiler : EngineObject
         }
     }
 
-    private bool ValidatePass(HlslPass pass, ref ShaderPassParameters parameters, ShaderCompilerContext context)
+    private bool ValidatePass(ShaderPass pass, ref ShaderPassParameters parameters, ShaderCompilerContext context)
     {
         if (pass[ShaderType.Hull] != null)
         {
@@ -479,9 +473,9 @@ public abstract class ShaderCompiler : EngineObject
 
     protected abstract ShaderCodeResult CompileNativeSource(string entryPoint, ShaderType type, ShaderCompilerContext context);
 
-    protected unsafe abstract void* BuildNativeShader(HlslPass parent, ShaderType type, void* byteCode, nuint numBytes);
+    protected unsafe abstract void* BuildNativeShader(ShaderPass parent, ShaderType type, void* byteCode, nuint numBytes);
 
-    protected abstract bool Validate(HlslPass pass, ShaderCompilerContext context, ShaderCodeResult result);
+    protected abstract bool Validate(ShaderPass pass, ShaderCompilerContext context, ShaderCodeResult result);
 
     /// <summary>
     /// Gets the <see cref="Logger"/> bound to the current <see cref="ShaderCompiler"/> instance.

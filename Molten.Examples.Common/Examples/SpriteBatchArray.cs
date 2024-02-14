@@ -14,7 +14,7 @@ public class SpriteBatchArray : MoltenExample
     {
         base.OnLoadContent(loader);
 
-        _hShader = loader.Load<HlslShader>("assets/BasicTexture.json");
+        _hShader = loader.Load<Shader>("assets/BasicTexture.json");
         _hTexture = loader.Load<ITexture2D>("assets/png_test.png");
         _hSpriteTexture = loader.Load<ITexture2D>("assets/128.dds", parameters: new TextureParameters()
         {
@@ -31,7 +31,7 @@ public class SpriteBatchArray : MoltenExample
             return;
         }
 
-        HlslShader shader = _hShader.Get<HlslShader>();
+        Shader shader = _hShader.Get<Shader>();
         ITexture2D tex = _hTexture.Get<ITexture2D>();
         shader.SetDefaultResource(tex, 0);
         TestMesh.Shader = shader;

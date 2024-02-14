@@ -2,10 +2,10 @@
 
 public sealed class ShaderCompileResult : EngineObject
 {
-    List<HlslShader> _shaders = new List<HlslShader>();
-    Dictionary<string, HlslShader> _shadersByName = new Dictionary<string, HlslShader>();
+    List<Shader> _shaders = new List<Shader>();
+    Dictionary<string, Shader> _shadersByName = new Dictionary<string, Shader>();
 
-    internal void AddShader(HlslShader shader)
+    internal void AddShader(Shader shader)
     {
         _shaders.Add(shader);
         _shadersByName.Add(shader.Name.ToLower(), shader);
@@ -14,18 +14,18 @@ public sealed class ShaderCompileResult : EngineObject
     protected override void OnDispose(bool immediate) { }
 
     /// <summary>
-    /// Gets a <see cref="HlslShader"/> of the specified name which was built successfully.
+    /// Gets a <see cref="Shader"/> of the specified name which was built successfully.
     /// </summary>
     /// <param name="shaderName">The name of the shader given to it it via its XML definition.</param>
     /// <returns></returns>
-    public HlslShader this[string shaderName]
+    public Shader this[string shaderName]
     {
         get
         {
-            _shadersByName.TryGetValue(shaderName.ToLower(), out HlslShader shader);
+            _shadersByName.TryGetValue(shaderName.ToLower(), out Shader shader);
             return shader;
         }
     }
 
-    public HlslShader this[int index] => _shaders[index];
+    public Shader this[int index] => _shaders[index];
 }

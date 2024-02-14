@@ -14,7 +14,7 @@ public class UILabel : UIElement
 
     public string _text;
     private Vector2F _position;
-    public HlslShader Shader;
+    public Shader Shader;
 
     string _fontName;
     SpriteFont _font;

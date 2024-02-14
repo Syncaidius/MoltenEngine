@@ -2,7 +2,7 @@
 
 internal class ComputeTask : GraphicsTask
 {
-    internal HlslShader Shader;
+    internal Shader Shader;
 
     internal Vector3UI Groups;
 

@@ -28,7 +28,7 @@ internal class RootSigPopulator1_1 : RootSignaturePopulatorDX12
             param.DescriptorTable.NumDescriptorRanges = 1;
             param.DescriptorTable.PDescriptorRanges = EngineUtil.Alloc<DescriptorRange1>();
             param.DescriptorTable.PDescriptorRanges[0] = ranges[i];
-            param.ShaderVisibility = ShaderVisibility.All; // TODO populate according to available shader composition types.
+            param.ShaderVisibility = ShaderVisibility.All; // TODO If a parameter is only used on 1 stage, set this to that stage.
         }
     }
 

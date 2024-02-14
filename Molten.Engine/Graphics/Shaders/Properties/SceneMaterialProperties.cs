@@ -12,7 +12,7 @@ public class SceneMaterialProperties : CommonShaderProperties
 
     public ShaderVariable MaxSurfaceUV { get; private set; }
 
-    public SceneMaterialProperties(HlslShader shader) : base(shader)
+    public SceneMaterialProperties(Shader shader) : base(shader)
     {
         View = MapValue(shader, "view");
         Projection = MapValue(shader, "projection");

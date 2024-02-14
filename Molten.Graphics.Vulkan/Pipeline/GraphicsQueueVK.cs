@@ -391,7 +391,7 @@ public unsafe class GraphicsQueueVK : GraphicsQueue<DeviceVK>
         throw new NotImplementedException();
     }
 
-    protected override unsafe GraphicsBindResult DoRenderPass(HlslPass hlslPass, QueueValidationMode mode, Action callback)
+    protected override unsafe GraphicsBindResult DoRenderPass(ShaderPass hlslPass, QueueValidationMode mode, Action callback)
     {
         ShaderPassVK pass = hlslPass as ShaderPassVK;
         GraphicsBindResult vResult = Validate(mode);
@@ -514,7 +514,7 @@ public unsafe class GraphicsQueueVK : GraphicsQueue<DeviceVK>
         return GraphicsBindResult.Successful;
     }
 
-    protected override GraphicsBindResult DoComputePass(HlslPass hlslPass)
+    protected override GraphicsBindResult DoComputePass(ShaderPass hlslPass)
     {
         ShaderPassVK pass = hlslPass as ShaderPassVK;
         Vector3UI groups = DrawInfo.Custom.ComputeGroups;
@@ -554,31 +554,31 @@ public unsafe class GraphicsQueueVK : GraphicsQueue<DeviceVK>
         return GraphicsBindResult.Successful;
     }
 
-    public override GraphicsBindResult Draw(HlslShader shader, uint vertexCount, uint vertexStartIndex = 0)
+    public override GraphicsBindResult Draw(Shader shader, uint vertexCount, uint vertexStartIndex = 0)
     {
         return ApplyState(shader, QueueValidationMode.Unindexed, () => 
             _vk.CmdDraw(_cmd, vertexCount, 1, vertexStartIndex, 0));
     }
 
-    public override GraphicsBindResult DrawInstanced(HlslShader shader, uint vertexCountPerInstance, uint instanceCount, uint vertexStartIndex = 0, uint instanceStartIndex = 0)
+    public override GraphicsBindResult DrawInstanced(Shader shader, uint vertexCountPerInstance, uint instanceCount, uint vertexStartIndex = 0, uint instanceStartIndex = 0)
     {
         return ApplyState(shader, QueueValidationMode.Instanced, () =>
             _vk.CmdDraw(_cmd, vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex));
     }
 
-    public override GraphicsBindResult DrawIndexed(HlslShader shader, uint indexCount, int vertexIndexOffset = 0, uint startIndex = 0)
+    public override GraphicsBindResult DrawIndexed(Shader shader, uint indexCount, int vertexIndexOffset = 0, uint startIndex = 0)
     {
         return ApplyState(shader, QueueValidationMode.Indexed, () => 
             _vk.CmdDrawIndexed(_cmd, indexCount, 1, startIndex, vertexIndexOffset, 0));
     }
 
-    public override GraphicsBindResult DrawIndexedInstanced(HlslShader shader, uint indexCountPerInstance, uint instanceCount, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
+    public override GraphicsBindResult DrawIndexedInstanced(Shader shader, uint indexCountPerInstance, uint instanceCount, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
     {
         return ApplyState(shader, QueueValidationMode.InstancedIndexed, () => 
             _vk.CmdDrawIndexed(_cmd, indexCountPerInstance, instanceCount, startIndex, vertexIndexOffset, instanceStartIndex));
     }
 
-    public override GraphicsBindResult Dispatch(HlslShader shader, Vector3UI groups)
+    public override GraphicsBindResult Dispatch(Shader shader, Vector3UI groups)
     {
         return ApplyState(shader, QueueValidationMode.Compute, null);
     }

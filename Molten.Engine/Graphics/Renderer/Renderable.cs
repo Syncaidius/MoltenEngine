@@ -36,7 +36,7 @@ public abstract class Renderable
             return _resources[slot];
     }
 
-    protected void ApplyResources(HlslShader shader)
+    protected void ApplyResources(Shader shader)
     {
         // Set as many custom resources from the renderable as possible, or use the material's default when needed.
         for (uint i = 0; i < _resources.Length; i++)
