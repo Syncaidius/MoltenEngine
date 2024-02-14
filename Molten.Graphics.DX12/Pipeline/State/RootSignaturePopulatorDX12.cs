@@ -22,7 +22,12 @@ internal abstract class RootSignaturePopulatorDX12
 
     protected unsafe void PopulateStaticSamplers(ref StaticSamplerDesc* samplers, ref uint numSamplers, ShaderPassDX12 pass)
     {
-        throw new NotImplementedException();
+        numSamplers = (uint)pass.Samplers.Length;
+        for(uint i = 0; i < numSamplers; i++)
+        {
+            SamplerDX12 sampler = pass.Samplers[i] as SamplerDX12;
+            samplers[i] = sampler.Desc;
+        }
     }
 
     protected unsafe RootSignatureFlags GetFlags(ref readonly GraphicsPipelineStateDesc psoDesc, ShaderPassDX12 pass)
