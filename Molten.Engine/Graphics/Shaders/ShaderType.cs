@@ -1,5 +1,8 @@
 ﻿namespace Molten.Graphics;
 
+/// <summary>
+/// Represents a type of shader stage.
+/// </summary>
 public enum ShaderType
 {
     /// <summary>
@@ -8,34 +11,44 @@ public enum ShaderType
     Unknown = 0,
 
     /// <summary>
-    /// Pixel shader.
-    /// </summary>
-    Pixel = 1,
-
-    /// <summary>
     /// Vertex shader.
     /// </summary>
-    Vertex = 2,
-
-    /// <summary>
-    /// Geometry shader.
-    /// </summary>
-    Geometry = 3,
-
-    /// <summary>
-    /// Domain Shader. Required for tessellation.
-    /// </summary>
-    Domain = 4,
-
-    /// <summary>
-    /// Compute shader.
-    /// </summary>
-    Compute = 5,
+    Vertex = 1,
 
     /// <summary>
     /// Hull Shader. Required for tessellation.
     /// </summary>
-    Hull = 6,
+    Hull = 2,
+
+    /// <summary>
+    /// Domain Shader. Required for tessellation.
+    /// </summary>
+    Domain = 3,
+
+    /// <summary>
+    /// Geometry shader.
+    /// </summary>
+    Geometry = 4,
+
+    /// <summary>
+    /// Pixel shader (fragment shader in OpenGL or Vulkan).
+    /// </summary>
+    Pixel = 5,
+
+    /// <summary>
+    /// Compute shader.
+    /// </summary>
+    Compute = 6,
+
+    /// <summary>
+    /// Amplification shader (Task shader in Vulkan). Used in conjunction with mesh shaders.
+    /// </summary>
+    Amplification = 7,
+
+    /// <summary>
+    /// Mesh shader. Used in conjunction with amplification/task shaders.
+    /// </summary>
+    Mesh = 8,
 
     /// <summary>
     /// Library shader. Required for DirectX Raytracing (DXR) shaders.
