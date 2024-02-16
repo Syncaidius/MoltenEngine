@@ -22,8 +22,6 @@ public abstract class ShaderPass : GraphicsObject, IEnumerable<ShaderComposition
 
     Dictionary<ShaderType, ShaderComposition> _compositions;
 
-    public unsafe void* InputByteCode;
-
     ShaderFormatLayout _formatLayout;
 
     /// <summary>

@@ -7,6 +7,7 @@ public class ShaderPassDX11 : ShaderPass
     BlendStateDX11 _stateBlend;
     DepthStateDX11 _stateDepth;
     RasterizerStateDX11 _stateRasterizer;
+    unsafe void* _inputByteCode;
 
     public ShaderPassDX11(Shader shader, string name) : base(shader, name) { }
 
@@ -33,4 +34,9 @@ public class ShaderPassDX11 : ShaderPass
     internal RasterizerStateDX11 RasterizerState => _stateRasterizer;
 
     internal BlendStateDX11 BlendState => _stateBlend;
+
+    /// <summary>
+    /// Gets a pointer to the bytecode that contains the input layout.
+    /// </summary>
+    internal unsafe ref void* InputByteCode => ref _inputByteCode;
 }

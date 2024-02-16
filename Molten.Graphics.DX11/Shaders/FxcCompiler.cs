@@ -256,18 +256,19 @@ public unsafe class FxcCompiler : ShaderCompiler
         void* ptrBytecode = dx11ByteCode->GetBufferPointer();
         numBytes = dx11ByteCode->GetBufferSize();
         DeviceDX11 device = Device as DeviceDX11;
+        ShaderPassDX11 passDX11 = parent as ShaderPassDX11;
 
         switch (type)
         {
             case ShaderType.Compute:
-                parent.InputByteCode = byteCode;
+                passDX11.InputByteCode = byteCode;
 
                 ID3D11ComputeShader* csShader = null;
                 device.Ptr->CreateComputeShader(ptrBytecode, numBytes, null, &csShader);
                 return csShader;
 
             case ShaderType.Vertex:
-                parent.InputByteCode = byteCode;
+                passDX11.InputByteCode = byteCode;
 
                 ID3D11VertexShader* vsShader = null;
                 device.Ptr->CreateVertexShader(ptrBytecode, numBytes, null, &vsShader);
