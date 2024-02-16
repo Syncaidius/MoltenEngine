@@ -16,10 +16,12 @@ public abstract class ShaderPass : GraphicsObject, IEnumerable<ShaderComposition
     public delegate void OnCompletedCallback(ShaderPass pass, GraphicsQueue.CustomDrawInfo customInfo);
 
     /// <summary>
-    /// The texture samplers to be used with the shader/component.
+    /// The texture samplers to be used with the shader/component, with the bind point as the key.
     /// </summary>
     public ShaderSampler[] Samplers;
+
     Dictionary<ShaderType, ShaderComposition> _compositions;
+
     public unsafe void* InputByteCode;
 
     ShaderFormatLayout _formatLayout;
@@ -29,12 +31,11 @@ public abstract class ShaderPass : GraphicsObject, IEnumerable<ShaderComposition
     /// </summary>
     public event OnCompletedCallback OnCompleted;
 
-    /// <summary>
-    /// Creates a new instance of <see cref="ShaderPass"/>. Can only be called by a derived class.
+    /// <summary>Creates a new instance of <see cref="ShaderPass"/>. Can only be called by a derived class.
     /// </summary>
     /// <param name="parent">The parnet shader that owns this new instance of <see cref="ShaderPass"/>.</param>
     /// <param name="name">The readable name to give to the <see cref="ShaderPass"/>.</param>
-    protected ShaderPass(Shader parent, string name) : 
+    protected ShaderPass(Shader parent, string name) :
         base(parent.Device)
     {
         Samplers = new ShaderSampler[0];
@@ -44,16 +45,16 @@ public abstract class ShaderPass : GraphicsObject, IEnumerable<ShaderComposition
         _compositions = new Dictionary<ShaderType, ShaderComposition>();
     }
 
-    internal unsafe void Initialize(ref ShaderPassParameters parameters)
+    internal unsafe void Initialize(ShaderPassParameters parameters)
     {
         ComputeGroups = new Vector3UI(parameters.GroupsX, parameters.GroupsY, parameters.GroupsZ);
         Topology = parameters.Topology;
         RasterizedStreamOutput = parameters.RasterizedStreamOutput;
 
-        OnInitialize(ref parameters);
+        OnInitialize(parameters);
     }
 
-    protected abstract void OnInitialize(ref ShaderPassParameters parameters);
+    protected abstract void OnInitialize(ShaderPassParameters parameters);
 
     public void InvokeCompleted(GraphicsQueue.CustomDrawInfo customInfo)
     {

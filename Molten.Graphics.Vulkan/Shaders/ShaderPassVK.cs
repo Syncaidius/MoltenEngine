@@ -9,7 +9,7 @@ internal unsafe class ShaderPassVK : ShaderPass
         base(material, name)
     { }
 
-    protected override void OnInitialize(ref ShaderPassParameters parameters)
+    protected override void OnInitialize(ShaderPassParameters parameters)
     {
         DeviceVK device = Device as DeviceVK;
         DescriptorLayout = new DescriptorSetLayoutVK(device, this);

@@ -11,7 +11,7 @@ public class ShaderPassDX12 : ShaderPass, IEquatable<ShaderPassDX12>
     BlendStateDX12 _stateBlend;
     DepthStateDX12 _stateDepth;
 
-    protected override void OnInitialize(ref ShaderPassParameters parameters)
+    protected override void OnInitialize(ShaderPassParameters parameters)
     {
         DeviceDX12 device = Device as DeviceDX12;
 

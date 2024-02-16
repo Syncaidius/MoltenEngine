@@ -8,8 +8,8 @@ public unsafe class SamplerDX11 : ShaderSampler
 
     ID3D11SamplerState* _native;
 
-    internal unsafe SamplerDX11(DeviceDX11 device, ref ShaderSamplerParameters parameters) :
-        base(device, ref parameters)
+    internal unsafe SamplerDX11(DeviceDX11 device, ShaderSamplerParameters parameters) :
+        base(device, parameters)
     {
         SamplerDesc desc = new SamplerDesc()
         {

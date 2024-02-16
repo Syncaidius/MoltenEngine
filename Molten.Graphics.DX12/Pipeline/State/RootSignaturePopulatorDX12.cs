@@ -22,9 +22,9 @@ internal abstract class RootSignaturePopulatorDX12
 
     protected unsafe void PopulateStaticSamplers(ref StaticSamplerDesc* samplers, ref uint numSamplers, ShaderPassDX12 pass)
     {
-        samplers = EngineUtil.AllocArray<StaticSamplerDesc>(numSamplers);
         numSamplers = (uint)pass.Samplers.Length;
-        for(uint i = 0; i < numSamplers; i++)
+        samplers = EngineUtil.AllocArray<StaticSamplerDesc>(numSamplers);
+        for (uint i = 0; i < numSamplers; i++)
         {
             SamplerDX12 sampler = pass.Samplers[i] as SamplerDX12;
             samplers[i] = sampler.Desc;

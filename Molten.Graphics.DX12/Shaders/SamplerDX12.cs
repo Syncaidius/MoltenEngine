@@ -6,8 +6,8 @@ public unsafe class SamplerDX12 : ShaderSampler
 {
     StaticSamplerDesc _desc;
 
-    internal unsafe SamplerDX12(DeviceDX12 device, ref ShaderSamplerParameters parameters) :
-        base(device, ref parameters)
+    internal unsafe SamplerDX12(DeviceDX12 device, ShaderSamplerParameters parameters) :
+        base(device, parameters)
     {
         _desc = new StaticSamplerDesc()
         {
@@ -20,10 +20,10 @@ public unsafe class SamplerDX12 : ShaderSampler
             MinLOD = parameters.MinMipMapLod,
             MaxLOD = parameters.MaxMipMapLod,
             MipLODBias = parameters.LodBias,
-            BorderColor = StaticBorderColor.TransparentBlack,
-            ShaderRegister = 0,
-            RegisterSpace = 0,
-            ShaderVisibility = ShaderVisibility.Pixel,
+            BorderColor = StaticBorderColor.TransparentBlack, // TODO Add support for setting this.
+            ShaderRegister = parameters.BindPoint.HasValue ? parameters.BindPoint.Value : 0,
+            RegisterSpace = parameters.BindSpace.HasValue ? parameters.BindSpace.Value : 0,
+            ShaderVisibility = ShaderVisibility.All, // TODO Add support for setting this.
         };
 
         // Figure out which DX11 filter mode to use. 

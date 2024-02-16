@@ -143,9 +143,9 @@ public unsafe class DeviceDX12 : DeviceDXGI
         throw new NotImplementedException();
     }
 
-    protected override ShaderSampler OnCreateSampler(ref ShaderSamplerParameters parameters)
+    protected override ShaderSampler OnCreateSampler(ShaderSamplerParameters parameters)
     {
-        return new SamplerDX12(this, ref parameters);
+        return new SamplerDX12(this, parameters);
     }
 
     protected override ShaderPass OnCreateShaderPass(Shader shader, string name)

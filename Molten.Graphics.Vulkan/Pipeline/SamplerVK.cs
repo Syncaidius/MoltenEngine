@@ -7,8 +7,8 @@ public class SamplerVK : ShaderSampler
 {
     Sampler _handle;
 
-    public unsafe SamplerVK(GraphicsDevice device, ref ShaderSamplerParameters parameters) : 
-        base(device, ref parameters)
+    public unsafe SamplerVK(GraphicsDevice device, ShaderSamplerParameters parameters) : 
+        base(device, parameters)
     {
         SamplerCustomBorderColorCreateInfoEXT* customColor = null;
 

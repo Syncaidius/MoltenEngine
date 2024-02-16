@@ -116,9 +116,6 @@ internal unsafe class DescriptorSetLayoutVK : GraphicsObject<DeviceVK>, IEquatab
             case RWVariable<ITextureCube>:
                 return DescriptorType.StorageImage;
 
-            case ShaderSamplerVariable:
-                return DescriptorType.Sampler;
-
             default:
                 throw new NotSupportedException("Unsupported shader resource variable type");
         }

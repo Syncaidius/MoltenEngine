@@ -302,9 +302,9 @@ public unsafe class DeviceDX11 : DeviceDXGI
         Tasks.Push(GraphicsPriority.StartOfFrame, source as TextureDX11, task);
     }
 
-    protected override ShaderSampler OnCreateSampler(ref ShaderSamplerParameters parameters)
+    protected override ShaderSampler OnCreateSampler(ShaderSamplerParameters parameters)
     {
-        return new SamplerDX11(this, ref parameters);
+        return new SamplerDX11(this, parameters);
     }
 
     protected override GraphicsBuffer CreateBuffer<T>(GraphicsBufferType type, GraphicsResourceFlags flags, GraphicsFormat format, uint numElements, T[] initialData)

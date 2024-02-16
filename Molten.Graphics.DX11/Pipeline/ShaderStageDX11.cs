@@ -45,10 +45,10 @@ internal unsafe abstract class ShaderStageDX11
         if (c != null)
         {
             // Apply pass samplers to slots
-            for (int i = 0; i < c.SamplerIds.Count; i++)
+            for(int i = 0; i < c.Samplers.Length; i++)
             {
-                uint slotID = c.SamplerIds[i];
-                _samplers[slotID] = c.Pass.Parent.SamplerVariables[slotID]?.Sampler as SamplerDX11;
+                uint slotID = c.Samplers[i].BindPoint;
+                _samplers[slotID] = c.Samplers[i] as SamplerDX11;
             }
 
             // Apply pass resources to slots

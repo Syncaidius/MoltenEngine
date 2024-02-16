@@ -175,9 +175,6 @@ public abstract class ShaderCompiler : EngineObject
 
     private unsafe void BuildPass(ShaderCompilerContext context, Shader parent, ShaderPassDefinition passDef)
     {
-        ShaderPass pass = Device.CreateShaderPass(parent, passDef.Name ?? "Unnamed pass");
-        PassCompileResult result = new PassCompileResult(pass);
-
         // Populate the format lookup of the pass parameters.
         foreach (KeyValuePair<string, string> p in passDef.Parameters.RawFormats)
         {
@@ -188,6 +185,9 @@ public abstract class ShaderCompiler : EngineObject
             else
                 context.AddError($"Invalid format '{p.Value}' for '{p.Key}' in pass '{passDef.Name}'");
         }
+
+        ShaderPass pass = Device.CreateShaderPass(parent, passDef.Name ?? "Unnamed pass");
+        PassCompileResult result = new PassCompileResult(pass);
 
         // Compile each stage of the material pass.
         foreach (ShaderType epType in passDef.Entry.Points.Keys)
@@ -290,15 +290,16 @@ public abstract class ShaderCompiler : EngineObject
                 }
 
                 // Initialize samplers.
-                pass.Samplers = new ShaderSampler[passDef.Samplers.Length];
-                for (int i = 0; i < passDef.Samplers.Length; i++)
+                foreach (string key in passDef.Samplers.Keys)
                 {
-                    ref ShaderSamplerParameters sp = ref passDef.Samplers[i];
-                    sp.ApplyPreset(sp.Preset);
-                    pass.Samplers[i] = Device.CreateSampler(ref sp);
+                    ShaderSamplerParameters sp = passDef.Samplers[key];
+                    if(sp.Preset != SamplerPreset.Default)
+                        sp.ApplyPreset(sp.Preset);
+
+                    pass.Parent.LinkSampler(sp);
                 }
 
-                pass.Initialize(ref passDef.Parameters);
+                pass.Initialize(passDef.Parameters);
                 parent.AddPass(pass);
             }
         }

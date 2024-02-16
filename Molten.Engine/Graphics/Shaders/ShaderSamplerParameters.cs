@@ -1,8 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace Molten.Graphics;
 
-public struct ShaderSamplerParameters : IEquatable<ShaderSamplerParameters>
+public class ShaderSamplerParameters : IEquatable<ShaderSamplerParameters>
 {
     /// <summary>Gets or sets the method to use for resolving a U texture coordinate that is outside the 0 to 1 range.</summary>
     public SamplerAddressMode AddressU;
@@ -29,7 +30,7 @@ public struct ShaderSamplerParameters : IEquatable<ShaderSamplerParameters>
     /// <summary>Gets or sets the filtering method to use when mip-level sampling.</summary>
     public SamplerFilter MipFilter;
 
-    /// <summary>Clamping value used if <see cref="SamplerFilter.Anisotropic"/> is specified in SamplerFilter. Valid values are between 1 and 16.
+    /// <summary>The max texture anisotrophy when performing anisotropic filtering. Valid values are between 1 and 16.
     /// <para>A value of 0 will disable anisotrophic filtering.</para></summary>
     public uint MaxAnisotropy;
 
@@ -51,7 +52,25 @@ public struct ShaderSamplerParameters : IEquatable<ShaderSamplerParameters>
     /// the texture will be sampled at mipmap level 5.</summary>
     public float LodBias;
 
+    /// <summary>The bind point to use for the sampler.</summary>
+    public uint? BindPoint;
+
+    /// <summary>
+    /// The bind space to use for the sampler.
+    /// </summary>
+    public uint? BindSpace;
+
+    /// <summary>
+    /// The sampelr preset.
+    /// </summary>
     public SamplerPreset Preset;
+
+    /// <summary>
+    /// Gets the <see cref="ShaderSampler"/> that is linked to the current parameters. 
+    /// <para>This is populated internally by the shader compiler to allow common sampler instances to be shared between passes.</para>
+    /// </summary>
+    [JsonIgnore]
+    public ShaderSampler LinkedSampler { get; internal set; }
 
     public ShaderSamplerParameters()
     {
@@ -81,6 +100,8 @@ public struct ShaderSamplerParameters : IEquatable<ShaderSamplerParameters>
         MaxAnisotropy = 0;
         BorderColor = Color.White;
         Comparison = ComparisonMode.Never;
+        BindPoint = 0;
+        BindSpace = 0;
 
         // Now apply preset values.
         switch (preset)
@@ -133,7 +154,9 @@ public struct ShaderSamplerParameters : IEquatable<ShaderSamplerParameters>
             IsComparison == other.IsComparison &&
             MaxMipMapLod == other.MaxMipMapLod &&
             MinMipMapLod == other.MinMipMapLod &&
-            LodBias == other.LodBias;
+            LodBias == other.LodBias &&
+            BindPoint == other.BindPoint &&
+            BindSpace == other.BindSpace;
     }
 }
 

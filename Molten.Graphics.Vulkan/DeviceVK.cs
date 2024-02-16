@@ -453,7 +453,7 @@ public unsafe class DeviceVK : GraphicsDevice
     }
 
     /// <inheritdoc/>
-    protected override ShaderSampler OnCreateSampler(ref ShaderSamplerParameters parameters)
+    protected override ShaderSampler OnCreateSampler(ShaderSamplerParameters parameters)
     {
         throw new NotImplementedException();
     }

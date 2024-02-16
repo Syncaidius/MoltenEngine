@@ -3,15 +3,15 @@
 public unsafe class ShaderComposition : GraphicsObject
 {
     /// <summary>A list of const buffers the shader stage requires to be bound.</summary>
-    public List<uint> ConstBufferIds = new List<uint>();
+    public List<uint> ConstBufferIds = new();
 
     /// <summary>A list of resources that must be bound to the shader stage.</summary>
-    public List<uint> ResourceIds = new List<uint>();
+    public List<uint> ResourceIds = new();
 
     /// <summary>A list of samplers that must be bound to the shader stage.</summary>
-    public List<uint> SamplerIds = new List<uint>();
+    public ShaderSampler[] Samplers = [];
 
-    public List<uint> UnorderedAccessIds = new List<uint>();
+    public List<uint> UnorderedAccessIds = new();
 
     public ShaderIOLayout InputLayout;
 

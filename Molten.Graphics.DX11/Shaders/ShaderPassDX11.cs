@@ -10,7 +10,7 @@ public class ShaderPassDX11 : ShaderPass
 
     public ShaderPassDX11(Shader shader, string name) : base(shader, name) { }
 
-    protected override void OnInitialize(ref ShaderPassParameters parameters)
+    protected override void OnInitialize(ShaderPassParameters parameters)
     {
         // Check for unsupported features
         if (parameters.RasterizerDiscardEnabled)

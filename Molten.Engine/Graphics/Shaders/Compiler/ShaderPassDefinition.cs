@@ -13,5 +13,5 @@ public class ShaderPassDefinition
 
     public ShaderPassParameters Parameters = new ShaderPassParameters(GraphicsStatePreset.Default, PrimitiveTopology.Triangle);
 
-    public ShaderSamplerParameters[] Samplers = new ShaderSamplerParameters[0];
+    public Dictionary<string, ShaderSamplerParameters> Samplers = new();
 }

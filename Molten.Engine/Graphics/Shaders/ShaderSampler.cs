@@ -2,11 +2,12 @@
 
 public abstract class ShaderSampler : GraphicsObject, IEquatable<ShaderSampler>, IEquatable<ShaderSamplerParameters>
 {
-    ShaderSamplerParameters _parameters;
+    readonly ShaderSamplerParameters _parameters;
 
-    protected ShaderSampler(GraphicsDevice device, ref ShaderSamplerParameters parameters) : 
+    protected ShaderSampler(GraphicsDevice device, ShaderSamplerParameters parameters) : 
         base(device)
     {
+        BindPoint = parameters.BindPoint.HasValue ? parameters.BindPoint.Value : 0;
         IsComparisonSampler = parameters.IsComparison;
         _parameters = parameters;
     }
@@ -28,7 +29,11 @@ public abstract class ShaderSampler : GraphicsObject, IEquatable<ShaderSampler>,
         return _parameters.Equals(other);
     }
 
-    /// <summary>Gets whether or not the sampler a comparison sampler. This is determined by the <see cref="Filter"/> mode.</summary>
+    /// <summary>Gets whether or not the sampler a comparison sampler. This is determined by the <see cref="SamplerFilter"/> mode.</summary>
     public bool IsComparisonSampler { get; private set; }
 
+    /// <summary>
+    /// Gets the bind point of the current <see cref="ShaderSampler"/>.
+    /// </summary>
+    public uint BindPoint { get; }
 }

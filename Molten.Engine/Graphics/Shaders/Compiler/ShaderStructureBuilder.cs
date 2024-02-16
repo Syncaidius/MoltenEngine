@@ -42,21 +42,25 @@ internal class ShaderStructureBuilder
 
                 case ShaderInputType.Sampler:
                     bool isComparison = bindInfo.HasInputFlags(ShaderInputFlags.ComparisonSampler);
-                    ShaderSamplerVariable sampler = GetVariableResource<ShaderSamplerVariable>(context, shader, bindInfo);
 
-                    if (bindPoint >= shader.SamplerVariables.Length)
+                    // If a sampler definition is not found for the current sampler bind-point, use a default sampler.
+                    if (!passDef.Samplers.TryGetValue(bindPoint.ToString(), out ShaderSamplerParameters samplerParams)
+                        && !passDef.Samplers.TryGetValue(bindInfo.Name, out samplerParams))
                     {
-                        int oldLength = shader.SamplerVariables.Length;
-                        EngineUtil.ArrayResize(ref shader.SamplerVariables, bindPoint + 1);
-                        for (int i = oldLength; i < shader.SamplerVariables.Length; i++)
-                            shader.SamplerVariables[i] = (i == bindPoint ? sampler : ShaderVariable.Create<ShaderSamplerVariable>(shader, bindInfo.Name));
-                    }
-                    else
-                    {
-                        shader.SamplerVariables[bindPoint] = sampler;
+                        context.AddWarning($"Sampler '{bindInfo.Name}' was not defined in the shader pass '{passDef.Name}'. Using default sampler.");
+                        samplerParams = new ShaderSamplerParameters(SamplerPreset.Default);
+                        shader.LinkSampler(samplerParams);
                     }
 
-                    composition.SamplerIds.Add(bindPoint);
+                    // Add sampler to composition.
+                    int index = composition.Samplers.Length;
+                    EngineUtil.ArrayResize(ref composition.Samplers, index + 1);
+                    composition.Samplers[index] = samplerParams.LinkedSampler;
+
+                    // Add sampler to pass.
+                    index = composition.Pass.Samplers.Length;
+                    EngineUtil.ArrayResize(ref composition.Pass.Samplers, index + 1);
+                    composition.Pass.Samplers[index] = samplerParams.LinkedSampler;
                     break;
 
                 case ShaderInputType.Structured:

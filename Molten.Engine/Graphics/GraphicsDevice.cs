@@ -284,14 +284,14 @@ public abstract partial class GraphicsDevice : EngineObject
     /// </summary>
     /// <param name="parameters">The parameters to use when creating the new <see cref="ShaderSampler"/>.</param>
     /// <returns></returns>
-    public ShaderSampler CreateSampler(ref ShaderSamplerParameters parameters)
+    public ShaderSampler CreateSampler(ShaderSamplerParameters parameters)
     {
-        ShaderSampler sampler = OnCreateSampler(ref parameters);
+        ShaderSampler sampler = OnCreateSampler(parameters);
         Cache.Check(ref sampler);
         return sampler;
     }
 
-    protected abstract ShaderSampler OnCreateSampler(ref ShaderSamplerParameters parameters);
+    protected abstract ShaderSampler OnCreateSampler(ShaderSamplerParameters parameters);
 
     internal ShaderPass CreateShaderPass(Shader shader, string name = null)
     {
