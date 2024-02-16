@@ -22,6 +22,52 @@ internal abstract class RootSignaturePopulatorDX12
 
     protected unsafe void PopulateStaticSamplers(ref StaticSamplerDesc* samplers, ref uint numSamplers, ShaderPassDX12 pass)
     {
+        // Finalize sampler visibility. Iterate over all samplers used in the pass.
+        for (int i = 0; i < pass.Parent.SharedSamplers.Count; i++)
+        {
+            SamplerDX12 sampler = pass.Parent.SharedSamplers[i] as SamplerDX12;
+            uint visCount = 0;
+            ShaderVisibility vis = ShaderVisibility.All;
+
+            // Check all compositions of the current pass to see where the sampler is used.
+            foreach (ShaderComposition sc in pass.Compositions)
+            {
+                // Check samplers used in the current composition.
+                for (int j = 0; j < sc.Samplers.Length; j++)
+                {
+                    if (sc.Samplers[j] == sampler)
+                    {
+                        visCount++;
+
+                        // If visibility count is only 1 stage, we can use a specific visibility.
+                        if (visCount == 1)
+                        {
+                            vis = sc.Type switch
+                            {
+                                ShaderType.Vertex => ShaderVisibility.Vertex,
+                                ShaderType.Geometry => ShaderVisibility.Geometry,
+                                ShaderType.Hull => ShaderVisibility.Hull,
+                                ShaderType.Domain => ShaderVisibility.Domain,
+                                ShaderType.Pixel => ShaderVisibility.Pixel,
+                                ShaderType.Amplification => ShaderVisibility.Amplification,
+                                ShaderType.Mesh => ShaderVisibility.Mesh,
+                                _ => vis,
+                            };
+                        }
+                        else // ... Otherwise we have to revert visibility to 'All'.
+                        {
+                            // Break out of nested loop since we know the visibility is mixed and requires the 'All' flag.
+                            vis = ShaderVisibility.All;
+                            goto NextSampler;
+                        }
+                    }
+                }
+            }
+
+        NextSampler:
+            sampler.Desc.ShaderVisibility = vis;
+        }
+
         numSamplers = (uint)pass.Samplers.Length;
         samplers = EngineUtil.AllocArray<StaticSamplerDesc>(numSamplers);
         for (uint i = 0; i < numSamplers; i++)

@@ -41,7 +41,7 @@ internal class ShaderStructureBuilder
                     break;
 
                 case ShaderInputType.Sampler:
-                    bool isComparison = bindInfo.HasInputFlags(ShaderInputFlags.ComparisonSampler);
+                    //bool isComparison = bindInfo.HasInputFlags(ShaderInputFlags.ComparisonSampler);
 
                     // If a sampler definition is not found for the current sampler bind-point, use a default sampler.
                     if (!passDef.Samplers.TryGetValue(bindPoint.ToString(), out ShaderSamplerParameters samplerParams)

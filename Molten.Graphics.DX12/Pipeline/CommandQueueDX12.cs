@@ -267,7 +267,7 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
         // Retrieve layout list or create new one if needed.
         foreach (PipelineInputLayoutDX12 l in _cachedLayouts)
         {
-            if (l.IsMatch(Device.Log, State.VertexBuffers))
+            if (l.IsMatch(State.VertexBuffers))
                 return l;
         }
 

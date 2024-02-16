@@ -86,7 +86,7 @@ internal unsafe class PipelineInputLayoutDX12 : GraphicsObject<DeviceDX12>
         elements.CopyTo(elementSpan);
     }
 
-    public bool IsMatch(Logger log, GraphicsStateValueGroup<GraphicsBuffer> grp)
+    public bool IsMatch(GraphicsStateValueGroup<GraphicsBuffer> grp)
     {
         int lastIndex = _expectedBindings.Length - 1;
 

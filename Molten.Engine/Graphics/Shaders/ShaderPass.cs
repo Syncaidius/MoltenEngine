@@ -118,6 +118,11 @@ public abstract class ShaderPass : GraphicsObject, IEnumerable<ShaderComposition
     public int CompositionCount => _compositions.Count;
 
     /// <summary>
+    /// Gets a read-only collection containing all of the shader compositions within the current <see cref="ShaderPass"/>.
+    /// </summary>
+    public IReadOnlyCollection<ShaderComposition> Compositions => _compositions.Values;
+
+    /// <summary>
     /// Gets or sets the type of geometry shader primitives to output.
     /// </summary>
     public GeometryHullTopology GeometryPrimitive { get; set; }
