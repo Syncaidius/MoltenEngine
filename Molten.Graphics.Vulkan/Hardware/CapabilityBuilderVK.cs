@@ -64,9 +64,9 @@ internal class CapabilityBuilderVK
         cap.PixelShader.Flags |= ShaderCapabilityFlags.IsSupported;
         cap.Compute.Flags |= ShaderCapabilityFlags.IsSupported;
         cap.Flags |= GraphicsCapabilityFlags.ConcurrentResourceCreation;
-        cap.GeometryShader.Flags |= features.GeometryShader ? ShaderCapabilityFlags.IsSupported : ShaderCapabilityFlags.None;
-        cap.HullShader.Flags |= features.TessellationShader ? ShaderCapabilityFlags.IsSupported : ShaderCapabilityFlags.None;
-        cap.DomainShader.Flags |= features.TessellationShader ? ShaderCapabilityFlags.IsSupported : ShaderCapabilityFlags.None;
+        cap.GeometryShader.Flags |= features.GeometryShader.ToCapFlag(ShaderCapabilityFlags.IsSupported);
+        cap.HullShader.Flags |= features.TessellationShader.ToCapFlag(ShaderCapabilityFlags.IsSupported);
+        cap.DomainShader.Flags |= features.TessellationShader.ToCapFlag(ShaderCapabilityFlags.IsSupported);
 
         if (features.ShaderFloat64)
             cap.AddShaderCap(ShaderCapabilityFlags.Float64);

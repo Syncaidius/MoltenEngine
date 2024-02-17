@@ -133,7 +133,7 @@ public unsafe class DeviceBuilderDX11
         //device->CheckCounterInfo(&cInfo);
         //CounterSupport = cInfo;
 
-        cap.Flags |= features11_0.OutputMergerLogicOp > 0 ? GraphicsCapabilityFlags.BlendLogicOp : GraphicsCapabilityFlags.None;
+        cap.Flags |= (features11_0.OutputMergerLogicOp).ToCapFlag(GraphicsCapabilityFlags.BlendLogicOp);
         cap.Flags |= GraphicsCapabilityFlags.NonPowerOfTwoTextures;
         cap.Flags |= GraphicsCapabilityFlags.OcculsionQueries;
         cap.Flags |= GraphicsCapabilityFlags.HardwareInstancing;

@@ -1,4 +1,6 @@
-﻿namespace Molten.Graphics;
+﻿using Silk.NET.Core;
+
+namespace Molten.Graphics;
 
 [Flags]
 public enum ShaderCapabilityFlags : ulong
@@ -37,4 +39,22 @@ public enum ShaderCapabilityFlags : ulong
     /// Indicates support for double-precision floating point values.
     /// </summary>
     Float64 = 1 << 5,
+}
+
+public static class ShaderCapabilityFlagsExtensions
+{
+    public static bool Has(this ShaderCapabilityFlags flags, ShaderCapabilityFlags flag)
+    {
+        return (flags & flag) == flag;
+    }
+
+    public static ShaderCapabilityFlags ToCapFlag(this Bool32 value, ShaderCapabilityFlags flag)
+    {
+        return value ? flag : ShaderCapabilityFlags.None;
+    }
+
+    public static ShaderCapabilityFlags ToCapFlag(this bool value, ShaderCapabilityFlags flag)
+    {
+        return value ? flag : ShaderCapabilityFlags.None;
+    }
 }

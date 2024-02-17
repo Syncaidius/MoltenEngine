@@ -119,10 +119,10 @@ internal unsafe class DeviceBuilderDX12
         cap.Flags |= GraphicsCapabilityFlags.NonPowerOfTwoTextures;
         cap.Flags |= GraphicsCapabilityFlags.OcculsionQueries;
         cap.Flags |= GraphicsCapabilityFlags.TextureCubeArrays;
-        cap.Flags |= features12_2.DepthBoundsTestSupported ? GraphicsCapabilityFlags.DepthBoundsTesting : GraphicsCapabilityFlags.None;
-        cap.Flags |= features12_0.ROVsSupported ? GraphicsCapabilityFlags.RasterizerOrderViews : GraphicsCapabilityFlags.None;
-        cap.Flags |= features12_0.OutputMergerLogicOp > 0 ? GraphicsCapabilityFlags.BlendLogicOp : GraphicsCapabilityFlags.None;
-        cap.Flags |= featuresArc.TileBasedRenderer > 0 ? GraphicsCapabilityFlags.TileBasedRendering : GraphicsCapabilityFlags.None;
+        cap.Flags |= features12_2.DepthBoundsTestSupported.ToCapFlag(GraphicsCapabilityFlags.DepthBoundsTesting);
+        cap.Flags |= features12_0.ROVsSupported.ToCapFlag(GraphicsCapabilityFlags.RasterizerOrderViews);
+        cap.Flags |= (features12_0.OutputMergerLogicOp > 0).ToCapFlag(GraphicsCapabilityFlags.BlendLogicOp);
+        cap.Flags |= (featuresArc.TileBasedRenderer > 0).ToCapFlag(GraphicsCapabilityFlags.TileBasedRendering);
 
         cap.MaxTexture1DSize = D3D12.ReqTexture1DUDimension;
         cap.MaxTexture2DSize = D3D12.ReqTexture2DUOrVDimension;

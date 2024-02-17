@@ -1,5 +1,8 @@
-﻿namespace Molten.Graphics;
+﻿using Silk.NET.Core;
 
+namespace Molten.Graphics;
+
+[Flags]
 public enum GraphicsCapabilityFlags : ulong
 {
     None = 0,
@@ -56,5 +59,15 @@ public static class GraphicsCapabilityFlagsExtensions
     public static bool Has(this GraphicsCapabilityFlags flags, GraphicsCapabilityFlags flag)
     {
         return (flags & flag) == flag;
+    }
+
+    public static GraphicsCapabilityFlags ToCapFlag(this Bool32 value, GraphicsCapabilityFlags flag)
+    {
+        return value ? flag : GraphicsCapabilityFlags.None;
+    }
+
+    public static GraphicsCapabilityFlags ToCapFlag(this bool value, GraphicsCapabilityFlags flag)
+    {
+        return value ? flag : GraphicsCapabilityFlags.None;
     }
 }
