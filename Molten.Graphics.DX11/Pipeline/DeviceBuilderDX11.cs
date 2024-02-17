@@ -152,7 +152,7 @@ public unsafe class DeviceBuilderDX11
 
         // NOTE:You can bind up to 14 constant buffers per pipeline stage (2 additional slots are reserved for internal use).
         // https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-constants
-        cap.ConstantBuffers.MaxSlots = D3D11.CommonshaderConstantBufferHWSlotCount;              // 15 (1 reserved for immediate constant buffer).
+        cap.ConstantBuffers.MaxSlots = D3D11.CommonshaderConstantBufferApiSlotCount;              // 15 (1 reserved for immediate constant buffer).
         cap.ConstantBuffers.MaxElements = D3D11.ReqConstantBufferElementCount;
         cap.ConstantBuffers.MaxBytes = cap.ConstantBuffers.MaxElements * (4 * sizeof(float)); // Max of four float components per element.
 
