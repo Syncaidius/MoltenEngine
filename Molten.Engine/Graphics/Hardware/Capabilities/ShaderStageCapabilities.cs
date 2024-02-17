@@ -5,7 +5,7 @@ public class ShaderStageCapabilities
     /// <summary>
     /// Gets or sets the flags that indicate support for various shader stage features.
     /// </summary>
-    public ShaderCapabilityFlags Flags { get; set; }
+    public ShaderCapFlags Flags { get; set; }
 
     /// <summary>
     /// Gets or sets the maximum number of input slots/registers for the shader stage.

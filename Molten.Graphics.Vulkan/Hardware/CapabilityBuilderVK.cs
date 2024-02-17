@@ -29,9 +29,9 @@ internal class CapabilityBuilderVK
         ref PhysicalDeviceLimits limits = ref properties.Limits;
         GraphicsCapabilities cap = new GraphicsCapabilities();
 
-        cap.Flags = GraphicsCapabilityFlags.DepthBoundsTesting;
-        cap.Flags |= features.ImageCubeArray ? GraphicsCapabilityFlags.TextureCubeArrays : GraphicsCapabilityFlags.None;
-        cap.Flags |= features.LogicOp ? GraphicsCapabilityFlags.BlendLogicOp : GraphicsCapabilityFlags.None;
+        cap.Flags = GraphicsCapFlags.DepthBoundsTesting;
+        cap.Flags |= features.ImageCubeArray ? GraphicsCapFlags.TextureCubeArrays : GraphicsCapFlags.None;
+        cap.Flags |= features.LogicOp ? GraphicsCapFlags.BlendLogicOp : GraphicsCapFlags.None;
 
         cap.MaxTexture1DSize = limits.MaxImageDimension1D;
         cap.MaxTexture2DSize = limits.MaxImageDimension2D;
@@ -60,22 +60,22 @@ internal class CapabilityBuilderVK
             cap.Api = GraphicsApi.Unsupported;
         }
 
-        cap.VertexShader.Flags |= ShaderCapabilityFlags.IsSupported;
-        cap.PixelShader.Flags |= ShaderCapabilityFlags.IsSupported;
-        cap.Compute.Flags |= ShaderCapabilityFlags.IsSupported;
-        cap.Flags |= GraphicsCapabilityFlags.ConcurrentResourceCreation;
-        cap.GeometryShader.Flags |= features.GeometryShader.ToCapFlag(ShaderCapabilityFlags.IsSupported);
-        cap.HullShader.Flags |= features.TessellationShader.ToCapFlag(ShaderCapabilityFlags.IsSupported);
-        cap.DomainShader.Flags |= features.TessellationShader.ToCapFlag(ShaderCapabilityFlags.IsSupported);
+        cap.VertexShader.Flags |= ShaderCapFlags.IsSupported;
+        cap.PixelShader.Flags |= ShaderCapFlags.IsSupported;
+        cap.Compute.Flags |= ShaderCapFlags.IsSupported;
+        cap.Flags |= GraphicsCapFlags.ConcurrentResourceCreation;
+        cap.GeometryShader.Flags |= features.GeometryShader.ToCapFlag(ShaderCapFlags.IsSupported);
+        cap.HullShader.Flags |= features.TessellationShader.ToCapFlag(ShaderCapFlags.IsSupported);
+        cap.DomainShader.Flags |= features.TessellationShader.ToCapFlag(ShaderCapFlags.IsSupported);
 
         if (features.ShaderFloat64)
-            cap.AddShaderCap(ShaderCapabilityFlags.Float64);
+            cap.AddShaderCap(ShaderCapFlags.Float64);
 
         if(features.ShaderInt16)
-            cap.AddShaderCap(ShaderCapabilityFlags.Int16);
+            cap.AddShaderCap(ShaderCapFlags.Int16);
 
         if(features.ShaderInt64)
-            cap.AddShaderCap(ShaderCapabilityFlags.Int64);
+            cap.AddShaderCap(ShaderCapFlags.Int64);
 
         cap.SetShaderCap(nameof(ShaderStageCapabilities.MaxInResources), limits.MaxPerStageResources);
 

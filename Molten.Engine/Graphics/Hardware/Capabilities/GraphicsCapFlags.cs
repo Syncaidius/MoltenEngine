@@ -2,8 +2,11 @@
 
 namespace Molten.Graphics;
 
+/// <summary>
+/// Flags which represent the capabilities of a <see cref="GraphicsDevice"/>.
+/// </summary>
 [Flags]
-public enum GraphicsCapabilityFlags : ulong
+public enum GraphicsCapFlags : ulong
 {
     None = 0,
 
@@ -52,22 +55,39 @@ public enum GraphicsCapabilityFlags : ulong
     /// Tile-based rendering is supported.
     /// </summary>
     TileBasedRendering = 1 << 8,
+
+    /// <summary>
+    /// Wave operations are supported in HLSL/SPIR-V shaders.
+    /// <para>See: https://gpuopen.com/wp-content/uploads/2017/07/GDC2017-Wave-Programming-D3D12-Vulkan.pdf</para>
+    /// </summary>
+    WaveOperations = 1 << 9,
+
+    /// <summary>
+    /// Alpha blending factors are supported.
+    /// </summary>
+    AlphaBlendFactor = 1 << 10,
+
+    /// <summary>
+    /// Barycentric intrinsic instructions are supported in the rasterizer stage.
+    /// <para>See: https://gpuopen.com/learn/barycentrics12-dx12-gcnshader-ext-sample/</para>
+    /// </summary>
+    Barycentrics = 1 << 11,
 }
 
 public static class GraphicsCapabilityFlagsExtensions
 {
-    public static bool Has(this GraphicsCapabilityFlags flags, GraphicsCapabilityFlags flag)
+    public static bool Has(this GraphicsCapFlags flags, GraphicsCapFlags flag)
     {
         return (flags & flag) == flag;
     }
 
-    public static GraphicsCapabilityFlags ToCapFlag(this Bool32 value, GraphicsCapabilityFlags flag)
+    public static GraphicsCapFlags ToCapFlag(this Bool32 value, GraphicsCapFlags flag)
     {
-        return value ? flag : GraphicsCapabilityFlags.None;
+        return value ? flag : GraphicsCapFlags.None;
     }
 
-    public static GraphicsCapabilityFlags ToCapFlag(this bool value, GraphicsCapabilityFlags flag)
+    public static GraphicsCapFlags ToCapFlag(this bool value, GraphicsCapFlags flag)
     {
-        return value ? flag : GraphicsCapabilityFlags.None;
+        return value ? flag : GraphicsCapFlags.None;
     }
 }

@@ -56,16 +56,16 @@ public sealed partial class GraphicsCapabilities
         }
     }
 
-    public void AddShaderCap(ShaderType type, ShaderCapabilityFlags flag)
+    public void AddShaderCap(ShaderType type, ShaderCapFlags flag)
     {
         if (_shaderCap.TryGetValue(type, out ShaderStageCapabilities cap))
-            cap.Flags |= flag | ShaderCapabilityFlags.IsSupported;
+            cap.Flags |= flag | ShaderCapFlags.IsSupported;
     }
 
-    public void AddShaderCap(ShaderCapabilityFlags flag)
+    public void AddShaderCap(ShaderCapFlags flag)
     {
         foreach (ShaderStageCapabilities cap in _shaderCap.Values)
-            cap.Flags |= flag | ShaderCapabilityFlags.IsSupported;
+            cap.Flags |= flag | ShaderCapFlags.IsSupported;
     }
 
     public bool IsCompatible(GraphicsCapabilities other)
@@ -239,5 +239,5 @@ public sealed partial class GraphicsCapabilities
     /// <summary>
     /// Gets or sets the capabilities of the graphics device.
     /// </summary>
-    public GraphicsCapabilityFlags Flags { get; set; }
+    public GraphicsCapFlags Flags { get; set; }
 }

@@ -2,8 +2,11 @@
 
 namespace Molten.Graphics;
 
+/// <summary>
+/// Flags which represent the capabilities of a shader stage.
+/// </summary>
 [Flags]
-public enum ShaderCapabilityFlags : ulong
+public enum ShaderCapFlags : ulong
 {
     /// <summary>
     /// Indicates that the shader stage is not supported by the current hardware.
@@ -43,18 +46,18 @@ public enum ShaderCapabilityFlags : ulong
 
 public static class ShaderCapabilityFlagsExtensions
 {
-    public static bool Has(this ShaderCapabilityFlags flags, ShaderCapabilityFlags flag)
+    public static bool Has(this ShaderCapFlags flags, ShaderCapFlags flag)
     {
         return (flags & flag) == flag;
     }
 
-    public static ShaderCapabilityFlags ToCapFlag(this Bool32 value, ShaderCapabilityFlags flag)
+    public static ShaderCapFlags ToCapFlag(this Bool32 value, ShaderCapFlags flag)
     {
-        return value ? flag : ShaderCapabilityFlags.None;
+        return value ? flag : ShaderCapFlags.None;
     }
 
-    public static ShaderCapabilityFlags ToCapFlag(this bool value, ShaderCapabilityFlags flag)
+    public static ShaderCapFlags ToCapFlag(this bool value, ShaderCapFlags flag)
     {
-        return value ? flag : ShaderCapabilityFlags.None;
+        return value ? flag : ShaderCapFlags.None;
     }
 }

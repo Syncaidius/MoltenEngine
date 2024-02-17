@@ -101,9 +101,9 @@ internal unsafe class DeviceBuilderDX12
         FeatureDataArchitecture featuresArc = GetFeatureSupport<FeatureDataArchitecture>(ptrDevice, Feature.Architecture);
         FeatureDataArchitecture1 featuresArc1 = GetFeatureSupport<FeatureDataArchitecture1>(ptrDevice, Feature.Architecture1);
         FeatureDataD3D12Options features12_0 = GetFeatureSupport<FeatureDataD3D12Options>(ptrDevice, Feature.D3D12Options);
-        FeatureDataD3D12Options1 features12_1 = GetFeatureSupport<FeatureDataD3D12Options1>(ptrDevice, Feature.D3D12Options1);
+        FeatureDataD3D12Options1 features12_1 = GetFeatureSupport<FeatureDataD3D12Options1>(ptrDevice, Feature.D3D12Options1); // Wave operations start here.
         FeatureDataD3D12Options2 features12_2 = GetFeatureSupport<FeatureDataD3D12Options2>(ptrDevice, Feature.D3D12Options2);
-        FeatureDataD3D12Options3 features12_3 = GetFeatureSupport<FeatureDataD3D12Options3>(ptrDevice, Feature.D3D12Options3);
+        FeatureDataD3D12Options3 features12_3 = GetFeatureSupport<FeatureDataD3D12Options3>(ptrDevice, Feature.D3D12Options3); // Barycentrics start here.
         FeatureDataD3D12Options4 features12_4 = GetFeatureSupport<FeatureDataD3D12Options4>(ptrDevice, Feature.D3D12Options4);
         FeatureDataD3D12Options5 features12_5 = GetFeatureSupport<FeatureDataD3D12Options5>(ptrDevice, Feature.D3D12Options5); // Raytracing starts here.
         FeatureDataD3D12Options6 features12_6 = GetFeatureSupport<FeatureDataD3D12Options6>(ptrDevice, Feature.D3D12Options6);
@@ -115,14 +115,18 @@ internal unsafe class DeviceBuilderDX12
         FeatureDataD3D12Options12 features12_12 = GetFeatureSupport<FeatureDataD3D12Options12>(ptrDevice, Feature.D3D12Options12);
         FeatureDataD3D12Options13 features12_13 = GetFeatureSupport<FeatureDataD3D12Options13>(ptrDevice, Feature.D3D12Options13);
 
-        cap.Flags |= GraphicsCapabilityFlags.HardwareInstancing;
-        cap.Flags |= GraphicsCapabilityFlags.NonPowerOfTwoTextures;
-        cap.Flags |= GraphicsCapabilityFlags.OcculsionQueries;
-        cap.Flags |= GraphicsCapabilityFlags.TextureCubeArrays;
-        cap.Flags |= features12_2.DepthBoundsTestSupported.ToCapFlag(GraphicsCapabilityFlags.DepthBoundsTesting);
-        cap.Flags |= features12_0.ROVsSupported.ToCapFlag(GraphicsCapabilityFlags.RasterizerOrderViews);
-        cap.Flags |= (features12_0.OutputMergerLogicOp > 0).ToCapFlag(GraphicsCapabilityFlags.BlendLogicOp);
-        cap.Flags |= (featuresArc.TileBasedRenderer > 0).ToCapFlag(GraphicsCapabilityFlags.TileBasedRendering);
+        cap.Flags |= GraphicsCapFlags.HardwareInstancing;
+        cap.Flags |= GraphicsCapFlags.NonPowerOfTwoTextures;
+        cap.Flags |= GraphicsCapFlags.OcculsionQueries;
+        cap.Flags |= GraphicsCapFlags.TextureCubeArrays;
+
+        cap.Flags |= (featuresArc.TileBasedRenderer > 0).ToCapFlag(GraphicsCapFlags.TileBasedRendering);
+        cap.Flags |= features12_0.ROVsSupported.ToCapFlag(GraphicsCapFlags.RasterizerOrderViews);
+        cap.Flags |= (features12_0.OutputMergerLogicOp > 0).ToCapFlag(GraphicsCapFlags.BlendLogicOp);
+        cap.Flags |= features12_1.WaveOps.ToCapFlag(GraphicsCapFlags.WaveOperations);
+        cap.Flags |= features12_2.DepthBoundsTestSupported.ToCapFlag(GraphicsCapFlags.DepthBoundsTesting);
+        cap.Flags |= features12_3.BarycentricsSupported.ToCapFlag(GraphicsCapFlags.Barycentrics);
+        cap.Flags |= features12_13.AlphaBlendFactorSupported.ToCapFlag(GraphicsCapFlags.AlphaBlendFactor);
 
         cap.MaxTexture1DSize = D3D12.ReqTexture1DUDimension;
         cap.MaxTexture2DSize = D3D12.ReqTexture2DUOrVDimension;
@@ -165,16 +169,16 @@ internal unsafe class DeviceBuilderDX12
         bool float64Support, bool int64Support)
     {
         if((minPrecision & ShaderMinPrecisionSupport.Support10Bit) == ShaderMinPrecisionSupport.Support10Bit)
-            cap.AddShaderCap(ShaderCapabilityFlags.Float10);
+            cap.AddShaderCap(ShaderCapFlags.Float10);
 
         if((minPrecision & ShaderMinPrecisionSupport.Support16Bit) == ShaderMinPrecisionSupport.Support16Bit)
-            cap.AddShaderCap(ShaderCapabilityFlags.Float16);
+            cap.AddShaderCap(ShaderCapFlags.Float16);
 
        if(float64Support)
-            cap.AddShaderCap(ShaderCapabilityFlags.Float64);
+            cap.AddShaderCap(ShaderCapFlags.Float64);
 
        if(int64Support)
-            cap.AddShaderCap(ShaderCapabilityFlags.Int64);
+            cap.AddShaderCap(ShaderCapFlags.Int64);
 
         cap.SetShaderCap(nameof(ShaderStageCapabilities.MaxInRegisters), 32U); 
         cap.SetShaderCap(nameof(ShaderStageCapabilities.MaxOutRegisters), 32U); 
