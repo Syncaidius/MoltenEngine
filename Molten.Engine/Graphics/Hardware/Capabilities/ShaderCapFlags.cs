@@ -11,7 +11,7 @@ public enum ShaderCapFlags : ulong
     /// <summary>
     /// Indicates that the shader stage is not supported by the current hardware.
     /// </summary>
-    None = 0,
+    NotSupported = 0,
 
     /// <summary>
     /// Indicates whether the shader capability is supported.
@@ -53,11 +53,11 @@ public static class ShaderCapabilityFlagsExtensions
 
     public static ShaderCapFlags ToCapFlag(this Bool32 value, ShaderCapFlags flag)
     {
-        return value ? flag : ShaderCapFlags.None;
+        return value ? flag : ShaderCapFlags.NotSupported;
     }
 
     public static ShaderCapFlags ToCapFlag(this bool value, ShaderCapFlags flag)
     {
-        return value ? flag : ShaderCapFlags.None;
+        return value ? flag : ShaderCapFlags.NotSupported;
     }
 }

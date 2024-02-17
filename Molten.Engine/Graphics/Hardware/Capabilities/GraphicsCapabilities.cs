@@ -14,6 +14,8 @@ public sealed partial class GraphicsCapabilities
         HullShader = new ShaderStageCapabilities();
         DomainShader = new ShaderStageCapabilities();
         PixelShader = new ShaderStageCapabilities();
+        AmplificationShader = new ShaderStageCapabilities();
+        MeshShader = new MeshShaderCapabilities();
         Compute = new ComputeCapabilities();
 
         _shaderCap = new Dictionary<ShaderType, ShaderStageCapabilities>()
@@ -23,7 +25,9 @@ public sealed partial class GraphicsCapabilities
             [ShaderType.Hull] = HullShader,
             [ShaderType.Domain] = DomainShader,
             [ShaderType.Pixel] = PixelShader,
-            [ShaderType.Compute] = Compute
+            [ShaderType.Compute] = Compute,
+            [ShaderType.Amplification] = AmplificationShader,
+            [ShaderType.Mesh] = MeshShader,
         };
     }
 
@@ -174,6 +178,16 @@ public sealed partial class GraphicsCapabilities
     /// Gets pixel/fragment shader stage capabilities.
     /// </summary>
     public ShaderStageCapabilities PixelShader { get; }
+    
+    /// <summary>
+    /// Gets the amplification/task shader stage capabilities.
+    /// </summary>
+    public ShaderStageCapabilities AmplificationShader { get; }
+
+    /// <summary>
+    /// Gets the mesh sahder stage capabilities.
+    /// </summary>
+    public MeshShaderCapabilities MeshShader { get; }
 
     /// <summary>
     /// Gets compute shader stage capabilities.

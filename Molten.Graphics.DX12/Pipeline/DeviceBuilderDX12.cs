@@ -105,7 +105,7 @@ internal unsafe class DeviceBuilderDX12
         FeatureDataD3D12Options4 features12_4 = GetFeatureSupport<FeatureDataD3D12Options4>(ptrDevice, Feature.D3D12Options4);
         FeatureDataD3D12Options5 features12_5 = GetFeatureSupport<FeatureDataD3D12Options5>(ptrDevice, Feature.D3D12Options5); // Raytracing starts here.
         FeatureDataD3D12Options6 features12_6 = GetFeatureSupport<FeatureDataD3D12Options6>(ptrDevice, Feature.D3D12Options6);
-        FeatureDataD3D12Options7 features12_7 = GetFeatureSupport<FeatureDataD3D12Options7>(ptrDevice, Feature.D3D12Options7); // Variable shading rate starts here.
+        FeatureDataD3D12Options7 features12_7 = GetFeatureSupport<FeatureDataD3D12Options7>(ptrDevice, Feature.D3D12Options7); // Mesh shader & Variable shading rate starts here.
         FeatureDataD3D12Options8 features12_8 = GetFeatureSupport<FeatureDataD3D12Options8>(ptrDevice, Feature.D3D12Options8);
         FeatureDataD3D12Options9 features12_9 = GetFeatureSupport<FeatureDataD3D12Options9>(ptrDevice, Feature.D3D12Options9);
         FeatureDataD3D12Options10 features12_10 = GetFeatureSupport<FeatureDataD3D12Options10>(ptrDevice, Feature.D3D12Options10);
@@ -168,7 +168,8 @@ internal unsafe class DeviceBuilderDX12
         DetectShaderStages(cap, 
             features12_0.MinPrecisionSupport, 
             features12_0.DoublePrecisionFloatShaderOps, 
-            features12_1.Int64ShaderOps);
+            features12_1.Int64ShaderOps,
+            ref features12_7, ref features12_9, ref features12_10);
 
         cap.PixelShader.MaxOutputTargets = D3D12.PSOutputRegisterCount;
 
@@ -182,7 +183,10 @@ internal unsafe class DeviceBuilderDX12
 
     private void DetectShaderStages(GraphicsCapabilities cap, 
         ShaderMinPrecisionSupport minPrecision,
-        bool float64Support, bool int64Support)
+        bool float64Support, bool int64Support, 
+        ref FeatureDataD3D12Options7 features12_7,
+        ref FeatureDataD3D12Options9 features12_9,
+        ref FeatureDataD3D12Options10 features12_10)
     {
         if((minPrecision & ShaderMinPrecisionSupport.Support10Bit) == ShaderMinPrecisionSupport.Support10Bit)
             cap.AddShaderCap(ShaderCapFlags.Float10);
@@ -213,6 +217,21 @@ internal unsafe class DeviceBuilderDX12
         cap.Compute.MaxGroupSizeX = D3D12.CSThreadGroupMaxX;
         cap.Compute.MaxGroupSizeY = D3D12.CSThreadGroupMaxY;
         cap.Compute.MaxGroupSizeZ = D3D12.CSThreadGroupMaxZ;
+
+        switch(features12_7.MeshShaderTier)
+        {
+            case MeshShaderTier.TierNotSupported:
+                cap.AmplificationShader.Flags = ShaderCapFlags.NotSupported;
+                cap.MeshShader.Flags = ShaderCapFlags.NotSupported;
+                break;
+
+            case MeshShaderTier.Tier1:
+                cap.MeshShader.Flags |= ShaderCapFlags.IsSupported;
+                cap.AmplificationShader.Flags |= ShaderCapFlags.IsSupported;
+                cap.MeshShader.PipelineStatsSupported = features12_9.MeshShaderPipelineStatsSupported;
+                cap.MeshShader.PerPrimitiveShadingRate = features12_10.MeshShaderPerPrimitiveShadingRateSupported;
+                break;
+        }
     }
 
     /// <summary>
