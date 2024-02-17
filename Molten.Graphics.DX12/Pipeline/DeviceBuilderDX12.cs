@@ -59,25 +59,28 @@ internal unsafe class DeviceBuilderDX12
             dataFeatures.PFeatureLevelsRequested = ptrLevels;
             GetFeatureSupport(ptrDevice, Feature.FeatureLevels, &dataFeatures);
         }
+        // Check if a lower shader model is supported instead of API's model.
+        FeatureDataShaderModel maxSM = new FeatureDataShaderModel(cap.MaxShaderModel.ToApi());
+        GetFeatureSupport(ptrDevice, Feature.ShaderModel, &maxSM);
 
         switch (dataFeatures.MaxSupportedFeatureLevel)
         {
             case D3DFeatureLevel.Level122:
                 cap.Api = GraphicsApi.DirectX12_2;
                 cap.UnorderedAccessBuffers.MaxSlots = D3D12.UavSlotCount;
-                cap.MaxShaderModel = ShaderModel.Model6_0;
+                cap.MaxShaderModel = maxSM.HighestShaderModel.FromApi();
                 break;
 
             case D3DFeatureLevel.Level121:
                 cap.Api = GraphicsApi.DirectX12_1;
                 cap.UnorderedAccessBuffers.MaxSlots = D3D12.UavSlotCount;
-                cap.MaxShaderModel = ShaderModel.Model6_0;
+                cap.MaxShaderModel = maxSM.HighestShaderModel.FromApi();
                 break;
 
             case D3DFeatureLevel.Level120:
                 cap.Api = GraphicsApi.DirectX12_0;
-                cap.UnorderedAccessBuffers.MaxSlots = D3D12.UavSlotCount;
-                cap.MaxShaderModel = ShaderModel.Model5_1;
+                cap.UnorderedAccessBuffers.MaxSlots = D3D12.UavSlotCount; 
+                cap.MaxShaderModel = maxSM.HighestShaderModel.FromApi().Clamp(ShaderModel.Model5_1, ShaderModel.Model6_0);
                 break;
 
             case D3DFeatureLevel.Level111:
@@ -89,14 +92,9 @@ internal unsafe class DeviceBuilderDX12
             case D3DFeatureLevel.Level110:
                 cap.Api = GraphicsApi.DirectX11_0;
                 cap.UnorderedAccessBuffers.MaxSlots = D3D12.PSCSUavRegisterCount;
-                cap.MaxShaderModel = ShaderModel.Model5_1;
+                cap.MaxShaderModel = ShaderModel.Model5_0;
                 break;
-        }
-
-        // Check if a lower shader model is supported instead of API's model.
-        FeatureDataShaderModel maxSM = new FeatureDataShaderModel(cap.MaxShaderModel.ToApi());
-        GetFeatureSupport(ptrDevice, Feature.ShaderModel, &maxSM);
-        cap.MaxShaderModel = maxSM.HighestShaderModel.FromApi();
+        }        
 
         FeatureDataArchitecture featuresArc = GetFeatureSupport<FeatureDataArchitecture>(ptrDevice, Feature.Architecture);
         FeatureDataArchitecture1 featuresArc1 = GetFeatureSupport<FeatureDataArchitecture1>(ptrDevice, Feature.Architecture1);
@@ -137,7 +135,25 @@ internal unsafe class DeviceBuilderDX12
         cap.MaxTextureArraySlices = D3D12.ReqTexture2DArrayAxisDimension;
         cap.MaxAllocatedSamplers = D3D12.ReqSamplerObjectCountPerDevice;    //  Total number of sampler objects per context
         cap.MaxPrimitiveCount = uint.MaxValue;          // (2^32) – 1 = uint.maxValue (4,294,967,295)
-        cap.ConservativeRasterization = (ConservativeRasterizationLevel)features12_0.ConservativeRasterizationTier;
+        switch (features12_0.ConservativeRasterizationTier)
+        {
+            case ConservativeRasterizationTier.Tier1:
+                cap.ConservativeRasterization |= ConservativeRasterizationFlags.Uncertainty1_2;
+                break;
+
+                case ConservativeRasterizationTier.Tier2:
+                cap.ConservativeRasterization |= ConservativeRasterizationFlags.Uncertainty1_256
+                    | ConservativeRasterizationFlags.Uncertainty1_2
+                    | ConservativeRasterizationFlags.UnculledPostSnapDegenerates;
+                break;
+
+            case ConservativeRasterizationTier.Tier3:
+                cap.ConservativeRasterization |= ConservativeRasterizationFlags.Uncertainty1_256
+                    | ConservativeRasterizationFlags.Uncertainty1_2
+                    | ConservativeRasterizationFlags.UnculledPostSnapDegenerates
+                    | ConservativeRasterizationFlags.InnerInputCoverageSupport;
+                break;
+        }
 
         // NOTE:You can bind up to 14 constant buffers per pipeline stage (2 additional slots are reserved for internal use).
         // https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-constants

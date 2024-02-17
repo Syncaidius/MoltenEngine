@@ -141,9 +141,9 @@ public sealed partial class GraphicsCapabilities
     public uint MaxTextureArraySlices { get; set; }
 
     /// <summary>
-    /// Gets or sets conservative rasterization support/requirement.
+    /// Gets or sets conservative rasterization feature support.
     /// </summary>
-    public ConservativeRasterizationLevel ConservativeRasterization { get; set; }
+    public ConservativeRasterizationFlags ConservativeRasterization { get; set; }
 
     /// <summary>
     /// Gets or sets the maximum supported shader model.
