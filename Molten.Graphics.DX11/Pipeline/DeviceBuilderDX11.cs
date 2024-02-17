@@ -111,20 +111,12 @@ public unsafe class DeviceBuilderDX11
         {
             case D3DFeatureLevel.Level111:
                 cap.Api = GraphicsApi.DirectX11_1;
-                cap.UnorderedAccessBuffers.MaxSlots = 64; // D3D11_1_UAV_SLOT_COUNT = 64
+                cap.UnorderedAccessBuffers.MaxSlots = D3D11.D3D111UavSlotCount;
                 break;
 
             case D3DFeatureLevel.Level110:
                 cap.Api = GraphicsApi.DirectX11_0;
-                cap.UnorderedAccessBuffers.MaxSlots = 8;  // D3D11_PS_CS_UAV_REGISTER_COUNT = 8
-                break;
-
-            case D3DFeatureLevel.Level101:
-                cap.Api = GraphicsApi.DirectX10_1;
-                break;
-
-            case D3DFeatureLevel.Level100:
-                cap.Api = GraphicsApi.DirectX10_0;
+                cap.UnorderedAccessBuffers.MaxSlots = D3D11.PSCSUavRegisterCount;
                 break;
         }
 
@@ -142,31 +134,31 @@ public unsafe class DeviceBuilderDX11
         //CounterSupport = cInfo;
 
         cap.MaxShaderModel = ShaderModel.Model5_0;
-        cap.MaxTexture1DSize = 16384;
-        cap.MaxTexture2DSize = 16384;
-        cap.MaxTexture3DSize = 2048;
+        cap.MaxTexture1DSize = D3D11.ReqTexture1DUDimension;
+        cap.MaxTexture2DSize = D3D11.ReqTexture2DUOrVDimension;
+        cap.MaxTexture3DSize = D3D11.ReqTexture3DUVOrWDimension;
         cap.MaxTextureCubeSize = 16384;
-        cap.MaxAnisotropy = 16;
+        cap.MaxAnisotropy = D3D11.MaxMaxanisotropy;
         cap.BlendLogicOp = features11_0.OutputMergerLogicOp > 0;
-        cap.MaxShaderSamplers = 16;
+        cap.MaxShaderSamplers = D3D11.CommonshaderSamplerSlotCount;
         cap.DepthBoundsTesting = false;
         cap.OcclusionQueries = true;
         cap.HardwareInstancing = true;
-        cap.MaxTextureArraySlices = 2048;               // D3D11_REQ_TEXTURE2D_ARRAY_AXIS_DIMENSION (2048 array slices)
+        cap.MaxTextureArraySlices = D3D11.ReqTexture2DArrayAxisDimension;
         cap.TextureCubeArrays = true;
         cap.NonPowerOfTwoTextures = true;
         cap.MaxAllocatedSamplers = 4096;                // D3D11_REQ_SAMPLER_OBJECT_COUNT_PER_DEVICE (4096) - Total number of sampler objects per context
         cap.MaxPrimitiveCount = uint.MaxValue;          // (2^32) – 1 = uint.maxValue (4,294,967,295)
 
-        cap.VertexBuffers.MaxSlots = 32;                // D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT = 32;
-        cap.VertexBuffers.MaxElementsPerVertex = 32;    // D3D11_STANDARD_VERTEX_ELEMENT_COUNT = 32;
-        cap.VertexBuffers.MaxElements = uint.MaxValue;  // (2^32) – 1 = uint.maxValue (4,294,967,295)
-
         // NOTE:You can bind up to 14 constant buffers per pipeline stage (2 additional slots are reserved for internal use).
         // https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-constants
-        cap.ConstantBuffers.MaxSlots = 14;              // D3D11_COMMONSHADER_CONSTANT_BUFFER_HW_SLOT_COUNT  = 15 (+1 for immediate constant buffer).
-        cap.ConstantBuffers.MaxElements = 4096;         // D3D11_REQ_CONSTANT_BUFFER_ELEMENT_COUNT = 4096
+        cap.ConstantBuffers.MaxSlots = D3D11.CommonshaderConstantBufferHWSlotCount;              // 15 (1 reserved for immediate constant buffer).
+        cap.ConstantBuffers.MaxElements = D3D11.ReqConstantBufferElementCount;
         cap.ConstantBuffers.MaxBytes = cap.ConstantBuffers.MaxElements * (4 * sizeof(float)); // Max of four float components per element.
+
+        cap.VertexBuffers.MaxSlots = D3D11.IAVertexInputResourceSlotCount;
+        cap.VertexBuffers.MaxElementsPerVertex = D3D11.StandardVertexElementCount;
+        cap.VertexBuffers.MaxElements = uint.MaxValue;  // (2^32) – 1 = uint.maxValue (4,294,967,295)
 
         // See: https://learn.microsoft.com/en-us/windows/win32/api/d3d11/nf-d3d11-id3d11devicecontext-dispatch
         cap.Compute.MaxGroupCountX = D3D11.CSDispatchMaxThreadGroupsPerDimension;
@@ -247,10 +239,10 @@ public unsafe class DeviceBuilderDX11
             cap.Compute.MaxUnorderedAccessSlots = cap.UnorderedAccessBuffers.MaxSlots;
         }
 
-        cap.SetShaderCap(nameof(ShaderStageCapabilities.MaxInRegisters), 32); // D3D11_VS/GS/PS_INPUT_REGISTER_COUNT (32)
-        cap.SetShaderCap(nameof(ShaderStageCapabilities.MaxOutRegisters), 32); // D3D11_VS/GS/DS_OUTPUT_REGISTER_COUNT (32)
+        cap.SetShaderCap(nameof(ShaderStageCapabilities.MaxInRegisters), 32U); // D3D11_VS/GS/PS_INPUT_REGISTER_COUNT (32)
+        cap.SetShaderCap(nameof(ShaderStageCapabilities.MaxOutRegisters), 32U); // D3D11_VS/GS/DS_OUTPUT_REGISTER_COUNT (32)
         cap.SetShaderCap(nameof(ShaderStageCapabilities.Float64), dp);
-        cap.SetShaderCap<uint>(nameof(ShaderStageCapabilities.MaxInResources), 128); // D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT (128)
+        cap.SetShaderCap(nameof(ShaderStageCapabilities.MaxInResources), 128U); // D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT (128)
 
         // Stage specific settings
         cap.PixelShader.MaxOutputTargets = 8;

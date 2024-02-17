@@ -64,31 +64,31 @@ internal unsafe class DeviceBuilderDX12
         {
             case D3DFeatureLevel.Level122:
                 cap.Api = GraphicsApi.DirectX12_2;
-                cap.UnorderedAccessBuffers.MaxSlots = 64;
+                cap.UnorderedAccessBuffers.MaxSlots = D3D12.UavSlotCount;
                 cap.MaxShaderModel = ShaderModel.Model6_0;
                 break;
 
             case D3DFeatureLevel.Level121:
                 cap.Api = GraphicsApi.DirectX12_1;
-                cap.UnorderedAccessBuffers.MaxSlots = 64;
+                cap.UnorderedAccessBuffers.MaxSlots = D3D12.UavSlotCount;
                 cap.MaxShaderModel = ShaderModel.Model6_0;
                 break;
 
             case D3DFeatureLevel.Level120:
                 cap.Api = GraphicsApi.DirectX12_0;
-                cap.UnorderedAccessBuffers.MaxSlots = 64;
+                cap.UnorderedAccessBuffers.MaxSlots = D3D12.UavSlotCount;
                 cap.MaxShaderModel = ShaderModel.Model5_1;
                 break;
 
             case D3DFeatureLevel.Level111:
                 cap.Api = GraphicsApi.DirectX11_1;
-                cap.UnorderedAccessBuffers.MaxSlots = 64;
+                cap.UnorderedAccessBuffers.MaxSlots = D3D12.UavSlotCount;
                 cap.MaxShaderModel = ShaderModel.Model5_1;
                 break;
 
             case D3DFeatureLevel.Level110:
                 cap.Api = GraphicsApi.DirectX11_0;
-                cap.UnorderedAccessBuffers.MaxSlots = 8;
+                cap.UnorderedAccessBuffers.MaxSlots = D3D12.PSCSUavRegisterCount;
                 cap.MaxShaderModel = ShaderModel.Model5_1;
                 break;
         }
@@ -113,16 +113,16 @@ internal unsafe class DeviceBuilderDX12
         FeatureDataD3D12Options12 features12_12 = GetFeatureSupport<FeatureDataD3D12Options12>(ptrDevice, Feature.D3D12Options12);
         FeatureDataD3D12Options13 features12_13 = GetFeatureSupport<FeatureDataD3D12Options13>(ptrDevice, Feature.D3D12Options13);
 
-        cap.MaxTexture1DSize = 16384;
-        cap.MaxTexture2DSize = 16384;
-        cap.MaxTexture3DSize = 2048;
+        cap.MaxTexture1DSize = D3D12.ReqTexture1DUDimension;
+        cap.MaxTexture2DSize = D3D12.ReqTexture2DUOrVDimension;
+        cap.MaxTexture3DSize = D3D12.ReqTexture3DUVOrWDimension;
         cap.MaxTextureCubeSize = 16384;
-        cap.MaxAnisotropy = 16;
+        cap.MaxAnisotropy = D3D12.MaxMaxanisotropy;
         cap.BlendLogicOp = features12_0.OutputMergerLogicOp > 0;
-        cap.MaxShaderSamplers = 16;
+        cap.MaxShaderSamplers = D3D12.CommonshaderSamplerSlotCount;
         cap.OcclusionQueries = true;
         cap.HardwareInstancing = true;
-        cap.MaxTextureArraySlices = 2048;               // D3D11_REQ_TEXTURE2D_ARRAY_AXIS_DIMENSION (2048 array slices)
+        cap.MaxTextureArraySlices = D3D12.ReqTexture2DArrayAxisDimension;
         cap.TextureCubeArrays = true;
         cap.NonPowerOfTwoTextures = true;
         cap.MaxAllocatedSamplers = 4096;                // D3D11_REQ_SAMPLER_OBJECT_COUNT_PER_DEVICE (4096) - Total number of sampler objects per context
@@ -130,8 +130,14 @@ internal unsafe class DeviceBuilderDX12
         cap.RasterizerOrderViews = features12_0.ROVsSupported;
         cap.ConservativeRasterization = (ConservativeRasterizationLevel)features12_0.ConservativeRasterizationTier;
 
-        cap.VertexBuffers.MaxSlots = 32;                // D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT = 32;
-        cap.VertexBuffers.MaxElementsPerVertex = 32;    // D3D11_STANDARD_VERTEX_ELEMENT_COUNT = 32;
+        // NOTE:You can bind up to 14 constant buffers per pipeline stage (2 additional slots are reserved for internal use).
+        // https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-constants
+        cap.ConstantBuffers.MaxSlots = D3D12.CommonshaderConstantBufferHWSlotCount;              // 15 (1 reserved for immediate constant buffer).
+        cap.ConstantBuffers.MaxElements = D3D12.ReqConstantBufferElementCount;
+        cap.ConstantBuffers.MaxBytes = cap.ConstantBuffers.MaxElements * (4 * sizeof(float)); // Max of four float components per element.
+
+        cap.VertexBuffers.MaxSlots = D3D12.IAVertexInputResourceSlotCount;
+        cap.VertexBuffers.MaxElementsPerVertex = D3D12.StandardVertexElementCount;
         cap.VertexBuffers.MaxElements = uint.MaxValue;  // (2^32) – 1 = uint.maxValue (4,294,967,295)
 
         DetectShaderStages(cap, 
@@ -160,9 +166,9 @@ internal unsafe class DeviceBuilderDX12
         cap.SetShaderCap(nameof(ShaderStageCapabilities.Float16), bit16);
         cap.SetShaderCap(nameof(ShaderStageCapabilities.Float64), float64Support);
         cap.SetShaderCap(nameof(ShaderStageCapabilities.Int64), int64Support);
-        cap.SetShaderCap(nameof(ShaderStageCapabilities.MaxInRegisters), 32); 
-        cap.SetShaderCap(nameof(ShaderStageCapabilities.MaxOutRegisters), 32); 
-        cap.SetShaderCap<uint>(nameof(ShaderStageCapabilities.MaxInResources), 128);
+        cap.SetShaderCap(nameof(ShaderStageCapabilities.MaxInRegisters), 32U); 
+        cap.SetShaderCap(nameof(ShaderStageCapabilities.MaxOutRegisters), 32U); 
+        cap.SetShaderCap(nameof(ShaderStageCapabilities.MaxInResources), 128U);
 
         // Pixel/fragment-specific capabilities
         // NOTE: When the pipeline is configured without a geometry shader, a pixel shader is limited to 16, 32-bit, 4-component inputs.
