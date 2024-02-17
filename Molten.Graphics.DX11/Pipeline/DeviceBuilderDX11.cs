@@ -133,21 +133,21 @@ public unsafe class DeviceBuilderDX11
         //device->CheckCounterInfo(&cInfo);
         //CounterSupport = cInfo;
 
+        cap.Flags |= features11_0.OutputMergerLogicOp > 0 ? GraphicsCapabilityFlags.BlendLogicOp : GraphicsCapabilityFlags.None;
+        cap.Flags |= GraphicsCapabilityFlags.NonPowerOfTwoTextures;
+        cap.Flags |= GraphicsCapabilityFlags.OcculsionQueries;
+        cap.Flags |= GraphicsCapabilityFlags.HardwareInstancing;
+        cap.Flags |= GraphicsCapabilityFlags.TextureCubeArrays;
+
         cap.MaxShaderModel = ShaderModel.Model5_0;
         cap.MaxTexture1DSize = D3D11.ReqTexture1DUDimension;
         cap.MaxTexture2DSize = D3D11.ReqTexture2DUOrVDimension;
         cap.MaxTexture3DSize = D3D11.ReqTexture3DUVOrWDimension;
-        cap.MaxTextureCubeSize = 16384;
+        cap.MaxTextureCubeSize = D3D11.ReqTexturecubeDimension;
         cap.MaxAnisotropy = D3D11.MaxMaxanisotropy;
-        cap.BlendLogicOp = features11_0.OutputMergerLogicOp > 0;
         cap.MaxShaderSamplers = D3D11.CommonshaderSamplerSlotCount;
-        cap.DepthBoundsTesting = false;
-        cap.OcclusionQueries = true;
-        cap.HardwareInstancing = true;
         cap.MaxTextureArraySlices = D3D11.ReqTexture2DArrayAxisDimension;
-        cap.TextureCubeArrays = true;
-        cap.NonPowerOfTwoTextures = true;
-        cap.MaxAllocatedSamplers = 4096;                // D3D11_REQ_SAMPLER_OBJECT_COUNT_PER_DEVICE (4096) - Total number of sampler objects per context
+        cap.MaxAllocatedSamplers = D3D11.ReqSamplerObjectCountPerDevice;
         cap.MaxPrimitiveCount = uint.MaxValue;          // (2^32) – 1 = uint.maxValue (4,294,967,295)
 
         // NOTE:You can bind up to 14 constant buffers per pipeline stage (2 additional slots are reserved for internal use).
@@ -180,7 +180,7 @@ public unsafe class DeviceBuilderDX11
         });
 
         
-        cap.ConcurrentResourceCreation = feature_threading.DriverConcurrentCreates > 0;
+        cap.Flags |= feature_threading.DriverConcurrentCreates > 0 ? GraphicsCapabilityFlags.ConcurrentResourceCreation : GraphicsCapabilityFlags.None;
         cap.DeferredCommandLists = feature_threading.DriverCommandLists > 0 ? CommandListSupport.Supported : CommandListSupport.Emulated;
 
         /* MaxTextureRepeat = 16384;
@@ -216,21 +216,27 @@ public unsafe class DeviceBuilderDX11
     private void DetectShaderStages(ID3D11Device5* device, GraphicsCapabilities cap, D3DFeatureLevel featureLevel)
     {
         FeatureDataDoubles fData = GetFeatureSupport<FeatureDataDoubles>(device, Feature.Doubles);
-        bool dp = fData.DoublePrecisionFloatShaderOps > 0;
 
         // DirectX 11.1 or higher precision features
         if (featureLevel >= D3DFeatureLevel.Level111)
         {
             FeatureDataShaderMinPrecisionSupport mData = GetFeatureSupport<FeatureDataShaderMinPrecisionSupport>(device, Feature.ShaderMinPrecisionSupport);
             ShaderMinPrecisionSupport all = (ShaderMinPrecisionSupport)mData.AllOtherShaderStagesMinPrecision;
-            bool all10Bit = (all & ShaderMinPrecisionSupport.Precision10Bit) == ShaderMinPrecisionSupport.Precision10Bit;
-            bool all16Bit = (all & ShaderMinPrecisionSupport.Precision16Bit) == ShaderMinPrecisionSupport.Precision16Bit;
             ShaderMinPrecisionSupport pixel = (ShaderMinPrecisionSupport)mData.PixelShaderMinPrecision;
 
-            cap.SetShaderCap(nameof(ShaderStageCapabilities.Float10), all10Bit);
-            cap.SetShaderCap(nameof(ShaderStageCapabilities.Float16), all16Bit);
-            cap.PixelShader.Float10 = (pixel & ShaderMinPrecisionSupport.Precision10Bit) == ShaderMinPrecisionSupport.Precision10Bit;
-            cap.PixelShader.Float16 = (pixel & ShaderMinPrecisionSupport.Precision16Bit) == ShaderMinPrecisionSupport.Precision16Bit;
+            if ((all & ShaderMinPrecisionSupport.Precision10Bit) == ShaderMinPrecisionSupport.Precision10Bit)
+                cap.AddShaderCap(ShaderCapabilityFlags.Float10);
+
+            if ((all & ShaderMinPrecisionSupport.Precision16Bit) == ShaderMinPrecisionSupport.Precision16Bit)
+                cap.AddShaderCap(ShaderCapabilityFlags.Float16);
+
+            // Pixel shader precision support is separate from the rest of the shader stages.
+            // If pixel shader does not support a precision, then remove the capability flag that may have been set in the calls above.
+            if ((pixel & ShaderMinPrecisionSupport.Precision10Bit) != ShaderMinPrecisionSupport.Precision10Bit)
+                cap.PixelShader.Flags &= ~ShaderCapabilityFlags.Float16;
+
+            if ((pixel & ShaderMinPrecisionSupport.Precision16Bit) != ShaderMinPrecisionSupport.Precision16Bit)
+                cap.PixelShader.Flags &= ~ShaderCapabilityFlags.Float16;
 
             cap.SetShaderCap(nameof(ShaderStageCapabilities.MaxUnorderedAccessSlots), cap.UnorderedAccessBuffers.MaxSlots);
         }
@@ -239,9 +245,12 @@ public unsafe class DeviceBuilderDX11
             cap.Compute.MaxUnorderedAccessSlots = cap.UnorderedAccessBuffers.MaxSlots;
         }
 
+
+        if (fData.DoublePrecisionFloatShaderOps > 0)
+            cap.AddShaderCap(ShaderCapabilityFlags.Float64);
+
         cap.SetShaderCap(nameof(ShaderStageCapabilities.MaxInRegisters), 32U); // D3D11_VS/GS/PS_INPUT_REGISTER_COUNT (32)
         cap.SetShaderCap(nameof(ShaderStageCapabilities.MaxOutRegisters), 32U); // D3D11_VS/GS/DS_OUTPUT_REGISTER_COUNT (32)
-        cap.SetShaderCap(nameof(ShaderStageCapabilities.Float64), dp);
         cap.SetShaderCap(nameof(ShaderStageCapabilities.MaxInResources), 128U); // D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT (128)
 
         // Stage specific settings

@@ -3,34 +3,9 @@
 public class ShaderStageCapabilities
 {
     /// <summary>
-    /// Gets or sets whether the shader stage is supported.
+    /// Gets or sets the flags that indicate support for various shader stage features.
     /// </summary>
-    public bool IsSupported { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets whether the use of 10-bit-precision floating-point values is supported by the shader stage.
-    /// </summary>
-    public bool Float10 { get; set; }
-
-    /// <summary>
-    /// Gets or sets whether the use of 16-bit integer values is supported by the shader stage.
-    /// </summary>
-    public bool Int16 { get; set; }
-
-    /// <summary>
-    /// Gets or sets whether the use of 6-bit half-precision floating-point values is supported by the shader stage.
-    /// </summary>
-    public bool Float16 { get; set; }
-
-    /// <summary>
-    /// Gets or sets whether the use of 64-bit integer values is supported by the shader stage.
-    /// </summary>
-    public bool Int64 { get; set; }
-
-    /// <summary>
-    /// Gets or sets whether the use of 64-bit, double-precision floating-point values is supported by the shader stage.
-    /// </summary>
-    public bool Float64 { get; set; }
+    public ShaderCapabilityFlags Flags { get; set; }
 
     /// <summary>
     /// Gets or sets the maximum number of input slots/registers for the shader stage.

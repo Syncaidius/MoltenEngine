@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.Vulkan;
 
-internal class CapabilityBuilder
+internal class CapabilityBuilderVK
 {
     internal unsafe struct PropertiesRef
     {
@@ -29,16 +29,17 @@ internal class CapabilityBuilder
         ref PhysicalDeviceLimits limits = ref properties.Limits;
         GraphicsCapabilities cap = new GraphicsCapabilities();
 
+        cap.Flags = GraphicsCapabilityFlags.DepthBoundsTesting;
+        cap.Flags |= features.ImageCubeArray ? GraphicsCapabilityFlags.TextureCubeArrays : GraphicsCapabilityFlags.None;
+        cap.Flags |= features.LogicOp ? GraphicsCapabilityFlags.BlendLogicOp : GraphicsCapabilityFlags.None;
+
         cap.MaxTexture1DSize = limits.MaxImageDimension1D;
         cap.MaxTexture2DSize = limits.MaxImageDimension2D;
         cap.MaxTexture3DSize = limits.MaxImageDimension3D;
         cap.MaxTextureCubeSize = limits.MaxImageDimensionCube;
-        cap.DepthBoundsTesting = true;
         cap.MaxAnisotropy = features.SamplerAnisotropy ? limits.MaxSamplerAnisotropy : 0;
         cap.MaxTextureArraySlices = limits.MaxImageArrayLayers;
-        cap.TextureCubeArrays = features.ImageCubeArray;
         cap.PixelShader.MaxOutputTargets = limits.MaxFragmentOutputAttachments;
-        cap.BlendLogicOp = features.LogicOp;
         cap.MaxAllocatedSamplers = limits.MaxSamplerAllocationCount;
 
         uint variant, major, minor, patch;
@@ -59,15 +60,24 @@ internal class CapabilityBuilder
             cap.Api = GraphicsApi.Unsupported;
         }
 
-        cap.SetShaderCap(nameof(ShaderStageCapabilities.Float64), features.ShaderFloat64);
-        cap.SetShaderCap(nameof(ShaderStageCapabilities.Int16), features.ShaderInt16);
-        cap.SetShaderCap(nameof(ShaderStageCapabilities.Int64), features.ShaderInt64);
-        cap.SetShaderCap(nameof(ShaderStageCapabilities.IsSupported), true);
-        cap.SetShaderCap(nameof(ShaderStageCapabilities.MaxInResources), limits.MaxPerStageResources);
+        cap.VertexShader.Flags |= ShaderCapabilityFlags.IsSupported;
+        cap.PixelShader.Flags |= ShaderCapabilityFlags.IsSupported;
+        cap.Compute.Flags |= ShaderCapabilityFlags.IsSupported;
+        cap.Flags |= GraphicsCapabilityFlags.ConcurrentResourceCreation;
+        cap.GeometryShader.Flags |= features.GeometryShader ? ShaderCapabilityFlags.IsSupported : ShaderCapabilityFlags.None;
+        cap.HullShader.Flags |= features.TessellationShader ? ShaderCapabilityFlags.IsSupported : ShaderCapabilityFlags.None;
+        cap.DomainShader.Flags |= features.TessellationShader ? ShaderCapabilityFlags.IsSupported : ShaderCapabilityFlags.None;
 
-        cap.GeometryShader.IsSupported =  features.GeometryShader;
-        cap.HullShader.IsSupported = features.TessellationShader;
-        cap.DomainShader.IsSupported = features.TessellationShader;
+        if (features.ShaderFloat64)
+            cap.AddShaderCap(ShaderCapabilityFlags.Float64);
+
+        if(features.ShaderInt16)
+            cap.AddShaderCap(ShaderCapabilityFlags.Int16);
+
+        if(features.ShaderInt64)
+            cap.AddShaderCap(ShaderCapabilityFlags.Int64);
+
+        cap.SetShaderCap(nameof(ShaderStageCapabilities.MaxInResources), limits.MaxPerStageResources);
 
         cap.VertexBuffers.MaxSlots = limits.MaxVertexInputBindings;
         cap.VertexBuffers.MaxElementStride = limits.MaxVertexInputBindingStride;
@@ -99,7 +109,6 @@ internal class CapabilityBuilder
 
         /// Command list functionality.
         cap.DeferredCommandLists = CommandListSupport.Supported;
-        cap.ConcurrentResourceCreation = true;
 
         for(uint famIndex = 0; famIndex < queueFamilies.Length; famIndex++)
         { 

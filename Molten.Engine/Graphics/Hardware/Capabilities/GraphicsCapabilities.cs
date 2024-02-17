@@ -56,6 +56,18 @@ public sealed partial class GraphicsCapabilities
         }
     }
 
+    public void AddShaderCap(ShaderType type, ShaderCapabilityFlags flag)
+    {
+        if (_shaderCap.TryGetValue(type, out ShaderStageCapabilities cap))
+            cap.Flags |= flag | ShaderCapabilityFlags.IsSupported;
+    }
+
+    public void AddShaderCap(ShaderCapabilityFlags flag)
+    {
+        foreach (ShaderStageCapabilities cap in _shaderCap.Values)
+            cap.Flags |= flag | ShaderCapabilityFlags.IsSupported;
+    }
+
     public bool IsCompatible(GraphicsCapabilities other)
     {
         // TODO compare current to other. Current must have at least everything 'other' specifies.
@@ -107,12 +119,6 @@ public sealed partial class GraphicsCapabilities
     public CommandListSupport DeferredCommandLists { get; set; } = CommandListSupport.None;
 
     /// <summary>
-    /// Gets or sets whether concurrent resource creation is supported/required. 
-    /// <para>True means resources can be created concurrently on multiple threads while drawing.</para>
-    /// </summary>
-    public bool ConcurrentResourceCreation { get; set; }
-
-    /// <summary>
     /// Gets or sets the graphics API capability.
     /// </summary>
     public string ApiVersion { get; set; }
@@ -129,18 +135,10 @@ public sealed partial class GraphicsCapabilities
     /// <summary>Gets the maximum size of a cube texture. A size of 128 would mean a maximum 3D texture size of 128 x 128 x 128.</summary>
     public uint MaxTextureCubeSize { get; set; }
 
-    /// <summary>Gets whether or not texture cube arrays are supported.</summary>
-    public bool TextureCubeArrays { get; set; }
-
     /// <summary>
     /// Gets the maximum number of array slices a texture array can have.
     /// </summary>
     public uint MaxTextureArraySlices { get; set; }
-
-    /// <summary>
-    /// Gets or sets Rasterizer-order-views (ROVs) support/requirement.
-    /// </summary>
-    public bool RasterizerOrderViews { get; set; }
 
     /// <summary>
     /// Gets or sets conservative rasterization support/requirement.
@@ -184,25 +182,6 @@ public sealed partial class GraphicsCapabilities
 
     /// <summary>The maximum anisotropy level that the device supports. A level of 0 means that the device does not support anisotropic filtering.</summary>
     public float MaxAnisotropy { get; set; }
-
-    public bool HardwareInstancing { get; set; }
-
-    public bool OcclusionQueries { get; set; }
-
-    /// <summary>
-    /// Gets or sets whether or not depth bounds testing is supported.
-    /// </summary>
-    public bool DepthBoundsTesting { get; set; }
-
-    /// <summary>
-    /// Gets or sets whether non-power-of-two textures are supported.
-    /// </summary>
-    public bool NonPowerOfTwoTextures { get; set; }
-
-    /// <summary>
-    /// Gets or sets whether or not blend-state logic operations are supported.
-    /// </summary>
-    public bool BlendLogicOp { get; set; }
 
     /// <summary>
     /// Gets or sets the maximum number of  samplers that can be included in a pipeline layout descriptor. Only relevant for DirectX 12 and Vulkan.
@@ -256,4 +235,9 @@ public sealed partial class GraphicsCapabilities
     /// Gets capabilities for structured/storage buffers.
     /// </summary>
     public BufferCapabilities StructuredBuffers { get; } = new BufferCapabilities();
+
+    /// <summary>
+    /// Gets or sets the capabilities of the graphics device.
+    /// </summary>
+    public GraphicsCapabilityFlags Flags { get; set; }
 }

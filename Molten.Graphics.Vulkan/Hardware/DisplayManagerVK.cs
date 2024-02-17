@@ -13,7 +13,7 @@ internal unsafe class DisplayManagerVK : GraphicsManager
     internal DisplayManagerVK(RendererVK renderer)
     {
         Renderer = renderer;
-        CapBuilder = new CapabilityBuilder();
+        CapBuilder = new CapabilityBuilderVK();
         _devices = new List<DeviceVK>();
         Outputs = new List<DisplayOutputVK>();
     }
@@ -160,5 +160,5 @@ internal unsafe class DisplayManagerVK : GraphicsManager
 
     internal RendererVK Renderer { get; }
 
-    internal CapabilityBuilder CapBuilder { get; }
+    internal CapabilityBuilderVK CapBuilder { get; }
 }

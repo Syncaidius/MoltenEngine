@@ -98,6 +98,8 @@ internal unsafe class DeviceBuilderDX12
         GetFeatureSupport(ptrDevice, Feature.ShaderModel, &maxSM);
         cap.MaxShaderModel = maxSM.HighestShaderModel.FromApi();
 
+        FeatureDataArchitecture featuresArc = GetFeatureSupport<FeatureDataArchitecture>(ptrDevice, Feature.Architecture);
+        FeatureDataArchitecture1 featuresArc1 = GetFeatureSupport<FeatureDataArchitecture1>(ptrDevice, Feature.Architecture1);
         FeatureDataD3D12Options features12_0 = GetFeatureSupport<FeatureDataD3D12Options>(ptrDevice, Feature.D3D12Options);
         FeatureDataD3D12Options1 features12_1 = GetFeatureSupport<FeatureDataD3D12Options1>(ptrDevice, Feature.D3D12Options1);
         FeatureDataD3D12Options2 features12_2 = GetFeatureSupport<FeatureDataD3D12Options2>(ptrDevice, Feature.D3D12Options2);
@@ -113,21 +115,24 @@ internal unsafe class DeviceBuilderDX12
         FeatureDataD3D12Options12 features12_12 = GetFeatureSupport<FeatureDataD3D12Options12>(ptrDevice, Feature.D3D12Options12);
         FeatureDataD3D12Options13 features12_13 = GetFeatureSupport<FeatureDataD3D12Options13>(ptrDevice, Feature.D3D12Options13);
 
+        cap.Flags |= GraphicsCapabilityFlags.HardwareInstancing;
+        cap.Flags |= GraphicsCapabilityFlags.NonPowerOfTwoTextures;
+        cap.Flags |= GraphicsCapabilityFlags.OcculsionQueries;
+        cap.Flags |= GraphicsCapabilityFlags.TextureCubeArrays;
+        cap.Flags |= features12_2.DepthBoundsTestSupported ? GraphicsCapabilityFlags.DepthBoundsTesting : GraphicsCapabilityFlags.None;
+        cap.Flags |= features12_0.ROVsSupported ? GraphicsCapabilityFlags.RasterizerOrderViews : GraphicsCapabilityFlags.None;
+        cap.Flags |= features12_0.OutputMergerLogicOp > 0 ? GraphicsCapabilityFlags.BlendLogicOp : GraphicsCapabilityFlags.None;
+        cap.Flags |= featuresArc.TileBasedRenderer > 0 ? GraphicsCapabilityFlags.TileBasedRendering : GraphicsCapabilityFlags.None;
+
         cap.MaxTexture1DSize = D3D12.ReqTexture1DUDimension;
         cap.MaxTexture2DSize = D3D12.ReqTexture2DUOrVDimension;
         cap.MaxTexture3DSize = D3D12.ReqTexture3DUVOrWDimension;
-        cap.MaxTextureCubeSize = 16384;
+        cap.MaxTextureCubeSize = D3D12.ReqTexturecubeDimension;
         cap.MaxAnisotropy = D3D12.MaxMaxanisotropy;
-        cap.BlendLogicOp = features12_0.OutputMergerLogicOp > 0;
         cap.MaxShaderSamplers = D3D12.CommonshaderSamplerSlotCount;
-        cap.OcclusionQueries = true;
-        cap.HardwareInstancing = true;
         cap.MaxTextureArraySlices = D3D12.ReqTexture2DArrayAxisDimension;
-        cap.TextureCubeArrays = true;
-        cap.NonPowerOfTwoTextures = true;
-        cap.MaxAllocatedSamplers = 4096;                // D3D11_REQ_SAMPLER_OBJECT_COUNT_PER_DEVICE (4096) - Total number of sampler objects per context
+        cap.MaxAllocatedSamplers = D3D12.ReqSamplerObjectCountPerDevice;    //  Total number of sampler objects per context
         cap.MaxPrimitiveCount = uint.MaxValue;          // (2^32) – 1 = uint.maxValue (4,294,967,295)
-        cap.RasterizerOrderViews = features12_0.ROVsSupported;
         cap.ConservativeRasterization = (ConservativeRasterizationLevel)features12_0.ConservativeRasterizationTier;
 
         // NOTE:You can bind up to 14 constant buffers per pipeline stage (2 additional slots are reserved for internal use).
@@ -159,13 +164,18 @@ internal unsafe class DeviceBuilderDX12
         ShaderMinPrecisionSupport minPrecision,
         bool float64Support, bool int64Support)
     {
-        bool bit10 = (minPrecision & ShaderMinPrecisionSupport.Support10Bit) == ShaderMinPrecisionSupport.Support10Bit;
-        bool bit16 = (minPrecision & ShaderMinPrecisionSupport.Support16Bit) == ShaderMinPrecisionSupport.Support16Bit;
+        if((minPrecision & ShaderMinPrecisionSupport.Support10Bit) == ShaderMinPrecisionSupport.Support10Bit)
+            cap.AddShaderCap(ShaderCapabilityFlags.Float10);
 
-        cap.SetShaderCap(nameof(ShaderStageCapabilities.Float10), bit10);
-        cap.SetShaderCap(nameof(ShaderStageCapabilities.Float16), bit16);
-        cap.SetShaderCap(nameof(ShaderStageCapabilities.Float64), float64Support);
-        cap.SetShaderCap(nameof(ShaderStageCapabilities.Int64), int64Support);
+        if((minPrecision & ShaderMinPrecisionSupport.Support16Bit) == ShaderMinPrecisionSupport.Support16Bit)
+            cap.AddShaderCap(ShaderCapabilityFlags.Float16);
+
+       if(float64Support)
+            cap.AddShaderCap(ShaderCapabilityFlags.Float64);
+
+       if(int64Support)
+            cap.AddShaderCap(ShaderCapabilityFlags.Int64);
+
         cap.SetShaderCap(nameof(ShaderStageCapabilities.MaxInRegisters), 32U); 
         cap.SetShaderCap(nameof(ShaderStageCapabilities.MaxOutRegisters), 32U); 
         cap.SetShaderCap(nameof(ShaderStageCapabilities.MaxInResources), 128U);
