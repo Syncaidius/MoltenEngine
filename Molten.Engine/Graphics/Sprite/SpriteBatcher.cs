@@ -99,12 +99,9 @@ public partial class SpriteBatcher : IDisposable
         ClipStack = new Rectangle[256];
         Reset();
 
-
         //throw new NotImplementedException("Implement per-frame buffer");
         _buffer = new GraphicsFrameBuffer<GraphicsBuffer>(device, (device) =>
-        {
-            return device.CreateStructuredBuffer<GpuData>(GraphicsResourceFlags.CpuWrite, FlushCapacity);
-        });
+            device.CreateStructuredBuffer<GpuData>(GraphicsResourceFlags.CpuWrite, FlushCapacity));
 
         ShaderCompileResult result = device.LoadEmbeddedShader("Molten.Assets", "sprite.json");
         _matDefaultNoTexture = result["sprite-no-texture"];

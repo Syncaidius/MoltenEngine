@@ -169,14 +169,14 @@ public unsafe class DeviceBuilderDX11
         cap.ConstantBuffers.MaxBytes = cap.ConstantBuffers.MaxElements * (4 * sizeof(float)); // Max of four float components per element.
 
         // See: https://learn.microsoft.com/en-us/windows/win32/api/d3d11/nf-d3d11-id3d11devicecontext-dispatch
-        cap.Compute.MaxGroupCountX = 65535;
-        cap.Compute.MaxGroupCountY = 65535;
-        cap.Compute.MaxGroupCountZ = 65535;
+        cap.Compute.MaxGroupCountX = D3D11.CSDispatchMaxThreadGroupsPerDimension;
+        cap.Compute.MaxGroupCountY = D3D11.CSDispatchMaxThreadGroupsPerDimension;
+        cap.Compute.MaxGroupCountZ = D3D11.CSDispatchMaxThreadGroupsPerDimension;
 
         // See: https://learn.microsoft.com/en-us/windows/win32/direct3d11/direct3d-11-advanced-stages-compute-shader
-        cap.Compute.MaxGroupSizeX = 1024;               // Shader Model 5.0 - The maximum number of threads is limited to D3D11_CS_THREAD_GROUP_MAX_THREADS_PER_GROUP (1024) per group.
-        cap.Compute.MaxGroupSizeY = 1024;
-        cap.Compute.MaxGroupSizeZ = 64;                 // The Z dimension of numthreads is limited to D3D11_CS_THREAD_GROUP_MAX_Z (64).;
+        cap.Compute.MaxGroupSizeX = D3D11.CSThreadGroupMaxX;
+        cap.Compute.MaxGroupSizeY = D3D11.CSThreadGroupMaxY;
+        cap.Compute.MaxGroupSizeZ = D3D11.CSThreadGroupMaxZ;
 
         cap.CommandSets.Add(new SupportedCommandSet()
         {

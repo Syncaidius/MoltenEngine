@@ -134,10 +134,12 @@ internal unsafe class DeviceBuilderDX12
         cap.VertexBuffers.MaxElementsPerVertex = 32;    // D3D11_STANDARD_VERTEX_ELEMENT_COUNT = 32;
         cap.VertexBuffers.MaxElements = uint.MaxValue;  // (2^32) – 1 = uint.maxValue (4,294,967,295)
 
-        DetectShaderStages(ptrDevice, cap, 
+        DetectShaderStages(cap, 
             features12_0.MinPrecisionSupport, 
             features12_0.DoublePrecisionFloatShaderOps, 
             features12_1.Int64ShaderOps);
+
+        cap.PixelShader.MaxOutputTargets = D3D12.PSOutputRegisterCount;
 
         FeatureDataRootSignature rootSig = new FeatureDataRootSignature();
         rootSig.HighestVersion = RendererDX12.MAX_ROOT_SIG_VERSION;
@@ -147,7 +149,7 @@ internal unsafe class DeviceBuilderDX12
         NativeUtil.ReleasePtr(ref ptrDevice);
     }
 
-    private void DetectShaderStages(ID3D12Device10* device, GraphicsCapabilities cap, 
+    private void DetectShaderStages(GraphicsCapabilities cap, 
         ShaderMinPrecisionSupport minPrecision,
         bool float64Support, bool int64Support)
     {
@@ -162,8 +164,19 @@ internal unsafe class DeviceBuilderDX12
         cap.SetShaderCap(nameof(ShaderStageCapabilities.MaxOutRegisters), 32); 
         cap.SetShaderCap<uint>(nameof(ShaderStageCapabilities.MaxInResources), 128);
 
-        // Stage specific settings
-        cap.PixelShader.MaxOutputTargets = 8;
+        // Pixel/fragment-specific capabilities
+        // NOTE: When the pipeline is configured without a geometry shader, a pixel shader is limited to 16, 32-bit, 4-component inputs.
+        //       Otherwise, a pixel shader can take up to 32, 32-bit, 4-component inputs.
+        cap.PixelShader.MaxOutputTargets = D3D12.PSOutputRegisterCount;
+        cap.PixelShader.MaxOutRegisters = D3D12.PSOutputRegisterCount;
+
+        // Compute-specific capabilities
+        cap.Compute.MaxGroupCountX = D3D12.CSDispatchMaxThreadGroupsPerDimension;
+        cap.Compute.MaxGroupCountY = D3D12.CSDispatchMaxThreadGroupsPerDimension;
+        cap.Compute.MaxGroupCountZ = D3D12.CSDispatchMaxThreadGroupsPerDimension;
+        cap.Compute.MaxGroupSizeX = D3D12.CSThreadGroupMaxX;
+        cap.Compute.MaxGroupSizeY = D3D12.CSThreadGroupMaxY;
+        cap.Compute.MaxGroupSizeZ = D3D12.CSThreadGroupMaxZ;
     }
 
     /// <summary>
