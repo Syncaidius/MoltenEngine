@@ -7,7 +7,7 @@ using Message = System.Windows.Forms.Message;
 
 namespace Molten.Graphics.DX11;
 
-public class WindowsFormSurface : SwapChainSurfaceDX11, INativeSurface
+public class FormSurfaceDX11 : SwapChainSurfaceDX11, INativeSurface
 {
     delegate void FormMessageCallback(ref Message m);
 
@@ -74,7 +74,7 @@ public class WindowsFormSurface : SwapChainSurfaceDX11, INativeSurface
     System.Drawing.Point? _preBorderlessLocation;
     System.Drawing.Rectangle? _preBorderlessScreenArea;
 
-    public WindowsFormSurface(DeviceDX11 device, uint width, uint height, uint mipCount, string title, string controlName,
+    public FormSurfaceDX11(DeviceDX11 device, uint width, uint height, uint mipCount, string title, string controlName,
         GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm) : 
         base(device, width, height, mipCount, format)
     {

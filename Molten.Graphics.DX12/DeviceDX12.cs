@@ -183,7 +183,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
     protected override INativeSurface OnCreateFormSurface(string formTitle, string formName, uint width, uint height,
         GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm, uint mipCount = 1)
     {
-        throw new NotImplementedException();
+        return new FormSurfaceDX12(this, width, height, 1, formTitle, formName);
     }
 
     protected override INativeSurface OnCreateControlSurface(string controlTitle, string controlName, uint mipCount = 1)

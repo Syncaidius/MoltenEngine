@@ -207,7 +207,7 @@ public unsafe class DeviceDX11 : DeviceDXGI
     protected override INativeSurface OnCreateFormSurface(string formTitle, string formName, uint width, uint height,
         GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm, uint mipCount = 1)
     {
-        return new WindowsFormSurface(this, 800, 600, 1, formTitle, formName);
+        return new FormSurfaceDX11(this, width, height, 1, formTitle, formName);
     }
 
     protected override INativeSurface OnCreateControlSurface(string formTitle, string controlName, uint mipCount = 1)

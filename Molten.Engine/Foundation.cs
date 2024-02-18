@@ -93,7 +93,7 @@ public abstract class Foundation : IDisposable
                     if (Settings.UseGuiControl)
                         _gameWindow = _engine.Renderer.Device.CreateControlSurface(Title, "MainControl");
                     else
-                        _gameWindow = _engine.Renderer.Device.CreateFormSurface(Title, "MainForm", 800, 600);
+                        _gameWindow = _engine.Renderer.Device.CreateFormSurface(Title, "MainForm", 1024, 768);
 
                     _gameWindow.IsVisible = true;
                     _gameWindow.OnClose += _gameWindow_OnClose;
