@@ -29,14 +29,12 @@ public unsafe class RenderSurface2DDX12 : Texture2DDX12, IRenderSurface2D
         Viewport = new ViewportF(Viewport.X, Viewport.Y, Desc.Width, Desc.Height);
     }
 
-    protected virtual void SetRTVDescription(ref RenderTargetViewDesc desc) { }
-
     protected override unsafe ResourceHandleDX12 OnCreateHandle(ID3D12Resource1* ptr)
     {
         RenderTargetViewDesc desc = new RenderTargetViewDesc()
         {
             Format = Desc.Format,
-            ViewDimension = RtvDimension.Texture1Darray,
+            ViewDimension = RtvDimension.Texture2Darray,
             Texture2DArray = new Tex2DArrayRtv()
             {
                 ArraySize = Desc.DepthOrArraySize,
@@ -45,8 +43,6 @@ public unsafe class RenderSurface2DDX12 : Texture2DDX12, IRenderSurface2D
                 PlaneSlice = 0,
             },
         };
-
-        SetRTVDescription(ref desc);
 
         return new ResourceHandleDX12<RenderTargetViewDesc>(this, ptr, ref desc);
     }

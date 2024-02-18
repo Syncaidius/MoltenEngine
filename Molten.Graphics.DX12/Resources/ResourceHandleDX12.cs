@@ -29,6 +29,11 @@ public unsafe class ResourceHandleDX12 : GraphicsResourceHandle
         return (ID3D12Resource*)handle._ptr;
     }
 
+    protected void SetHandle(ID3D12Resource1* ptr)
+    {
+        _ptr = ptr;
+    }
+
     internal ResourceViewDX12<ShaderResourceViewDesc> SRV { get; }
 
     internal ResourceViewDX12<UnorderedAccessViewDesc> UAV { get; }
