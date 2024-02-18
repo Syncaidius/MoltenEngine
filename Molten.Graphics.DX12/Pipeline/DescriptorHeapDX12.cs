@@ -1,108 +1,84 @@
 ﻿using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
-using System.Runtime.CompilerServices;
 
 namespace Molten.Graphics.DX12;
 
 internal unsafe class DescriptorHeapDX12 : GraphicsObject<DeviceDX12>
 {
-    public class DescriptorHeapIndexException(DescriptorHeapDX12 heap, uint requestedIndex) : 
-        Exception($"Requested descriptor heap index is out of range.")
-    {
-        public DescriptorHeapDX12 Heap => heap;
-
-        public uint RequestedIndex => requestedIndex;
-    }
-
-    internal unsafe delegate void IterateCallback<T>(ref T handle, void* ptr) where T : unmanaged;
-
     ID3D12DescriptorHeap* _handle;
-    DescriptorHeapDesc _desc;
+    uint _incrementSize;
+    ulong _availabilityMask;
+    bool _isGpuVisible;
+    uint _capacity;
     CpuDescriptorHandle _cpuStartHandle;
-    GpuDescriptorHandle _gpuStartHandle;
 
-    internal DescriptorHeapDX12(DeviceDX12 device, uint capacity, DescriptorHeapType type, DescriptorHeapFlags flags) : 
+    internal DescriptorHeapDX12(DeviceDX12 device, DescriptorHeapDesc desc) : 
         base(device)
     {
-        _desc = new DescriptorHeapDesc()
-        {
-            NodeMask = 0,
-            Type = type,
-            Flags = flags,
-            NumDescriptors = capacity,
-        };
-
         Guid guid = ID3D12DescriptorHeap.Guid;
         void* ptr = null;
+        HResult hr = device.Ptr->CreateDescriptorHeap(desc, &guid, &ptr);
 
-        HResult hr;
-        fixed (DescriptorHeapDesc* ptrDesc = &_desc)
-            hr = device.Ptr->CreateDescriptorHeap(ptrDesc, &guid, &ptr);
-
-        if(!device.Log.CheckResult(hr, () => $"Failed to create descriptor heap with capacity '{capacity}'"))
+        if(!device.Log.CheckResult(hr, () => $"Failed to create descriptor heap with capacity '{desc.NumDescriptors}'"))
             return;
 
+        _capacity = desc.NumDescriptors;
         _handle = (ID3D12DescriptorHeap*)ptr;
+        _incrementSize = device.Ptr->GetDescriptorHandleIncrementSize(desc.Type);
+        _isGpuVisible = (desc.Flags & DescriptorHeapFlags.ShaderVisible) == DescriptorHeapFlags.ShaderVisible;
         _cpuStartHandle = _handle->GetCPUDescriptorHandleForHeapStart();
-        IncrementSize = device.Ptr->GetDescriptorHandleIncrementSize(type);
-
-        // Only create a GPU start handle if the heap is shader visible.
-        if(flags.HasFlag(DescriptorHeapFlags.ShaderVisible))
-            _gpuStartHandle = _handle->GetGPUDescriptorHandleForHeapStart();
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal CpuDescriptorHandle GetCpuHandle(uint index)
+    internal bool TryAllocate(uint numSlots, out CpuDescriptorHandle handle)
     {
-        if (index > Capacity)
-            throw new DescriptorHeapIndexException(this, index);
+        // If the heap is full, return false.
+        if (_availabilityMask != ulong.MaxValue)
+        {
+            uint freeStart = 0; // Number of continguous free slots.
+            ulong mask;
+            ulong slotMask = 0;
 
-        return new CpuDescriptorHandle(_cpuStartHandle.Ptr + (index * IncrementSize));
+            for (int i = 0; i < _capacity; i++)
+            {
+                mask = (1UL << i);
+
+                // If the slot is already taken, reset the free slot count.
+                if ((_availabilityMask & mask) == mask)
+                {
+                    freeStart = (uint)i;
+                }
+                else
+                {
+                    slotMask |= mask;
+                    if ((i + 1) - freeStart == numSlots)
+                    {
+                        _availabilityMask |= slotMask;
+                        handle = new CpuDescriptorHandle(_cpuStartHandle.Ptr + (freeStart * _incrementSize));
+                        return true;
+                    }
+                }
+            }
+        }
+
+        handle = default;
+        return false;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal GpuDescriptorHandle GetGpuHandle(uint index)
+    internal void Free(uint startIndex, uint numSlots)
     {
-        if (index > Capacity)
-            throw new DescriptorHeapIndexException(this, index);
+        ulong mask = 0;
+        for(int i = 0; i < numSlots; i++)
+            mask |= (1UL << ((int)startIndex + i));
 
-        return new GpuDescriptorHandle(_gpuStartHandle.Ptr + (index * IncrementSize));
+        _availabilityMask &= ~mask;
     }
 
-    internal void Assign(ResourceViewDX12<ShaderResourceViewDesc> view, uint handleIndex)
+    internal GpuDescriptorHandle GetGpuHandle()
     {
-        CpuDescriptorHandle handle = GetCpuHandle(handleIndex);
-        Device.Ptr->CreateShaderResourceView(view.Handle, view.Desc, handle);
-    }
+        if (!_isGpuVisible)
+            throw new InvalidOperationException("Cannot get a GPU handle from a non-GPU visible heap.");
 
-    internal void Assign(ResourceViewDX12<UnorderedAccessViewDesc> view, uint handleIndex)
-    {
-        CpuDescriptorHandle handle = GetCpuHandle(handleIndex);
-        Device.Ptr->CreateUnorderedAccessView(view.Handle, null, view.Desc, handle);
-    }
-
-    internal void Assign(ResourceViewDX12<RenderTargetViewDesc> view, uint handleIndex)
-    {
-        CpuDescriptorHandle handle = GetCpuHandle(handleIndex);
-        Device.Ptr->CreateRenderTargetView(view.Handle, view.Desc, handle);
-    }
-
-    internal void Assign(ResourceViewDX12<DepthStencilViewDesc> view, uint handleIndex)
-    {
-        CpuDescriptorHandle handle = GetCpuHandle(handleIndex);
-        Device.Ptr->CreateDepthStencilView(view.Handle, view.Desc, handle);
-    }
-
-    internal void Assign(ResourceViewDX12<ConstantBufferViewDesc> view, uint handleIndex)
-    {
-        CpuDescriptorHandle handle = GetCpuHandle(handleIndex);
-        Device.Ptr->CreateConstantBufferView(view.Desc, handle);
-    }
-
-    internal void Assign(ResourceViewDX12<SamplerDesc> view, uint handleIndex)
-    {
-        CpuDescriptorHandle handle = GetCpuHandle(handleIndex);
-        Device.Ptr->CreateSampler(view.Desc, handle);
+        return _handle->GetGPUDescriptorHandleForHeapStart();
     }
 
     protected override void OnGraphicsRelease()
@@ -110,11 +86,8 @@ internal unsafe class DescriptorHeapDX12 : GraphicsObject<DeviceDX12>
         NativeUtil.ReleasePtr(ref _handle);
     }
 
-    public ref readonly uint Capacity => ref _desc.NumDescriptors;
-
-    public ref readonly DescriptorHeapType Type => ref _desc.Type;
-
-    public ref readonly DescriptorHeapFlags Flags => ref _desc.Flags;
-
-    public uint IncrementSize { get; }
+    public static implicit operator ID3D12DescriptorHeap*(DescriptorHeapDX12 heap)
+    {
+        return heap._handle;
+    }
 }

@@ -153,7 +153,7 @@ public class FormSurfaceDX11 : SwapChainSurfaceDX11, INativeSurface
 
     protected override void OnResizeTexture(ref readonly TextureDimensions dimensions, GraphicsFormat format)
     {
-        base.OnResizeTexture(dimensions, format);
+        base.OnResizeTexture(in dimensions, format);
         RequestFormResize(dimensions.Width, dimensions.Height);
     }
 

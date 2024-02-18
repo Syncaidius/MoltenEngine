@@ -18,6 +18,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
     uint _debugCookieID;
     ShaderLayoutCache<ShaderIOLayoutDX12> _layoutCache;
     HlslDxcCompiler _shaderCompiler;
+    DescriptorHeapManagerDX12 _heapManager;
     uint _nodeCount;
 
     internal DeviceDX12(RendererDX12 renderer, GraphicsManagerDXGI manager, IDXGIAdapter4* adapter, DeviceBuilderDX12 deviceBuilder) :
@@ -271,4 +272,9 @@ public unsafe class DeviceDX12 : DeviceDXGI
     /// see: https://ubm-twvideo01.s3.amazonaws.com/o1/vault/gdc2016/Presentations/Juha_Sjoholm_DX12_Explicit_Multi_GPU.pdf</para>
     /// </summary>
     internal uint NodeCount => _nodeCount;
+
+    /// <summary>
+    /// Gets the descriptor heap manager for the current <see cref="DeviceDX12"/> instance.
+    /// </summary>
+    internal DescriptorHeapManagerDX12 Heap => _heapManager;
 }
