@@ -1,4 +1,5 @@
 ﻿using Silk.NET.Direct3D12;
+using System.Runtime.InteropServices;
 
 namespace Molten.Graphics.DX12;
 internal class RootSigPopulator1_1 : RootSignaturePopulatorDX12
@@ -19,17 +20,21 @@ internal class RootSigPopulator1_1 : RootSignaturePopulatorDX12
         PopulateRanges(DescriptorRangeType.Uav, ranges, pass.Parent.UAVs);
         PopulateRanges(DescriptorRangeType.Cbv, ranges, pass.Parent.ConstBuffers);
 
-        desc.PParameters = EngineUtil.AllocArray<RootParameter1>((uint)ranges.Count);
-        for (int i = 0; i < ranges.Count; i++)
-        {
-            ref RootParameter1 param = ref desc.PParameters[i];
+        // TODO Add support for heap-based samplers.
+        // TODO Add support for static CBV (which require their own root parameter with the data_static flag set.
 
-            param.ParameterType = RootParameterType.TypeDescriptorTable;
-            param.DescriptorTable.NumDescriptorRanges = 1;
-            param.DescriptorTable.PDescriptorRanges = EngineUtil.Alloc<DescriptorRange1>();
-            param.DescriptorTable.PDescriptorRanges[0] = ranges[i];
-            param.ShaderVisibility = ShaderVisibility.All; // TODO If a parameter is only used on 1 stage, set this to that stage.
-        }
+        desc.NumParameters = 1;
+        desc.PParameters = EngineUtil.AllocArray<RootParameter1>(desc.NumParameters);
+        ref RootParameter1 param = ref desc.PParameters[0];
+
+        param.ParameterType = RootParameterType.TypeDescriptorTable;
+        param.DescriptorTable.NumDescriptorRanges = (uint)ranges.Count;
+        param.DescriptorTable.PDescriptorRanges = EngineUtil.AllocArray<DescriptorRange1>((uint)ranges.Count);
+        param.ShaderVisibility = ShaderVisibility.All; // TODO If a parameter is only used on 1 stage, set this to that stage.
+
+        Span<DescriptorRange1> rangeSpan = CollectionsMarshal.AsSpan(ranges);
+        Span<DescriptorRange1> tableRanges = new(param.DescriptorTable.PDescriptorRanges, ranges.Count);
+        rangeSpan.CopyTo(tableRanges);
     }
 
     internal override unsafe void Free(ref VersionedRootSignatureDesc versionedDesc)

@@ -1,4 +1,5 @@
 ﻿using Silk.NET.Direct3D12;
+using System.Runtime.InteropServices;
 
 namespace Molten.Graphics.DX12;
 internal class RootSigPopulator1_0 : RootSignaturePopulatorDX12
@@ -10,8 +11,6 @@ internal class RootSigPopulator1_0 : RootSignaturePopulatorDX12
         ref RootSignatureDesc desc = ref versionedDesc.Desc10;
         PopulateStaticSamplers(ref desc.PStaticSamplers, ref desc.NumStaticSamplers, pass);
 
-        desc.NumParameters = (uint)pass.Parent.Resources.Length;
-        desc.PParameters = EngineUtil.AllocArray<RootParameter>(desc.NumParameters);
         desc.Flags = GetFlags(in psoDesc, pass);
 
         List<DescriptorRange> ranges = new();
@@ -19,17 +18,22 @@ internal class RootSigPopulator1_0 : RootSignaturePopulatorDX12
         PopulateRanges(DescriptorRangeType.Uav, ranges, pass.Parent.UAVs);
         PopulateRanges(DescriptorRangeType.Cbv, ranges, pass.Parent.ConstBuffers);
 
-        desc.PParameters = EngineUtil.AllocArray<RootParameter>((uint)ranges.Count);
-        for (int i = 0; i < ranges.Count; i++)
-        {
-            ref RootParameter param = ref desc.PParameters[i];
+        // TODO Add support for heap-based samplers.
+        // TODO Add support for static CBV (which require their own root parameter with the data_static flag set.
 
-            param.ParameterType = RootParameterType.TypeDescriptorTable;
-            param.DescriptorTable.NumDescriptorRanges = 1;
-            param.DescriptorTable.PDescriptorRanges = EngineUtil.Alloc<DescriptorRange>();
-            param.DescriptorTable.PDescriptorRanges[0] = ranges[i];
-            param.ShaderVisibility = ShaderVisibility.All; // TODO If a parameter is only used on 1 stage, set this to that stage.
-        }
+        desc.NumParameters = 1;
+        desc.PParameters = EngineUtil.AllocArray<RootParameter>(desc.NumParameters);
+        ref RootParameter param = ref desc.PParameters[0];
+
+        param.ParameterType = RootParameterType.TypeDescriptorTable;
+        param.DescriptorTable.NumDescriptorRanges = (uint)ranges.Count;
+        param.DescriptorTable.PDescriptorRanges = EngineUtil.AllocArray<DescriptorRange>((uint)ranges.Count);
+        param.ShaderVisibility = ShaderVisibility.All; // TODO If a parameter is only used on 1 stage, set this to that stage.
+
+        Span<DescriptorRange> rangeSpan = CollectionsMarshal.AsSpan(ranges);
+        Span<DescriptorRange> tableRanges = new(param.DescriptorTable.PDescriptorRanges, ranges.Count);
+        rangeSpan.CopyTo(tableRanges);
+
     }
 
     internal unsafe override void Free(ref VersionedRootSignatureDesc versionedDesc)
