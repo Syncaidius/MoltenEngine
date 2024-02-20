@@ -21,12 +21,12 @@ internal class DescriptorHeapAllocatorDX12 : GraphicsObject<DeviceDX12>
         };
     }
 
-    internal CpuDescriptorHandle Allocate(uint numDescriptors)
+    internal HeapHandleDX12 Allocate(uint numDescriptors)
     {
         if(numDescriptors > _desc.NumDescriptors)
             throw new InvalidOperationException($"The number of requested descriptors exceeds the capacity of a heap ({_desc.NumDescriptors}).");
 
-        CpuDescriptorHandle handle;
+        HeapHandleDX12 handle;
         DescriptorHeapDX12 heap;
 
         // Attempt to allocate from existing heaps.

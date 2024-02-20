@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.DX11;
 
-internal unsafe class UAViewDX11 : ResourceViewDX11<ID3D11UnorderedAccessView1, UnorderedAccessViewDesc1>
+internal unsafe class UAViewDX11 : ViewDX11<ID3D11UnorderedAccessView1, UnorderedAccessViewDesc1>
 {
     internal UAViewDX11(ResourceHandleDX11 handle) : 
         base(handle, GraphicsResourceFlags.UnorderedAccess) { }

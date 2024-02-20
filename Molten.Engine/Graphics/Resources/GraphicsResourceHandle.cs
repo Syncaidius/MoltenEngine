@@ -13,9 +13,4 @@ public unsafe abstract class GraphicsResourceHandle : IDisposable
     /// Gets the <see cref="GraphicsResource"/> that this handle is associated with.
     /// </summary>
     public GraphicsResource Resource { get; }
-
-    /// <summary>
-    /// Gets a pointer to the underlying native resource.
-    /// </summary>
-    public abstract void* Ptr { get; }
 }

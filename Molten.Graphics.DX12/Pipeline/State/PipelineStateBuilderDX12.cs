@@ -54,7 +54,7 @@ internal class PipelineStateBuilderDX12
             PS = pass.GetBytecode(ShaderType.Pixel),
             PrimitiveTopologyType = pass.GeometryPrimitive.ToApiToplogyType(),
             NodeMask = 0,               // TODO Set this to the node mask of the device.
-            IBStripCutValue = IndexBufferStripCutValue.ValueDisabled,
+            IBStripCutValue = indexStripCutValue,
         };
 
         // Check if cache data can be set.
@@ -164,6 +164,10 @@ internal class PipelineStateBuilderDX12
         HResult hr = device.Renderer.Api.SerializeVersionedRootSignature(&sigDesc, &signature, &error);
         if (!device.Log.CheckResult(hr, () => "Failed to serialize root signature"))
             hr.Throw();
+
+        // TODO Read the error blob and log it if it contains any errors.
+
+        // TODO Implement root signature caching - Store the serialized signature blob in cache file.
 
         // Create the root signature.
         Guid guid = ID3D12RootSignature.Guid;

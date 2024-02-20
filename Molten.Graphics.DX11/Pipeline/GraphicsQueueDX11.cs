@@ -222,8 +222,9 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue<DeviceDX11>
 
     protected override void GenerateMipMaps(GraphicsResource texture)
     {
-        if (texture.Handle.Ptr != null)
-            _handle->GenerateMips(((ResourceHandleDX11)texture.Handle).SRV);
+        ResourceHandleDX11 handle = (ResourceHandleDX11)texture.Handle;
+        if (handle.Ptr != null)
+            _handle->GenerateMips(handle.SRV);
     }
 
     protected override void CopyResource(GraphicsResource src, GraphicsResource dest)

@@ -10,8 +10,8 @@ public unsafe class ResourceHandleDX12 : GraphicsResourceHandle
     {
         _ptr = ptr;
         Device = resource.Device as DeviceDX12;
-        SRV = new ResourceViewDX12<ShaderResourceViewDesc>(this);
-        UAV = new ResourceViewDX12<UnorderedAccessViewDesc>(this);
+        SRV = new ViewDX12<ShaderResourceViewDesc>(this);
+        UAV = new ViewDX12<UnorderedAccessViewDesc>(this);
     }
 
     public override void Dispose()
@@ -34,13 +34,13 @@ public unsafe class ResourceHandleDX12 : GraphicsResourceHandle
         _ptr = ptr;
     }
 
-    internal ResourceViewDX12<ShaderResourceViewDesc> SRV { get; }
+    internal ViewDX12<ShaderResourceViewDesc> SRV { get; }
 
-    internal ResourceViewDX12<UnorderedAccessViewDesc> UAV { get; }
+    internal ViewDX12<UnorderedAccessViewDesc> UAV { get; }
 
     internal DeviceDX12 Device { get; }
 
-    public override unsafe void* Ptr => _ptr;
+    public unsafe ID3D12Resource1* Ptr => _ptr;
 }
 
 public class ResourceHandleDX12<D> : ResourceHandleDX12
@@ -49,13 +49,13 @@ public class ResourceHandleDX12<D> : ResourceHandleDX12
     internal unsafe ResourceHandleDX12(GraphicsResource resource, ID3D12Resource1* ptr) :
         base(resource, ptr)
     {
-        View = new ResourceViewDX12<D>(this);
+        View = new ViewDX12<D>(this);
     }
 
     internal unsafe ResourceHandleDX12(GraphicsResource resource, ID3D12Resource1* ptr, ref D desc) :
         base(resource, ptr)
     {
-        View = new ResourceViewDX12<D>(this)
+        View = new ViewDX12<D>(this)
         {
             Desc = desc,
         };
@@ -64,5 +64,5 @@ public class ResourceHandleDX12<D> : ResourceHandleDX12
     /// <summary>
     /// An additional, unique view of the resource, with a specific description.
     /// </summary>
-    internal ResourceViewDX12<D> View { get; }
+    internal ViewDX12<D> View { get; }
 }

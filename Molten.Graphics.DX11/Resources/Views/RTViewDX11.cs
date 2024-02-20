@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.DX11;
 
-internal class RTViewDX11 : ResourceViewDX11<ID3D11RenderTargetView1, RenderTargetViewDesc1>
+internal class RTViewDX11 : ViewDX11<ID3D11RenderTargetView1, RenderTargetViewDesc1>
 {
     internal RTViewDX11(ResourceHandleDX11 handle) :
         base(handle, GraphicsResourceFlags.None) { }

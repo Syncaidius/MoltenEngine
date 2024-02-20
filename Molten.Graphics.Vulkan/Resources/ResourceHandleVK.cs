@@ -121,8 +121,6 @@ public unsafe class ResourceHandleVK<T, SH> : ResourceHandleVK
         }
     }
 
-    public override unsafe sealed void* Ptr => _sub.Ptr;
-
     internal ref T* NativePtr => ref _sub.Ptr;
 
     protected bool IsAllocated { get; set; }

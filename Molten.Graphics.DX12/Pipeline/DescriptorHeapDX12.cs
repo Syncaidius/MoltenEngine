@@ -29,12 +29,14 @@ internal unsafe class DescriptorHeapDX12 : GraphicsObject<DeviceDX12>
         _cpuStartHandle = _handle->GetCPUDescriptorHandleForHeapStart();
     }
 
-    internal bool TryAllocate(uint numSlots, out CpuDescriptorHandle handle)
+    internal bool TryAllocate(uint numSlots, out HeapHandleDX12 handle)
     {
+        handle = default;
+
         // If the heap is full, return false.
         if (_availabilityMask != ulong.MaxValue)
         {
-            uint freeStart = 0; // Number of continguous free slots.
+            uint startIndex = 0; // The first slot of the requested range.
             ulong mask;
             ulong slotMask = 0;
 
@@ -45,32 +47,35 @@ internal unsafe class DescriptorHeapDX12 : GraphicsObject<DeviceDX12>
                 // If the slot is already taken, reset the free slot count.
                 if ((_availabilityMask & mask) == mask)
                 {
-                    freeStart = (uint)i;
+                    startIndex = (uint)i;
                 }
                 else
                 {
                     slotMask |= mask;
-                    if ((i + 1) - freeStart == numSlots)
+                    if ((i + 1) - startIndex == numSlots)
                     {
                         _availabilityMask |= slotMask;
-                        handle = new CpuDescriptorHandle(_cpuStartHandle.Ptr + (freeStart * _incrementSize));
+                        handle.CpuHandle = new CpuDescriptorHandle(_cpuStartHandle.Ptr + (startIndex * _incrementSize));
+                        handle.Heap = this;
+                        handle.StartIndex = startIndex;
+                        handle.NumSlots = numSlots;
                         return true;
                     }
                 }
             }
         }
 
-        handle = default;
         return false;
     }
 
-    internal void Free(uint startIndex, uint numSlots)
+    internal void Free(ref HeapHandleDX12 handle)
     {
         ulong mask = 0;
-        for(int i = 0; i < numSlots; i++)
-            mask |= (1UL << ((int)startIndex + i));
+        for(int i = (int)handle.StartIndex; i < handle.NumSlots; i++)
+            mask |= (1UL << i);
 
         _availabilityMask &= ~mask;
+        handle.Heap = null;
     }
 
     internal GpuDescriptorHandle GetGpuHandle()

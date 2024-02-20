@@ -8,7 +8,7 @@ namespace Molten.Graphics.DX11;
 /// </summary>
 /// <typeparam name="V">Underlying view type.</typeparam>
 /// <typeparam name="D">Underlying view description type.</typeparam>
-internal unsafe abstract class ResourceViewDX11<V, D>
+internal unsafe abstract class ViewDX11<V, D>
     where V : unmanaged
     where D : unmanaged
 {
@@ -16,7 +16,7 @@ internal unsafe abstract class ResourceViewDX11<V, D>
     D _desc;
     GraphicsResourceFlags _requiredFlags;
 
-    internal ResourceViewDX11(ResourceHandleDX11 handle, GraphicsResourceFlags requiredFlags)
+    internal ViewDX11(ResourceHandleDX11 handle, GraphicsResourceFlags requiredFlags)
     {
         Handle = handle;
         _requiredFlags = requiredFlags;
@@ -60,7 +60,7 @@ internal unsafe abstract class ResourceViewDX11<V, D>
 
     protected abstract void OnCreateView(ID3D11Resource* resource, D* desc, ref V* view);
 
-    public static implicit operator V*(ResourceViewDX11<V, D> view)
+    public static implicit operator V*(ViewDX11<V, D> view)
     {
         return view._native;
     }

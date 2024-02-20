@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.DX11;
 
-internal unsafe class SRViewDX11 : ResourceViewDX11<ID3D11ShaderResourceView1, ShaderResourceViewDesc1>
+internal unsafe class SRViewDX11 : ViewDX11<ID3D11ShaderResourceView1, ShaderResourceViewDesc1>
 {
     internal SRViewDX11(ResourceHandleDX11 handle) : 
         base(handle, GraphicsResourceFlags.None) { }

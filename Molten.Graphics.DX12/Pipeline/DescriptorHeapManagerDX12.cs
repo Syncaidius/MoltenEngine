@@ -3,13 +3,10 @@
 namespace Molten.Graphics.DX12;
 internal class DescriptorHeapManagerDX12 : GraphicsObject<DeviceDX12>
 {
-    DescriptorHeapAllocatorDX12 ResourceHeap { get; }
-
-    DescriptorHeapAllocatorDX12 SamplerHeap { get; }
-
-    DescriptorHeapAllocatorDX12 DsvHeap { get; }
-
-    DescriptorHeapAllocatorDX12 RtvHeap { get; }
+    DescriptorHeapAllocatorDX12 _resourceHeap;
+    DescriptorHeapAllocatorDX12 _samplerHeap;
+    DescriptorHeapAllocatorDX12 _dsvHeap;
+    DescriptorHeapAllocatorDX12 _rtvHeap;
 
     /// <summary>
     /// Creates a new instance of <see cref="DescriptorHeapAllocatorDX12"/>.
@@ -19,10 +16,35 @@ internal class DescriptorHeapManagerDX12 : GraphicsObject<DeviceDX12>
     internal DescriptorHeapManagerDX12(DeviceDX12 device) :
         base(device)
     {
-        ResourceHeap = new DescriptorHeapAllocatorDX12(device, DescriptorHeapType.CbvSrvUav, DescriptorHeapFlags.None);
-        SamplerHeap = new DescriptorHeapAllocatorDX12(device, DescriptorHeapType.Sampler, DescriptorHeapFlags.None);
-        DsvHeap = new DescriptorHeapAllocatorDX12(device, DescriptorHeapType.Dsv, DescriptorHeapFlags.None);
-        RtvHeap = new DescriptorHeapAllocatorDX12(device, DescriptorHeapType.Rtv, DescriptorHeapFlags.None);
+        _resourceHeap = new DescriptorHeapAllocatorDX12(device, DescriptorHeapType.CbvSrvUav, DescriptorHeapFlags.None);
+        _samplerHeap = new DescriptorHeapAllocatorDX12(device, DescriptorHeapType.Sampler, DescriptorHeapFlags.None);
+        _dsvHeap = new DescriptorHeapAllocatorDX12(device, DescriptorHeapType.Dsv, DescriptorHeapFlags.None);
+        _rtvHeap = new DescriptorHeapAllocatorDX12(device, DescriptorHeapType.Rtv, DescriptorHeapFlags.None);
+    }
+
+    internal void Allocate(ViewDX12<ShaderResourceViewDesc> view)
+    {
+        view.DescriptorHandle = _resourceHeap.Allocate(1);
+    }
+
+    internal void Allocate(ViewDX12<UnorderedAccessViewDesc> view)
+    {
+        view.DescriptorHandle = _resourceHeap.Allocate(1);
+    }
+
+    internal void Allocate(ViewDX12<RenderTargetViewDesc> view)
+    {
+        view.DescriptorHandle = _rtvHeap.Allocate(1);
+    }
+
+    internal void Allocate(ViewDX12<DepthStencilViewDesc> view)
+    {
+        view.DescriptorHandle = _dsvHeap.Allocate(1);
+    }
+
+    internal void Allocate(ViewDX12<SamplerDesc> view)
+    {
+        view.DescriptorHandle = _samplerHeap.Allocate(1);
     }
 
     /// <summary>
@@ -35,9 +57,9 @@ internal class DescriptorHeapManagerDX12 : GraphicsObject<DeviceDX12>
 
     protected override void OnGraphicsRelease()
     {
-        ResourceHeap.Dispose(true);
-        SamplerHeap.Dispose(true);
-        DsvHeap.Dispose(true);
-        RtvHeap.Dispose(true);
+        _resourceHeap.Dispose(true);
+        _samplerHeap.Dispose(true);
+        _dsvHeap.Dispose(true);
+        _rtvHeap.Dispose(true);
     }
 }

@@ -13,7 +13,7 @@ public abstract unsafe class ResourceHandleDX11 : GraphicsResourceHandle
 
     public static implicit operator ID3D11Resource*(ResourceHandleDX11 handle)
     {
-        return (ID3D11Resource*)handle.Ptr;
+        return handle.Ptr;
     }
 
     public override void Dispose()
@@ -27,6 +27,8 @@ public abstract unsafe class ResourceHandleDX11 : GraphicsResourceHandle
     internal UAViewDX11 UAV { get; }
 
     internal DeviceDX11 Device { get; }
+
+    internal abstract unsafe ID3D11Resource* Ptr { get; }
 }
 
 public unsafe class ResourceHandleDX11<T> : ResourceHandleDX11
@@ -54,7 +56,7 @@ public unsafe class ResourceHandleDX11<T> : ResourceHandleDX11
         return handle._ptr;
     }
 
-    public override unsafe void* Ptr => _ptr;
+    internal override unsafe ID3D11Resource* Ptr => (ID3D11Resource*)_ptr;
 
     internal ref T* NativePtr => ref _ptr;
 }
