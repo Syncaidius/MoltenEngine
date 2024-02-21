@@ -8,6 +8,9 @@ internal class DescriptorHeapManagerDX12 : GraphicsObject<DeviceDX12>
     DescriptorHeapAllocatorDX12 _dsvHeap;
     DescriptorHeapAllocatorDX12 _rtvHeap;
 
+    DescriptorHeapDX12 _gpuResourceHeap;
+    DescriptorHeapDX12 _gpuSamplerHeap;
+
     /// <summary>
     /// Creates a new instance of <see cref="DescriptorHeapAllocatorDX12"/>.
     /// </summary>
@@ -20,31 +23,58 @@ internal class DescriptorHeapManagerDX12 : GraphicsObject<DeviceDX12>
         _samplerHeap = new DescriptorHeapAllocatorDX12(device, DescriptorHeapType.Sampler, DescriptorHeapFlags.None);
         _dsvHeap = new DescriptorHeapAllocatorDX12(device, DescriptorHeapType.Dsv, DescriptorHeapFlags.None);
         _rtvHeap = new DescriptorHeapAllocatorDX12(device, DescriptorHeapType.Rtv, DescriptorHeapFlags.None);
+
+        _gpuResourceHeap = new DescriptorHeapDX12(device, new DescriptorHeapDesc()
+        {
+            NodeMask = 0,
+            Type = DescriptorHeapType.CbvSrvUav,
+            Flags = DescriptorHeapFlags.ShaderVisible,
+            NumDescriptors = 1024,
+        });
+
+        _gpuSamplerHeap = new DescriptorHeapDX12(device, new DescriptorHeapDesc()
+        {
+            NodeMask = 0,
+            Type = DescriptorHeapType.Sampler,
+            Flags = DescriptorHeapFlags.ShaderVisible,
+            NumDescriptors = 512,
+        });
     }
 
-    internal void Allocate(ViewDX12<ShaderResourceViewDesc> view)
+    internal unsafe void Allocate(ViewDX12<ShaderResourceViewDesc> view)
     {
         view.DescriptorHandle = _resourceHeap.Allocate(1);
     }
 
-    internal void Allocate(ViewDX12<UnorderedAccessViewDesc> view)
+    internal unsafe void Allocate(ViewDX12<UnorderedAccessViewDesc> view)
     {
+        // TODO Add support for counter resources.
         view.DescriptorHandle = _resourceHeap.Allocate(1);
+        Device.Ptr->CreateUnorderedAccessView(view.Handle.Ptr, null, view.Desc, view.DescriptorHandle.CpuHandle);
     }
 
-    internal void Allocate(ViewDX12<RenderTargetViewDesc> view)
+    internal unsafe void Allocate(ViewDX12<RenderTargetViewDesc> view)
     {
         view.DescriptorHandle = _rtvHeap.Allocate(1);
+        Device.Ptr->CreateRenderTargetView(view.Handle.Ptr, view.Desc, view.DescriptorHandle.CpuHandle);
     }
 
-    internal void Allocate(ViewDX12<DepthStencilViewDesc> view)
+    internal unsafe void Allocate(ViewDX12<DepthStencilViewDesc> view)
     {
         view.DescriptorHandle = _dsvHeap.Allocate(1);
+        Device.Ptr->CreateDepthStencilView(view.Handle.Ptr, view.Desc, view.DescriptorHandle.CpuHandle);
     }
 
-    internal void Allocate(ViewDX12<SamplerDesc> view)
+    internal unsafe void Allocate(ViewDX12<SamplerDesc> view)
     {
         view.DescriptorHandle = _samplerHeap.Allocate(1);
+        Device.Ptr->CreateSampler(view.Desc, view.DescriptorHandle.CpuHandle);
+    }
+
+    internal unsafe void Allocate(ViewDX12<ConstantBufferViewDesc> view)
+    {
+        view.DescriptorHandle = _resourceHeap.Allocate(1);
+        Device.Ptr->CreateConstantBufferView(view.Desc, view.DescriptorHandle.CpuHandle);
     }
 
     /// <summary>
@@ -52,6 +82,9 @@ internal class DescriptorHeapManagerDX12 : GraphicsObject<DeviceDX12>
     /// </summary>
     internal void PrepareGpuHeap(ShaderPassDX12 pass)
     {
+        int index = 0;
+
+        // Populate SRV, UAV, and CBV descriptors first.
         // TODO Pull descriptor info from our pass, render targets, samplers, depth-stencil, etc.
     }
 

@@ -40,7 +40,9 @@ public unsafe class ResourceHandleDX12 : GraphicsResourceHandle
 
     internal DeviceDX12 Device { get; }
 
-    public unsafe ID3D12Resource1* Ptr => _ptr;
+    public unsafe ID3D12Resource1* Ptr1 => _ptr;
+
+    public unsafe ID3D12Resource* Ptr => (ID3D12Resource*)_ptr;
 }
 
 public class ResourceHandleDX12<D> : ResourceHandleDX12
