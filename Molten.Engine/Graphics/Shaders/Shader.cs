@@ -5,7 +5,7 @@ public class Shader : GraphicsObject
     public IConstantBuffer[] ConstBuffers = [];
     public RWVariable[] UAVs = [];
     public ShaderResourceVariable[] Resources = [];
-    public List<ShaderSampler> SharedSamplers = [];
+    public List<ShaderSampler> SharedStaticSamplers = [];
     public Dictionary<string, ShaderVariable> Variables = new Dictionary<string, ShaderVariable>();
     
     internal GraphicsResource[] DefaultResources;
@@ -40,9 +40,9 @@ public class Shader : GraphicsObject
     internal void LinkSampler(ShaderSamplerParameters parameters)
     {
         // Find an existing sampler with the same settings.
-        for (int i = 0; i < SharedSamplers.Count; i++)
+        for (int i = 0; i < SharedStaticSamplers.Count; i++)
         {
-            ShaderSampler s = SharedSamplers[i];
+            ShaderSampler s = SharedStaticSamplers[i];
             if (s.Equals(parameters))
                 parameters.LinkedSampler = s;
         }
@@ -51,7 +51,7 @@ public class Shader : GraphicsObject
         if (parameters.LinkedSampler == null)
         {
             parameters.LinkedSampler = Device.CreateSampler(parameters);
-            SharedSamplers.Add(parameters.LinkedSampler);
+            SharedStaticSamplers.Add(parameters.LinkedSampler);
         }
     }
 

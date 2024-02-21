@@ -16,9 +16,14 @@ public abstract class ShaderPass : GraphicsObject, IEnumerable<ShaderComposition
     public delegate void OnCompletedCallback(ShaderPass pass, GraphicsQueue.CustomDrawInfo customInfo);
 
     /// <summary>
-    /// The texture samplers to be used with the shader/component, with the bind point as the key.
+    /// The dynamic samplers to be used with the shader/component, with the bind point as the key.
     /// </summary>
     public ShaderSampler[] Samplers;
+
+    /// <summary>
+    /// The static samplers to be used with the current shader pass, with the bind point as the key.
+    /// </summary>
+    public ShaderSampler[] StaticSamplers;
 
     Dictionary<ShaderType, ShaderComposition> _compositions;
 
@@ -36,7 +41,8 @@ public abstract class ShaderPass : GraphicsObject, IEnumerable<ShaderComposition
     protected ShaderPass(Shader parent, string name) :
         base(parent.Device)
     {
-        Samplers = new ShaderSampler[0];
+        Samplers = [];
+        StaticSamplers = [];
         Parent = parent;
         Name = name;
         IsEnabled = true;

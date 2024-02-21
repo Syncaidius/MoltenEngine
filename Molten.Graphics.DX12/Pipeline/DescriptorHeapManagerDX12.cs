@@ -84,6 +84,10 @@ internal class DescriptorHeapManagerDX12 : GraphicsObject<DeviceDX12>
     {
         int index = 0;
 
+        GpuDescriptorHandle gpuHandle = _gpuResourceHeap.GetGpuHandle();
+        
+        // TODO Iterate over pass resources
+
         // Populate SRV, UAV, and CBV descriptors first.
         // TODO Pull descriptor info from our pass, render targets, samplers, depth-stencil, etc.
     }
@@ -94,5 +98,8 @@ internal class DescriptorHeapManagerDX12 : GraphicsObject<DeviceDX12>
         _samplerHeap.Dispose(true);
         _dsvHeap.Dispose(true);
         _rtvHeap.Dispose(true);
+
+        _gpuResourceHeap.Dispose(true);
+        _gpuSamplerHeap.Dispose(true);
     }
 }

@@ -21,8 +21,8 @@ public unsafe class SamplerDX12 : ShaderSampler
             MaxLOD = parameters.MaxMipMapLod,
             MipLODBias = parameters.LodBias,
             BorderColor = StaticBorderColor.TransparentBlack, // TODO Add support for setting this.
-            ShaderRegister = parameters.BindPoint.HasValue ? parameters.BindPoint.Value : 0,
-            RegisterSpace = parameters.BindSpace.HasValue ? parameters.BindSpace.Value : 0,
+            ShaderRegister = parameters.Slot.HasValue ? parameters.Slot.Value : 0,
+            RegisterSpace = parameters.SlotSpace.HasValue ? parameters.SlotSpace.Value : 0,
             ShaderVisibility = ShaderVisibility.All, // TODO Add support for setting this.
         };
 

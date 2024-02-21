@@ -23,19 +23,19 @@ internal abstract class RootSignaturePopulatorDX12
     protected unsafe void PopulateStaticSamplers(ref StaticSamplerDesc* samplers, ref uint numSamplers, ShaderPassDX12 pass)
     {
         // Finalize sampler visibility. Iterate over all samplers used in the pass.
-        for (int i = 0; i < pass.Parent.SharedSamplers.Count; i++)
+        for (int i = 0; i < pass.Parent.SharedStaticSamplers.Count; i++)
         {
-            SamplerDX12 sampler = pass.Parent.SharedSamplers[i] as SamplerDX12;
+            SamplerDX12 sampler = pass.Parent.SharedStaticSamplers[i] as SamplerDX12;
             uint visCount = 0;
             ShaderVisibility vis = ShaderVisibility.All;
 
             // Check all compositions of the current pass to see where the sampler is used.
             foreach (ShaderComposition sc in pass.Compositions)
             {
-                // Check samplers used in the current composition.
-                for (int j = 0; j < sc.Samplers.Length; j++)
+                // Check static samplers used in the current composition.
+                for (int j = 0; j < sc.StaticSamplers.Length; j++)
                 {
-                    if (sc.Samplers[j] == sampler)
+                    if (sc.StaticSamplers[j] == sampler)
                     {
                         visCount++;
 
@@ -68,11 +68,11 @@ internal abstract class RootSignaturePopulatorDX12
             sampler.Desc.ShaderVisibility = vis;
         }
 
-        numSamplers = (uint)pass.Samplers.Length;
+        numSamplers = (uint)pass.StaticSamplers.Length;
         samplers = EngineUtil.AllocArray<StaticSamplerDesc>(numSamplers);
         for (uint i = 0; i < numSamplers; i++)
         {
-            SamplerDX12 sampler = pass.Samplers[i] as SamplerDX12;
+            SamplerDX12 sampler = pass.StaticSamplers[i] as SamplerDX12;
             samplers[i] = sampler.Desc;
         }
     }

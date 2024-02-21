@@ -492,4 +492,9 @@ public abstract class ShaderCompiler : EngineObject
     /// Gets the <see cref="GraphicsDevice"/> that the shader compiler is bound to.
     /// </summary>
     public GraphicsDevice Device { get; }
+
+    /// <summary>
+    /// Gets whether or not the current <see cref="ShaderCompiler"/> supports static samplers.
+    /// </summary>
+    public abstract bool AllowStaticSamplers { get; }
 }

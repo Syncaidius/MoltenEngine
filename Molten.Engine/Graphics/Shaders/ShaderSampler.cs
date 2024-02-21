@@ -7,7 +7,14 @@ public abstract class ShaderSampler : GraphicsObject, IEquatable<ShaderSampler>,
     protected ShaderSampler(GraphicsDevice device, ShaderSamplerParameters parameters) : 
         base(device)
     {
-        BindPoint = parameters.BindPoint.HasValue ? parameters.BindPoint.Value : 0;
+        // If a bind point was provided, assume the sampler is static.
+        if (parameters.Slot.HasValue)
+        {
+            BindPoint = parameters.Slot.Value;
+            BindSpace = parameters.SlotSpace.HasValue ? parameters.SlotSpace.Value : 0;
+            IsStatic = true;
+        }
+
         IsComparisonSampler = parameters.IsComparison;
         _parameters = parameters;
     }
@@ -36,4 +43,15 @@ public abstract class ShaderSampler : GraphicsObject, IEquatable<ShaderSampler>,
     /// Gets the bind point of the current <see cref="ShaderSampler"/>.
     /// </summary>
     public uint BindPoint { get; }
+
+    /// <summary>
+    /// Gets the bind space of the current <see cref="ShaderSampler"/>, within the assigned <see cref="BindPoint"/>.
+    /// </summary>
+    public uint BindSpace { get; }
+
+    /// <summary>
+    /// Gets whether or not the current <see cref="ShaderSampler"/> is static. 
+    /// <para>A static shader sampler is generally included in the root signature layout, and is not bound by the application.</para>
+    /// </summary>
+    public bool IsStatic { get; }
 }

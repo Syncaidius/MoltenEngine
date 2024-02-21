@@ -26,8 +26,7 @@ internal class ShaderStructureBuilder
                             Array.Resize(ref shader.ConstBuffers, (int)bindPoint + 1);
 
                         if (shader.ConstBuffers[bindPoint] != null && shader.ConstBuffers[bindPoint].BufferName != bindInfo.Name)
-                            context.AddMessage($"Shader constant buffer '{shader.ConstBuffers[bindPoint].BufferName}' was overwritten by buffer '{bindInfo.Name}' at the same register (b{bindPoint}).",
-                                ShaderCompilerMessage.Kind.Warning);
+                            context.AddWarning($"Shader constant buffer '{shader.ConstBuffers[bindPoint].BufferName}' was overwritten by buffer '{bindInfo.Name}' at the same register (b{bindPoint}).");
 
                         shader.ConstBuffers[bindPoint] = GetConstantBuffer(context, shader, bufferInfo);
                         composition.ConstBufferIds.Add(bindPoint);
@@ -53,14 +52,22 @@ internal class ShaderStructureBuilder
                     }
 
                     // Add sampler to composition.
-                    int index = composition.Samplers.Length;
-                    EngineUtil.ArrayResize(ref composition.Samplers, index + 1);
-                    composition.Samplers[index] = samplerParams.LinkedSampler;
+                    ref ShaderSampler[] samplers = ref composition.Samplers;
+                    if(context.Compiler.AllowStaticSamplers)
+                        samplers = ref composition.Samplers;
+
+                    int index = samplers.Length;
+                    EngineUtil.ArrayResize(ref samplers, index + 1);
+                    samplers[index] = samplerParams.LinkedSampler;
 
                     // Add sampler to pass.
-                    index = composition.Pass.Samplers.Length;
-                    EngineUtil.ArrayResize(ref composition.Pass.Samplers, index + 1);
-                    composition.Pass.Samplers[index] = samplerParams.LinkedSampler;
+                    ref ShaderSampler[] passSamplers = ref composition.Pass.StaticSamplers;
+                    if (!context.Compiler.AllowStaticSamplers)
+                        passSamplers = ref composition.Pass.Samplers;
+
+                    index = passSamplers.Length;
+                    EngineUtil.ArrayResize(ref passSamplers, index + 1);
+                    passSamplers[index] = samplerParams.LinkedSampler;
                     break;
 
                 case ShaderInputType.Structured:

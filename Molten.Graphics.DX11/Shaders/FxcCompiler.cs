@@ -319,4 +319,6 @@ public unsafe class FxcCompiler : ShaderCompiler
                 context.AddError(errorList[i]);
         }
     }
+
+    public override bool AllowStaticSamplers => false;
 }

@@ -52,13 +52,13 @@ public class ShaderSamplerParameters : IEquatable<ShaderSamplerParameters>
     /// the texture will be sampled at mipmap level 5.</summary>
     public float LodBias;
 
-    /// <summary>The bind point to use for the sampler.</summary>
-    public uint? BindPoint;
+    /// <summary>The bind point or slot to use for the sampler.</summary>
+    public uint? Slot;
 
     /// <summary>
     /// The bind space to use for the sampler.
     /// </summary>
-    public uint? BindSpace;
+    public uint? SlotSpace;
 
     /// <summary>
     /// The sampelr preset.
@@ -100,8 +100,8 @@ public class ShaderSamplerParameters : IEquatable<ShaderSamplerParameters>
         MaxAnisotropy = 0;
         BorderColor = Color.White;
         Comparison = ComparisonMode.Never;
-        BindPoint = 0;
-        BindSpace = 0;
+        Slot = 0;
+        SlotSpace = 0;
 
         // Now apply preset values.
         switch (preset)
@@ -155,8 +155,8 @@ public class ShaderSamplerParameters : IEquatable<ShaderSamplerParameters>
             MaxMipMapLod == other.MaxMipMapLod &&
             MinMipMapLod == other.MinMipMapLod &&
             LodBias == other.LodBias &&
-            BindPoint == other.BindPoint &&
-            BindSpace == other.BindSpace;
+            Slot == other.Slot &&
+            SlotSpace == other.SlotSpace;
     }
 }
 

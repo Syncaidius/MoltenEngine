@@ -274,4 +274,6 @@ public unsafe abstract class DxcCompiler : ShaderCompiler
     protected IDxcUtils* Utils => _utils;
 
     protected DXC Api => _dxc;
+
+    public override bool AllowStaticSamplers => true;
 }

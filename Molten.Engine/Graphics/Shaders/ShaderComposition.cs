@@ -11,6 +11,9 @@ public unsafe class ShaderComposition : GraphicsObject
     /// <summary>A list of samplers that must be bound to the shader stage.</summary>
     public ShaderSampler[] Samplers = [];
 
+    /// <summary>A list of static samplers that should be part of the root signature.</summary>
+    public ShaderSampler[] StaticSamplers = [];
+
     public List<uint> UnorderedAccessIds = new();
 
     public ShaderIOLayout InputLayout;
