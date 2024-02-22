@@ -2,11 +2,10 @@
 
 public class Shader : GraphicsObject
 {
-    public IConstantBuffer[] ConstBuffers = [];
     public RWVariable[] UAVs = [];
-    public ShaderResourceVariable[] Resources = [];
-    public List<ShaderSampler> SharedStaticSamplers = [];
-    public Dictionary<string, ShaderVariable> Variables = new Dictionary<string, ShaderVariable>();
+    public List<ShaderSampler> SharedSamplers = [];
+    public Dictionary<string, ShaderVariable> Variables = new();
+    public Dictionary<ShaderBindPoint, ShaderVariable> VariablesByBindMask = new();
     
     internal GraphicsResource[] DefaultResources;
 
@@ -40,9 +39,9 @@ public class Shader : GraphicsObject
     internal void LinkSampler(ShaderSamplerParameters parameters)
     {
         // Find an existing sampler with the same settings.
-        for (int i = 0; i < SharedStaticSamplers.Count; i++)
+        for (int i = 0; i < SharedSamplers.Count; i++)
         {
-            ShaderSampler s = SharedStaticSamplers[i];
+            ShaderSampler s = SharedSamplers[i];
             if (s.Equals(parameters))
                 parameters.LinkedSampler = s;
         }
@@ -51,8 +50,27 @@ public class Shader : GraphicsObject
         if (parameters.LinkedSampler == null)
         {
             parameters.LinkedSampler = Device.CreateSampler(parameters);
-            SharedStaticSamplers.Add(parameters.LinkedSampler);
+            SharedSamplers.Add(parameters.LinkedSampler);
         }
+    }
+
+    public T CreateVariable<T>(string name, uint bindPoint, uint bindSpace)
+        where T : ShaderVariable, new()
+    {
+
+        ShaderBindPoint bp = new ShaderBindPoint(bindPoint, bindSpace);
+
+        if (!VariablesByBindMask.TryGetValue(bp, out ShaderVariable variable))
+        {
+            variable = new T();
+            variable.Name = name;
+            variable.Parent = this;
+            Variables.Add(name, variable);
+
+            VariablesByBindMask.Add(bp, variable);
+        }
+
+        return variable as T;
     }
 
     public void AddPass(ShaderPass pass)
@@ -95,10 +113,8 @@ public class Shader : GraphicsObject
     {
         get
         {
-            if (Variables.TryGetValue(varName, out ShaderVariable varInstance))
-                return varInstance;
-            else
-                return null;
+            Variables.TryGetValue(varName, out ShaderVariable varInstance);
+            return varInstance;
         }
 
         set

@@ -20,6 +20,8 @@ public abstract class ShaderPass : GraphicsObject, IEnumerable<ShaderPassStage>,
     /// </summary>
     public ShaderSampler[] Samplers;
 
+    public ShaderResourceVariable[] Resources = [];
+
     Dictionary<ShaderStageType, ShaderPassStage> _stages;
 
     ShaderFormatLayout _formatLayout;

@@ -47,29 +47,28 @@ internal unsafe abstract class ShaderStageDX11
             // Apply pass samplers to slots
             for(int i = 0; i < c.Samplers.Length; i++)
             {
-                uint slotID = c.Samplers[i].BindPoint;
-                _samplers[slotID] = c.Samplers[i] as SamplerDX11;
+                ref ShaderBindPoint<ShaderSampler> bp = ref c.Samplers[i];
+                _samplers[bp.BindPoint] = bp.Object as SamplerDX11;
             }
 
             // Apply pass resources to slots
-            for (int i = 0; i < c.ResourceIds.Count; i++)
+            for(int i = 0; i < c.Resources.Length; i++)
             {
-                uint slotID = c.ResourceIds[i];
-                _resources[slotID] = c.Pass.Parent.Resources[slotID]?.Resource;
+                ref ShaderBindPoint<ShaderResourceVariable> bp = ref c.Resources[i];
+                _resources[bp.BindPoint] = bp.Object.Resource;
             }
 
             // Apply pass constant buffers to slots
-            for (int i = 0; i < c.ConstBufferIds.Count; i++)
+            for(int i = 0; i < c.ConstantBuffers.Length; i++)
             {
-                uint slotID = c.ConstBufferIds[i];
-                _constantBuffers[slotID] = c.Pass.Parent.ConstBuffers[slotID] as ConstantBufferDX11;
+                ref ShaderBindPoint<IConstantBuffer> bp = ref c.ConstantBuffers[i];
+                _constantBuffers[bp.BindPoint] = bp.Object as ConstantBufferDX11;
             }
         }
 
         BindSamplers();
         BindResources();
         BindConstantBuffers();
-
         OnBind(c, shaderChanged);
 
         return shaderChanged;

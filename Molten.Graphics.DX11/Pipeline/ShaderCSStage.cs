@@ -19,10 +19,10 @@ internal class ShaderCSStage : ShaderStageDX11
         // Apply unordered acces views to slots
         if (c != null)
         {
-            for (int j = 0; j < c.UnorderedAccessIds.Count; j++)
+            for (int j = 0; j < c.UavResources.Length; j++)
             {
-                uint slotID = c.UnorderedAccessIds[j];
-                _uavs[slotID] = c.Pass.Parent.UAVs[slotID]?.Resource;
+                ref ShaderBindPoint<RWVariable> bp = ref c.UavResources[j];
+                _uavs[bp.BindPoint] = bp.Object.Resource;
             }
 
             if (_uavs.Bind(Cmd))

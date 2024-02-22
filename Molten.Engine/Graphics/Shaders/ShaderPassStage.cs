@@ -31,32 +31,32 @@ public unsafe class ShaderPassStage : GraphicsObject
         Type = type;
     }
 
-    internal void AddBinding(ShaderSampler binding, uint bindPoint)
+    internal void AddBinding(ShaderSampler binding, uint bindPoint, uint bindSpace = 0)
     {
         int index = Samplers.Length;
         EngineUtil.ArrayResize(ref Samplers, index + 1);
-        Samplers[index] = new ShaderBindPoint<ShaderSampler>(bindPoint, 0, binding);
+        Samplers[index] = new ShaderBindPoint<ShaderSampler>(bindPoint, bindSpace, binding);
     }
 
-    internal void AddBinding(ShaderResourceVariable binding, uint bindPoint)
+    internal void AddBinding(ShaderResourceVariable binding, uint bindPoint, uint bindSpace = 0)
     {
         int index = Resources.Length;
         EngineUtil.ArrayResize(ref Resources, index + 1);
-        Resources[index] = new ShaderBindPoint<ShaderResourceVariable>(bindPoint, 0, binding);
+        Resources[index] = new ShaderBindPoint<ShaderResourceVariable>(bindPoint, bindSpace, binding);
     }
 
-    internal void AddBinding(RWVariable binding, uint bindPoint)
+    internal void AddBinding(RWVariable binding, uint bindPoint, uint bindSpace = 0)
     {
         int index = UavResources.Length;
         EngineUtil.ArrayResize(ref UavResources, index + 1);
-        UavResources[index] = new ShaderBindPoint<RWVariable>(bindPoint, 0, binding);
+        UavResources[index] = new ShaderBindPoint<RWVariable>(bindPoint, bindSpace, binding);
     }
 
-    internal void AddBinding(IConstantBuffer binding, uint bindPoint)
+    internal void AddBinding(IConstantBuffer binding, uint bindPoint, uint bindSpace = 0)
     {
         int index = ConstantBuffers.Length;
         EngineUtil.ArrayResize(ref ConstantBuffers, index + 1);
-        ConstantBuffers[index] = new ShaderBindPoint<IConstantBuffer>(bindPoint, 0, binding);
+        ConstantBuffers[index] = new ShaderBindPoint<IConstantBuffer>(bindPoint, bindSpace, binding);
     }
 
     protected override void OnGraphicsRelease() { }

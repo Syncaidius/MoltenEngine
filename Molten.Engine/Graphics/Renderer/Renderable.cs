@@ -8,7 +8,7 @@ public abstract class Renderable
     {
         Renderer = renderer;
         IsVisible = false;
-        _resources = new GraphicsResource[0];
+        _resources = [];
     }
 
     /// <summary>Applies a shader resource to the renderable at the specified slot.</summary>

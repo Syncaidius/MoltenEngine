@@ -23,9 +23,9 @@ internal abstract class RootSignaturePopulatorDX12
     protected unsafe void PopulateStaticSamplers(ref StaticSamplerDesc* samplers, ref uint numSamplers, ShaderPassDX12 pass)
     {
         // Finalize sampler visibility. Iterate over all samplers used in the pass.
-        for (int i = 0; i < pass.Parent.SharedStaticSamplers.Count; i++)
+        for (int i = 0; i < pass.Parent.SharedSamplers.Count; i++)
         {
-            SamplerDX12 sampler = pass.Parent.SharedStaticSamplers[i] as SamplerDX12;
+            SamplerDX12 sampler = pass.Parent.SharedSamplers[i] as SamplerDX12;
             uint visCount = 0;
             ShaderVisibility vis = ShaderVisibility.All;
 
@@ -35,7 +35,7 @@ internal abstract class RootSignaturePopulatorDX12
                 // Check static samplers used in the current stage.
                 for (int j = 0; j < sps.Samplers.Length; j++)
                 {
-                    if (sps.Samplers[j] == sampler)
+                    if (sps.Samplers[j].Object == sampler)
                     {
                         visCount++;
 
