@@ -28,7 +28,7 @@ internal unsafe class PipelineStateVK : GraphicsObject<DeviceVK>
 
     GraphicsPipelineCreateInfo _info;
     Pipeline _pipeline;
-    List<PipelineStateVK> _derivatives = new List<PipelineStateVK>();
+    List<PipelineStateVK> _derivatives = new();
 
     BlendStateVK _blendState;
     DepthStateVK _depthState;
@@ -59,11 +59,10 @@ internal unsafe class PipelineStateVK : GraphicsObject<DeviceVK>
         _inputState = new InputAssemblyStateVK(device, ref parameters);
         device.Cache.Check(ref _inputState);
 
-        DynamicState[] dynamics = new DynamicState[]
-        {
+        DynamicState[] dynamics = [
             DynamicState.ViewportWithCount,
             DynamicState.ScissorWithCount,
-        };
+        ];
 
         _dynamicState = new DynamicStateVK(device, ref parameters, dynamics);
         device.Cache.Check(ref _dynamicState);

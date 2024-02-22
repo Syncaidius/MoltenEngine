@@ -52,14 +52,6 @@ public class ShaderSamplerParameters : IEquatable<ShaderSamplerParameters>
     /// the texture will be sampled at mipmap level 5.</summary>
     public float LodBias;
 
-    /// <summary>The bind point or slot to use for the sampler.</summary>
-    public uint? Slot;
-
-    /// <summary>
-    /// The bind space to use for the sampler.
-    /// </summary>
-    public uint? SlotSpace;
-
     /// <summary>
     /// The sampelr preset.
     /// </summary>

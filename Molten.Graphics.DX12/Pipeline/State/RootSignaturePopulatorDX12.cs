@@ -33,9 +33,9 @@ internal abstract class RootSignaturePopulatorDX12
             foreach (ShaderComposition sc in pass.Compositions)
             {
                 // Check static samplers used in the current composition.
-                for (int j = 0; j < sc.StaticSamplers.Length; j++)
+                for (int j = 0; j < sc.Samplers.Length; j++)
                 {
-                    if (sc.StaticSamplers[j] == sampler)
+                    if (sc.Samplers[j] == sampler)
                     {
                         visCount++;
 
@@ -68,12 +68,15 @@ internal abstract class RootSignaturePopulatorDX12
             sampler.Desc.ShaderVisibility = vis;
         }
 
-        numSamplers = (uint)pass.StaticSamplers.Length;
-        samplers = EngineUtil.AllocArray<StaticSamplerDesc>(numSamplers);
-        for (uint i = 0; i < numSamplers; i++)
+        numSamplers = (uint)pass.Samplers.Length;
+        if (numSamplers > 0)
         {
-            SamplerDX12 sampler = pass.StaticSamplers[i] as SamplerDX12;
-            samplers[i] = sampler.Desc;
+            samplers = EngineUtil.AllocArray<StaticSamplerDesc>(numSamplers);
+            for (uint i = 0; i < numSamplers; i++)
+            {
+                SamplerDX12 sampler = pass.Samplers[i] as SamplerDX12;
+                samplers[i] = sampler.Desc;
+            }
         }
     }
 

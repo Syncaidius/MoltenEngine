@@ -49,25 +49,11 @@ internal class ShaderStructureBuilder
                         context.AddWarning($"Sampler '{bindInfo.Name}' was not defined in the shader pass '{passDef.Name}'. Using default sampler.");
                         samplerParams = new ShaderSamplerParameters(SamplerPreset.Default);
                         shader.LinkSampler(samplerParams);
+
                     }
 
-                    // Add sampler to composition.
-                    ref ShaderSampler[] samplers = ref composition.Samplers;
-                    if(context.Compiler.AllowStaticSamplers)
-                        samplers = ref composition.Samplers;
-
-                    int index = samplers.Length;
-                    EngineUtil.ArrayResize(ref samplers, index + 1);
-                    samplers[index] = samplerParams.LinkedSampler;
-
-                    // Add sampler to pass.
-                    ref ShaderSampler[] passSamplers = ref composition.Pass.StaticSamplers;
-                    if (!context.Compiler.AllowStaticSamplers)
-                        passSamplers = ref composition.Pass.Samplers;
-
-                    index = passSamplers.Length;
-                    EngineUtil.ArrayResize(ref passSamplers, index + 1);
-                    passSamplers[index] = samplerParams.LinkedSampler;
+                    composition.AddSampler(samplerParams.LinkedSampler);
+                    composition.Pass.AddSampler(samplerParams.LinkedSampler);
                     break;
 
                 case ShaderInputType.Structured:
