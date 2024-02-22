@@ -47,11 +47,11 @@ internal class PipelineStateBuilderDX12
             BlendState = pass.BlendState.Description.Desc,
             SampleMask = pass.BlendState.Description.BlendSampleMask,
             DepthStencilState = pass.DepthState.Description.Desc,
-            VS = pass.GetBytecode(ShaderType.Vertex),
-            GS = pass.GetBytecode(ShaderType.Geometry),
-            DS = pass.GetBytecode(ShaderType.Domain),
-            HS = pass.GetBytecode(ShaderType.Hull),
-            PS = pass.GetBytecode(ShaderType.Pixel),
+            VS = pass.GetBytecode(ShaderStageType.Vertex),
+            GS = pass.GetBytecode(ShaderStageType.Geometry),
+            DS = pass.GetBytecode(ShaderStageType.Domain),
+            HS = pass.GetBytecode(ShaderStageType.Hull),
+            PS = pass.GetBytecode(ShaderStageType.Pixel),
             PrimitiveTopologyType = pass.GeometryPrimitive.ToApiToplogyType(),
             NodeMask = 0,               // TODO Set this to the node mask of the device.
             IBStripCutValue = indexStripCutValue,
@@ -70,7 +70,7 @@ internal class PipelineStateBuilderDX12
         }
 
         // Populate render target formats if a pixel shader is present in the pass.
-        ShaderComposition ps = pass[ShaderType.Pixel];
+        ShaderPassStage ps = pass[ShaderStageType.Pixel];
         if (ps != null)
         {
             desc.NumRenderTargets = (uint)ps.OutputLayout.Metadata.Length;
@@ -80,7 +80,7 @@ internal class PipelineStateBuilderDX12
         }
         else // ... If no pixel shader is present, but a geometry shader is, populate the stream output format.
         {
-            ShaderComposition gs = pass[ShaderType.Geometry];
+            ShaderPassStage gs = pass[ShaderStageType.Geometry];
             if (gs != null)
             {
                 int numEntries = gs.OutputLayout.Metadata.Length;   

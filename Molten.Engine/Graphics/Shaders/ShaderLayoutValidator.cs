@@ -2,20 +2,20 @@
 
 public class ShaderLayoutValidator
 {
-    static readonly ShaderType[] _validationIndex = [
-            ShaderType.Vertex,
-            ShaderType.Hull,
-            ShaderType.Domain,
-            ShaderType.Geometry,
-            ShaderType.Pixel];
+    static readonly ShaderStageType[] _validationIndex = [
+            ShaderStageType.Vertex,
+            ShaderStageType.Hull,
+            ShaderStageType.Domain,
+            ShaderStageType.Geometry,
+            ShaderStageType.Pixel];
 
     public bool Validate(ShaderCompilerContext context,
         PassCompileResult pResult)
     {
         // Stage order reference: https://msdn.microsoft.com/en-us/library/windows/desktop/ff476882(v=vs.85).aspx
         bool valid = true;
-        ShaderComposition prevStage = null;
-        ShaderComposition curStage = null;
+        ShaderPassStage prevStage = null;
+        ShaderPassStage curStage = null;
 
         for (int i = 0; i < _validationIndex.Length; i++)
         {
@@ -37,13 +37,10 @@ public class ShaderLayoutValidator
             // If the input expects anything, check compatibility. Skip compat check if input does not expect anything (length 0).
             if (input.Metadata.Length > 0 && !output.IsCompatible(input))
             {
-                ShaderType currentCompositionType =  curStage.Type;
-                ShaderType previousCompositionType = prevStage.Type;
-
                 context.AddError("Incompatible shader I/O structure.");
                 context.AddError("====================================");
                 context.AddError($"\tFilename: {pResult.Pass.Parent.Filename ?? "N/A"}");
-                context.AddError($"\tOutput -- {previousCompositionType}:");
+                context.AddError($"\tOutput -- {prevStage.Type}:");
 
                 if (output.Metadata.Length > 0)
                 {
@@ -59,7 +56,7 @@ public class ShaderLayoutValidator
                     context.AddError("No output elements expected.");
                 }
 
-                context.AddError($"\tInput -- {currentCompositionType}:");
+                context.AddError($"\tInput -- {curStage.Type}:");
                 for (int o = 0; o < input.Metadata.Length; o++)
                 {
                     ref ShaderIOLayout.ElementMetadata meta = ref input.Metadata[o];
@@ -83,8 +80,8 @@ public class ShaderLayoutValidator
         PassCompileResult pResult)
     {
         bool valid = true;
-        ShaderCodeResult hs = pResult[ShaderType.Hull];
-        ShaderCodeResult ds = pResult[ShaderType.Domain];
+        ShaderCodeResult hs = pResult[ShaderStageType.Hull];
+        ShaderCodeResult ds = pResult[ShaderStageType.Domain];
 
         if (hs != null && ds == null)
         {
@@ -103,9 +100,9 @@ public class ShaderLayoutValidator
     private bool CheckGeometryTessellationAdjacency(PassCompileResult pResult)
     {
         bool valid = true;
-        ShaderCodeResult geometryRef = pResult[ShaderType.Geometry];
-        ShaderCodeResult hullRef = pResult[ShaderType.Hull];
-        ShaderCodeResult domainRef = pResult[ShaderType.Domain];
+        ShaderCodeResult geometryRef = pResult[ShaderStageType.Geometry];
+        ShaderCodeResult hullRef = pResult[ShaderStageType.Hull];
+        ShaderCodeResult domainRef = pResult[ShaderStageType.Domain];
 
         if (geometryRef == null || hullRef == null || domainRef == null)
             return valid;

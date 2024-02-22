@@ -190,7 +190,7 @@ public abstract class ShaderCompiler : EngineObject
         PassCompileResult result = new PassCompileResult(pass);
 
         // Compile each stage of the material pass.
-        foreach (ShaderType epType in passDef.Entry.Points.Keys)
+        foreach (ShaderStageType epType in passDef.Entry.Points.Keys)
         {
             context.EntryPoint = passDef.Entry.Points[epType];
             context.Type = epType;
@@ -223,13 +223,13 @@ public abstract class ShaderCompiler : EngineObject
 
             // At this point, the bytecode has already been validated, so we can proceed.
             result[epType] = cResult;
-            ShaderComposition sc = pass.AddComposition(epType);
+            ShaderPassStage sc = pass.AddStage(epType);
             sc.EntryPoint = context.EntryPoint;
             sc.PtrShader = BuildNativeShader(pass, epType, cResult.ByteCode, cResult.NumBytes);
             sc.InputLayout = BuildIO(cResult, ShaderIOLayoutType.Input);
             sc.OutputLayout = BuildIO(cResult, ShaderIOLayoutType.Output);
 
-            if(epType == ShaderType.Pixel)
+            if(epType == ShaderStageType.Pixel)
             {
                 // Apply output surface formats.
                 for(int i = 0; i < sc.OutputLayout.Metadata.Length; i++)
@@ -263,25 +263,25 @@ public abstract class ShaderCompiler : EngineObject
             if (!ValidatePass(pass, ref passDef.Parameters, context))
                 return;
 
-            pass.IsCompute = result[ShaderType.Compute] != null;
+            pass.IsCompute = result[ShaderStageType.Compute] != null;
 
             // Fill in any extra metadata
-            if (result[ShaderType.Geometry] != null)
+            if (result[ShaderStageType.Geometry] != null)
             {
-                ShaderCodeResult fcr = result[ShaderType.Geometry];
+                ShaderCodeResult fcr = result[ShaderStageType.Geometry];
                 pass.GeometryPrimitive = fcr.Reflection.GSInputPrimitive;
             }
 
             // Validate I/O structure of each shader stage.
             if (_layoutValidator.Validate(context, result))
             {
-                foreach (ShaderType type in result.Results.Keys)
+                foreach (ShaderStageType type in result.Results.Keys)
                 {
                     if (result[type] == null)
                         continue;
 
                     string typeName = type.ToString().ToLower();
-                    ShaderComposition comp = pass[type];
+                    ShaderPassStage comp = pass[type];
 
                     if (comp != null)
                     {
@@ -308,13 +308,13 @@ public abstract class ShaderCompiler : EngineObject
 
     private bool ValidatePass(ShaderPass pass, ref ShaderPassParameters parameters, ShaderCompilerContext context)
     {
-        if (pass[ShaderType.Hull] != null)
+        if (pass[ShaderStageType.Hull] != null)
         {
             if (parameters.Topology < PrimitiveTopology.PatchListWith1ControlPoint)
                 context.AddError($"Invalid pass topology '{parameters.Topology}': The pass has a hull shader, so topology must be a patch list");
         }
 
-        if (pass[ShaderType.Compute] != null && pass.CompositionCount > 1)
+        if (pass[ShaderStageType.Compute] != null && pass.StageCount > 1)
             context.AddError($"Invalid pass. Pass cannot mix compute entry points with render-stage entry points");
 
         return !context.HasErrors;
@@ -473,9 +473,9 @@ public abstract class ShaderCompiler : EngineObject
         }
     }
 
-    protected abstract ShaderCodeResult CompileNativeSource(string entryPoint, ShaderType type, ShaderCompilerContext context);
+    protected abstract ShaderCodeResult CompileNativeSource(string entryPoint, ShaderStageType type, ShaderCompilerContext context);
 
-    protected unsafe abstract void* BuildNativeShader(ShaderPass parent, ShaderType type, void* byteCode, nuint numBytes);
+    protected unsafe abstract void* BuildNativeShader(ShaderPass parent, ShaderStageType type, void* byteCode, nuint numBytes);
 
     protected abstract bool Validate(ShaderPass pass, ShaderCompilerContext context, ShaderCodeResult result);
 

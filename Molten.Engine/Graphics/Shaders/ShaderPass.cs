@@ -6,7 +6,7 @@ namespace Molten.Graphics;
 /// <summary>
 /// An a base class implementation for key shader components, such as materials, material passes or compute tasks.
 /// </summary>
-public abstract class ShaderPass : GraphicsObject, IEnumerable<ShaderComposition>, IEnumerable<ShaderType>
+public abstract class ShaderPass : GraphicsObject, IEnumerable<ShaderPassStage>, IEnumerable<ShaderStageType>
 {
     /// <summary>
     /// A callback that is used by <see cref="ShaderPass"/> when it has finished its draw/dispatch call.
@@ -20,7 +20,7 @@ public abstract class ShaderPass : GraphicsObject, IEnumerable<ShaderComposition
     /// </summary>
     public ShaderSampler[] Samplers;
 
-    Dictionary<ShaderType, ShaderComposition> _compositions;
+    Dictionary<ShaderStageType, ShaderPassStage> _stages;
 
     ShaderFormatLayout _formatLayout;
 
@@ -41,7 +41,7 @@ public abstract class ShaderPass : GraphicsObject, IEnumerable<ShaderComposition
         Parent = parent;
         Name = name;
         IsEnabled = true;
-        _compositions = new Dictionary<ShaderType, ShaderComposition>();
+        _stages = new Dictionary<ShaderStageType, ShaderPassStage>();
     }
 
     internal unsafe void Initialize(ShaderPassParameters parameters)
@@ -60,12 +60,12 @@ public abstract class ShaderPass : GraphicsObject, IEnumerable<ShaderComposition
         OnCompleted?.Invoke(this, customInfo);
     }
 
-    internal ShaderComposition AddComposition(ShaderType type)
+    internal ShaderPassStage AddStage(ShaderStageType type)
     {
-        if (!_compositions.TryGetValue(type, out ShaderComposition comp))
+        if (!_stages.TryGetValue(type, out ShaderPassStage comp))
         {
-            comp = new ShaderComposition(this, type);
-            _compositions.Add(type, comp);
+            comp = new ShaderPassStage(this, type);
+            _stages.Add(type, comp);
         }
 
         return comp;
@@ -73,55 +73,55 @@ public abstract class ShaderPass : GraphicsObject, IEnumerable<ShaderComposition
 
     protected override void OnGraphicsRelease()
     {
-        foreach (ShaderComposition c in _compositions.Values)
+        foreach (ShaderPassStage c in _stages.Values)
             c.Dispose();
     }
 
-    public IEnumerator<ShaderComposition> GetEnumerator()
+    public IEnumerator<ShaderPassStage> GetEnumerator()
     {
-        return _compositions.Values.GetEnumerator();
+        return _stages.Values.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
     {
-        return _compositions.Keys.GetEnumerator();
+        return _stages.Keys.GetEnumerator();
     }
 
-    IEnumerator<ShaderType> IEnumerable<ShaderType>.GetEnumerator()
+    IEnumerator<ShaderStageType> IEnumerable<ShaderStageType>.GetEnumerator()
     {
-        return _compositions.Keys.GetEnumerator();
+        return _stages.Keys.GetEnumerator();
     }
 
-    public bool HasComposition(ShaderType type)
+    public bool HasStage(ShaderStageType type)
     {
-        return _compositions.ContainsKey(type);
+        return _stages.ContainsKey(type);
     }
 
     /// <summary>
-    /// Gets a <see cref="ShaderComposition"/> from the current <see cref="ShaderPass"/>. 
-    /// <para>Returns null if no composition exists for the specified <see cref="ShaderType"/>.</para>
+    /// Gets a <see cref="ShaderPassStage"/> from the current <see cref="ShaderPass"/>. 
+    /// <para>Returns null if no stage exists for the specified <see cref="ShaderStageType"/>.</para>
     /// </summary>
-    /// <param name="type">The type of shader composition to retrieve.</param>
+    /// <param name="type">The type of shader stage to retrieve.</param>
     /// <returns></returns>
-    public ShaderComposition this[ShaderType type]
+    public ShaderPassStage this[ShaderStageType type]
     {
         get
         {
-            _compositions.TryGetValue(type, out ShaderComposition comp);
+            _stages.TryGetValue(type, out ShaderPassStage comp);
             return comp;
         }
     }
 
     /// <summary>
-    /// Gets the number of compositions in the current <see cref="ShaderPass"/>. 
-    /// Each composition represents a shader pipeline stage. For example, vertex, geometry or fragment/pixel stages.
+    /// Gets the number of stage in the current <see cref="ShaderPass"/>. 
+    /// Each stage represents a shader pipeline stage. For example, vertex, geometry or fragment/pixel stages.
     /// </summary>
-    public int CompositionCount => _compositions.Count;
+    public int StageCount => _stages.Count;
 
     /// <summary>
-    /// Gets a read-only collection containing all of the shader compositions within the current <see cref="ShaderPass"/>.
+    /// Gets a read-only collection containing all of the shader stages within the current <see cref="ShaderPass"/>.
     /// </summary>
-    public IReadOnlyCollection<ShaderComposition> Compositions => _compositions.Values;
+    public IReadOnlyCollection<ShaderPassStage> Stages => _stages.Values;
 
     /// <summary>
     /// Gets or sets the type of geometry shader primitives to output.

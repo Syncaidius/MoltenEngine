@@ -86,9 +86,9 @@ internal unsafe class DescriptorSetLayoutVK : GraphicsObject<DeviceVK>, IEquatab
     {
         ShaderStageFlags flags = ShaderStageFlags.None;
 
-        foreach(ShaderType type in PipelineStateVK.ShaderTypes)
+        foreach(ShaderStageType type in PipelineStateVK.ShaderTypes)
         {
-            ShaderComposition comp = pass[type];
+            ShaderPassStage comp = pass[type];
             if (comp != null && comp.ResourceIds.Contains(slotID))
                 flags |= PipelineStateVK.ShaderStageLookup[type];
         }

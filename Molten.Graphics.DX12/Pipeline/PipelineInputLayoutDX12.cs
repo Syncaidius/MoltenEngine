@@ -21,7 +21,7 @@ internal unsafe class PipelineInputLayoutDX12 : GraphicsObject<DeviceDX12>
         base(device)
     {
         IsValid = true;
-        ShaderComposition vs = pass[ShaderType.Vertex];
+        ShaderPassStage vs = pass[ShaderStageType.Vertex];
         _sourceLayout = vs.InputLayout;
         List<FormatBinding> expected = new List<FormatBinding>();
         List<InputElementDesc> elements = new List<InputElementDesc>();

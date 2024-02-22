@@ -24,7 +24,7 @@ internal unsafe class HlslDxcCompiler : DxcCompiler
 #endif
     }
 
-    protected override unsafe void* BuildNativeShader(ShaderPass parent, ShaderType type, void* byteCode, nuint numBytes)
+    protected override unsafe void* BuildNativeShader(ShaderPass parent, ShaderStageType type, void* byteCode, nuint numBytes)
     {
         IDxcBlob* blob = (IDxcBlob*)byteCode;
         byteCode = blob->GetBufferPointer();

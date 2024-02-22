@@ -5,7 +5,7 @@ namespace Molten.Graphics;
 
 public sealed partial class GraphicsCapabilities
 {   
-    Dictionary<ShaderType, ShaderStageCapabilities> _shaderCap;
+    Dictionary<ShaderStageType, ShaderStageCapabilities> _shaderCap;
 
     public GraphicsCapabilities()
     {
@@ -18,16 +18,16 @@ public sealed partial class GraphicsCapabilities
         MeshShader = new MeshShaderCapabilities();
         Compute = new ComputeCapabilities();
 
-        _shaderCap = new Dictionary<ShaderType, ShaderStageCapabilities>()
+        _shaderCap = new Dictionary<ShaderStageType, ShaderStageCapabilities>()
         {
-            [ShaderType.Vertex] = VertexShader,
-            [ShaderType.Geometry] = GeometryShader,
-            [ShaderType.Hull] = HullShader,
-            [ShaderType.Domain] = DomainShader,
-            [ShaderType.Pixel] = PixelShader,
-            [ShaderType.Compute] = Compute,
-            [ShaderType.Amplification] = AmplificationShader,
-            [ShaderType.Mesh] = MeshShader,
+            [ShaderStageType.Vertex] = VertexShader,
+            [ShaderStageType.Geometry] = GeometryShader,
+            [ShaderStageType.Hull] = HullShader,
+            [ShaderStageType.Domain] = DomainShader,
+            [ShaderStageType.Pixel] = PixelShader,
+            [ShaderStageType.Compute] = Compute,
+            [ShaderStageType.Amplification] = AmplificationShader,
+            [ShaderStageType.Mesh] = MeshShader,
         };
     }
 
@@ -60,7 +60,7 @@ public sealed partial class GraphicsCapabilities
         }
     }
 
-    public void AddShaderCap(ShaderType type, ShaderCapFlags flag)
+    public void AddShaderCap(ShaderStageType type, ShaderCapFlags flag)
     {
         if (_shaderCap.TryGetValue(type, out ShaderStageCapabilities cap))
             cap.Flags |= flag | ShaderCapFlags.IsSupported;
@@ -101,11 +101,11 @@ public sealed partial class GraphicsCapabilities
     }
 
     /// <summary>
-    /// Gets the capabilities of a shader stage based on the provided <see cref="ShaderType"/> value.
+    /// Gets the capabilities of a shader stage based on the provided <see cref="ShaderStageType"/> value.
     /// </summary>
     /// <param name="type">The shader stage type.</param>
     /// <returns></returns>
-    public ShaderStageCapabilities this[ShaderType type] => _shaderCap[type];
+    public ShaderStageCapabilities this[ShaderStageType type] => _shaderCap[type];
 
     /// <summary>
     /// Gets or sets the graphics API capability.

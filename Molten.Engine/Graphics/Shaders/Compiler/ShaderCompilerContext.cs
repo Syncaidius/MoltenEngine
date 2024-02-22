@@ -17,7 +17,7 @@ public class ShaderCompilerContext
 
     public ShaderCompileFlags Flags { get; set; }
 
-    public ShaderType Type { get; set; }
+    public ShaderStageType Type { get; set; }
 
     public ShaderCompiler Compiler { get; }
 

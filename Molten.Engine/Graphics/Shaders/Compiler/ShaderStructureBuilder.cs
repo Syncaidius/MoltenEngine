@@ -1,13 +1,13 @@
 ﻿namespace Molten.Graphics;
 
 /// <summary>
-/// Responsible for building the variable structure of a <see cref="ShaderComposition"/>.
+/// Responsible for building the variable structure of a <see cref="ShaderPassStage"/>.
 /// </summary>
 internal class ShaderStructureBuilder
 {
-    internal bool Build(ShaderCompilerContext context, ShaderReflection reflection, ShaderComposition composition, ShaderPassDefinition passDef)
+    internal bool Build(ShaderCompilerContext context, ShaderReflection reflection, ShaderPassStage stage, ShaderPassDefinition passDef)
     {
-        Shader shader = composition.Pass.Parent;
+        Shader shader = stage.Pass.Parent;
 
         for (int r = 0; r < reflection.BoundResources.Count; r++)
         {
@@ -29,14 +29,14 @@ internal class ShaderStructureBuilder
                             context.AddWarning($"Shader constant buffer '{shader.ConstBuffers[bindPoint].BufferName}' was overwritten by buffer '{bindInfo.Name}' at the same register (b{bindPoint}).");
 
                         shader.ConstBuffers[bindPoint] = GetConstantBuffer(context, shader, bufferInfo);
-                        composition.ConstBufferIds.Add(bindPoint);
+                        stage.ConstBufferIds.Add(bindPoint);
                     }
 
                     break;
 
                 case ShaderInputType.Texture:
                     OnBuildTextureVariable(context, shader, bindInfo, passDef);
-                    composition.ResourceIds.Add(bindInfo.BindPoint);
+                    stage.ResourceIds.Add(bindInfo.BindPoint);
                     break;
 
                 case ShaderInputType.Sampler:
@@ -52,8 +52,8 @@ internal class ShaderStructureBuilder
 
                     }
 
-                    composition.AddSampler(samplerParams.LinkedSampler);
-                    composition.Pass.AddSampler(samplerParams.LinkedSampler);
+                    stage.AddSampler(samplerParams.LinkedSampler);
+                    stage.Pass.AddSampler(samplerParams.LinkedSampler);
                     break;
 
                 case ShaderInputType.Structured:
@@ -62,17 +62,17 @@ internal class ShaderStructureBuilder
                         EngineUtil.ArrayResize(ref shader.Resources, bindPoint + 1);
 
                     shader.Resources[bindPoint] = bVar;
-                    composition.ResourceIds.Add(bindPoint);
+                    stage.ResourceIds.Add(bindPoint);
                     break;
 
                 case ShaderInputType.UavRWStructured:
                     OnBuildRWStructuredVariable(context, shader, bindInfo);
-                    composition.UnorderedAccessIds.Add(bindPoint);
+                    stage.UnorderedAccessIds.Add(bindPoint);
                     break;
 
                 case ShaderInputType.UavRWTyped:
                     OnBuildRWTypedVariable(context, shader, bindInfo);
-                    composition.UnorderedAccessIds.Add(bindPoint);
+                    stage.UnorderedAccessIds.Add(bindPoint);
                     break;
             }
         }

@@ -20,7 +20,7 @@ public class ShaderEntryPointDefinition
         set
         {
             _vs = value;
-            Points[ShaderType.Vertex] = value;
+            Points[ShaderStageType.Vertex] = value;
         }
     }
 
@@ -34,7 +34,7 @@ public class ShaderEntryPointDefinition
         set
         {
             _ps = value;
-            Points[ShaderType.Pixel] = value;
+            Points[ShaderStageType.Pixel] = value;
         }
     }
 
@@ -48,7 +48,7 @@ public class ShaderEntryPointDefinition
         set
         {
             _ps = value;
-            Points[ShaderType.Pixel] = value;
+            Points[ShaderStageType.Pixel] = value;
         }
     }
 
@@ -62,7 +62,7 @@ public class ShaderEntryPointDefinition
         set
         {
             _gs = value;
-            Points[ShaderType.Geometry] = value;
+            Points[ShaderStageType.Geometry] = value;
         }
     }
 
@@ -76,7 +76,7 @@ public class ShaderEntryPointDefinition
         set
         {
             _hs = value;
-            Points[ShaderType.Hull] = value;
+            Points[ShaderStageType.Hull] = value;
         }
     }
 
@@ -87,7 +87,7 @@ public class ShaderEntryPointDefinition
         set
         {
             _ds = value;
-            Points[ShaderType.Domain] = value;
+            Points[ShaderStageType.Domain] = value;
         }
     }
 
@@ -98,10 +98,10 @@ public class ShaderEntryPointDefinition
         set
         {
             _cs = value;
-            Points[ShaderType.Compute] = value;
+            Points[ShaderStageType.Compute] = value;
         }
     }
 
     [JsonIgnore]
-    public Dictionary<ShaderType, string> Points { get; } = new Dictionary<ShaderType, string>();
+    public Dictionary<ShaderStageType, string> Points { get; } = new Dictionary<ShaderStageType, string>();
 }

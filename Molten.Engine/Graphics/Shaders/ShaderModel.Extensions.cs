@@ -7,32 +7,32 @@ public static class ShaderModelExtensions
     /// <param name="model">The model value to convert.</param>
     /// <param name="type">The type of shader profile to define.</param>
     /// <returns></returns>
-    public static string ToProfile(this ShaderModel model, ShaderType type)
+    public static string ToProfile(this ShaderModel model, ShaderStageType type)
     {
         string pString = "";
 
         switch (type)
         {
-            case ShaderType.Compute:
+            case ShaderStageType.Compute:
                 pString += "cs_";
                 break;
-            case ShaderType.Domain:
+            case ShaderStageType.Domain:
                 pString += "ds_";
                 break;
-            case ShaderType.Geometry:
+            case ShaderStageType.Geometry:
                 pString += "gs_";
                 break;
-            case ShaderType.Pixel:
+            case ShaderStageType.Pixel:
                 pString += "ps_";
                 break;
-            case ShaderType.Vertex:
+            case ShaderStageType.Vertex:
                 pString += "vs_";
                 break;
-            case ShaderType.Hull:
+            case ShaderStageType.Hull:
                 pString += "hs_";
                 break;
 
-            case ShaderType.Lib:
+            case ShaderStageType.Lib:
                 pString += "lib_";
                 break;
 
@@ -40,7 +40,7 @@ public static class ShaderModelExtensions
                 throw new InvalidOperationException("Cannot convert unknown shader model value.");
         }
 
-        if (type != ShaderType.Unknown)
+        if (type != ShaderStageType.Unknown)
             pString += model.ToString().Replace("Model", "");
         else
             throw new InvalidOperationException("Cannot convert unknown shader profile type.");

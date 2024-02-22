@@ -25,9 +25,9 @@ public class ShaderPassDX12 : ShaderPass, IEquatable<ShaderPassDX12>
         Device.Cache.Check(ref _stateDepth);
     }
 
-    internal unsafe ShaderBytecode GetBytecode(ShaderType type)
+    internal unsafe ShaderBytecode GetBytecode(ShaderStageType type)
     {
-        ShaderComposition comp = this[type];
+        ShaderPassStage comp = this[type];
         if (comp == null)
             return default;
 

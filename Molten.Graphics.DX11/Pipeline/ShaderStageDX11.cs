@@ -7,9 +7,9 @@ internal unsafe abstract class ShaderStageDX11
     GraphicsStateValueGroup<ConstantBufferDX11> _constantBuffers;
     GraphicsStateValueGroup<GraphicsResource> _resources;
     GraphicsStateBasicValueGroup<SamplerDX11> _samplers;
-    GraphicsStateBasicValue<ShaderComposition> _shader;
+    GraphicsStateBasicValue<ShaderPassStage> _shader;
 
-    internal ShaderStageDX11(GraphicsQueueDX11 queue, ShaderType type)
+    internal ShaderStageDX11(GraphicsQueueDX11 queue, ShaderStageType type)
     {
         Cmd = queue;
         Type = type;
@@ -20,10 +20,10 @@ internal unsafe abstract class ShaderStageDX11
         _samplers = new GraphicsStateBasicValueGroup<SamplerDX11>(cap.MaxShaderSamplers);
         _resources = new GraphicsStateValueGroup<GraphicsResource>(shaderCap.MaxInResources);
         _constantBuffers = new GraphicsStateValueGroup<ConstantBufferDX11>(cap.ConstantBuffers.MaxSlots);
-        _shader = new GraphicsStateBasicValue<ShaderComposition>();
+        _shader = new GraphicsStateBasicValue<ShaderPassStage>();
     }
 
-    internal bool Bind(ShaderComposition c)
+    internal bool Bind(ShaderPassStage c)
     {
         _shader.Value = c;
         bool shaderChanged = _shader.Bind();
@@ -75,7 +75,7 @@ internal unsafe abstract class ShaderStageDX11
         return shaderChanged;
     }
 
-    protected virtual void OnBind(ShaderComposition c, bool shaderChanged) { }
+    protected virtual void OnBind(ShaderPassStage c, bool shaderChanged) { }
 
     private void BindSamplers()
     {
@@ -154,5 +154,5 @@ internal unsafe abstract class ShaderStageDX11
 
     internal GraphicsQueueDX11 Cmd { get; }
 
-    internal ShaderType Type { get; }
+    internal ShaderStageType Type { get; }
 }

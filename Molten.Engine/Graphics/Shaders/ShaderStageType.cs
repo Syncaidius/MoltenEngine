@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents a type of shader stage.
 /// </summary>
-public enum ShaderType
+public enum ShaderStageType
 {
     /// <summary>
     /// Unknown shader type.

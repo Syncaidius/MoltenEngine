@@ -5,10 +5,10 @@ public unsafe class PassCompileResult
     public PassCompileResult(ShaderPass pass)
     {
         Pass = pass;
-        Results = new Dictionary<ShaderType, ShaderCodeResult>();
+        Results = new Dictionary<ShaderStageType, ShaderCodeResult>();
     }
 
-    public ShaderCodeResult this[ShaderType type]
+    public ShaderCodeResult this[ShaderStageType type]
     {
         get
         {
@@ -21,7 +21,7 @@ public unsafe class PassCompileResult
         set => Results[type] = value;
     }
 
-    public Dictionary<ShaderType, ShaderCodeResult> Results { get; }
+    public Dictionary<ShaderStageType, ShaderCodeResult> Results { get; }
 
     public ShaderPass Pass { get; }
 }

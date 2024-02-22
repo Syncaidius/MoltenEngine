@@ -29,28 +29,28 @@ internal abstract class RootSignaturePopulatorDX12
             uint visCount = 0;
             ShaderVisibility vis = ShaderVisibility.All;
 
-            // Check all compositions of the current pass to see where the sampler is used.
-            foreach (ShaderComposition sc in pass.Compositions)
+            // Check all stages of the current pass to see where the sampler is used.
+            foreach (ShaderPassStage sps in pass.Stages)
             {
-                // Check static samplers used in the current composition.
-                for (int j = 0; j < sc.Samplers.Length; j++)
+                // Check static samplers used in the current stage.
+                for (int j = 0; j < sps.Samplers.Length; j++)
                 {
-                    if (sc.Samplers[j] == sampler)
+                    if (sps.Samplers[j] == sampler)
                     {
                         visCount++;
 
                         // If visibility count is only 1 stage, we can use a specific visibility.
                         if (visCount == 1)
                         {
-                            vis = sc.Type switch
+                            vis = sps.Type switch
                             {
-                                ShaderType.Vertex => ShaderVisibility.Vertex,
-                                ShaderType.Geometry => ShaderVisibility.Geometry,
-                                ShaderType.Hull => ShaderVisibility.Hull,
-                                ShaderType.Domain => ShaderVisibility.Domain,
-                                ShaderType.Pixel => ShaderVisibility.Pixel,
-                                ShaderType.Amplification => ShaderVisibility.Amplification,
-                                ShaderType.Mesh => ShaderVisibility.Mesh,
+                                ShaderStageType.Vertex => ShaderVisibility.Vertex,
+                                ShaderStageType.Geometry => ShaderVisibility.Geometry,
+                                ShaderStageType.Hull => ShaderVisibility.Hull,
+                                ShaderStageType.Domain => ShaderVisibility.Domain,
+                                ShaderStageType.Pixel => ShaderVisibility.Pixel,
+                                ShaderStageType.Amplification => ShaderVisibility.Amplification,
+                                ShaderStageType.Mesh => ShaderVisibility.Mesh,
                                 _ => vis,
                             };
                         }

@@ -113,7 +113,7 @@ internal unsafe class DxcArgumentBuilder
         Set(DxcCompilerArg.EntryPoint, entryPoint);
     }
 
-    internal void SetShaderProfile(ShaderModel model, ShaderType type)
+    internal void SetShaderProfile(ShaderModel model, ShaderStageType type)
     {
         string profile = model.ToProfile(type);
         Set(DxcCompilerArg.TargetProfile, profile);

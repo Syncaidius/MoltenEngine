@@ -4,7 +4,7 @@ namespace Molten.Graphics.DX11;
 
 internal class ShaderGSStage : ShaderStageDX11
 {
-    public ShaderGSStage(GraphicsQueueDX11 queue) : base(queue, ShaderType.Geometry) { }
+    public ShaderGSStage(GraphicsQueueDX11 queue) : base(queue, ShaderStageType.Geometry) { }
 
     internal override unsafe void SetConstantBuffers(uint numBuffers, ID3D11Buffer** buffers)
     {

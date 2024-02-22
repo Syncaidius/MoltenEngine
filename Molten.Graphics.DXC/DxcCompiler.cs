@@ -89,7 +89,7 @@ public unsafe abstract class DxcCompiler : ShaderCompiler
     /// <param name="result"></param>
     /// <returns></returns>
     /// 
-    protected override ShaderCodeResult CompileNativeSource(string entryPoint, ShaderType type, ShaderCompilerContext context)
+    protected override ShaderCodeResult CompileNativeSource(string entryPoint, ShaderStageType type, ShaderCompilerContext context)
     {
         const NativeStringEncoding argEncoding = NativeStringEncoding.LPWStr;
 

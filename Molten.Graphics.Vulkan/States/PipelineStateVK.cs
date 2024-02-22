@@ -8,22 +8,22 @@ internal unsafe class PipelineStateVK : GraphicsObject<DeviceVK>
     /// <summary>
     /// A list of all shader stages in the order they are expected by Vulkan and Molten.
     /// </summary>
-    internal static readonly ShaderType[] ShaderTypes = [
-        ShaderType.Vertex,
-        ShaderType.Hull,
-        ShaderType.Domain,
-        ShaderType.Geometry,
-        ShaderType.Pixel,
-        ShaderType.Compute
+    internal static readonly ShaderStageType[] ShaderTypes = [
+        ShaderStageType.Vertex,
+        ShaderStageType.Hull,
+        ShaderStageType.Domain,
+        ShaderStageType.Geometry,
+        ShaderStageType.Pixel,
+        ShaderStageType.Compute
     ];
 
-    internal static readonly Dictionary<ShaderType, ShaderStageFlags> ShaderStageLookup = new()
+    internal static readonly Dictionary<ShaderStageType, ShaderStageFlags> ShaderStageLookup = new()
     {
-        [ShaderType.Vertex] = ShaderStageFlags.VertexBit,
-        [ShaderType.Hull] = ShaderStageFlags.TessellationControlBit,
-        [ShaderType.Domain] = ShaderStageFlags.TessellationEvaluationBit,
-        [ShaderType.Geometry] = ShaderStageFlags.GeometryBit,
-        [ShaderType.Pixel] = ShaderStageFlags.FragmentBit
+        [ShaderStageType.Vertex] = ShaderStageFlags.VertexBit,
+        [ShaderStageType.Hull] = ShaderStageFlags.TessellationControlBit,
+        [ShaderStageType.Domain] = ShaderStageFlags.TessellationEvaluationBit,
+        [ShaderStageType.Geometry] = ShaderStageFlags.GeometryBit,
+        [ShaderStageType.Pixel] = ShaderStageFlags.FragmentBit
     };
 
     GraphicsPipelineCreateInfo _info;
@@ -68,21 +68,21 @@ internal unsafe class PipelineStateVK : GraphicsObject<DeviceVK>
         device.Cache.Check(ref _dynamicState);
 
         // Setup shader stage info
-        _info.PStages = EngineUtil.AllocArray<PipelineShaderStageCreateInfo>((uint)pass.CompositionCount);
+        _info.PStages = EngineUtil.AllocArray<PipelineShaderStageCreateInfo>((uint)pass.StageCount);
         _info.StageCount = 0;
 
-        // Iterate over and add pass compositions in the order Vulkan expects.
-        foreach (ShaderType type in ShaderTypes)
+        // Iterate over and add pass stages in the order Vulkan expects.
+        foreach (ShaderStageType type in ShaderTypes)
         {
-            ShaderComposition c = pass[type];
-            if (c == null)
+            ShaderPassStage s = pass[type];
+            if (s == null)
                 continue;
 
             ref PipelineShaderStageCreateInfo stageDesc = ref _info.PStages[_info.StageCount++];
             stageDesc.SType = StructureType.PipelineShaderStageCreateInfo;
-            stageDesc.PName = EngineUtil.StringToPtr(c.EntryPoint, Encoding.UTF8);
+            stageDesc.PName = EngineUtil.StringToPtr(s.EntryPoint, Encoding.UTF8);
             stageDesc.Stage = ShaderStageLookup[type];
-            stageDesc.Module = *(ShaderModule*)c.PtrShader;
+            stageDesc.Module = *(ShaderModule*)s.PtrShader;
             stageDesc.Flags = PipelineShaderStageCreateFlags.None;
             stageDesc.PNext = null;
         }

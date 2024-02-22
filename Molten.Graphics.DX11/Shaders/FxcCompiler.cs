@@ -202,7 +202,7 @@ public unsafe class FxcCompiler : ShaderCompiler
     /// <param name="context"></param>
     /// <param name="result"></param>
     /// <returns></returns>
-    protected override ShaderCodeResult CompileNativeSource(string entryPoint, ShaderType type, ShaderCompilerContext context)
+    protected override ShaderCodeResult CompileNativeSource(string entryPoint, ShaderStageType type, ShaderCompilerContext context)
     {
         Encoding encoding = CodePagesEncodingProvider.Instance.GetEncoding(1252); // Ansi codepage
         NativeStringEncoding nativeEncoding = NativeStringEncoding.LPStr;
@@ -250,7 +250,7 @@ public unsafe class FxcCompiler : ShaderCompiler
         return null;
     }
 
-    protected override unsafe void* BuildNativeShader(ShaderPass parent, ShaderType type, void* byteCode, nuint numBytes)
+    protected override unsafe void* BuildNativeShader(ShaderPass parent, ShaderStageType type, void* byteCode, nuint numBytes)
     {
         ID3D10Blob* dx11ByteCode = (ID3D10Blob*)byteCode;
         void* ptrBytecode = dx11ByteCode->GetBufferPointer();
@@ -260,36 +260,36 @@ public unsafe class FxcCompiler : ShaderCompiler
 
         switch (type)
         {
-            case ShaderType.Compute:
+            case ShaderStageType.Compute:
                 passDX11.InputByteCode = byteCode;
 
                 ID3D11ComputeShader* csShader = null;
                 device.Ptr->CreateComputeShader(ptrBytecode, numBytes, null, &csShader);
                 return csShader;
 
-            case ShaderType.Vertex:
+            case ShaderStageType.Vertex:
                 passDX11.InputByteCode = byteCode;
 
                 ID3D11VertexShader* vsShader = null;
                 device.Ptr->CreateVertexShader(ptrBytecode, numBytes, null, &vsShader);
                 return vsShader;
 
-            case ShaderType.Hull:
+            case ShaderStageType.Hull:
                 ID3D11HullShader* hsShader = null;
                 device.Ptr->CreateHullShader(ptrBytecode, numBytes, null, &hsShader);
                 return hsShader;
 
-            case ShaderType.Domain:
+            case ShaderStageType.Domain:
                 ID3D11DomainShader* dsShader = null;
                 device.Ptr->CreateDomainShader(ptrBytecode, numBytes, null, &dsShader);
                 return dsShader;
 
-            case ShaderType.Geometry:
+            case ShaderStageType.Geometry:
                 ID3D11GeometryShader* gsShader = null;
                 device.Ptr->CreateGeometryShader(ptrBytecode, numBytes, null, &gsShader);
                 return gsShader;
 
-            case ShaderType.Pixel:
+            case ShaderStageType.Pixel:
                 ID3D11PixelShader* psShader = null;
                 device.Ptr->CreatePixelShader(ptrBytecode, numBytes, null, &psShader);
                 return psShader;

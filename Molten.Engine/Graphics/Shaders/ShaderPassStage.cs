@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics;
 
-public unsafe class ShaderComposition : GraphicsObject
+public unsafe class ShaderPassStage : GraphicsObject
 {
     /// <summary>A list of const buffers the shader stage requires to be bound.</summary>
     public ShaderBindPoint<IConstantBuffer>[] ConstantBuffers = [];
@@ -20,11 +20,11 @@ public unsafe class ShaderComposition : GraphicsObject
 
     public string EntryPoint { get; internal set; }
 
-    public ShaderType Type { get; internal set; }
+    public ShaderStageType Type { get; internal set; }
 
     void* _ptrShader;
 
-    internal ShaderComposition(ShaderPass parentPass, ShaderType type) : 
+    internal ShaderPassStage(ShaderPass parentPass, ShaderStageType type) : 
         base(parentPass.Device)
     {
         Pass = parentPass;
@@ -71,7 +71,7 @@ public unsafe class ShaderComposition : GraphicsObject
     }
 
     /// <summary>
-    /// Gets the parent <see cref="ShaderPass"/> that the current <see cref="ShaderComposition"/> belongs to.
+    /// Gets the parent <see cref="ShaderPass"/> that the current <see cref="ShaderPassStage"/> belongs to.
     /// </summary>
     public ShaderPass Pass { get; }
 }

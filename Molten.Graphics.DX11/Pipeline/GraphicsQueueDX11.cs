@@ -259,16 +259,16 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue<DeviceDX11>
         Span<bool> stageChanged = stackalloc bool[_shaderStages.Length];
         for(int i = 0; i < _shaderStages.Length; i++)
         {
-            ShaderComposition composition = pass[_shaderStages[i].Type];
-            stageChanged[i] = _shaderStages[i].Bind(composition);
+            ShaderPassStage passStage = pass[_shaderStages[i].Type];
+            stageChanged[i] = _shaderStages[i].Bind(passStage);
 
             // Set the output-merger UAVs needed by each render stage
-            if (composition != null)
+            if (passStage != null)
             {
-                for (int j = 0; j < composition.UnorderedAccessIds.Count; j++)
+                for (int j = 0; j < passStage.UnorderedAccessIds.Count; j++)
                 {
-                    uint slotID = composition.UnorderedAccessIds[j];
-                    _omUAVs[slotID] = composition.Pass.Parent.UAVs[slotID]?.Resource;
+                    uint slotID = passStage.UnorderedAccessIds[j];
+                    _omUAVs[slotID] = passStage.Pass.Parent.UAVs[slotID]?.Resource;
                 }
             }
         }
@@ -432,7 +432,7 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue<DeviceDX11>
     protected override GraphicsBindResult DoComputePass(ShaderPass hlslPass)
     {
         ShaderPassDX11 pass = hlslPass as ShaderPassDX11;
-        _cs.Bind(pass[ShaderType.Compute]);
+        _cs.Bind(pass[ShaderStageType.Compute]);
 
         Vector3UI groups = DrawInfo.Custom.ComputeGroups;
 

@@ -6,13 +6,13 @@ internal class ShaderCSStage : ShaderStageDX11
 {
     GraphicsStateValueGroup<GraphicsResource> _uavs;
 
-    public ShaderCSStage(GraphicsQueueDX11 queue) : base(queue, ShaderType.Compute)
+    public ShaderCSStage(GraphicsQueueDX11 queue) : base(queue, ShaderStageType.Compute)
     {
         uint uavSlots = queue.Device.Capabilities.Compute.MaxUnorderedAccessSlots;
         _uavs = new GraphicsStateValueGroup<GraphicsResource>(uavSlots);
     }
 
-    protected unsafe override void OnBind(ShaderComposition c, bool shaderChanged)
+    protected unsafe override void OnBind(ShaderPassStage c, bool shaderChanged)
     {
         _uavs.Reset();
 

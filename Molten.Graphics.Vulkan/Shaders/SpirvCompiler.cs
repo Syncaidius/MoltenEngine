@@ -56,7 +56,7 @@ internal class SpirvCompiler : DxcCompiler
 #endif
     }
 
-    protected override unsafe void* BuildNativeShader(ShaderPass parent, ShaderType type, void* byteCode, nuint numBytes)
+    protected override unsafe void* BuildNativeShader(ShaderPass parent, ShaderStageType type, void* byteCode, nuint numBytes)
     {
         IDxcBlob* blob = (IDxcBlob*)byteCode;
         byteCode = blob->GetBufferPointer();
@@ -106,7 +106,7 @@ internal class SpirvCompiler : DxcCompiler
             PopulateReflectionParamters(context, result, ep, ShaderIOLayoutType.Input);
             PopulateReflectionParamters(context, result, ep, ShaderIOLayoutType.Output);
 
-            if (context.Type == ShaderType.Geometry)
+            if (context.Type == ShaderStageType.Geometry)
                 result.GSInputPrimitive = GetGeometryTopology(ep);
 
             break; //  TODO support multiple entry points in reflection
@@ -488,7 +488,7 @@ internal class SpirvCompiler : DxcCompiler
         }
     }
 
-    private ShaderSVType GetSystemValue(ShaderType shaderType, ShaderParameterInfo p)
+    private ShaderSVType GetSystemValue(ShaderStageType shaderType, ShaderParameterInfo p)
     {
         string semanticName = p.SemanticName.ToLower();
 
@@ -536,7 +536,7 @@ internal class SpirvCompiler : DxcCompiler
                     return ShaderSVType.GroupThreadID;
 
                 case "gl_invocationid":
-                    if (shaderType == ShaderType.Hull)
+                    if (shaderType == ShaderStageType.Hull)
                         return ShaderSVType.OutputControlPointID;
                     else
                         return ShaderSVType.GSInstanceID;
