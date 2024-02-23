@@ -34,7 +34,7 @@ internal class SkyboxStep : RenderStep
             return;
 
         Rectangle bounds = (Rectangle)camera.Surface.Viewport.Bounds;
-        _sphereMesh[0] = context.Scene.SkyboxTexture;
+        _sphereMesh[ShaderBindType.Resource, 0] = context.Scene.SkyboxTexture;
 
         // We want to add to the previous composition, rather than completely overwrite it.
         IRenderSurface2D destSurface = context.HasComposed ? context.PreviousComposition : Renderer.Surfaces[MainSurfaceType.Scene];

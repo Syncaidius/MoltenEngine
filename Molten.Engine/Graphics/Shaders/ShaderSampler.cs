@@ -7,14 +7,6 @@ public abstract class ShaderSampler : GraphicsObject, IEquatable<ShaderSampler>,
     protected ShaderSampler(GraphicsDevice device, ShaderSamplerParameters parameters) : 
         base(device)
     {
-        // If a bind point was provided, assume the sampler is static.
-        if (parameters.Slot.HasValue)
-        {
-            BindPoint = parameters.Slot.Value;
-            BindSpace = parameters.SlotSpace.HasValue ? parameters.SlotSpace.Value : 0;
-            IsStatic = true;
-        }
-
         IsComparisonSampler = parameters.IsComparison;
         _parameters = parameters;
     }

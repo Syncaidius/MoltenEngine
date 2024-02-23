@@ -8,8 +8,6 @@ public class Shader : GraphicsObject
     public List<ShaderSampler> SharedSamplers = [];
     public Dictionary<string, ShaderVariable> Variables = new();
     public ShaderBindPoint<ShaderResourceVariable>[][] ResourceVariables;
-    
-    internal GraphicsResource[] DefaultResources;
 
     ShaderPass[] _passes = [];
 
@@ -100,23 +98,6 @@ public class Shader : GraphicsObject
             _passes[i].Dispose();
     }
 
-    public void SetDefaultResource(IGraphicsResource resource, uint slot)
-    {
-        if (slot >= DefaultResources.Length)
-            throw new IndexOutOfRangeException($"The highest slot number must be less-or-equal to the highest slot number used in the shader source code ({DefaultResources.Length}).");
-
-        EngineUtil.ArrayResize(ref DefaultResources, slot + 1);
-        DefaultResources[slot] = resource as GraphicsResource;
-    }
-
-    public GraphicsResource GetDefaultResource(uint slot)
-    {
-        if (slot >= DefaultResources.Length)
-            throw new IndexOutOfRangeException($"The highest slot number must be less-or-equal to the highest slot number used in the shader source code ({DefaultResources.Length}).");
-        else
-            return DefaultResources[slot];
-    }
-
     /// <summary>Gets or sets the value of a material parameter.</summary>
     /// <value>
     /// The <see cref="ShaderVariable"/>.
@@ -135,6 +116,45 @@ public class Shader : GraphicsObject
         {
             if (Variables.TryGetValue(varName, out ShaderVariable varInstance))
                 varInstance.Value = value;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets a default resource at the specified bind point and/or bind-space. This is used when a resource is not explicitly set.
+    /// </summary>
+    /// <param name="bindSlot"></param>
+    /// <param name="bindSpace"></param>
+    /// <param name="type">The bind type.</param>
+    /// <returns></returns>
+    public IGraphicsResource this[ShaderBindType type, uint bindSlot, uint bindSpace = 0]
+    {
+        get
+        {
+            ShaderBindPoint bp = new(bindSlot, bindSpace);
+            ref readonly ShaderBindPoint<ShaderResourceVariable>[] points = ref ResourceVariables[(int)type];
+
+            for (int i = 0; i < points.Length; i++)
+            {
+                if (bp == points[i])
+                    return points[i].Object.DefaultValue;
+            }
+
+            return null;
+        }
+
+        set
+        {
+            ShaderBindPoint bp = new(bindSlot, bindSpace);
+            ref ShaderBindPoint<ShaderResourceVariable>[] points = ref ResourceVariables[(int)type];
+
+            for (int i = 0; i < points.Length; i++)
+            {
+                if (bp == points[i])
+                {
+                    points[i].Object.DefaultValue = value as GraphicsResource;
+                    return;
+                }
+            }
         }
     }
 

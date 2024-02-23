@@ -169,7 +169,7 @@ public abstract class ShaderCompiler : EngineObject
         shader.Light = new LightMaterialProperties(shader);
 
         // Intialize the shader's default resource array, now that we have the final count of the shader's actual resources.
-        shader.DefaultResources = new GraphicsResource[shader.Resources.Length];
+        shader.DefaultResources = new GraphicsResource[shader.ResourceVariables.Length];
         return shader;
     }
 

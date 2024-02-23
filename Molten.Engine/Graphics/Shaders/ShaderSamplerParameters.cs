@@ -92,8 +92,6 @@ public class ShaderSamplerParameters : IEquatable<ShaderSamplerParameters>
         MaxAnisotropy = 0;
         BorderColor = Color.White;
         Comparison = ComparisonMode.Never;
-        Slot = 0;
-        SlotSpace = 0;
 
         // Now apply preset values.
         switch (preset)
@@ -146,9 +144,7 @@ public class ShaderSamplerParameters : IEquatable<ShaderSamplerParameters>
             IsComparison == other.IsComparison &&
             MaxMipMapLod == other.MaxMipMapLod &&
             MinMipMapLod == other.MinMipMapLod &&
-            LodBias == other.LodBias &&
-            Slot == other.Slot &&
-            SlotSpace == other.SlotSpace;
+            LodBias == other.LodBias;
     }
 }
 

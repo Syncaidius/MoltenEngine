@@ -3,8 +3,41 @@
 public abstract class ShaderResourceVariable : ShaderVariable
 {
     GraphicsResource _resource;
+    GraphicsResource _default;
 
     protected abstract bool ValidateResource(GraphicsResource value);
+
+    private void SetResource(ref GraphicsResource dest, object value, string logKey)
+    {
+        if (dest != value)
+        {
+            if (value != null)
+            {
+                if (value is GraphicsResource res && ValidateResource(res))
+                {
+                    if (ExpectedFormat != GraphicsFormat.Unknown && res.ResourceFormat != ExpectedFormat)
+                    {
+                        Parent.Device.Log.Error($"Resource ({logKey}) format mismatch on '{Name}' of '{Parent.Name}':");
+                        Parent.Device.Log.Error($"\tResource: {res.Name}");
+                        Parent.Device.Log.Error($"\tExpected: {ExpectedFormat}");
+                        Parent.Device.Log.Error($"\tReceived: {res.ResourceFormat}");
+                    }
+                    else
+                    {
+                        dest = res;
+                    }
+                }
+                else
+                {
+                    Parent.Device.Log.Error($"Cannot set non-resource '{value.GetType().Name}' object on resource ({logKey}) variable '{Name}' of '{Parent.Name}'");
+                }
+            }
+            else
+            {
+                dest = null;
+            }
+        }
+    }
 
     /// <summary>Gets the resource bound to the variable.</summary>
     public GraphicsResource Resource => _resource;
@@ -15,37 +48,16 @@ public abstract class ShaderResourceVariable : ShaderVariable
     public override object Value
     {
         get => _resource;
-        set
-        {
-            if (value != _resource)
-            {
-                if (value != null)
-                {
-                    if (value is GraphicsResource res && ValidateResource(res))
-                    {
-                        if (ExpectedFormat != GraphicsFormat.Unknown && res.ResourceFormat != ExpectedFormat)
-                        {
-                            Parent.Device.Log.Error($"Resource format mismatch on '{Name}' of '{Parent.Name}':");
-                            Parent.Device.Log.Error($"\tResource: {res.Name}");
-                            Parent.Device.Log.Error($"\tExpected: {ExpectedFormat}");
-                            Parent.Device.Log.Error($"\tReceived: {res.ResourceFormat}");
-                        }
-                        else
-                        {
-                            _resource = res;
-                        }
-                    }
-                    else
-                    {
-                        Parent.Device.Log.Error($"Cannot set non-resource '{value.GetType().Name}' object on resource variable '{Name}' of '{Parent.Name}'");
-                    }
-                }
-                else
-                {
-                    _resource = null;
-                }
-            }
-        }
+        set => SetResource(ref _resource, value, "value");
+    }
+
+    /// <summary>
+    /// Gets or sets the internal default value of the resource variable.
+    /// </summary>
+    internal GraphicsResource DefaultValue
+    {
+        get => _default;
+        set => SetResource(ref _default, value, "default");
     }
 
     /// <summary>
