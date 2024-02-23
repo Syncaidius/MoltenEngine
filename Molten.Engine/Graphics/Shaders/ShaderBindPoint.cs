@@ -1,44 +1,62 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace Molten.Graphics;
 
 [StructLayout(LayoutKind.Explicit)]
 public struct ShaderBindPoint<T> : IEquatable<ulong>, IEquatable<ShaderBindPoint>, IEquatable<ShaderBindPoint<T>>
 {
+    /// <summary>
+    /// The mask which includes the bind point, space and type as a single value.
+    /// </summary>
     [FieldOffset(0)]
-    public ulong BindMask;
+    public ulong Mask;
 
+    /// <summary>
+    /// The bind point.
+    /// </summary>
     [FieldOffset(0)]
-    public uint BindPoint;
+    public ushort Point;
 
+    /// <summary>
+    /// The bind point type.
+    /// </summary>
+    [FieldOffset(2)]
+    public ShaderBindPointType Type;
+
+    /// <summary>
+    /// The bind space for the current bind point.
+    /// </summary>
     [FieldOffset(4)]
-    public uint BindSpace;
+    public uint Space;
 
+    /// <summary>
+    /// The binding object.
+    /// </summary>
     [FieldOffset(8)]
     public T Object;
 
-    public ShaderBindPoint(uint bindPoint, uint bindSpace, T binding)
+    public ShaderBindPoint(uint bindPoint, uint bindSpace, ShaderBindPointType type, T binding)
     {
-        BindPoint = bindPoint;
-        BindSpace = bindSpace;
+        Point = (ushort)bindPoint;
+        Space = bindSpace;
+        Type = type;
         Object = binding;
     }
 
     public bool Equals(ShaderBindPoint other)
     {
-        return BindMask == other.BindMask;
+        return Mask == other.Mask;
     }
 
     public bool Equals(ShaderBindPoint<T> other)
     {
-        return BindMask == other.BindMask 
+        return Mask == other.Mask 
             && Object.Equals(other.Object);
     }
 
     public bool Equals(ulong other)
     {
-        return BindMask == other;
+        return Mask == other;
     }
 
     public override bool Equals(object obj) => obj switch
@@ -51,7 +69,7 @@ public struct ShaderBindPoint<T> : IEquatable<ulong>, IEquatable<ShaderBindPoint
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(BindMask);
+        return HashCode.Combine(Mask);
     }
 
     public static bool operator ==(ShaderBindPoint<T> left, ShaderBindPoint<T> right)
@@ -73,34 +91,60 @@ public struct ShaderBindPoint<T> : IEquatable<ulong>, IEquatable<ShaderBindPoint
     {
         return !left.Equals(right);
     }
+
+    public static bool operator ==(ShaderBindPoint left, ShaderBindPoint<T> right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(ShaderBindPoint left, ShaderBindPoint<T> right)
+    {
+        return !left.Equals(right);
+    }
 }
 
 [StructLayout(LayoutKind.Explicit)]
 public struct ShaderBindPoint : IEquatable<ulong>, IEquatable<ShaderBindPoint>
 {
+    /// <summary>
+    /// The mask which includes the bind point, space and type as a single value.
+    /// </summary>
     [FieldOffset(0)]
-    public ulong BindMask;
+    public ulong Mask;
 
+    /// <summary>
+    /// The bind point.
+    /// </summary>
     [FieldOffset(0)]
-    public uint BindPoint;
+    public ushort Point;
 
+    /// <summary>
+    /// The bind point type.
+    /// </summary>
+    [FieldOffset(2)]
+    public ShaderBindPointType Type;
+
+    /// <summary>
+    /// The bind space for the current bind point.
+    /// </summary>
     [FieldOffset(4)]
-    public uint BindSpace;
+    public uint Space;
 
-    public ShaderBindPoint(uint bindPoint, uint bindSpace)
+    public ShaderBindPoint(uint bindPoint, uint bindSpace, ShaderBindPointType type)
     {
-        BindPoint = bindPoint;
-        BindSpace = bindSpace;
+        Point = (ushort)bindPoint;
+        Space = bindSpace;
+        Type = type;
     }
 
     public bool Equals(ShaderBindPoint other)
     {
-        return BindMask == other.BindMask;
+        return Mask == other.Mask;
     }
 
     public bool Equals(ulong other)
     {
-        return BindMask == other;
+        return Mask == other;
     }
 
     public override bool Equals(object obj) => obj switch
@@ -112,7 +156,7 @@ public struct ShaderBindPoint : IEquatable<ulong>, IEquatable<ShaderBindPoint>
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(BindMask);
+        return Mask.GetHashCode();
     }
 
     public static bool operator ==(ShaderBindPoint left, ShaderBindPoint right)

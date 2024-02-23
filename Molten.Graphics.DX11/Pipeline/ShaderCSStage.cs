@@ -22,7 +22,7 @@ internal class ShaderCSStage : ShaderStageDX11
             for (int j = 0; j < c.UavResources.Length; j++)
             {
                 ref ShaderBindPoint<RWVariable> bp = ref c.UavResources[j];
-                _uavs[bp.BindPoint] = bp.Object.Resource;
+                _uavs[bp.Point] = bp.Object.Resource;
             }
 
             if (_uavs.Bind(Cmd))

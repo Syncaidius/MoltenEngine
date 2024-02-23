@@ -15,7 +15,7 @@ public class StandardMesh : Mesh<GBufferVertex>
     protected override void OnApply(GraphicsQueue queue)
     {
         base.OnApply(queue);
-        GraphicsResource normal = GetResource(1);
+        IGraphicsResource normal = this[1];
 
         if (Shader == null)
         {

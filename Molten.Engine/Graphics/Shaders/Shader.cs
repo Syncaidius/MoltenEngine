@@ -5,7 +5,7 @@ public class Shader : GraphicsObject
     public RWVariable[] UAVs = [];
     public List<ShaderSampler> SharedSamplers = [];
     public Dictionary<string, ShaderVariable> Variables = new();
-    public Dictionary<ShaderBindPoint, ShaderVariable> VariablesByBindMask = new();
+    public Dictionary<ShaderBindPoint, ShaderVariable> BindPointVariables = new();
     
     internal GraphicsResource[] DefaultResources;
 
@@ -54,20 +54,19 @@ public class Shader : GraphicsObject
         }
     }
 
-    public T CreateVariable<T>(string name, uint bindPoint, uint bindSpace)
-        where T : ShaderVariable, new()
+    internal T CreateResourceVariable<T>(string name, uint bindPoint, uint bindSpace, ShaderBindPointType type)
+        where T : ShaderResourceVariable, new()
     {
+        ShaderBindPoint bp = new ShaderBindPoint(bindPoint, bindSpace, type);
 
-        ShaderBindPoint bp = new ShaderBindPoint(bindPoint, bindSpace);
-
-        if (!VariablesByBindMask.TryGetValue(bp, out ShaderVariable variable))
+        if (!BindPointVariables.TryGetValue(bp, out ShaderVariable variable))
         {
             variable = new T();
             variable.Name = name;
             variable.Parent = this;
-            Variables.Add(name, variable);
 
-            VariablesByBindMask.Add(bp, variable);
+            Variables.Add(name, variable);
+            BindPointVariables.Add(bp, variable);
         }
 
         return variable as T;

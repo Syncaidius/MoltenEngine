@@ -4,6 +4,9 @@
 public abstract class Mesh : Renderable
 {
     GraphicsBuffer _iBuffer;
+    Shader _shader;
+    ShaderBindPoint<GraphicsResource>[] _resources;
+    bool _applied;
 
     /// <summary>
     /// Creates a new instance of <see cref="Mesh"/>, but can only be called by derived mesh classes.
@@ -16,6 +19,7 @@ public abstract class Mesh : Renderable
     protected Mesh(RenderService renderer, GraphicsResourceFlags mode, ushort maxVertices, uint maxIndices, ushort[] initialIndices = null) :
         base(renderer)
     {
+        _resources = [];
         IndexFormat = maxIndices > 0 ? GraphicsIndexFormat.UInt16 : GraphicsIndexFormat.None;
         MaxVertices = maxVertices;
         IsDiscard = mode.IsDiscard();
@@ -52,6 +56,17 @@ public abstract class Mesh : Renderable
                 IndexCount = (uint)initialIndices.Length;
         }
     }
+
+    protected void ApplyResources(Shader shader)
+    {
+        // Set as many custom resources from the renderable as possible, or use the material's default when needed.
+        for (uint i = 0; i < _resources.Length; i++)
+            shader.Resources[i].Value = _resources[i] ?? shader.DefaultResources[i];
+
+        for (uint i = (uint)_resources.Length; i < shader.Resources.Length; i++)
+            shader.Resources[i].Value = shader.DefaultResources[i];
+    }
+
 
     public void SetIndices<I>(I[] data) where I : unmanaged
     {
@@ -131,11 +146,62 @@ public abstract class Mesh : Renderable
     /// <summary>
     /// Gets or sets the material that should be used when rendering the current <see cref="Mesh"/>.
     /// </summary>
-    public Shader Shader { get; set; }
+    public Shader Shader
+    {
+        get => _shader;
+        set
+        {
+            if(_shader != value)
+            {
+                // Apply the new shader and update the resource array.
+                if(value != null)
+                {
+                    if(_resources.Length < value.Resources.Length)
+                        Array.Resize(ref _resources, value.Resources.Length);
+                }
+
+                _shader = value;
+            }
+        }
+    }
 
     public float EmissivePower { get; set; } = 1.0f;
 
     protected bool IsDiscard { get; }
+
+    /// <summary>
+    /// Gets or sets the resource at the specified bind point and/or bind-space
+    /// </summary>
+    /// <param name="bindSlot"></param>
+    /// <param name="bindSpace"></param>
+    /// <returns></returns>
+    public IGraphicsResource this[uint bindSlot, uint bindSpace = 0]
+    {
+        get
+        {
+            ShaderBindPoint bp = new ShaderBindPoint(bindSlot, bindSpace);
+            for(int i = 0; i < _resources.Length; i++)
+            {
+                if(bp == _resources[i])
+                    return _resources[i].Object;
+            }
+
+            return null;
+        }
+
+        set
+        {
+            ShaderBindPoint bp = new ShaderBindPoint(bindSlot, bindSpace);
+            for (int i = 0; i < _resources.Length; i++)
+            {
+                if (bp == _resources[i])
+                {
+                    _resources[i].Object = value as GraphicsResource;
+                    return;
+                }
+            }
+        }
+    }
 }
 
 public class Mesh<T> : Mesh
