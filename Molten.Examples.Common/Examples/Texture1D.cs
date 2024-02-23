@@ -27,8 +27,7 @@ public class Texture1DCube : MoltenExample
 
         Shader shader = _hShader.Get<Shader>();
         ITexture1D texture = _hTexture.Get<ITexture1D>();
-
-        shader.SetDefaultResource(texture, 0);
+        shader[ShaderBindType.Resource, 0] = texture;
         TestMesh.Shader = shader;
     }
 

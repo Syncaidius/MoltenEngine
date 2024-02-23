@@ -40,25 +40,21 @@ public class DeferredRendering : MoltenExample
     private void Loader_OnCompleted(ContentLoadBatch loader)
     {
         ITexture2D diffuseMap = _hTex.Get<ITexture2D>();
-        _mesh.SetResource(diffuseMap, 0);
-
         ITexture2D normalMap = _hTexNormal.Get<ITexture2D>();
-        _mesh.SetResource(normalMap, 1);
-
         ITexture2D emssiveMap = _hTexEmissive.Get<ITexture2D>();
-        _mesh.SetResource(emssiveMap, 2);
 
+        _mesh[ShaderBindType.Resource, 0] = diffuseMap;
+        _mesh[ShaderBindType.Resource, 1] = normalMap;
+        _mesh[ShaderBindType.Resource, 2] = emssiveMap;
         SetupFloor(Vector3F.Zero, 30);
 
         diffuseMap = _hTexMetal.Get<ITexture2D>();
-        _floorMesh.SetResource(diffuseMap, 0);
-
         normalMap = _hTexMetalNormal.Get<ITexture2D>();
-        _floorMesh.SetResource(normalMap, 1);
-
         emssiveMap = _hTexMetalEmissive.Get<ITexture2D>();
-        _floorMesh.SetResource(emssiveMap, 2);
 
+        _floorMesh[ShaderBindType.Resource, 0] = diffuseMap;
+        _floorMesh[ShaderBindType.Resource, 1] = normalMap;
+        _floorMesh[ShaderBindType.Resource, 2] = emssiveMap;
         MainScene.SkyboxTeture = _hTexSkybox.Get<ITextureCube>();
 
         Player.Transform.LocalPosition = new Vector3F(0, 3, -8);

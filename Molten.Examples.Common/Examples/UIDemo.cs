@@ -57,8 +57,7 @@ public class UIDemo : MoltenExample
 
         Shader shader = _hShader.Get<Shader>();
         ITexture2D texture = _hTexture.Get<ITexture2D>();
-
-        shader.SetDefaultResource(texture, 0);
+        shader[ShaderBindType.Resource, 0] = texture;
         TestMesh.Shader = shader;
 
         _window1 = new UIWindow()

@@ -88,7 +88,7 @@ public class ComputeAdd : MoltenExample
             compute["BufferOut"].Value = outBuffer;
         }
 
-        shader.SetDefaultResource(texture, 0);
+        shader[ShaderBindType.Resource, 0] = texture;
         TestMesh.Shader = shader;
     }
 

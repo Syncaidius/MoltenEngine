@@ -30,9 +30,7 @@ public class Skybox : MoltenExample
         }
 
         Shader shader = _hShader.Get<Shader>();
-        ITexture2D texture = _hTexture.Get<ITexture2D>();
-
-        shader.SetDefaultResource(texture, 0);
+        shader[ShaderBindType.Resource, 0] = _hTexture.Get<ITexture2D>();
         TestMesh.Shader = shader;
     }
 

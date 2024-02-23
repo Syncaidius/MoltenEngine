@@ -61,7 +61,7 @@ public class AudioCapture : MoltenExample
         Shader shader = _hShader.Get<Shader>();
         ITexture2D texture = _hTexture.Get<ITexture2D>();
 
-        shader.SetDefaultResource(texture, 0);
+        shader[ShaderBindType.Resource, 0] = texture;
         TestMesh.Shader = shader;
 
         _buffer = Engine.Audio.CreateBuffer(FREQUENCY, AudioFormat.Mono8, FREQUENCY);

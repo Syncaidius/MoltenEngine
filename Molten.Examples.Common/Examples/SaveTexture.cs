@@ -32,7 +32,7 @@ public class SaveTexture : MoltenExample
 
         // Manually construct a 2D texture array from the 3 textures we requested earlier
         ITexture2D tex = _hTexture.Get<ITexture2D>();
-        mat.SetDefaultResource(tex, 0);
+        mat[ShaderBindType.Resource, 0] = tex;
         TestMesh.Shader = mat;
 
         GraphicsTexture texStaging = Engine.Renderer.Device.CreateStagingTexture(tex);

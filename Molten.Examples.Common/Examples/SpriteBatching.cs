@@ -96,7 +96,7 @@ public class SpriteBatching : MoltenExample
 
         Shader shader = _hShader.Get<Shader>();
         ITexture2D texMesh = _hTexMesh.Get<ITexture2D>();
-        shader.SetDefaultResource(texMesh, 0);
+        shader[ShaderBindType.Resource, 0] = texMesh;
         TestMesh.Shader = shader;
 
         // Create points for zig-zagging lines.

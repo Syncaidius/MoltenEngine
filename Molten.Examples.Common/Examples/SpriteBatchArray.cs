@@ -33,7 +33,7 @@ public class SpriteBatchArray : MoltenExample
 
         Shader shader = _hShader.Get<Shader>();
         ITexture2D tex = _hTexture.Get<ITexture2D>();
-        shader.SetDefaultResource(tex, 0);
+        shader[ShaderBindType.Resource, 0] = tex;
         TestMesh.Shader = shader;
 
         ITexture2D texSprites = _hSpriteTexture.Get<ITexture2D>();

@@ -8,17 +8,19 @@ internal class RootSigPopulator1_1 : RootSignaturePopulatorDX12
         ref readonly GraphicsPipelineStateDesc psoDesc, 
         ShaderPassDX12 pass)
     {
+        Shader parent = pass.Parent;
+
         ref RootSignatureDesc1 desc = ref versionedDesc.Desc11;
         PopulateStaticSamplers(ref desc.PStaticSamplers, ref desc.NumStaticSamplers, pass);
 
-        desc.NumParameters = (uint)pass.Parent.Resources.Length;
+        desc.NumParameters = (uint)parent.Resources.Length;
         desc.PParameters = EngineUtil.AllocArray<RootParameter1>(desc.NumParameters);
         desc.Flags = GetFlags(in psoDesc, pass);
 
         List<DescriptorRange1> ranges = new();
-        PopulateRanges(DescriptorRangeType.Srv, ranges, pass.Parent.Resources);
-        PopulateRanges(DescriptorRangeType.Uav, ranges, pass.Parent.UAVs);
-        PopulateRanges(DescriptorRangeType.Cbv, ranges, pass.Parent.ConstBuffers);
+        PopulateRanges(DescriptorRangeType.Srv, ranges, parent.ResourceVariables[(int)ShaderBindType.Resource]);
+        PopulateRanges(DescriptorRangeType.Uav, ranges, parent.ResourceVariables[(int)ShaderBindType.UnorderedAccess]);
+        PopulateRanges(DescriptorRangeType.Cbv, ranges, parent.ResourceVariables[(int)ShaderBindType.ConstantBuffer]);
 
         // TODO Add support for heap-based samplers.
         // TODO Add support for static CBV (which require their own root parameter with the data_static flag set.
