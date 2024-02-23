@@ -15,10 +15,11 @@ public class StandardMesh : Mesh<GBufferVertex>
     protected override void OnApply(GraphicsQueue queue)
     {
         base.OnApply(queue);
-        IGraphicsResource normal = this[1];
 
         if (Shader == null)
         {
+            IGraphicsResource normal = this[ShaderBindType.Resource, 1];
+
             // Use whichever default one fits the current configuration.
             if (normal == null)
                 Shader = Renderer.FxStandardMesh_NoNormalMap;

@@ -15,13 +15,7 @@ public struct ShaderBindPoint<T> : IEquatable<ulong>, IEquatable<ShaderBindPoint
     /// The bind point.
     /// </summary>
     [FieldOffset(0)]
-    public ushort Point;
-
-    /// <summary>
-    /// The bind point type.
-    /// </summary>
-    [FieldOffset(2)]
-    public ShaderBindPointType Type;
+    public uint Point;
 
     /// <summary>
     /// The bind space for the current bind point.
@@ -35,11 +29,10 @@ public struct ShaderBindPoint<T> : IEquatable<ulong>, IEquatable<ShaderBindPoint
     [FieldOffset(8)]
     public T Object;
 
-    public ShaderBindPoint(uint bindPoint, uint bindSpace, ShaderBindPointType type, T binding)
+    public ShaderBindPoint(uint bindPoint, uint bindSpace, T binding)
     {
-        Point = (ushort)bindPoint;
+        Point = bindPoint;
         Space = bindSpace;
-        Type = type;
         Object = binding;
     }
 
@@ -116,13 +109,7 @@ public struct ShaderBindPoint : IEquatable<ulong>, IEquatable<ShaderBindPoint>
     /// The bind point.
     /// </summary>
     [FieldOffset(0)]
-    public ushort Point;
-
-    /// <summary>
-    /// The bind point type.
-    /// </summary>
-    [FieldOffset(2)]
-    public ShaderBindPointType Type;
+    public uint Point;
 
     /// <summary>
     /// The bind space for the current bind point.
@@ -130,11 +117,10 @@ public struct ShaderBindPoint : IEquatable<ulong>, IEquatable<ShaderBindPoint>
     [FieldOffset(4)]
     public uint Space;
 
-    public ShaderBindPoint(uint bindPoint, uint bindSpace, ShaderBindPointType type)
+    public ShaderBindPoint(uint bindPoint, uint bindSpace)
     {
-        Point = (ushort)bindPoint;
+        Point = bindPoint;
         Space = bindSpace;
-        Type = type;
     }
 
     public bool Equals(ShaderBindPoint other)

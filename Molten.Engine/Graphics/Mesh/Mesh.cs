@@ -1,11 +1,13 @@
-﻿namespace Molten.Graphics;
+﻿using Newtonsoft.Json.Linq;
+
+namespace Molten.Graphics;
 
 /// <summary>A base interface for mesh implementations.</summary>
 public abstract class Mesh : Renderable
 {
     GraphicsBuffer _iBuffer;
     Shader _shader;
-    ShaderBindPoint<GraphicsResource>[] _resources;
+    ShaderBindPoint<GraphicsResource>[][] _resources;
     bool _applied;
 
     /// <summary>
@@ -19,7 +21,10 @@ public abstract class Mesh : Renderable
     protected Mesh(RenderService renderer, GraphicsResourceFlags mode, ushort maxVertices, uint maxIndices, ushort[] initialIndices = null) :
         base(renderer)
     {
-        _resources = [];
+        _resources = new ShaderBindPoint<GraphicsResource>[Shader.BindTypes.Length][];
+        for(int i = 0; i < _resources.Length; i++)
+            _resources[i] = [];
+
         IndexFormat = maxIndices > 0 ? GraphicsIndexFormat.UInt16 : GraphicsIndexFormat.None;
         MaxVertices = maxVertices;
         IsDiscard = mode.IsDiscard();
@@ -59,12 +64,14 @@ public abstract class Mesh : Renderable
 
     protected void ApplyResources(Shader shader)
     {
-        // Set as many custom resources from the renderable as possible, or use the material's default when needed.
-        for (uint i = 0; i < _resources.Length; i++)
-            shader.Resources[i].Value = _resources[i] ?? shader.DefaultResources[i];
+        for (int i = 0; i < _shader.ResourceVariables.Length; i++)
+        {
+            ref ShaderBindPoint<ShaderResourceVariable>[] variables = ref _shader.ResourceVariables[i];
+            ref ShaderBindPoint<GraphicsResource>[] resources = ref _resources[i];
 
-        for (uint i = (uint)_resources.Length; i < shader.Resources.Length; i++)
-            shader.Resources[i].Value = shader.DefaultResources[i];
+            for(int r = 0; r < variables.Length; r++)
+                variables[r].Object.Value = resources[r].Object;
+        }
     }
 
 
@@ -156,8 +163,15 @@ public abstract class Mesh : Renderable
                 // Apply the new shader and update the resource array.
                 if(value != null)
                 {
-                    if(_resources.Length < value.Resources.Length)
-                        Array.Resize(ref _resources, value.Resources.Length);
+                    // Ensure the bind point lists are large enough to hold the new shader's resources.
+                    for(int i = 0; i < value.ResourceVariables.Length; i++)
+                    {
+                        ref ShaderBindPoint<ShaderResourceVariable>[] variables = ref value.ResourceVariables[i];
+                        ref ShaderBindPoint<GraphicsResource>[] resources = ref _resources[i];
+
+                        if(resources.Length < variables.Length)
+                            Array.Resize(ref resources, variables.Length);
+                    }
                 }
 
                 _shader = value;
@@ -174,16 +188,19 @@ public abstract class Mesh : Renderable
     /// </summary>
     /// <param name="bindSlot"></param>
     /// <param name="bindSpace"></param>
+    /// <param name="type">The bind type.</param>
     /// <returns></returns>
-    public IGraphicsResource this[uint bindSlot, uint bindSpace = 0]
+    public IGraphicsResource this[ShaderBindType type, uint bindSlot, uint bindSpace = 0]
     {
         get
         {
-            ShaderBindPoint bp = new ShaderBindPoint(bindSlot, bindSpace);
-            for(int i = 0; i < _resources.Length; i++)
+            ShaderBindPoint bp = new(bindSlot, bindSpace);
+            ref readonly ShaderBindPoint<GraphicsResource>[] points = ref _resources[(int)type];
+
+            for(int i = 0; i < points.Length; i++)
             {
-                if(bp == _resources[i])
-                    return _resources[i].Object;
+                if(bp == points[i])
+                    return points[i].Object;
             }
 
             return null;
@@ -191,12 +208,14 @@ public abstract class Mesh : Renderable
 
         set
         {
-            ShaderBindPoint bp = new ShaderBindPoint(bindSlot, bindSpace);
-            for (int i = 0; i < _resources.Length; i++)
+            ShaderBindPoint bp = new(bindSlot, bindSpace);
+            ref ShaderBindPoint<GraphicsResource>[] points = ref _resources[(int)type];
+
+            for (int i = 0; i < points.Length; i++)
             {
-                if (bp == _resources[i])
+                if (bp == points[i])
                 {
-                    _resources[i].Object = value as GraphicsResource;
+                    points[i].Object = value as GraphicsResource;
                     return;
                 }
             }

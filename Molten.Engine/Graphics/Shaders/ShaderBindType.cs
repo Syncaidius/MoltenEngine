@@ -1,5 +1,5 @@
 ﻿namespace Molten.Graphics;
-public enum ShaderBindPointType : ushort
+public enum ShaderBindType : ushort
 {
     ConstantBuffer = 0,
 

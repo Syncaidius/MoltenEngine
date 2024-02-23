@@ -2,10 +2,12 @@
 
 public class Shader : GraphicsObject
 {
+    public static readonly ShaderBindType[] BindTypes = Enum.GetValues<ShaderBindType>();
+
     public RWVariable[] UAVs = [];
     public List<ShaderSampler> SharedSamplers = [];
     public Dictionary<string, ShaderVariable> Variables = new();
-    public Dictionary<ShaderBindPoint, ShaderVariable> BindPointVariables = new();
+    public ShaderBindPoint<ShaderResourceVariable>[][] ResourceVariables;
     
     internal GraphicsResource[] DefaultResources;
 
@@ -29,6 +31,11 @@ public class Shader : GraphicsObject
     internal Shader(GraphicsDevice device, ShaderDefinition def, string filename = null) : 
         base(device)
     {
+        ResourceVariables = new ShaderBindPoint<ShaderResourceVariable>[BindTypes.Length][];
+
+        for (int i = 0; i < BindTypes.Length; i++)
+            ResourceVariables[i] = [];
+
         Name = def.Name;
         Description = def.Description;
         Author = def.Author;
@@ -54,22 +61,30 @@ public class Shader : GraphicsObject
         }
     }
 
-    internal T CreateResourceVariable<T>(string name, uint bindPoint, uint bindSpace, ShaderBindPointType type)
+    internal T CreateResourceVariable<T>(string name, uint bindPoint, uint bindSpace, ShaderBindType type)
         where T : ShaderResourceVariable, new()
     {
-        ShaderBindPoint bp = new ShaderBindPoint(bindPoint, bindSpace, type);
-
-        if (!BindPointVariables.TryGetValue(bp, out ShaderVariable variable))
+        ShaderBindPoint bp = new(bindPoint, bindSpace);
+        ref ShaderBindPoint<ShaderResourceVariable>[] points = ref ResourceVariables[(int)type];
+        for (int i = 0; i < points.Length; i++)
         {
-            variable = new T();
-            variable.Name = name;
-            variable.Parent = this;
-
-            Variables.Add(name, variable);
-            BindPointVariables.Add(bp, variable);
+            if (points[i] == bp)
+                return points[i].Object as T;
         }
 
-        return variable as T;
+        // Create a new variable
+        T variable = new T();
+        variable.Name = name;
+        variable.Parent = this;
+
+        Variables.Add(name, variable);
+
+        // Add new variable to bind points list.
+        int index = points.Length;
+        Array.Resize(ref points, points.Length + 1);
+        points[index].Object = variable;
+
+        return variable;
     }
 
     public void AddPass(ShaderPass pass)
