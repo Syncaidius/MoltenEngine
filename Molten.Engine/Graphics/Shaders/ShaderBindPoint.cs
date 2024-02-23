@@ -53,6 +53,26 @@ public struct ShaderBindPoint<T> : IEquatable<ulong>, IEquatable<ShaderBindPoint
     {
         return HashCode.Combine(BindMask);
     }
+
+    public static bool operator ==(ShaderBindPoint<T> left, ShaderBindPoint<T> right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(ShaderBindPoint<T> left, ShaderBindPoint<T> right)
+    {
+        return !left.Equals(right);
+    }
+
+    public static bool operator ==(ShaderBindPoint<T> left, ShaderBindPoint right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(ShaderBindPoint<T> left, ShaderBindPoint right)
+    {
+        return !left.Equals(right);
+    }
 }
 
 [StructLayout(LayoutKind.Explicit)]
@@ -93,5 +113,15 @@ public struct ShaderBindPoint : IEquatable<ulong>, IEquatable<ShaderBindPoint>
     public override int GetHashCode()
     {
         return HashCode.Combine(BindMask);
+    }
+
+    public static bool operator ==(ShaderBindPoint left, ShaderBindPoint right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(ShaderBindPoint left, ShaderBindPoint right)
+    {
+        return !left.Equals(right);
     }
 }
