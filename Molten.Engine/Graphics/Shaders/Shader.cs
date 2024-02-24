@@ -101,12 +101,12 @@ public class Shader : GraphicsObject
         get
         {
             ShaderBindPoint bp = new(bindSlot, bindSpace);
-            ref readonly ShaderBindPoint<ShaderResourceVariable>[] points = ref Resources[(int)type];
+            ref readonly ShaderBindPoint<ShaderResourceVariable>[] points = ref Bindings.Resources[(int)type];
 
             for (int i = 0; i < points.Length; i++)
             {
                 if (bp == points[i])
-                    return points[i].Object.DefaultValue;
+                    return points[i].Object.Resource;
             }
 
             return null;
@@ -115,7 +115,7 @@ public class Shader : GraphicsObject
         set
         {
             ShaderBindPoint bp = new(bindSlot, bindSpace);
-            ref ShaderBindPoint<ShaderResourceVariable>[] points = ref Resources[(int)type];
+            ref ShaderBindPoint<ShaderResourceVariable>[] points = ref Bindings.Resources[(int)type];
 
             for (int i = 0; i < points.Length; i++)
             {

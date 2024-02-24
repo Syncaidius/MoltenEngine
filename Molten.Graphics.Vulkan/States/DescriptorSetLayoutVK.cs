@@ -13,11 +13,11 @@ internal unsafe class DescriptorSetLayoutVK : GraphicsObject<DeviceVK>, IEquatab
         base(device)
     {
         _layoutBindings = new List<DescriptorSetLayoutBinding>();
-        Shader parent = pass.Parent;
+        ShaderBindManager bindings = pass.Parent.Bindings;
 
-        for(int i = 0; i < parent.Resources.Length; i++)
+        for(int i = 0; i < bindings.Resources.Length; i++)
         {
-            ref ShaderBindPoint<ShaderResourceVariable>[] variable = ref parent.Resources[i];
+            ref ShaderBindPoint<ShaderResourceVariable>[] variable = ref bindings.Resources[i];
             for(int j = 0; j < variable.Length; j++)
             {
                 ref ShaderBindPoint<ShaderResourceVariable> bp = ref variable[j];

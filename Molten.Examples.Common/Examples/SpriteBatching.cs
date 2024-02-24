@@ -85,7 +85,6 @@ public class SpriteBatching : MoltenExample
         }
     }
 
-
     private void Loader_OnCompleted(ContentLoadBatch loader)
     {
         if (!_hShader.HasAsset())

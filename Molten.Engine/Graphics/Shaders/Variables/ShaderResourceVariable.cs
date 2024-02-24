@@ -40,21 +40,21 @@ public abstract class ShaderResourceVariable : ShaderVariable
     }
 
     /// <summary>Gets the resource bound to the variable.</summary>
-    public GraphicsResource Resource => _resource;
+    public GraphicsResource Resource => _resource ?? _default;
 
     /// <summary>
     /// Gets or sets the value of the resource variable.
     /// </summary>
     public override object Value
     {
-        get => _resource;
+        get => _resource ?? _default;
         set => SetResource(ref _resource, value, "value");
     }
 
     /// <summary>
     /// Gets or sets the internal default value of the resource variable.
     /// </summary>
-    internal GraphicsResource DefaultValue
+    internal object DefaultValue
     {
         get => _default;
         set => SetResource(ref _default, value, "default");

@@ -101,7 +101,7 @@ public class InstancedMesh<V, I> : Mesh<V>
         Shader.Scene.ViewProjection.Value = camera.ViewProjection;
 
         OnApply(cmd);
-        ApplyResources(Shader);
+        ApplyResources();
         OnDraw(cmd);
         OnPostDraw(cmd);
         

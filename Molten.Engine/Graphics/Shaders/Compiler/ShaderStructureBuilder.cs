@@ -23,7 +23,12 @@ internal class ShaderStructureBuilder
                     if (bufferInfo.Type != ConstantBufferType.ResourceBindInfo)
                     {
                         IConstantBuffer cb = GetConstantBuffer(context, shader, bufferInfo);
-                        stage.AddBinding(ShaderBindType.ConstantBuffer, cb, bindPoint);
+
+                        ShaderResourceVariable<IConstantBuffer> bufferVar = stage.Bindings.Create<ShaderResourceVariable<IConstantBuffer>>(bufferInfo.Name, 
+                            bindPoint, 0, ShaderBindType.ConstantBuffer);
+
+                        stage.Bindings.Add(ShaderBindType.ConstantBuffer, bufferVar, bindPoint);
+                        bufferVar.DefaultValue = cb;
                     }
 
                     break;
@@ -49,13 +54,11 @@ internal class ShaderStructureBuilder
                     break;
 
                 case ShaderInputType.Structured:
-                    ShaderResourceVariable bVar = GetResourceVariable<ShaderResourceVariable<GraphicsBuffer>>(context, stage, bindInfo, ShaderBindType.Resource);
-                    stage.AddBinding(ShaderBindType.Resource, bVar, bindPoint);
+                    BuildResourceVariable<ShaderResourceVariable<GraphicsBuffer>>(context, stage, bindInfo, ShaderBindType.Resource);
                     break;
 
                 case ShaderInputType.UavRWStructured:
-                    RWVariable rwBuffer = GetResourceVariable<RWVariable<GraphicsBuffer>>(context, stage, bindInfo, ShaderBindType.UnorderedAccess);
-                    stage.AddBinding(ShaderBindType.UnorderedAccess, rwBuffer, bindInfo.BindPoint);
+                    BuildResourceVariable<RWVariable<GraphicsBuffer>>(context, stage, bindInfo, ShaderBindType.UnorderedAccess);
                     break;
 
                 case ShaderInputType.UavRWTyped:
@@ -130,7 +133,7 @@ internal class ShaderStructureBuilder
         {
             case ShaderResourceDimension.Texture1DArray:
             case ShaderResourceDimension.Texture1D:
-                obj = GetResourceVariable<ShaderResourceVariable<ITexture1D>>(context, stage, info, ShaderBindType.Resource);
+                obj = BuildResourceVariable<ShaderResourceVariable<ITexture1D>>(context, stage, info, ShaderBindType.Resource);
                 supportFlags |= GraphicsFormatSupportFlags.Texture1D;
                 break;
 
@@ -138,17 +141,17 @@ internal class ShaderStructureBuilder
             case ShaderResourceDimension.Texture2DMSArray:
             case ShaderResourceDimension.Texture2DArray:
             case ShaderResourceDimension.Texture2D:
-                obj = GetResourceVariable<ShaderResourceVariable<ITexture2D>>(context, stage, info, ShaderBindType.Resource);
+                obj = BuildResourceVariable<ShaderResourceVariable<ITexture2D>>(context, stage, info, ShaderBindType.Resource);
                 supportFlags |= GraphicsFormatSupportFlags.Texture2D;
                 break;
 
             case ShaderResourceDimension.Texture3D:
-                obj = GetResourceVariable<ShaderResourceVariable<ITexture3D>>(context, stage, info, ShaderBindType.Resource);
+                obj = BuildResourceVariable<ShaderResourceVariable<ITexture3D>>(context, stage, info, ShaderBindType.Resource);
                 supportFlags |= GraphicsFormatSupportFlags.Texture3D;
                 break;
 
             case ShaderResourceDimension.TextureCube:
-                obj = GetResourceVariable<ShaderResourceVariable<ITextureCube>>(context, stage, info, ShaderBindType.Resource);
+                obj = BuildResourceVariable<ShaderResourceVariable<ITextureCube>>(context, stage, info, ShaderBindType.Resource);
                 supportFlags |= GraphicsFormatSupportFlags.Texturecube;
                 break;
         }
@@ -169,69 +172,55 @@ internal class ShaderStructureBuilder
                 obj.ExpectedFormat = format;
             }
         }
-
-        stage.Bindings.Add(ShaderBindType.Resource, obj, info.BindPoint);
     }
 
     private void OnBuildRWTypedVariable(ShaderCompilerContext context, ShaderPassStage stage, ShaderResourceInfo info)
     {
-        RWVariable resource = null;
-        uint bindPoint = info.BindPoint;
-
         switch (info.Dimension)
         {
             case ShaderResourceDimension.Texture1DArray:
             case ShaderResourceDimension.Texture1D:
-                resource = GetResourceVariable<RWVariable<ITexture1D>>(context, stage, info, ShaderBindType.UnorderedAccess);
+                BuildResourceVariable<RWVariable<ITexture1D>>(context, stage, info, ShaderBindType.UnorderedAccess);
                 break;
 
             case ShaderResourceDimension.Texture2DMS:
             case ShaderResourceDimension.Texture2DMSArray:
             case ShaderResourceDimension.Texture2DArray:
             case ShaderResourceDimension.Texture2D:
-                resource = GetResourceVariable<RWVariable<ITexture2D>>(context, stage, info, ShaderBindType.UnorderedAccess);
+                BuildResourceVariable<RWVariable<ITexture2D>>(context, stage, info, ShaderBindType.UnorderedAccess);
                 break;
 
             case ShaderResourceDimension.Texture3D:
-                resource = GetResourceVariable<RWVariable<ITexture3D>>(context, stage, info, ShaderBindType.UnorderedAccess);
+                BuildResourceVariable<RWVariable<ITexture3D>>(context, stage, info, ShaderBindType.UnorderedAccess);
                 break;
 
             case ShaderResourceDimension.TextureCube:
             case ShaderResourceDimension.TextureCubeArray:
-                resource = GetResourceVariable<RWVariable<ITextureCube>>(context, stage, info, ShaderBindType.UnorderedAccess);
+                BuildResourceVariable<RWVariable<ITextureCube>>(context, stage, info, ShaderBindType.UnorderedAccess);
                 break;
         }
-
-        stage.Bindings.Add(ShaderBindType.UnorderedAccess, resource, bindPoint);
     }
 
-    private T GetResourceVariable<T>(ShaderCompilerContext context, ShaderPassStage stage, ShaderResourceInfo info, ShaderBindType bindPointType)
+    private T BuildResourceVariable<T>(ShaderCompilerContext context, ShaderPassStage stage, ShaderResourceInfo info, ShaderBindType bindType)
         where T : ShaderResourceVariable, new()
     {
-        Shader shader = stage.Pass.Parent;
-        T bVar = null;
-        Type t = typeof(T);
-
-        if (shader.Variables.TryGetValue(info.Name, out ShaderVariable existing))
+        if (stage.Pass.Parent.Variables.TryGetValue(info.Name, out ShaderVariable existing))
         {
-            T other = existing as T;
-
-            if (other != null)
+            if (existing is T resVariable)
             {
-                // If valid, use existing buffer variable.
-                if (other.GetType() == t)
-                    return other;
+                stage.Bindings.Add(bindType, resVariable, info.BindPoint, 0);
+                return resVariable;
             }
             else
             {
-                context.AddMessage($"Resource variable '{t.Name}' creation failed. A diffrent variable ('{existing.GetType().Name}') with the name '{info.Name}' already exists!");
+                context.AddMessage($"Resource variable '{typeof(T).Name}' creation failed. A diffrent variable ('{existing.GetType().Name}') with the name '{info.Name}' already exists!");
             }
         }
         else
         {
-            return stage.Bindings.Create<T>(info.Name, info.BindPoint, 0, bindPointType); // TODO - bind space
+            return stage.Bindings.Create<T>(info.Name, info.BindPoint, 0, bindType); // TODO - bind space
         }
 
-        return bVar;
+        return null;
     }
 }
