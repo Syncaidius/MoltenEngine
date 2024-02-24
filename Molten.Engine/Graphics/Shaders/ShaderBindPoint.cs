@@ -15,7 +15,7 @@ public struct ShaderBindPoint<T> : IEquatable<ulong>, IEquatable<ShaderBindPoint
     /// The bind point.
     /// </summary>
     [FieldOffset(0)]
-    public uint Point;
+    public uint BindPoint;
 
     /// <summary>
     /// The bind space for the current bind point.
@@ -31,7 +31,7 @@ public struct ShaderBindPoint<T> : IEquatable<ulong>, IEquatable<ShaderBindPoint
 
     public ShaderBindPoint(uint bindPoint, uint bindSpace, T binding)
     {
-        Point = bindPoint;
+        BindPoint = bindPoint;
         Space = bindSpace;
         Object = binding;
     }

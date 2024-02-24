@@ -23,7 +23,7 @@ internal class ShaderStructureBuilder
                     if (bufferInfo.Type != ConstantBufferType.ResourceBindInfo)
                     {
                         IConstantBuffer cb = GetConstantBuffer(context, shader, bufferInfo);
-                        stage.AddBinding(cb, bindPoint);
+                        stage.AddBinding(ShaderBindType.ConstantBuffer, cb, bindPoint);
                     }
 
                     break;
@@ -45,17 +45,17 @@ internal class ShaderStructureBuilder
 
                     }
 
-                    stage.AddBinding(samplerParams.LinkedSampler, bindPoint);
+                    stage.Bindings.Add(samplerParams.LinkedSampler, bindPoint);
                     break;
 
                 case ShaderInputType.Structured:
                     ShaderResourceVariable bVar = GetResourceVariable<ShaderResourceVariable<GraphicsBuffer>>(context, stage, bindInfo, ShaderBindType.Resource);
-                    stage.AddBinding(bVar, bindPoint);
+                    stage.AddBinding(ShaderBindType.Resource, bVar, bindPoint);
                     break;
 
                 case ShaderInputType.UavRWStructured:
                     RWVariable rwBuffer = GetResourceVariable<RWVariable<GraphicsBuffer>>(context, stage, bindInfo, ShaderBindType.UnorderedAccess);
-                    stage.AddBinding(rwBuffer, bindInfo.BindPoint);
+                    stage.AddBinding(ShaderBindType.UnorderedAccess, rwBuffer, bindInfo.BindPoint);
                     break;
 
                 case ShaderInputType.UavRWTyped:
@@ -170,7 +170,7 @@ internal class ShaderStructureBuilder
             }
         }
 
-        stage.AddBinding(obj, info.BindPoint);
+        stage.Bindings.Add(ShaderBindType.Resource, obj, info.BindPoint);
     }
 
     private void OnBuildRWTypedVariable(ShaderCompilerContext context, ShaderPassStage stage, ShaderResourceInfo info)
@@ -202,7 +202,7 @@ internal class ShaderStructureBuilder
                 break;
         }
 
-        stage.AddBinding(resource, bindPoint);
+        stage.Bindings.Add(ShaderBindType.UnorderedAccess, resource, bindPoint);
     }
 
     private T GetResourceVariable<T>(ShaderCompilerContext context, ShaderPassStage stage, ShaderResourceInfo info, ShaderBindType bindPointType)
@@ -220,17 +220,16 @@ internal class ShaderStructureBuilder
             {
                 // If valid, use existing buffer variable.
                 if (other.GetType() == t)
-                    bVar = other;
+                    return other;
             }
             else
             {
-                context.AddMessage($"Resource '{t.Name}' creation failed. A resource with the name '{info.Name}' already exists!");
+                context.AddMessage($"Resource variable '{t.Name}' creation failed. A diffrent variable ('{existing.GetType().Name}') with the name '{info.Name}' already exists!");
             }
         }
         else
         {
-            bVar = shader.CreateResourceVariable<T>(info.Name, info.BindPoint, 0, bindPointType); // TODO - bind space
-            shader.Variables.Add(bVar.Name, bVar);
+            return stage.Bindings.Create<T>(info.Name, info.BindPoint, 0, bindPointType); // TODO - bind space
         }
 
         return bVar;

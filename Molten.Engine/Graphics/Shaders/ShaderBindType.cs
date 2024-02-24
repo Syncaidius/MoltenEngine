@@ -6,6 +6,4 @@ public enum ShaderBindType : ushort
     Resource = 1,
 
     UnorderedAccess = 2,
-
-    Sampler = 3,
 }

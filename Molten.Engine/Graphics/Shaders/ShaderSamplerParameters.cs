@@ -58,6 +58,21 @@ public class ShaderSamplerParameters : IEquatable<ShaderSamplerParameters>
     public SamplerPreset Preset;
 
     /// <summary>
+    /// Gets or sets the bind-point slot of the sampler.
+    /// </summary>
+    public uint? Slot { get; set; }
+
+    /// <summary>
+    /// Gets or sets the slot bind-point space of the sampler.
+    /// </summary>
+    public uint? SlotSpace { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether not the sampler is static. A static sampler is generally included in the root signature layout, and is not bound by the application.
+    /// </summary>
+    public bool IsStatic { get; set; } = true;
+
+    /// <summary>
     /// Gets the <see cref="ShaderSampler"/> that is linked to the current parameters. 
     /// <para>This is populated internally by the shader compiler to allow common sampler instances to be shared between passes.</para>
     /// </summary>

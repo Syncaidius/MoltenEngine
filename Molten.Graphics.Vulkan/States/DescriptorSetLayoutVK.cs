@@ -13,20 +13,25 @@ internal unsafe class DescriptorSetLayoutVK : GraphicsObject<DeviceVK>, IEquatab
         base(device)
     {
         _layoutBindings = new List<DescriptorSetLayoutBinding>();
+        Shader parent = pass.Parent;
 
-        for (uint slotID = 0; slotID < pass.Parent.Resources.Length; slotID++)
+        for(int i = 0; i < parent.Resources.Length; i++)
         {
-            ShaderResourceVariable variable = pass.Parent.Resources[slotID];
-            DescriptorSetLayoutBinding binding = new DescriptorSetLayoutBinding()
+            ref ShaderBindPoint<ShaderResourceVariable>[] variable = ref parent.Resources[i];
+            for(int j = 0; j < variable.Length; j++)
             {
-                DescriptorType = GetDescriptorType(variable),
-                Binding = slotID,
-                DescriptorCount = 1,
-                PImmutableSamplers = null,
-                StageFlags = GetShaderStageFlags(pass, slotID),
-            };
+                ref ShaderBindPoint<ShaderResourceVariable> bp = ref variable[j];
+                DescriptorSetLayoutBinding binding = new DescriptorSetLayoutBinding()
+                {
+                    DescriptorType = GetDescriptorType((ShaderBindType)i, bp.Object),
+                    Binding = bp.BindPoint,
+                    DescriptorCount = 1,
+                    PImmutableSamplers = null,
+                    StageFlags = GetShaderStageFlags(pass, bp.Object),
+                };
 
-            _layoutBindings.Add(binding);
+                _layoutBindings.Add(binding);
+            }
         }
 
         _ptrBindings = EngineUtil.AllocArray<DescriptorSetLayoutBinding>((uint)_layoutBindings.Count);
@@ -82,21 +87,21 @@ internal unsafe class DescriptorSetLayoutVK : GraphicsObject<DeviceVK>, IEquatab
         // TODO check PImmutableSampler values, if any. Need to store count to iterate.
     }
 
-    private ShaderStageFlags GetShaderStageFlags(ShaderPassVK pass, uint slotID)
+    private ShaderStageFlags GetShaderStageFlags(ShaderPassVK pass, ShaderResourceVariable variable)
     {
         ShaderStageFlags flags = ShaderStageFlags.None;
 
         foreach(ShaderStageType type in PipelineStateVK.ShaderTypes)
         {
-            ShaderPassStage comp = pass[type];
-            if (comp != null && comp.ResourceIds.Contains(slotID))
+            ShaderPassStage stage = pass[type];
+            if (stage != null && stage.ResourceIds.Contains(slotID))
                 flags |= PipelineStateVK.ShaderStageLookup[type];
         }
 
         return flags;
     }
 
-    private DescriptorType GetDescriptorType(ShaderVariable variable)
+    private DescriptorType GetDescriptorType(ShaderBindType bindType, ShaderVariable variable)
     {
         switch (variable)
         {
@@ -117,7 +122,14 @@ internal unsafe class DescriptorSetLayoutVK : GraphicsObject<DeviceVK>, IEquatab
                 return DescriptorType.StorageImage;
 
             default:
-                throw new NotSupportedException("Unsupported shader resource variable type");
+                return bindType switch
+                {
+                    ShaderBindType.ConstantBuffer => DescriptorType.UniformBuffer,
+                    ShaderBindType.Resource => DescriptorType.SampledImage,
+                    ShaderBindType.UnorderedAccess => DescriptorType.StorageBuffer,
+                    ShaderBindType.Sampler => DescriptorType.Sampler,
+                    _ => throw new NotImplementedException(),
+                };
         }
     }
 

@@ -8,6 +8,7 @@ public abstract class ShaderSampler : GraphicsObject, IEquatable<ShaderSampler>,
         base(device)
     {
         IsComparisonSampler = parameters.IsComparison;
+        IsImmutable = parameters.IsStatic;
         _parameters = parameters;
     }
 
@@ -45,5 +46,5 @@ public abstract class ShaderSampler : GraphicsObject, IEquatable<ShaderSampler>,
     /// Gets whether or not the current <see cref="ShaderSampler"/> is static. 
     /// <para>A static shader sampler is generally included in the root signature layout, and is not bound by the application.</para>
     /// </summary>
-    public bool IsStatic { get; }
+    public bool IsImmutable { get; }
 }

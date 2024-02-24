@@ -64,9 +64,9 @@ public abstract class Mesh : Renderable
 
     protected void ApplyResources(Shader shader)
     {
-        for (int i = 0; i < _shader.ResourceVariables.Length; i++)
+        for (int i = 0; i < _shader.Resources.Length; i++)
         {
-            ref ShaderBindPoint<ShaderResourceVariable>[] variables = ref _shader.ResourceVariables[i];
+            ref ShaderBindPoint<ShaderResourceVariable>[] variables = ref _shader.Resources[i];
             ref ShaderBindPoint<GraphicsResource>[] resources = ref _resources[i];
 
             for(int r = 0; r < variables.Length; r++)
@@ -164,9 +164,9 @@ public abstract class Mesh : Renderable
                 if(value != null)
                 {
                     // Ensure the bind point lists are large enough to hold the new shader's resources.
-                    for(int i = 0; i < value.ResourceVariables.Length; i++)
+                    for(int i = 0; i < value.Resources.Length; i++)
                     {
-                        ref ShaderBindPoint<ShaderResourceVariable>[] variables = ref value.ResourceVariables[i];
+                        ref ShaderBindPoint<ShaderResourceVariable>[] variables = ref value.Resources[i];
                         ref ShaderBindPoint<GraphicsResource>[] resources = ref _resources[i];
 
                         if(resources.Length < variables.Length)

@@ -15,10 +15,7 @@ public abstract class ShaderPass : GraphicsObject, IEnumerable<ShaderPassStage>,
     /// <param name="customInfo">Custom information that can be passed between shader passes.</param>
     public delegate void OnCompletedCallback(ShaderPass pass, GraphicsQueue.CustomDrawInfo customInfo);
 
-    /// <summary>
-    /// The samplers to be used with the current shader pass, with the bind point as the key.
-    /// </summary>
-    public ShaderSampler[] Samplers;
+    public ShaderBindManager Bindings { get; }
 
     Dictionary<ShaderStageType, ShaderPassStage> _stages;
 
@@ -36,8 +33,7 @@ public abstract class ShaderPass : GraphicsObject, IEnumerable<ShaderPassStage>,
     protected ShaderPass(Shader parent, string name) :
         base(parent.Device)
     {
-        Samplers = [];
-        Samplers = [];
+        Bindings = new ShaderBindManager(parent, parent.Bindings);
         Parent = parent;
         Name = name;
         IsEnabled = true;

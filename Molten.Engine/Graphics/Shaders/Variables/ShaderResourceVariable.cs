@@ -34,7 +34,7 @@ public abstract class ShaderResourceVariable : ShaderVariable
             }
             else
             {
-                dest = null;
+                dest = _default;
             }
         }
     }
@@ -72,7 +72,7 @@ public abstract class ShaderResourceVariable : ShaderVariable
 /// <typeparam name="T"></typeparam>
 public class ShaderResourceVariable<T> : ShaderResourceVariable
 {
-    protected override bool ValidateResource(GraphicsResource value)
+    protected override sealed bool ValidateResource(GraphicsResource value)
     {
         return value is T;
     }
