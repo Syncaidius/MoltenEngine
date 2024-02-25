@@ -82,9 +82,12 @@ public class ShaderCompilerContext
             HasErrors = true;
     }
 
-    public void AddError(string text)
+    public void AddError(string text, Exception ex = null)
     {
-        AddMessage(text, ShaderCompilerMessage.Kind.Error);
+        if(ex != null)
+            AddMessage($"{text} -- {ex.Message}", ShaderCompilerMessage.Kind.Error);
+        else
+            AddMessage(text, ShaderCompilerMessage.Kind.Error);
     }
 
     public void AddDebug(string text)
