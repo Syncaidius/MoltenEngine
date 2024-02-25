@@ -1,6 +1,10 @@
-﻿namespace Molten.Graphics;
+﻿using Molten.Graphics.Textures;
+
+namespace Molten.Graphics;
 public class ShaderBindManager
 {
+    public delegate void OnFindVariableCallback(ref ShaderBindPoint<ShaderResourceVariable> bindPoint);
+
     ShaderBindPoint<ShaderResourceVariable>[][] _resources;
     ShaderBindPoint<ShaderSamplerVariable>[] _samplers;
     ShaderBindManager _parent;
@@ -102,6 +106,31 @@ public class ShaderBindManager
         _samplers[index] = new ShaderBindPoint<ShaderSamplerVariable>(bindPoint, bindSpace, variable);
 
         return variable;
+    }
+
+    /// <summary>
+    /// Searches for the provided variable and 
+    /// </summary>
+    /// <param name="variableToFind"></param>
+    /// <param name="onFound"></param>
+    /// <exception cref="ArgumentNullException"></exception>
+    public void OnFind(ShaderResourceVariable variableToFind, OnFindVariableCallback onFound)
+    {
+        if (variableToFind == null)
+            throw new ArgumentNullException(nameof(variableToFind));
+
+        if (onFound == null)
+            throw new ArgumentNullException(nameof(onFound));
+
+        for (int i = 0; i < Resources.Length; i++)
+        {
+            ShaderBindPoint<ShaderResourceVariable>[] list = Resources[i];
+            for (int j = 0; j < list.Length; j++)
+            {
+                if (list[i].Object == variableToFind)
+                    onFound(ref list[i]);
+            }
+        }
     }
 
     public ShaderBindPoint<ShaderResourceVariable>[][] Resources => _resources;

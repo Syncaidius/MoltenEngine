@@ -93,9 +93,8 @@ internal unsafe class DescriptorSetLayoutVK : GraphicsObject<DeviceVK>, IEquatab
 
         foreach(ShaderStageType type in PipelineStateVK.ShaderTypes)
         {
-            ShaderPassStage stage = pass[type];
-            if (stage != null && stage.ResourceIds.Contains(slotID))
-                flags |= PipelineStateVK.ShaderStageLookup[type];
+            pass[type].Bindings.OnFind(variable, (ref ShaderBindPoint<ShaderResourceVariable> v) =>
+                flags |= PipelineStateVK.ShaderStageLookup[type]);
         }
 
         return flags;
@@ -122,14 +121,7 @@ internal unsafe class DescriptorSetLayoutVK : GraphicsObject<DeviceVK>, IEquatab
                 return DescriptorType.StorageImage;
 
             default:
-                return bindType switch
-                {
-                    ShaderBindType.ConstantBuffer => DescriptorType.UniformBuffer,
-                    ShaderBindType.Resource => DescriptorType.SampledImage,
-                    ShaderBindType.UnorderedAccess => DescriptorType.StorageBuffer,
-                    ShaderBindType.Sampler => DescriptorType.Sampler,
-                    _ => throw new NotImplementedException(),
-                };
+                throw new NotSupportedException($"The provided shader variable type is not supported: {variable.GetType().Name}");
         }
     }
 
