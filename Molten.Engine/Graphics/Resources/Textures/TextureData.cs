@@ -136,7 +136,7 @@ public unsafe class TextureData : ICloneable
 
         if (Levels == null || end >= Levels.Length)
         {
-            EngineUtil.ArrayResize(ref Levels, end);
+            Array.Resize(ref Levels, (int)end);
             ArraySize = Math.Max(ArraySize, arraySlice + otherData.ArraySize);
         }
 

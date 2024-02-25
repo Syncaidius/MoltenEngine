@@ -85,7 +85,7 @@ public class ShaderCompilerContext
     public void AddError(string text, Exception ex = null)
     {
         if(ex != null)
-            AddMessage($"{text} -- {ex.Message}", ShaderCompilerMessage.Kind.Error);
+            AddMessage($"{text} -- {ex.Message}\r\n{ex.StackTrace}", ShaderCompilerMessage.Kind.Error);
         else
             AddMessage(text, ShaderCompilerMessage.Kind.Error);
     }

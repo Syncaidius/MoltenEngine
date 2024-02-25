@@ -265,7 +265,7 @@ public unsafe static class EngineUtil
     /// <exception cref="ArgumentException"></exception>
     public static ulong Align(ulong location, ulong alignment)
     {
-        if(alignment == 0 || (alignment & (alignment - 1)) != 0)
+        if (alignment == 0 || (alignment & (alignment - 1)) != 0)
             throw new ArgumentException("Alignment must be a power-of-two value.");
 
         return ((location + alignment - 1) & ~(alignment - 1));
@@ -278,65 +278,10 @@ public unsafe static class EngineUtil
     /// <param name="alignment">The alignment of the location</param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    public static T* Align<T>(T* location, ulong alignment) 
+    public static T* Align<T>(T* location, ulong alignment)
         where T : unmanaged
     {
         return (T*)Align((ulong)location, alignment);
-    }
-
-    /// <summary>
-    /// An implementation of <see cref="Array.Resize{T}(ref T[], int)"/> that is not constrained 
-    /// to [<see cref="int.MaxValue"/>] number of elements.
-    /// </summary>
-    /// <param name="array">The array to be resized.</param>
-    /// <param name="newSize">The new size of the array, must be at 
-    /// least the same size as <paramref name="array"/></param>
-    public static void ArrayResize<T>(ref T[] array, long newSize)
-    {
-        if (array == null)
-        {
-            array = new T[newSize];
-            return;
-        }
-
-        if (array.Length > newSize)
-            throw new Exception("New array size cannot be smaller than the provided array's length.");
-
-        Type t = typeof(T);
-        T[] newArray = new T[newSize];
-
-        if (t.IsValueType)
-        {
-            uint eSize = (uint)Marshal.SizeOf(t);
-            GCHandle hArray = GCHandle.Alloc(array, GCHandleType.Pinned);
-
-            try
-            {
-                void* ptrArray = hArray.AddrOfPinnedObject().ToPointer();
-                GCHandle hNewArray = GCHandle.Alloc(newArray, GCHandleType.Pinned);
-                try
-                {
-                    ulong arrayBytes = (ulong)array.LongLength * eSize;
-                    ulong available = (ulong)newArray.LongLength * eSize;
-                    void* ptrNewArray = hNewArray.AddrOfPinnedObject().ToPointer();
-                    Buffer.MemoryCopy(ptrArray, ptrNewArray, available, arrayBytes);
-                }
-                finally
-                {
-                    hNewArray.Free();
-                }
-            }
-            finally
-            {
-                hArray.Free();
-            }
-        }
-        else
-        {
-            Array.Copy(array, newArray, array.LongLength);
-        }
-
-        array = newArray;
     }
 
     /// <summary>

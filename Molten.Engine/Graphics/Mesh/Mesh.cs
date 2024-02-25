@@ -49,6 +49,10 @@ public abstract class Mesh : Renderable
     protected Mesh(RenderService renderer, GraphicsResourceFlags mode, uint maxVertices, uint maxIndices, uint[] initialIndices = null) :
         base(renderer)
     {
+        _resources = new ShaderBind<GraphicsResource>[Shader.BindTypes.Length][];
+        for (int i = 0; i < _resources.Length; i++)
+            _resources[i] = [];
+
         IndexFormat = maxIndices > 0 ? GraphicsIndexFormat.UInt32 : GraphicsIndexFormat.None;
         MaxVertices = maxVertices;
         MaxIndices = maxIndices;

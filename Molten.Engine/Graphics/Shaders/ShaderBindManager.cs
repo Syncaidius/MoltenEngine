@@ -87,7 +87,7 @@ public class ShaderBindManager
 
         // If not, check the parent for a duplicate that we can reuse.
         int index = points.Length;
-        EngineUtil.ArrayResize(ref points, index + 1);
+        Array.Resize(ref points, index + 1);
 
         if (_parent != null)
             _parent.Add(type, variable, bindPoint, bindSpace, ref points[index]);
@@ -102,7 +102,7 @@ public class ShaderBindManager
         variable.IsImmutable = sampler.IsImmutable;
 
         int index = _samplers.Length;
-        EngineUtil.ArrayResize(ref _samplers, index + 1);
+        Array.Resize(ref _samplers, index + 1);
         _samplers[index] = new ShaderBind<ShaderSamplerVariable>(bindPoint, bindSpace, variable);
 
         return variable;

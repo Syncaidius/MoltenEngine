@@ -40,8 +40,8 @@ public class LightList
             id = _elementCount++;
             if (_elementCount == Data.Length)
             {
-                EngineUtil.ArrayResize(ref Data, Data.Length + _resizeIncrement);
-                EngineUtil.ArrayResize(ref Instances, Data.Length);
+                Array.Resize(ref Data, (int)(Data.Length + _resizeIncrement));
+                Array.Resize(ref Instances, Data.Length);
             }
         }
 
