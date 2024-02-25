@@ -3,10 +3,10 @@
 namespace Molten.Graphics;
 public class ShaderBindManager
 {
-    public delegate void OnFindVariableCallback(ref ShaderBindPoint<ShaderResourceVariable> bindPoint);
+    public delegate void OnFindVariableCallback(ref ShaderBind<ShaderResourceVariable> bindPoint);
 
-    ShaderBindPoint<ShaderResourceVariable>[][] _resources;
-    ShaderBindPoint<ShaderSamplerVariable>[] _samplers;
+    ShaderBind<ShaderResourceVariable>[][] _resources;
+    ShaderBind<ShaderSamplerVariable>[] _samplers;
     ShaderBindManager _parent;
     Shader _shader;
 
@@ -14,7 +14,7 @@ public class ShaderBindManager
     {
         _shader = shader;
         _parent = parent;
-        _resources = new ShaderBindPoint<ShaderResourceVariable>[Shader.BindTypes.Length][];
+        _resources = new ShaderBind<ShaderResourceVariable>[Shader.BindTypes.Length][];
         _samplers = [];
 
         for (int i = 0; i < Shader.BindTypes.Length; i++)
@@ -24,8 +24,8 @@ public class ShaderBindManager
     internal T Create<T>(string name, uint bindPoint, uint bindSpace, ShaderBindType bindType)
         where T: ShaderResourceVariable, new()
     {
-        ShaderBindPoint bp = new(bindPoint, bindSpace);
-        ref ShaderBindPoint<ShaderResourceVariable>[] points = ref Resources[(int)bindType];
+        ShaderBindInfo bp = new(bindPoint, bindSpace);
+        ref ShaderBind<ShaderResourceVariable>[] points = ref Resources[(int)bindType];
 
         for (int i = 0; i < points.Length; i++)
         {
@@ -61,7 +61,7 @@ public class ShaderBindManager
 
     internal void Add(ShaderBindType type, ShaderResourceVariable variable, uint bindPoint, uint bindSpace = 0)
     {
-        ShaderBindPoint<ShaderResourceVariable> result = default;
+        ShaderBind<ShaderResourceVariable> result = default;
         Add(type, variable, bindPoint, bindSpace, ref result);
     }
 
@@ -70,10 +70,10 @@ public class ShaderBindManager
         ShaderResourceVariable variable,
         uint bindPoint,
         uint bindSpace,
-        ref ShaderBindPoint<ShaderResourceVariable> result)
+        ref ShaderBind<ShaderResourceVariable> result)
     {
-        ShaderBindPoint bp = new ShaderBindPoint(bindPoint, bindSpace);
-        ref ShaderBindPoint<ShaderResourceVariable>[] points = ref _resources[(int)type];
+        ShaderBindInfo bp = new ShaderBindInfo(bindPoint, bindSpace);
+        ref ShaderBind<ShaderResourceVariable>[] points = ref _resources[(int)type];
 
         // Check if the current bind manager has a duplicate bind-point for the current bind type.
         for (int i = 0; i < points.Length; i++)
@@ -92,7 +92,7 @@ public class ShaderBindManager
         if (_parent != null)
             _parent.Add(type, variable, bindPoint, bindSpace, ref points[index]);
         else
-            points[index] = new ShaderBindPoint<ShaderResourceVariable>(bindPoint, bindSpace, variable);
+            points[index] = new ShaderBind<ShaderResourceVariable>(bindPoint, bindSpace, variable);
     }
 
     internal ShaderSamplerVariable Add(ShaderSampler sampler, uint bindPoint, uint bindSpace = 0)
@@ -103,7 +103,7 @@ public class ShaderBindManager
 
         int index = _samplers.Length;
         EngineUtil.ArrayResize(ref _samplers, index + 1);
-        _samplers[index] = new ShaderBindPoint<ShaderSamplerVariable>(bindPoint, bindSpace, variable);
+        _samplers[index] = new ShaderBind<ShaderSamplerVariable>(bindPoint, bindSpace, variable);
 
         return variable;
     }
@@ -124,7 +124,7 @@ public class ShaderBindManager
 
         for (int i = 0; i < Resources.Length; i++)
         {
-            ShaderBindPoint<ShaderResourceVariable>[] list = Resources[i];
+            ShaderBind<ShaderResourceVariable>[] list = Resources[i];
             for (int j = 0; j < list.Length; j++)
             {
                 if (list[i].Object == variableToFind)
@@ -133,7 +133,9 @@ public class ShaderBindManager
         }
     }
 
-    public ShaderBindPoint<ShaderResourceVariable>[][] Resources => _resources;
+    public ShaderBind<ShaderResourceVariable>[][] Resources => _resources;
 
-    public ShaderBindPoint<ShaderSamplerVariable>[] Samplers => _samplers;
+    public ShaderBind<ShaderSamplerVariable>[] Samplers => _samplers;
+
+    public ref ShaderBind<ShaderResourceVariable>[] this[ShaderBindType type] => ref _resources[(int)type];
 }

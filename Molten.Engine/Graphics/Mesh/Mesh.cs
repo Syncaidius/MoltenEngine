@@ -7,7 +7,7 @@ public abstract class Mesh : Renderable
 {
     GraphicsBuffer _iBuffer;
     Shader _shader;
-    ShaderBindPoint<GraphicsResource>[][] _resources;
+    ShaderBind<GraphicsResource>[][] _resources;
     bool _applied;
 
     /// <summary>
@@ -21,7 +21,7 @@ public abstract class Mesh : Renderable
     protected Mesh(RenderService renderer, GraphicsResourceFlags mode, ushort maxVertices, uint maxIndices, ushort[] initialIndices = null) :
         base(renderer)
     {
-        _resources = new ShaderBindPoint<GraphicsResource>[Shader.BindTypes.Length][];
+        _resources = new ShaderBind<GraphicsResource>[Shader.BindTypes.Length][];
         for(int i = 0; i < _resources.Length; i++)
             _resources[i] = [];
 
@@ -66,8 +66,8 @@ public abstract class Mesh : Renderable
     {
         for (int i = 0; i < _shader.Bindings.Resources.Length; i++)
         {
-            ref ShaderBindPoint<ShaderResourceVariable>[] variables = ref _shader.Bindings.Resources[i];
-            ref ShaderBindPoint<GraphicsResource>[] resources = ref _resources[i];
+            ref ShaderBind<ShaderResourceVariable>[] variables = ref _shader.Bindings.Resources[i];
+            ref ShaderBind<GraphicsResource>[] resources = ref _resources[i];
 
             for(int r = 0; r < variables.Length; r++)
                 variables[r].Object.Value = resources[r].Object;
@@ -166,8 +166,8 @@ public abstract class Mesh : Renderable
                     // Ensure the bind point lists are large enough to hold the new shader's resources.
                     for(int i = 0; i < value.Bindings.Resources.Length; i++)
                     {
-                        ref ShaderBindPoint<ShaderResourceVariable>[] variables = ref value.Bindings.Resources[i];
-                        ref ShaderBindPoint<GraphicsResource>[] resources = ref _resources[i];
+                        ref ShaderBind<ShaderResourceVariable>[] variables = ref value.Bindings.Resources[i];
+                        ref ShaderBind<GraphicsResource>[] resources = ref _resources[i];
 
                         if(resources.Length < variables.Length)
                             Array.Resize(ref resources, variables.Length);
@@ -194,8 +194,8 @@ public abstract class Mesh : Renderable
     {
         get
         {
-            ShaderBindPoint bp = new(bindSlot, bindSpace);
-            ref readonly ShaderBindPoint<GraphicsResource>[] points = ref _resources[(int)type];
+            ShaderBindInfo bp = new(bindSlot, bindSpace);
+            ref readonly ShaderBind<GraphicsResource>[] points = ref _resources[(int)type];
 
             for(int i = 0; i < points.Length; i++)
             {
@@ -208,8 +208,8 @@ public abstract class Mesh : Renderable
 
         set
         {
-            ShaderBindPoint bp = new(bindSlot, bindSpace);
-            ref ShaderBindPoint<GraphicsResource>[] points = ref _resources[(int)type];
+            ShaderBindInfo bp = new(bindSlot, bindSpace);
+            ref ShaderBind<GraphicsResource>[] points = ref _resources[(int)type];
 
             for (int i = 0; i < points.Length; i++)
             {

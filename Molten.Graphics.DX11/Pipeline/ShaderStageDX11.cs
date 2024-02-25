@@ -23,16 +23,16 @@ internal unsafe abstract class ShaderStageDX11
         _shader = new GraphicsStateBasicValue<ShaderPassStage>();
     }
 
-    internal bool Bind(ShaderPassStage c)
+    internal bool Bind(ShaderPassStage passStage)
     {
-        _shader.Value = c;
+        _shader.Value = passStage;
         bool shaderChanged = _shader.Bind();
-        c = _shader.BoundValue;
+        passStage = _shader.BoundValue;
 
         if (shaderChanged)
         {
-            if (c != null)
-                SetShader(c.PtrShader, null, 0);
+            if (passStage != null)
+                SetShader(passStage.PtrShader, null, 0);
             else
                 SetShader(null, null, 0);
         }
@@ -42,34 +42,38 @@ internal unsafe abstract class ShaderStageDX11
         _resources.Reset();
         _constantBuffers.Reset();
 
-        if (c != null)
+        if (passStage != null)
         {
+            ShaderBind<ShaderSamplerVariable>[] samplers = passStage.Bindings.Samplers;
+            ShaderBind<ShaderResourceVariable>[] resources = passStage.Bindings[ShaderBindType.Resource];
+            ShaderBind<ShaderResourceVariable>[] constantBuffers = passStage.Bindings[ShaderBindType.ConstantBuffer];
+
             // Apply pass samplers to slots
-            for(int i = 0; i < c.Samplers.Length; i++)
+            for(int i = 0; i < samplers.Length; i++)
             {
-                ref ShaderBindPoint<ShaderSampler> bp = ref c.Samplers[i];
-                _samplers[bp.BindPoint] = bp.Object as SamplerDX11;
+                ref ShaderBind<ShaderSamplerVariable> bind = ref samplers[i];
+                _samplers[bind.Info.BindPoint] = bind.Object.Value as SamplerDX11;
             }
 
             // Apply pass resources to slots
-            for(int i = 0; i < c.Resources.Length; i++)
+            for(int i = 0; i < resources.Length; i++)
             {
-                ref ShaderBindPoint<ShaderResourceVariable> bp = ref c.Resources[i];
-                _resources[bp.BindPoint] = bp.Object.Resource;
+                ref ShaderBind<ShaderResourceVariable> bind = ref resources[i];
+                _resources[bind.Info.BindPoint] = bind.Object.Resource;
             }
 
             // Apply pass constant buffers to slots
-            for(int i = 0; i < c.ConstantBuffers.Length; i++)
+            for(int i = 0; i < constantBuffers.Length; i++)
             {
-                ref ShaderBindPoint<IConstantBuffer> bp = ref c.ConstantBuffers[i];
-                _constantBuffers[bp.BindPoint] = bp.Object as ConstantBufferDX11;
+                ref ShaderBind<ShaderResourceVariable> bind = ref constantBuffers[i];
+                _constantBuffers[bind.Info.BindPoint] = bind.Object.Resource as ConstantBufferDX11;
             }
         }
 
         BindSamplers();
         BindResources();
         BindConstantBuffers();
-        OnBind(c, shaderChanged);
+        OnBind(passStage, shaderChanged);
 
         return shaderChanged;
     }

@@ -20,4 +20,6 @@ public class ShaderSamplerVariable : ShaderVariable
                 _sampler = (ShaderSampler)value;
         }
     }
+
+    public ShaderSampler Sampler => _sampler;
 }

@@ -23,7 +23,6 @@ internal class ShaderStructureBuilder
                     if (bufferInfo.Type != ConstantBufferType.ResourceBindInfo)
                     {
                         IConstantBuffer cb = GetConstantBuffer(context, shader, bufferInfo);
-
                         ShaderResourceVariable<IConstantBuffer> bufferVar = stage.Bindings.Create<ShaderResourceVariable<IConstantBuffer>>(bufferInfo.Name, 
                             bindPoint, 0, ShaderBindType.ConstantBuffer);
 

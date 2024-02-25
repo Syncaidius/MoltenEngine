@@ -265,10 +265,12 @@ public unsafe partial class GraphicsQueueDX11 : GraphicsQueue<DeviceDX11>
             // Set the output-merger UAVs needed by each render stage
             if (passStage != null)
             {
-                for (int j = 0; j < passStage.UnorderedAccessIds.Count; j++)
+                ref ShaderBind<ShaderResourceVariable>[] uavs = ref passStage.Bindings[ShaderBindType.UnorderedAccess];
+
+                for (int j = 0; j < uavs.Length; j++)
                 {
-                    uint slotID = passStage.UnorderedAccessIds[j];
-                    _omUAVs[slotID] = passStage.Pass.Parent.UAVs[slotID]?.Resource;
+                    ref ShaderBind<ShaderResourceVariable> bind = ref uavs[j];
+                    _omUAVs[bind.Info.BindPoint] = bind.Object.Resource;
                 }
             }
         }

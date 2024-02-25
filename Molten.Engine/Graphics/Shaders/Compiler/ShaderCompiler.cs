@@ -105,7 +105,7 @@ public abstract class ShaderCompiler : EngineObject
         }
         catch (Exception ex)
         {
-            context.AddError($"Failed to deserialize shader definition: {ex.Message}");
+            context.AddError($"Failed to deserialize shader definition -- {ex.GetType().Name}: {ex.Message}\r\n{ex.StackTrace}");
         }
 
         // Log all context messages.

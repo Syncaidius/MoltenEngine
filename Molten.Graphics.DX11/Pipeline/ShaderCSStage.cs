@@ -12,17 +12,18 @@ internal class ShaderCSStage : ShaderStageDX11
         _uavs = new GraphicsStateValueGroup<GraphicsResource>(uavSlots);
     }
 
-    protected unsafe override void OnBind(ShaderPassStage c, bool shaderChanged)
+    protected unsafe override void OnBind(ShaderPassStage passStage, bool shaderChanged)
     {
         _uavs.Reset();
 
         // Apply unordered acces views to slots
-        if (c != null)
+        if (passStage != null)
         {
-            for (int j = 0; j < c.UavResources.Length; j++)
+            ref ShaderBind<ShaderResourceVariable>[] uavs = ref passStage.Bindings[ShaderBindType.UnorderedAccess];
+            for (int j = 0; j < uavs.Length; j++)
             {
-                ref ShaderBindPoint<RWVariable> bp = ref c.UavResources[j];
-                _uavs[bp.BindPoint] = bp.Object.Resource;
+                ref ShaderBind<ShaderResourceVariable> bind = ref uavs[j];
+                _uavs[bind.Info.BindPoint] = bind.Object.Resource;
             }
 
             if (_uavs.Bind(Cmd))

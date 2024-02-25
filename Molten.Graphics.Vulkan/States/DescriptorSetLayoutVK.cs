@@ -17,17 +17,17 @@ internal unsafe class DescriptorSetLayoutVK : GraphicsObject<DeviceVK>, IEquatab
 
         for(int i = 0; i < bindings.Resources.Length; i++)
         {
-            ref ShaderBindPoint<ShaderResourceVariable>[] variable = ref bindings.Resources[i];
+            ref ShaderBind<ShaderResourceVariable>[] variable = ref bindings.Resources[i];
             for(int j = 0; j < variable.Length; j++)
             {
-                ref ShaderBindPoint<ShaderResourceVariable> bp = ref variable[j];
+                ref ShaderBind<ShaderResourceVariable> bind = ref variable[j];
                 DescriptorSetLayoutBinding binding = new DescriptorSetLayoutBinding()
                 {
-                    DescriptorType = GetDescriptorType((ShaderBindType)i, bp.Object),
-                    Binding = bp.BindPoint,
+                    DescriptorType = GetDescriptorType((ShaderBindType)i, bind.Object),
+                    Binding = bind.Info.BindPoint,
                     DescriptorCount = 1,
                     PImmutableSamplers = null,
-                    StageFlags = GetShaderStageFlags(pass, bp.Object),
+                    StageFlags = GetShaderStageFlags(pass, bind.Object),
                 };
 
                 _layoutBindings.Add(binding);
@@ -93,7 +93,7 @@ internal unsafe class DescriptorSetLayoutVK : GraphicsObject<DeviceVK>, IEquatab
 
         foreach(ShaderStageType type in PipelineStateVK.ShaderTypes)
         {
-            pass[type].Bindings.OnFind(variable, (ref ShaderBindPoint<ShaderResourceVariable> v) =>
+            pass[type].Bindings.OnFind(variable, (ref ShaderBind<ShaderResourceVariable> v) =>
                 flags |= PipelineStateVK.ShaderStageLookup[type]);
         }
 

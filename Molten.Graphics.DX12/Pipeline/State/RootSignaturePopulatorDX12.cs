@@ -30,19 +30,19 @@ internal abstract class RootSignaturePopulatorDX12
             ShaderVisibility vis = ShaderVisibility.All;
 
             // Check all stages of the current pass to see where the sampler is used.
-            foreach (ShaderPassStage sps in pass.Stages)
+            foreach (ShaderPassStage passStage in pass.Stages)
             {
                 // Check static samplers used in the current stage.
-                for (int j = 0; j < sps.Samplers.Length; j++)
+                for (int j = 0; j < passStage.Bindings.Samplers.Length; j++)
                 {
-                    if (sps.Samplers[j].Object == sampler)
+                    if (passStage.Bindings.Samplers[j].Object.Sampler == sampler)
                     {
                         visCount++;
 
                         // If visibility count is only 1 stage, we can use a specific visibility.
                         if (visCount == 1)
                         {
-                            vis = sps.Type switch
+                            vis = passStage.Type switch
                             {
                                 ShaderStageType.Vertex => ShaderVisibility.Vertex,
                                 ShaderStageType.Geometry => ShaderVisibility.Geometry,
@@ -68,13 +68,14 @@ internal abstract class RootSignaturePopulatorDX12
             sampler.Desc.ShaderVisibility = vis;
         }
 
-        numSamplers = (uint)pass.Samplers.Length;
+        // Consolidate the samplers into the provided description array
+        numSamplers = (uint)pass.Bindings.Samplers.Length;
         if (numSamplers > 0)
         {
             samplers = EngineUtil.AllocArray<StaticSamplerDesc>(numSamplers);
             for (uint i = 0; i < numSamplers; i++)
             {
-                SamplerDX12 sampler = pass.Samplers[i] as SamplerDX12;
+                SamplerDX12 sampler = pass.Bindings.Samplers[i].Object.Sampler as SamplerDX12;
                 samplers[i] = sampler.Desc;
             }
         }
