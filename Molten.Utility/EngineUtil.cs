@@ -303,7 +303,7 @@ public unsafe static class EngineUtil
     /// <summary>
     /// Try parsing an enum value using Silk.NET's possible naming conventions. e.g. DepthWriteMask.DepthWriteMaskAll or ComparisonFunc.ComparisonLessEqual.
     /// </summary>
-    /// <param name="t"></param>
+    /// <param name="t"></param> 
     /// <param name="strValue"></param>
     /// <param name="value"></param>
     /// <returns></returns>

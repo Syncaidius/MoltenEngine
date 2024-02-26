@@ -54,7 +54,7 @@ public class ShaderBindManager
         // Add new variable to bind points list.
         int index = points.Length;
         Array.Resize(ref points, points.Length + 1);
-        points[index].Object = variable;
+        points[index] = new ShaderBind<ShaderResourceVariable>(bindPoint, bindSpace, variable);
 
         return variable;
     }
@@ -93,6 +93,8 @@ public class ShaderBindManager
             _parent.Add(type, variable, bindPoint, bindSpace, ref points[index]);
         else
             points[index] = new ShaderBind<ShaderResourceVariable>(bindPoint, bindSpace, variable);
+
+        result = points[index];
     }
 
     internal ShaderSamplerVariable Add(ShaderSampler sampler, uint bindPoint, uint bindSpace = 0)
