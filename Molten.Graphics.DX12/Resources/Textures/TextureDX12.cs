@@ -103,8 +103,7 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
                 return;
         }
 
-        _handle = new ResourceHandleDX12(this, (ID3D12Resource1*)ptr);
-
+        _handle = OnCreateHandle((ID3D12Resource1*)ptr);
         _handle.SRV.Desc = new ShaderResourceViewDesc
         {
             Format = DxgiFormat,
@@ -115,10 +114,16 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
         };
 
         if (!Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
+        {
             SetSRVDescription(ref _handle.SRV.Desc);
+            Device.Heap.Allocate(_handle.SRV);
+        }
 
         if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
+        {
             SetUAVDescription(ref _handle.SRV.Desc, ref _handle.UAV.Desc);
+            Device.Heap.Allocate(_handle.UAV);
+        }
 
         //SetDebugName(_handle.NativePtr, $"{Name}");
     }

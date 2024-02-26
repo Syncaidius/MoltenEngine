@@ -30,6 +30,11 @@ public unsafe abstract class SwapChainSurfaceDX12 : RenderSurface2DDX12, ISwapCh
         _presentParams[0] = new PresentParameters();
     }
 
+    protected override void OnCreateResource()
+    {
+        //base.OnCreateResource();
+    }
+
     protected override unsafe ResourceHandleDX12 OnCreateHandle(ID3D12Resource1* ptr)
     {
         // Resize the swap chain if needed.

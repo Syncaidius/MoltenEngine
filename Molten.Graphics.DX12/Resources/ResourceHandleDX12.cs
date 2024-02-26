@@ -16,6 +16,8 @@ public unsafe class ResourceHandleDX12 : GraphicsResourceHandle
 
     public override void Dispose()
     {
+        SRV.Dispose();
+        UAV.Dispose();
         NativeUtil.ReleasePtr(ref _ptr);
     }
 

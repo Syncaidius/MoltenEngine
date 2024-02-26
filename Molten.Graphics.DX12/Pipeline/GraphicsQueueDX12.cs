@@ -68,7 +68,7 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
         }
         else
         {
-            Log.Error("Cannot clear a non-render surface texture.");
+            throw new GraphicsResourceException(surface, "Cannot clear a non-render surface texture.");
         }
     }
 

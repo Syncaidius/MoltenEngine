@@ -23,7 +23,9 @@ public unsafe class RenderSurface1DDX12 : Texture1DDX12, IRenderSurface1D
     {
         base.OnCreateResource();
 
-        Viewport = new ViewportF(Viewport.X, Viewport.Y, Desc.Width, Desc.Height);
+        Viewport = new ViewportF(Viewport.X, Viewport.Y, Desc.Width, Desc.Height); 
+        ResourceHandleDX12<RenderTargetViewDesc> handle = (ResourceHandleDX12<RenderTargetViewDesc>)Handle;
+        Device.Heap.Allocate(handle.View);
     }
 
     protected virtual void SetRTVDescription(ref RenderTargetViewDesc desc) { }
