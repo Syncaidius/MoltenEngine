@@ -4,7 +4,7 @@ namespace Molten.Graphics.DX12;
 
 public abstract class CommandListDX12 : GraphicsCommandList
 {
-    protected CommandListDX12(CommandQueueDX12 queue, CommandAllocatorDX12 allocator) : base(queue)
+    protected CommandListDX12(GraphicsQueueDX12 queue, CommandAllocatorDX12 allocator) : base(queue)
     {
         Fence = new FenceDX12(queue.Device, FenceFlags.None);
     }

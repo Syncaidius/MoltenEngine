@@ -13,7 +13,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
 {
     ID3D12Device10* _handle;
     DeviceBuilderDX12 _builder;
-    CommandQueueDX12 _cmdDirect;
+    GraphicsQueueDX12 _cmdDirect;
     ID3D12InfoQueue1* _debugInfo;
     uint _debugCookieID;
     ShaderLayoutCache<ShaderIOLayoutDX12> _layoutCache;
@@ -65,7 +65,8 @@ public unsafe class DeviceDX12 : DeviceDXGI
             Type = CommandListType.Direct,
         };
 
-        _cmdDirect = new CommandQueueDX12(Log, this, _builder, ref cmdDesc);
+        _heapManager = new DescriptorHeapManagerDX12(this);
+        _cmdDirect = new GraphicsQueueDX12(Log, this, _builder, ref cmdDesc);
 
         Assembly includeAssembly = GetType().Assembly;
         _shaderCompiler = new HlslDxcCompiler(this, "\\Assets\\HLSL\\include\\", includeAssembly);
@@ -123,8 +124,9 @@ public unsafe class DeviceDX12 : DeviceDXGI
 
     protected override void OnDispose(bool immediate)
     {
-        _shaderCompiler?.Dispose();
-        _cmdDirect?.Dispose();
+        _shaderCompiler?.Dispose(true);
+        _cmdDirect?.Dispose(true);
+        _heapManager?.Dispose(true);
 
         if (_debugInfo != null)
         {
@@ -250,7 +252,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
     /// </summary>
     protected ref ID3D12Device10* PtrRef => ref _handle;
 
-    public override CommandQueueDX12 Queue => _cmdDirect;
+    public override GraphicsQueueDX12 Queue => _cmdDirect;
 
     /// <summary>
     /// Gets DirectX 12-specific capabilities.

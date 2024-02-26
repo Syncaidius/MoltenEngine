@@ -49,8 +49,9 @@ public unsafe class RenderSurface1DDX12 : Texture1DDX12, IRenderSurface1D
 
     public void Clear(GraphicsPriority priority, Color color)
     {
-        throw new NotImplementedException();
-        // TODO push clear task to queue
+        Surface1DClearTaskDX12 task = Device.Tasks.Get<Surface1DClearTaskDX12>();
+        task.Color = color;
+        Device.Tasks.Push(priority, this, task);
     }
 
     /// <summary>Gets the viewport that defines the default renderable area of the render target.</summary>

@@ -1,11 +1,9 @@
 ﻿using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
-using System.Reflection.Metadata;
-using System.Threading;
 
 namespace Molten.Graphics.DX12;
 
-public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
+public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
 {
     CommandQueueDesc _desc;
     ID3D12CommandQueue* _handle;
@@ -16,7 +14,7 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
     GraphicsCommandListDX12 _cmd;
     GraphicsFrameBuffer<CommandAllocatorDX12> _cmdAllocators;
 
-    internal CommandQueueDX12(Logger log, DeviceDX12 device, DeviceBuilderDX12 builder, ref CommandQueueDesc desc) : 
+    internal GraphicsQueueDX12(Logger log, DeviceDX12 device, DeviceBuilderDX12 builder, ref CommandQueueDesc desc) : 
         base(device)
     {
         _desc = desc;
@@ -56,6 +54,22 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
         //       See: https://www.3dgep.com/learning-directx-12-4/#Generate_Mipmaps_Compute_Shader
 
         throw new NotImplementedException();
+    }
+
+    internal void Clear(TextureDX12 surface, Color color)
+    {
+        if (surface.Handle is ResourceHandleDX12<RenderTargetViewDesc> rtv)
+        {
+            Transition(surface, ResourceStates.RenderTarget);
+            ref HeapHandleDX12 heapHandle = ref rtv.View.DescriptorHandle;
+            Color4 c4 = color.ToColor4();
+
+            _cmd.Handle->ClearRenderTargetView(heapHandle.CpuHandle, c4.Values, 0, null);
+        }
+        else
+        {
+            Log.Error("Cannot clear a non-render surface texture.");
+        }
     }
 
     internal void Transition(BufferDX12 buffer, ResourceStates newState)
@@ -277,11 +291,11 @@ public unsafe class CommandQueueDX12 : GraphicsQueue<DeviceDX12>
         return input;
     }
 
-    internal ID3D12CommandQueue* Ptr => _handle;
+    internal ID3D12CommandQueue* Handle => _handle;
 
     internal Logger Log { get; }
 
-    protected override GraphicsCommandList Cmd => _cmd;
+    protected override CommandListDX12 Cmd => _cmd;
 
     internal new DeviceDX12 Device { get; }
 }

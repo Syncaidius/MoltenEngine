@@ -51,7 +51,7 @@ internal unsafe class FenceDX12 : GraphicsFence
     public override bool Wait(ulong nsTimeout = ulong.MaxValue)
     {
         ulong fenceVal = Interlocked.Increment(ref _value);
-        _device.Queue.Ptr->Signal(_ptr, fenceVal);
+        _device.Queue.Handle->Signal(_ptr, fenceVal);
 
         if (_ptr->GetCompletedValue() < fenceVal)
         {
