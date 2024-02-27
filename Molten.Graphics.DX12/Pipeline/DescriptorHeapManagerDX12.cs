@@ -41,40 +41,24 @@ internal class DescriptorHeapManagerDX12 : GraphicsObject<DeviceDX12>
         });
     }
 
-    internal unsafe void Allocate(ViewDX12<ShaderResourceViewDesc> view)
+    internal HeapHandleDX12 GetResourceHandle(uint numDescriptors)
     {
-        view.DescriptorHandle = _resourceHeap.Allocate(1);
+        return _resourceHeap.Allocate(numDescriptors);
     }
 
-    internal unsafe void Allocate(ViewDX12<UnorderedAccessViewDesc> view)
+    internal HeapHandleDX12 GetRTHandle(uint numDescriptors)
     {
-        // TODO Add support for counter resources.
-        view.DescriptorHandle = _resourceHeap.Allocate(1);
-        Device.Ptr->CreateUnorderedAccessView(view.Handle.Ptr, null, view.Desc, view.DescriptorHandle.CpuHandle);
+        return _rtvHeap.Allocate(numDescriptors);
     }
 
-    internal unsafe void Allocate(ViewDX12<RenderTargetViewDesc> view)
+    internal HeapHandleDX12 GetDepthHandle(uint numDescriptors)
     {
-        view.DescriptorHandle = _rtvHeap.Allocate(1);
-        Device.Ptr->CreateRenderTargetView(view.Handle.Ptr, view.Desc, view.DescriptorHandle.CpuHandle);
+        return _dsvHeap.Allocate(numDescriptors);
     }
 
-    internal unsafe void Allocate(ViewDX12<DepthStencilViewDesc> view)
+    internal HeapHandleDX12 GetSamplerHandle(uint numDescriptors)
     {
-        view.DescriptorHandle = _dsvHeap.Allocate(1);
-        Device.Ptr->CreateDepthStencilView(view.Handle.Ptr, view.Desc, view.DescriptorHandle.CpuHandle);
-    }
-
-    internal unsafe void Allocate(ViewDX12<SamplerDesc> view)
-    {
-        view.DescriptorHandle = _samplerHeap.Allocate(1);
-        Device.Ptr->CreateSampler(view.Desc, view.DescriptorHandle.CpuHandle);
-    }
-
-    internal unsafe void Allocate(ViewDX12<ConstantBufferViewDesc> view)
-    {
-        view.DescriptorHandle = _resourceHeap.Allocate(1);
-        Device.Ptr->CreateConstantBufferView(view.Desc, view.DescriptorHandle.CpuHandle);
+        return _samplerHeap.Allocate(numDescriptors);
     }
 
     /// <summary>

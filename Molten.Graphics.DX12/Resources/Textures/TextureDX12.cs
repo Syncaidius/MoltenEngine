@@ -58,19 +58,17 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
     {
         ResourceFlags result = Flags.ToResourceFlags();
 
-        /*if (this is RenderSurface2DDX12)
+        if (this is IRenderSurface)
             result |= ResourceFlags.AllowRenderTarget;
 
-        if (this is DepthSurfaceDX12)
-            result |= ResourceFlags.AllowDepthStencil;*/
+        if (this is IDepthStencilSurface)
+            result |= ResourceFlags.AllowDepthStencil;
 
         return result;
     }
 
     protected unsafe override void OnCreateResource()
     {
-        _handle?.Dispose();
-
         HeapFlags heapFlags = HeapFlags.None;
         ResourceFlags flags = Flags.ToResourceFlags();
         HeapType heapType = Flags.ToHeapType();
@@ -104,28 +102,27 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
         }
 
         _handle = OnCreateHandle((ID3D12Resource1*)ptr);
-        _handle.SRV.Desc = new ShaderResourceViewDesc
+        ShaderResourceViewDesc srvDesc = new ShaderResourceViewDesc
         {
             Format = DxgiFormat,
-            Shader4ComponentMapping = (uint)(ShaderComponentMapping.FromMemoryComponent0 | 
-                ShaderComponentMapping.FromMemoryComponent1 | 
-                ShaderComponentMapping.FromMemoryComponent2 | 
-                ShaderComponentMapping.FromMemoryComponent3),
+            Shader4ComponentMapping = (uint)(ShaderComponentMapping.FromMemoryComponent0 |
+                    ShaderComponentMapping.FromMemoryComponent1 |
+                    ShaderComponentMapping.FromMemoryComponent2 |
+                    ShaderComponentMapping.FromMemoryComponent3),
         };
 
         if (!Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
         {
-            SetSRVDescription(ref _handle.SRV.Desc);
-            Device.Heap.Allocate(_handle.SRV);
+            SetSRVDescription(ref srvDesc);
+            _handle.SRV.Create(ref srvDesc);
         }
 
         if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
         {
-            SetUAVDescription(ref _handle.SRV.Desc, ref _handle.UAV.Desc);
-            Device.Heap.Allocate(_handle.UAV);
+            UnorderedAccessViewDesc uavDesc = default;
+            SetUAVDescription(ref srvDesc, ref uavDesc);
+            _handle.UAV.Create(ref uavDesc);
         }
-
-        //SetDebugName(_handle.NativePtr, $"{Name}");
     }
 
     protected virtual ClearValue GetClearValue() => default;
@@ -137,7 +134,11 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
 
     protected unsafe virtual ResourceHandleDX12 OnCreateHandle(ID3D12Resource1* ptr)
     {
-        return new ResourceHandleDX12(this, ptr);
+        if(_handle == null)
+            return new ResourceHandleDX12(this, ptr); 
+
+        _handle.UpdateResource(ptr);
+        return _handle;
     }
 
     protected abstract void SetUAVDescription(ref ShaderResourceViewDesc srvDesc, ref UnorderedAccessViewDesc desc);

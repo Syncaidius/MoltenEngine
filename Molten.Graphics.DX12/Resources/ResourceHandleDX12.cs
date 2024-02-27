@@ -10,14 +10,23 @@ public unsafe class ResourceHandleDX12 : GraphicsResourceHandle
     {
         _ptr = ptr;
         Device = resource.Device as DeviceDX12;
-        SRV = new ViewDX12<ShaderResourceViewDesc>(this);
-        UAV = new ViewDX12<UnorderedAccessViewDesc>(this);
+
+        if (!resource.Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
+            SRV = new SRViewDX12(this);
+
+        if(resource.Flags.Has(GraphicsResourceFlags.UnorderedAccess))
+            UAV = new UAViewDX12(this);
+    }
+
+    internal void UpdateResource(ID3D12Resource1* ptr)
+    {
+        _ptr = ptr;
     }
 
     public override void Dispose()
     {
-        SRV.Dispose();
-        UAV.Dispose();
+        SRV?.Dispose();
+        UAV?.Dispose();
         NativeUtil.ReleasePtr(ref _ptr);
     }
 
@@ -36,9 +45,9 @@ public unsafe class ResourceHandleDX12 : GraphicsResourceHandle
         _ptr = ptr;
     }
 
-    internal ViewDX12<ShaderResourceViewDesc> SRV { get; }
+    internal SRViewDX12 SRV { get; }
 
-    internal ViewDX12<UnorderedAccessViewDesc> UAV { get; }
+    internal UAViewDX12 UAV { get; }
 
     internal DeviceDX12 Device { get; }
 
@@ -47,26 +56,27 @@ public unsafe class ResourceHandleDX12 : GraphicsResourceHandle
     public unsafe ID3D12Resource* Ptr => (ID3D12Resource*)_ptr;
 }
 
-public class ResourceHandleDX12<D> : ResourceHandleDX12
-    where D : unmanaged
+public class ResourceHandleDX12<V, VD> : ResourceHandleDX12
+    where V : ViewDX12<VD>, new()
+    where VD : unmanaged
 {
     internal unsafe ResourceHandleDX12(GraphicsResource resource, ID3D12Resource1* ptr) :
         base(resource, ptr)
     {
-        View = new ViewDX12<D>(this);
+        VD desc = new VD();
+        View = new V();
+        View.Initialize(this, ref desc);
     }
 
-    internal unsafe ResourceHandleDX12(GraphicsResource resource, ID3D12Resource1* ptr, ref D desc) :
+    internal unsafe ResourceHandleDX12(GraphicsResource resource, ID3D12Resource1* ptr, ref VD desc) :
         base(resource, ptr)
     {
-        View = new ViewDX12<D>(this)
-        {
-            Desc = desc,
-        };
+        View = new V();
+        View.Initialize(this, ref desc);
     }
 
     /// <summary>
     /// An additional, unique view of the resource, with a specific description.
     /// </summary>
-    internal ViewDX12<D> View { get; }
+    internal ViewDX12<VD> View { get; }
 }

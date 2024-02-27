@@ -14,8 +14,11 @@ internal static class ResourceInterop
         if (flags.Has(GraphicsResourceFlags.DenyShaderAccess))
             result |= ResourceFlags.DenyShaderResource;
 
-        if (flags.Has(GraphicsResourceFlags.Shared))
+        if (flags.Has(GraphicsResourceFlags.SharedAccess))
             result |= ResourceFlags.AllowSimultaneousAccess;
+
+        if (flags.Has(GraphicsResourceFlags.CrossAdapter))
+            result |= ResourceFlags.AllowCrossAdapter;
 
         return result;
     }

@@ -1,7 +1,7 @@
 ﻿using Silk.NET.Direct3D12;
 
 namespace Molten.Graphics.DX12;
-internal unsafe class SwapChainHandleDX12 : ResourceHandleDX12<RenderTargetViewDesc>
+internal unsafe class SwapChainHandleDX12 : ResourceHandleDX12
 {
     ID3D12Resource1** _handles; 
     uint _handleCount;

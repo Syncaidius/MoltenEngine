@@ -39,7 +39,7 @@ internal static class DescriptionInterop
     {
         ResourceMiscFlag result = 0;
 
-        if (flags.Has(GraphicsResourceFlags.Shared))
+        if (flags.Has(GraphicsResourceFlags.SharedAccess))
             result |= ResourceMiscFlag.Shared;
 
         if (flags.Has(GraphicsResourceFlags.MipMapGeneration))

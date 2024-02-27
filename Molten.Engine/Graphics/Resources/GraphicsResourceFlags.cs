@@ -43,14 +43,25 @@ public enum GraphicsResourceFlags
     DenyShaderAccess = 1 << 5,
 
     /// <summary>
-    /// Allows the resource to be shared between logical devices, such as ID3D11Device, ID3D12Device or vkDevice instances.
+    /// Allows the resource to be shared between logical devices, queues or processes. 
+    /// For example:
+    /// <list type="bullet">
+    /// <item>Multiple ID3D11Device, ID3D12Device or vkDevice instances within the same application.</item>
+    /// <item>Two separate applcations which share data via GPU resources, such as an external game debugging editor or tool</item>
+    /// <item>Multiple command queues which need to write to the same resource at different locations.</item>
+    /// </list>
     /// </summary>
-    Shared = 1 << 6,
+    SharedAccess = 1 << 6,
+
+    /// <summary>
+    /// Allows the resource to be shared between physical devices e.g. Two descreet GPUs or one integrated and one descreet GPU.
+    /// </summary>
+    CrossAdapter = 1 << 7,
 
     /// <summary>
     /// Allow mi-pmap generation for the resource.
     /// </summary>
-    MipMapGeneration = 1 << 7,
+    MipMapGeneration = 1 << 8,
 
     /// <summary>
     /// All of the GPU and CPU read/write flags. Generally used by staging resources.
