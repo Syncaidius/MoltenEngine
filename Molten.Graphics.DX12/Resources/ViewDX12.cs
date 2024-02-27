@@ -13,7 +13,13 @@ public abstract class ViewDX12<D> : IDisposable
         Handle = handle;
     }
 
-    internal void Create(ref D desc, uint numDescriptors = 1)
+    /// <summary>
+    /// Allocates a new descriptor heap handle and (re)creates the view. 
+    /// If a heap handle already exists, it will be reused if possible.
+    /// </summary>
+    /// <param name="desc"></param>
+    /// <param name="numDescriptors"></param>
+    internal void Initialize(ref D desc, uint numDescriptors)
     {
         if (_heapHandle.NumSlots != numDescriptors)
             _heapHandle.Heap.Free(ref _heapHandle);

@@ -52,7 +52,23 @@ public unsafe class ResourceHandleDX12 : GraphicsResourceHandle
 
     public unsafe ID3D12Resource* Ptr => (ID3D12Resource*)_ptr[PtrIndex];
 
+    /// <summary>
+    /// The current resource pointer index. This is the one that will be used by default when the handle is passed to the D3D12 API.
+    /// </summary>
     public uint PtrIndex { get; set; }
 
-    public int NumResources => _ptr.Length;
+    /// <summary>
+    /// The number of indexable resources in the handle.
+    /// </summary>
+    public uint NumResources => (uint)_ptr.Length;
+
+    /// <summary>
+    /// Gets the resource pointer at the specified index.
+    /// </summary>
+    /// <param name="index">The resource pointer index.</param>
+    /// <returns></returns>
+    public ID3D12Resource* this[uint index]
+    {
+        get => (ID3D12Resource*)_ptr[index];
+    }
 }

@@ -114,14 +114,14 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
         if (!Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
         {
             SetSRVDescription(ref srvDesc);
-            _handle.SRV.Create(ref srvDesc);
+            _handle.SRV.Initialize(ref srvDesc, _handle.NumResources);
         }
 
         if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
         {
             UnorderedAccessViewDesc uavDesc = default;
             SetUAVDescription(ref srvDesc, ref uavDesc);
-            _handle.UAV.Create(ref uavDesc);
+            _handle.UAV.Initialize(ref uavDesc, _handle.NumResources);
         }
     }
 
