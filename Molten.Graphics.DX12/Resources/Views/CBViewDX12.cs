@@ -11,8 +11,8 @@ internal class CBViewDX12 : ViewDX12<ConstantBufferViewDesc>
         Handle.Device.Ptr->CreateConstantBufferView(desc, DescriptorHandle.CpuHandle);
     }
 
-    private protected override HeapHandleDX12 OnAllocateHandle(uint numDescriptors)
+    private protected override void OnAllocateHandle(uint numDescriptors, out HeapHandleDX12 handle)
     {
-        return Handle.Device.Heap.GetResourceHandle(numDescriptors);
+        handle = Handle.Device.Heap.GetResourceHandle(numDescriptors);
     }
 }

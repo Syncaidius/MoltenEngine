@@ -11,4 +11,9 @@ internal struct HeapHandleDX12
     public uint NumSlots;
 
     public DescriptorHeapDX12 Heap;
+
+    public void Free()
+    {
+        Heap?.Free(ref this);
+    }
 }

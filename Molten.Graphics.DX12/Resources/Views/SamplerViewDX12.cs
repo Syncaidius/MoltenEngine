@@ -11,8 +11,8 @@ internal class SamplerViewDX12 : ViewDX12<SamplerDesc>
         Handle.Device.Ptr->CreateSampler(desc, DescriptorHandle.CpuHandle);
     }
 
-    private protected override HeapHandleDX12 OnAllocateHandle(uint numDescriptors)
+    private protected override void OnAllocateHandle(uint numDescriptors, out HeapHandleDX12 handle)
     {
-        return Handle.Device.Heap.GetSamplerHandle(numDescriptors);
+        handle = Handle.Device.Heap.GetSamplerHandle(numDescriptors);
     }
 }

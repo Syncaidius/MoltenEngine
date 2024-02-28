@@ -12,8 +12,8 @@ internal class RTViewDX12 : ViewDX12<RenderTargetViewDesc>
         Handle.Device.Ptr->CreateRenderTargetView(Handle.Ptr, desc, DescriptorHandle.CpuHandle);
     }
 
-    private protected override HeapHandleDX12 OnAllocateHandle(uint numDescriptors)
+    private protected override void OnAllocateHandle(uint numDescriptors, out HeapHandleDX12 handle)
     {
-        return Handle.Device.Heap.GetRTHandle(numDescriptors);
+        handle = Handle.Device.Heap.GetRTHandle(numDescriptors);
     }
 }

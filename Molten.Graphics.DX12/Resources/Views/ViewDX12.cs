@@ -22,15 +22,15 @@ public abstract class ViewDX12<D> : IDisposable
     internal void Initialize(ref D desc, uint numDescriptors)
     {
         if (_heapHandle.NumSlots != numDescriptors)
-            _heapHandle.Heap.Free(ref _heapHandle);
+            _heapHandle.Free();
 
         if (_heapHandle.Heap == null)
-            _heapHandle = OnAllocateHandle(numDescriptors);
+            OnAllocateHandle(numDescriptors, out _heapHandle);
 
         OnCreate(ref desc);
     }
 
-    private protected abstract HeapHandleDX12 OnAllocateHandle(uint numDescriptors);
+    private protected abstract void OnAllocateHandle(uint numDescriptors, out HeapHandleDX12 handle);
 
     protected abstract void OnCreate(ref D desc);
 
