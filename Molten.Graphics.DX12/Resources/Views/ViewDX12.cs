@@ -5,9 +5,9 @@ namespace Molten.Graphics.DX12;
 /// <summary>
 /// Represents a view for a DirectX 12 resource, such as a shader resource (SRV), unordered-access (UAV) resource or render-target (RTV).
 /// </summary>
-/// <typeparam name="D">Underlying view description type.</typeparam>
-public abstract class ViewDX12<D> : IDisposable
-    where D : unmanaged
+/// <typeparam name="DESC">Underlying view description type.</typeparam>
+public abstract class ViewDX12<DESC> : IDisposable
+    where DESC : unmanaged
 {
     HeapHandleDX12 _heapHandle;
 
@@ -21,7 +21,7 @@ public abstract class ViewDX12<D> : IDisposable
     /// </summary>
     /// <param name="desc"></param>
     /// <param name="numDescriptors"></param>
-    internal void Initialize(ref D desc)
+    internal void Initialize(ref DESC desc)
     {
         if (_heapHandle.NumSlots != Handle.NumResources)
             _heapHandle.Free();
@@ -34,7 +34,7 @@ public abstract class ViewDX12<D> : IDisposable
 
     private protected abstract void OnAllocateHandle(uint numDescriptors, out HeapHandleDX12 handle);
 
-    protected abstract void OnCreate(ref D desc);
+    protected abstract void OnCreate(ref DESC desc);
 
     public void Dispose()
     {

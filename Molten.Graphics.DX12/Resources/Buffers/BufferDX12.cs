@@ -82,35 +82,23 @@ public class BufferDX12 : GraphicsBuffer
         switch (BufferType)
         {
             case GraphicsBufferType.Vertex:
-                var vbv = new ResourceHandleDX12<VertexBufferView>(this, ptr);
-                vbv.View.Desc = new VertexBufferView()
-                {
-                    BufferLocation = ptr->GetGPUVirtualAddress() + Offset,
-                    SizeInBytes = (uint)SizeInBytes,
-                    StrideInBytes = Stride,
-                };
-                _handle = vbv;
+                _handle = new VBHandleDX12(this, ptr);
                 break;
 
             case GraphicsBufferType.Index:
-                var ibv = new ResourceHandleDX12<IndexBufferView>(this, ptr);
-                ibv.View.Desc = new IndexBufferView()
-                {
-                    BufferLocation = ptr->GetGPUVirtualAddress() + Offset,
-                    Format = ResourceFormat.ToApi(),
-                    SizeInBytes = (uint)SizeInBytes,
-                };
-                _handle = ibv;
+                _handle = new IBHandleDX12(this, ptr);
                 break;
 
             case GraphicsBufferType.Constant:
-                var cbv = new ResourceHandleDX12<ConstantBufferViewDesc>(this, ptr);
-                cbv.View.Desc = new ConstantBufferViewDesc()
+                CBHandleDX12 cbHandle = new(this, ptr);
+                ConstantBufferViewDesc cbDesc = new()
                 {
                     BufferLocation = ptr->GetGPUVirtualAddress() + Offset,
                     SizeInBytes = (uint)SizeInBytes,
                 };
-                _handle = cbv;
+
+                cbHandle.CBV.Initialize(ref cbDesc);
+                _handle = cbHandle;
                 break;
 
             default:
