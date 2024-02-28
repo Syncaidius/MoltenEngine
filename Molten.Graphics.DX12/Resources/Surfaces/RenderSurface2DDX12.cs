@@ -25,10 +25,7 @@ public unsafe class RenderSurface2DDX12 : Texture2DDX12, IRenderSurface2D
     protected override void OnCreateResource()
     {
         base.OnCreateResource();
-
         Viewport = new ViewportF(Viewport.X, Viewport.Y, Desc.Width, Desc.Height);
-        ResourceHandleDX12<RenderTargetViewDesc> handle = (ResourceHandleDX12<RenderTargetViewDesc>)Handle;
-        Device.Heap.Allocate(handle.View);
     }
 
     protected override unsafe ResourceHandleDX12 OnCreateHandle(ID3D12Resource1* ptr)
@@ -46,7 +43,10 @@ public unsafe class RenderSurface2DDX12 : Texture2DDX12, IRenderSurface2D
             },
         };
 
-        return new ResourceHandleDX12<RenderTargetViewDesc>(this, ptr, ref desc);
+        RTHandleDX12 handle = new RTHandleDX12(this, ptr);
+        handle.RTV.Initialize(ref desc);
+
+        return handle;
     }
 
     public void Clear(GraphicsPriority priority, Color color)

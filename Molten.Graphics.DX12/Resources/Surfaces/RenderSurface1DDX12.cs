@@ -22,10 +22,7 @@ public unsafe class RenderSurface1DDX12 : Texture1DDX12, IRenderSurface1D
     protected override void OnCreateResource()
     {
         base.OnCreateResource();
-
         Viewport = new ViewportF(Viewport.X, Viewport.Y, Desc.Width, Desc.Height); 
-        ResourceHandleDX12<RenderTargetViewDesc> handle = (ResourceHandleDX12<RenderTargetViewDesc>)Handle;
-        Device.Heap.Allocate(handle.View);
     }
 
     protected virtual void SetRTVDescription(ref RenderTargetViewDesc desc) { }
@@ -45,8 +42,10 @@ public unsafe class RenderSurface1DDX12 : Texture1DDX12, IRenderSurface1D
         };
 
         SetRTVDescription(ref desc);
+        RTHandleDX12 handle = new RTHandleDX12(this, ptr);
+        handle.RTV.Initialize(ref desc);
 
-        return new ResourceHandleDX12<RenderTargetViewDesc>(this, ptr, ref desc);
+        return handle;
     }
 
     public void Clear(GraphicsPriority priority, Color color)

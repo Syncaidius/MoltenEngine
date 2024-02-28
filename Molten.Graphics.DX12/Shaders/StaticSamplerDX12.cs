@@ -2,11 +2,11 @@
 
 namespace Molten.Graphics.DX12;
 
-public unsafe class SamplerDX12 : ShaderSampler
+public unsafe class StaticSamplerDX12 : ShaderSampler
 {
     StaticSamplerDesc _desc;
 
-    internal unsafe SamplerDX12(DeviceDX12 device, ShaderSamplerParameters parameters) :
+    internal unsafe StaticSamplerDX12(DeviceDX12 device, ShaderSamplerParameters parameters) :
         base(device, parameters)
     {
         _desc = new StaticSamplerDesc()

@@ -148,7 +148,11 @@ public unsafe class DeviceDX12 : DeviceDXGI
 
     protected override ShaderSampler OnCreateSampler(ShaderSamplerParameters parameters)
     {
-        return new SamplerDX12(this, parameters);
+        // TODO Add support for heap-based (non-static) samplers
+        if(parameters.IsStatic)
+            return new StaticSamplerDX12(this, parameters);
+        else
+            throw new NotImplementedException("Heap-based (non-static) samplers are not implemented yet!");
     }
 
     protected override ShaderPass OnCreateShaderPass(Shader shader, string name)

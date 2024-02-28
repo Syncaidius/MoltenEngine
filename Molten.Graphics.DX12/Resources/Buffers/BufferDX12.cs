@@ -126,7 +126,7 @@ public class BufferDX12 : GraphicsBuffer
 
         if (!Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
         {
-            _handle.SRV.Desc = new ShaderResourceViewDesc()
+            ShaderResourceViewDesc desc = new()
             {
                 Format = ResourceFormat.ToApi(),
                 ViewDimension = SrvDimension.Buffer,
@@ -142,11 +142,13 @@ public class BufferDX12 : GraphicsBuffer
                     StructureByteStride = Stride, // TODO If stride is 0, then it is a typed buffer, where the ResourceFormat must be set to a valid format.
                 },
             };
+
+            _handle.SRV.Initialize(ref desc);
         }
 
         if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
         {
-            _handle.UAV.Desc = new UnorderedAccessViewDesc()
+            UnorderedAccessViewDesc desc = new()
             {
                 Format = ResourceFormat.ToApi(),
                 ViewDimension = UavDimension.Buffer,
@@ -159,6 +161,8 @@ public class BufferDX12 : GraphicsBuffer
                     StructureByteStride = Stride, // TODO If stride is 0, then it is a typed buffer, where the ResourceFormat must be set to a valid format.
                 },
             };
+
+            _handle.UAV.Initialize(ref desc);
         }
 
         return _handle;

@@ -25,7 +25,7 @@ internal abstract class RootSignaturePopulatorDX12
         // Finalize sampler visibility. Iterate over all samplers used in the pass.
         for (int i = 0; i < pass.Parent.SharedSamplers.Count; i++)
         {
-            SamplerDX12 sampler = pass.Parent.SharedSamplers[i] as SamplerDX12;
+            StaticSamplerDX12 sampler = pass.Parent.SharedSamplers[i] as StaticSamplerDX12;
             uint visCount = 0;
             ShaderVisibility vis = ShaderVisibility.All;
 
@@ -75,7 +75,7 @@ internal abstract class RootSignaturePopulatorDX12
             samplers = EngineUtil.AllocArray<StaticSamplerDesc>(numSamplers);
             for (uint i = 0; i < numSamplers; i++)
             {
-                SamplerDX12 sampler = pass.Bindings.Samplers[i].Object.Sampler as SamplerDX12;
+                StaticSamplerDX12 sampler = pass.Bindings.Samplers[i].Object.Sampler as StaticSamplerDX12;
                 samplers[i] = sampler.Desc;
             }
         }

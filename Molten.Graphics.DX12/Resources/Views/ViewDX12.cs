@@ -1,4 +1,6 @@
-﻿namespace Molten.Graphics.DX12;
+﻿using Silk.NET.Direct3D12;
+
+namespace Molten.Graphics.DX12;
 
 /// <summary>
 /// Represents a view for a DirectX 12 resource, such as a shader resource (SRV), unordered-access (UAV) resource or render-target (RTV).
@@ -19,13 +21,13 @@ public abstract class ViewDX12<D> : IDisposable
     /// </summary>
     /// <param name="desc"></param>
     /// <param name="numDescriptors"></param>
-    internal void Initialize(ref D desc, uint numDescriptors)
+    internal void Initialize(ref D desc)
     {
-        if (_heapHandle.NumSlots != numDescriptors)
+        if (_heapHandle.NumSlots != Handle.NumResources)
             _heapHandle.Free();
 
         if (_heapHandle.Heap == null)
-            OnAllocateHandle(numDescriptors, out _heapHandle);
+            OnAllocateHandle(Handle.NumResources, out _heapHandle);
 
         OnCreate(ref desc);
     }

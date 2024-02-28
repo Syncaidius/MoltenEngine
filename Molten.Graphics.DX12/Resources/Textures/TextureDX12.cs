@@ -114,14 +114,14 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
         if (!Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
         {
             SetSRVDescription(ref srvDesc);
-            _handle.SRV.Initialize(ref srvDesc, _handle.NumResources);
+            _handle.SRV.Initialize(ref srvDesc);
         }
 
         if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
         {
             UnorderedAccessViewDesc uavDesc = default;
             SetUAVDescription(ref srvDesc, ref uavDesc);
-            _handle.UAV.Initialize(ref uavDesc, _handle.NumResources);
+            _handle.UAV.Initialize(ref uavDesc);
         }
     }
 
@@ -134,10 +134,11 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
 
     protected unsafe virtual ResourceHandleDX12 OnCreateHandle(ID3D12Resource1* ptr)
     {
-        if(_handle == null)
-            return new ResourceHandleDX12(this, ptr); 
+        if (_handle == null)
+            return new ResourceHandleDX12(this, ptr);
+        else
+            _handle[0] = ptr;
 
-        _handle.UpdateResource(ptr);
         return _handle;
     }
 
