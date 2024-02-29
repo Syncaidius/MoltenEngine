@@ -13,6 +13,7 @@ public unsafe class CommandAllocatorDX12 : GraphicsObject<DeviceDX12>
     {
         Guid guid = ID3D12CommandAllocator.Guid;
         Type = type;
+        Queue = queue;
 
         void* ptr = null;
         HResult hr = Device.Ptr->CreateCommandAllocator(CommandListType.Direct, &guid, &ptr);

@@ -21,6 +21,8 @@ public unsafe class DeviceDX12 : DeviceDXGI
     DescriptorHeapManagerDX12 _heapManager;
     uint _nodeCount;
 
+    FenceDX12 _presentFence;
+
     internal DeviceDX12(RendererDX12 renderer, GraphicsManagerDXGI manager, IDXGIAdapter4* adapter, DeviceBuilderDX12 deviceBuilder) :
         base(renderer, manager, adapter)
     {
@@ -133,12 +135,18 @@ public unsafe class DeviceDX12 : DeviceDXGI
 
     protected override void OnBeginFrame(ThreadedList<ISwapChainSurface> surfaces)
     {
-        throw new NotImplementedException();
+        
     }
 
     protected override void OnEndFrame(ThreadedList<ISwapChainSurface> surfaces)
     {
-        throw new NotImplementedException();
+        surfaces.For(0, (index, surface) =>
+        {
+            if (surface.IsEnabled)
+                (surface as SwapChainSurfaceDX12).Present();
+        });
+
+        _presentFence.Wait();
     }
 
     protected override ShaderSampler OnCreateSampler(ShaderSamplerParameters parameters)

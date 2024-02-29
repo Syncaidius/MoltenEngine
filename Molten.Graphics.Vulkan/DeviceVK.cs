@@ -360,7 +360,7 @@ public unsafe class DeviceVK : GraphicsDevice
             _presentSurfaces.Add(vkSurface);
         });
 
-        if (_presentSurfaces.Count == 0)
+        if (_presentSurfaces.Count == 0) // TODO Remove this - What if we're rendering directly to a texture that may be saved to file or streamed?
             return;
 
         // Check if our unsafe arrays need resizing.

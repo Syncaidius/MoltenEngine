@@ -4,6 +4,7 @@ using Molten.Windows32;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
 using Silk.NET.DXGI;
+using System.Diagnostics;
 
 namespace Molten.Graphics.DX12;
 
@@ -20,10 +21,10 @@ public unsafe abstract class SwapChainSurfaceDX12 : RenderSurface2DDX12, ISwapCh
     uint _vsync;
     RTHandleDX12 _handle;
 
-    internal SwapChainSurfaceDX12(DeviceDX12 device, uint width, uint height, uint mipCount, GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm)
+    internal SwapChainSurfaceDX12(DeviceDX12 device, uint width, uint height, uint mipCount, GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm, string name = null)
         : base(device, width, height, 
               GraphicsResourceFlags.DenyShaderAccess | GraphicsResourceFlags.None | GraphicsResourceFlags.GpuWrite,
-              format, mipCount, 1, AntiAliasLevel.None, MSAAQuality.Default)
+              format, mipCount, 1, AntiAliasLevel.None, MSAAQuality.Default, name)
     {
         _dispatchQueue = new ThreadedQueue<Action>();
         _presentParams = EngineUtil.Alloc<PresentParameters>();
@@ -42,7 +43,13 @@ public unsafe abstract class SwapChainSurfaceDX12 : RenderSurface2DDX12, ISwapCh
         {
             NativeUtil.ReleasePtr(ref NativeSwapChain);
             OnCreateSwapchain(ref Desc);
-            NativeSwapChain->GetDesc1(ref _swapDesc);
+
+            if(NativeSwapChain != null)
+                NativeSwapChain->GetDesc1(ref _swapDesc);
+            else if(Debugger.IsAttached)
+                throw new InvalidOperationException("Swap chain creation failed.");
+            else
+                Device.Log.Error("Swap chain creation failed.");
 
             _vsync = Device.Settings.VSync ? 1U : 0;
             Device.Settings.VSync.OnChanged += VSync_OnChanged;
