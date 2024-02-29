@@ -36,10 +36,10 @@ public class DepthSurfaceDX12 : Texture2DDX12, IDepthStencilSurface
         UpdateViewport();
     }
 
-    protected override void OnCreateResource()
+    protected unsafe override ID3D12Resource1* OnCreateTexture()
     {
-        base.OnCreateResource();
         UpdateViewport();
+        return base.OnCreateTexture();
     }
 
     private void UpdateViewport()

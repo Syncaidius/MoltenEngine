@@ -9,6 +9,12 @@ internal class RTHandleDX12 : ResourceHandleDX12
         RTV = new RTViewDX12(this);
     }
 
+    internal unsafe RTHandleDX12(TextureDX12 texture, ID3D12Resource1** resources, uint numResources) : 
+        base(texture, resources, numResources)
+    {
+        RTV = new RTViewDX12(this);
+    }
+
     public override void Dispose()
     {
         RTV.Dispose();

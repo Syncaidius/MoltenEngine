@@ -95,4 +95,9 @@ internal unsafe class DescriptorHeapDX12 : GraphicsObject<DeviceDX12>
     {
         return heap._handle;
     }
+
+    /// <summary>
+    /// Gets the increment size of the heap, in bytes.
+    /// </summary>
+    public uint IncrementSize => _incrementSize;
 }

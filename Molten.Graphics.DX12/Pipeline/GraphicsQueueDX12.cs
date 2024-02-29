@@ -58,13 +58,13 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
 
     internal void Clear(TextureDX12 surface, Color color)
     {
-        if (surface.Handle is ResourceHandleDX12<RenderTargetViewDesc> rtv)
+        if (surface.Handle is RTHandleDX12 rtHandle)
         {
             Transition(surface, ResourceStates.RenderTarget);
-            ref HeapHandleDX12 heapHandle = ref rtv.View.DescriptorHandle;
+            ref CpuDescriptorHandle cpuHandle = ref rtHandle.RTV.CpuHandle;
             Color4 c4 = color.ToColor4();
 
-            _cmd.Handle->ClearRenderTargetView(heapHandle.CpuHandle, c4.Values, 0, null);
+            _cmd.Handle->ClearRenderTargetView(cpuHandle, c4.Values, 0, null);
         }
         else
         {

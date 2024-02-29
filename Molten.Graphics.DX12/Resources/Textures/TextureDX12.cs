@@ -67,7 +67,41 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
         return result;
     }
 
-    protected unsafe override void OnCreateResource()
+    protected unsafe override sealed void OnCreateResource()
+    {
+        ID3D12Resource1* ptr = OnCreateTexture();
+        _handle = OnCreateHandle(ptr);
+        ShaderResourceViewDesc srvDesc = new ShaderResourceViewDesc
+        {
+            Format = DxgiFormat,
+            Shader4ComponentMapping = (uint)(ShaderComponentMapping.FromMemoryComponent0 |
+                    ShaderComponentMapping.FromMemoryComponent1 |
+                    ShaderComponentMapping.FromMemoryComponent2 |
+                    ShaderComponentMapping.FromMemoryComponent3),
+        };
+
+        if (!Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
+        {
+            SetSRVDescription(ref srvDesc);
+            _handle.SRV.Initialize(ref srvDesc);
+        }
+
+        if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
+        {
+            UnorderedAccessViewDesc uavDesc = default;
+            SetUAVDescription(ref srvDesc, ref uavDesc);
+            _handle.UAV.Initialize(ref uavDesc);
+        }
+    }
+
+    protected virtual ClearValue GetClearValue() => default;
+
+    protected override void OnGraphicsRelease()
+    {
+        _handle?.Dispose();
+    }
+
+    protected unsafe virtual ID3D12Resource1* OnCreateTexture()
     {
         HeapFlags heapFlags = HeapFlags.None;
         ResourceFlags flags = Flags.ToResourceFlags();
@@ -98,38 +132,10 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
         {
             HResult hr = Device.Ptr->CreateCommittedResource2(&heapProp, heapFlags, ptrDesc, stateFlags, ptrClearValue, _protectedSession, &guid, &ptr);
             if (!Device.Log.CheckResult(hr, () => $"Failed to create {_desc.Dimension} resource"))
-                return;
+                return null;
         }
 
-        _handle = OnCreateHandle((ID3D12Resource1*)ptr);
-        ShaderResourceViewDesc srvDesc = new ShaderResourceViewDesc
-        {
-            Format = DxgiFormat,
-            Shader4ComponentMapping = (uint)(ShaderComponentMapping.FromMemoryComponent0 |
-                    ShaderComponentMapping.FromMemoryComponent1 |
-                    ShaderComponentMapping.FromMemoryComponent2 |
-                    ShaderComponentMapping.FromMemoryComponent3),
-        };
-
-        if (!Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
-        {
-            SetSRVDescription(ref srvDesc);
-            _handle.SRV.Initialize(ref srvDesc);
-        }
-
-        if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
-        {
-            UnorderedAccessViewDesc uavDesc = default;
-            SetUAVDescription(ref srvDesc, ref uavDesc);
-            _handle.UAV.Initialize(ref uavDesc);
-        }
-    }
-
-    protected virtual ClearValue GetClearValue() => default;
-
-    protected override void OnGraphicsRelease()
-    {
-        _handle?.Dispose();
+        return (ID3D12Resource1*)ptr;
     }
 
     protected unsafe virtual ResourceHandleDX12 OnCreateHandle(ID3D12Resource1* ptr)

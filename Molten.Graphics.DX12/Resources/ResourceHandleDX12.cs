@@ -8,7 +8,7 @@ public unsafe class ResourceHandleDX12 : GraphicsResourceHandle
 
     internal ResourceHandleDX12(GraphicsResource resource, params ID3D12Resource1*[] ptr) : base(resource)
     {
-        _ptr = ptr;
+        SetResources(ptr);
         Device = resource.Device as DeviceDX12;
 
         if (!resource.Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
@@ -16,6 +16,32 @@ public unsafe class ResourceHandleDX12 : GraphicsResourceHandle
 
         if(resource.Flags.Has(GraphicsResourceFlags.UnorderedAccess))
             UAV = new UAViewDX12(this);
+    }
+
+    internal ResourceHandleDX12(GraphicsResource resource, ID3D12Resource1** ptr, uint numResources) : base(resource)
+    {
+        SetResources(ptr, numResources);
+        Device = resource.Device as DeviceDX12;
+
+        if (!resource.Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
+            SRV = new SRViewDX12(this);
+
+        if (resource.Flags.Has(GraphicsResourceFlags.UnorderedAccess))
+            UAV = new UAViewDX12(this);
+    }
+
+    public void SetResources(params ID3D12Resource1*[] ptr)
+    {
+        _ptr = ptr;
+    }
+
+    public void SetResources(ID3D12Resource1** ptr, uint numResources)
+    {
+        if(_ptr == null || _ptr.Length != numResources)
+            _ptr = new ID3D12Resource1*[numResources];
+
+        for (int i = 0; i < numResources; i++)
+            _ptr[i] = ptr[i];
     }
 
     public override void Dispose()
@@ -29,12 +55,12 @@ public unsafe class ResourceHandleDX12 : GraphicsResourceHandle
 
     public static implicit operator ID3D12Resource1*(ResourceHandleDX12 handle)
     {
-        return handle._ptr[handle.PtrIndex];
+        return handle._ptr[handle.Index];
     }
 
     public static implicit operator ID3D12Resource*(ResourceHandleDX12 handle)
     {
-        return (ID3D12Resource*)handle._ptr[handle.PtrIndex];
+        return (ID3D12Resource*)handle._ptr[handle.Index];
     }
 
     internal SRViewDX12 SRV { get; }
@@ -43,14 +69,14 @@ public unsafe class ResourceHandleDX12 : GraphicsResourceHandle
 
     internal DeviceDX12 Device { get; }
 
-    internal unsafe ID3D12Resource1* Ptr1 => _ptr[PtrIndex];
+    internal unsafe ID3D12Resource1* Ptr1 => _ptr[Index];
 
-    internal unsafe ID3D12Resource* Ptr => (ID3D12Resource*)_ptr[PtrIndex];
+    internal unsafe ID3D12Resource* Ptr => (ID3D12Resource*)_ptr[Index];
 
     /// <summary>
     /// The current resource pointer index. This is the one that will be used by default when the handle is passed to the D3D12 API.
     /// </summary>
-    internal uint PtrIndex { get; set; }
+    internal uint Index { get; set; }
 
     /// <summary>
     /// The number of indexable resources in the handle.

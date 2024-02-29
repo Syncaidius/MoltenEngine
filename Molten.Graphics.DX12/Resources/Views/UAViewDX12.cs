@@ -7,11 +7,11 @@ internal class UAViewDX12 : ViewDX12<UnorderedAccessViewDesc>
     {
     }
 
-    protected unsafe override void OnCreate(ref UnorderedAccessViewDesc desc)
+    protected override unsafe void OnCreate(ref UnorderedAccessViewDesc desc, ID3D12Resource1* resource, ref CpuDescriptorHandle heapHandle, uint resourceIndex)
     {
         // TODO Add support for counter resources.
 
-        Handle.Device.Ptr->CreateUnorderedAccessView(Handle.Ptr, null, desc, DescriptorHandle.CpuHandle);
+        Handle.Device.Ptr->CreateUnorderedAccessView((ID3D12Resource*)resource, null, desc, heapHandle);
     }
 
     private protected override void OnAllocateHandle(uint numDescriptors, out HeapHandleDX12 handle)

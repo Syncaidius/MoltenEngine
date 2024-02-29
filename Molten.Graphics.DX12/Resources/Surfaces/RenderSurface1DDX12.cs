@@ -19,10 +19,10 @@ public unsafe class RenderSurface1DDX12 : Texture1DDX12, IRenderSurface1D
         Name = $"Surface_{name ?? GetType().Name}";
     }
 
-    protected override void OnCreateResource()
-    {
-        base.OnCreateResource();
-        Viewport = new ViewportF(Viewport.X, Viewport.Y, Desc.Width, Desc.Height); 
+    protected override ID3D12Resource1* OnCreateTexture()
+    {       
+        Viewport = new ViewportF(Viewport.X, Viewport.Y, Desc.Width, Desc.Height);
+        return base.OnCreateTexture();
     }
 
     protected virtual void SetRTVDescription(ref RenderTargetViewDesc desc) { }

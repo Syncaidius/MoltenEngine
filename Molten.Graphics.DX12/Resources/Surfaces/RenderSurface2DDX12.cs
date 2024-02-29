@@ -22,10 +22,10 @@ public unsafe class RenderSurface2DDX12 : Texture2DDX12, IRenderSurface2D
         Name = $"Surface_{name ?? GetType().Name}";
     }
 
-    protected override void OnCreateResource()
+    protected override ID3D12Resource1* OnCreateTexture()
     {
-        base.OnCreateResource();
         Viewport = new ViewportF(Viewport.X, Viewport.Y, Desc.Width, Desc.Height);
+        return base.OnCreateTexture();        
     }
 
     protected override unsafe ResourceHandleDX12 OnCreateHandle(ID3D12Resource1* ptr)
