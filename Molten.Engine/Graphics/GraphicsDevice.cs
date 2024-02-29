@@ -77,31 +77,17 @@ public abstract partial class GraphicsDevice : EngineObject
 
     public abstract GraphicsFormatSupportFlags GetFormatSupport(GraphicsFormat format);
 
-    /// <summary> Invoked when the minimum supported frame-buffer size needs to be known.
-    /// </summary>
-    /// <returns></returns>
-    protected abstract uint MinimumFrameBufferSize();
-
     private void BufferingMode_OnChanged(FrameBufferMode oldValue, FrameBufferMode newValue)
     {
         SettingValue<FrameBufferMode> bufferingMode = Settings.FrameBufferMode;
-        _newFrameBufferSize = MinimumFrameBufferSize();
 
         // Does the buffer mode exceed the minimum?
-        switch (bufferingMode.Value)
+        _newFrameBufferSize = bufferingMode.Value switch
         {
-            case FrameBufferMode.Double:
-                _newFrameBufferSize = Math.Max(_newFrameBufferSize, 2);
-                break;
-
-            case FrameBufferMode.Triple:
-                _newFrameBufferSize = Math.Max(_newFrameBufferSize, 3);
-                break;
-
-            case FrameBufferMode.Quad:
-                _newFrameBufferSize = Math.Max(_newFrameBufferSize, 4);
-                break;
-        }
+            FrameBufferMode.Triple => 3,
+            FrameBufferMode.Quad => 4,
+            _ => 2,
+        };
     }
 
     protected void InvokeOutputActivated(IDisplayOutput output)

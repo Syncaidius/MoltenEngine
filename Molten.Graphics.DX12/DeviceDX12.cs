@@ -117,11 +117,6 @@ public unsafe class DeviceDX12 : DeviceDXGI
         }
     }
 
-    protected override uint MinimumFrameBufferSize()
-    {
-        return 2;
-    }
-
     protected override void OnDispose(bool immediate)
     {
         _shaderCompiler?.Dispose(true);

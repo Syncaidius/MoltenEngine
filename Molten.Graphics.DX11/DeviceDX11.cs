@@ -91,11 +91,6 @@ public unsafe class DeviceDX11 : DeviceDXGI
         return true;
     }
 
-    protected override uint MinimumFrameBufferSize()
-    {
-        return 2;
-    }
-
     /// <summary>Queries the underlying texture's interface.</summary>
     /// <typeparam name="Q">The type of object to request in the query.</typeparam>
     /// <returns></returns>
