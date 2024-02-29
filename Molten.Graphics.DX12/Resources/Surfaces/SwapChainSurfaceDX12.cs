@@ -14,11 +14,11 @@ public unsafe abstract class SwapChainSurfaceDX12 : RenderSurface2DDX12, ISwapCh
 
     PresentParameters* _presentParams;
     SwapChainDesc1 _swapDesc;
-    ID3D12Resource1* _surfaces;
-    SwapChainHandleDX12 _handle;
+    ID3D12Resource1** _ptrSurfaces;
     ThreadedQueue<Action> _dispatchQueue;
 
     uint _vsync;
+    RTHandleDX12 _handle;
 
     internal SwapChainSurfaceDX12(DeviceDX12 device, uint width, uint height, uint mipCount, GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm)
         : base(device, width, height, 
@@ -30,12 +30,7 @@ public unsafe abstract class SwapChainSurfaceDX12 : RenderSurface2DDX12, ISwapCh
         _presentParams[0] = new PresentParameters();
     }
 
-    protected override void OnCreateResource()
-    {
-        //base.OnCreateResource();
-    }
-
-    protected override unsafe ResourceHandleDX12 OnCreateHandle(ID3D12Resource1* ptr)
+    protected override unsafe ID3D12Resource1* OnCreateTexture()
     {
         // Resize the swap chain if needed.
         if (NativeSwapChain != null)
@@ -59,7 +54,7 @@ public unsafe abstract class SwapChainSurfaceDX12 : RenderSurface2DDX12, ISwapCh
          *  
          *  This means we only need 1 handle for the swap chain, as the next image is always at index 0.
          */
-        ID3D12Resource1** ptrHandles = stackalloc ID3D12Resource1*[(int)Device.FrameBufferSize];
+        _ptrSurfaces = EngineUtil.AllocPtrArray<ID3D12Resource1>(Device.FrameBufferSize);
 
         for (uint i = 0; i < Device.FrameBufferSize; i++)
         {
@@ -67,7 +62,7 @@ public unsafe abstract class SwapChainSurfaceDX12 : RenderSurface2DDX12, ISwapCh
             Guid riid = ID3D12Resource1.Guid;
             WinHResult hr = NativeSwapChain->GetBuffer(i, &riid, &ppSurface);
             DxgiError err = hr.ToEnum<DxgiError>();
-            ptrHandles[i] = (ID3D12Resource1*)ppSurface;
+            _ptrSurfaces[i] = (ID3D12Resource1*)ppSurface;
 
             if (err != DxgiError.Ok)
             {
@@ -76,8 +71,15 @@ public unsafe abstract class SwapChainSurfaceDX12 : RenderSurface2DDX12, ISwapCh
             }
         }
 
-        SwapChainHandleDX12 handle = new SwapChainHandleDX12(this, ptrHandles, Device.FrameBufferSize);
-        handle.View.Desc = new RenderTargetViewDesc()
+        return _ptrSurfaces[0];
+    }
+
+    protected override unsafe ResourceHandleDX12 OnCreateHandle(ID3D12Resource1* ptr)
+    {
+        if(_handle == null)
+            _handle = new RTHandleDX12(this, _ptrSurfaces, Device.FrameBufferSize);
+
+        RenderTargetViewDesc desc = new()
         {
             Format = Desc.Format,
             ViewDimension = RtvDimension.Texture2Darray,
@@ -90,7 +92,9 @@ public unsafe abstract class SwapChainSurfaceDX12 : RenderSurface2DDX12, ISwapCh
             },
         };
 
-        return handle;
+        _handle.RTV.Initialize(ref desc); 
+
+        return _handle;
     }
 
     protected virtual void SetRTVDescription(ref RenderTargetViewDesc desc) { }
@@ -116,6 +120,10 @@ public unsafe abstract class SwapChainSurfaceDX12 : RenderSurface2DDX12, ISwapCh
 
         if (OnPresent() && NativeSwapChain != null)
         {
+            // Update the RTV frame index, so that it points to the correct resource, SRV, UAV and RTV views.
+            uint bbIndex = NativeSwapChain->GetCurrentBackBufferIndex();
+            _handle.Index = bbIndex;
+
             // TODO implement partial-present - Partial Presentation (using scroll or dirty rects)
             // is not valid until first submitting a regular Present without scroll or dirty rects.
             // Otherwise, the preserved back-buffer data would be uninitialized.
