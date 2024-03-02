@@ -130,8 +130,7 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
         if (flags.Has(GraphicsCommandListFlags.Deferred))
             throw new InvalidOperationException($"An immediate/primary command list branch cannot use deferred flag during Sync() calls.");
 
-        ID3D12CommandList** lists = stackalloc ID3D12CommandList*[] { _cmd.BaseHandle };
-        _handle->ExecuteCommandLists(1, lists);
+        Execute(_cmd);
 
         // A fence will signal a synchronization event.
         // This blocks the CPU until the GPU has finished processing all commands prior to the fences signal command.
