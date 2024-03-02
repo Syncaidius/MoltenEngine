@@ -14,6 +14,9 @@ internal unsafe class GraphicsCommandListDX12 : CommandListDX12<ID3D12GraphicsCo
 
     internal void Reset(CommandAllocatorDX12 allocator, PipelineStateDX12 initialState)
     {
+        if(!_isClosed)
+            throw new InvalidOperationException("Command list must be closed before it can be reset.");
+
         ID3D12PipelineState* pState = initialState != null ? initialState.Handle : null;
         Handle->Reset(allocator.Handle, pState);
         _isClosed = false;

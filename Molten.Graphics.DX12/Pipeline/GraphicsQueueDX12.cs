@@ -151,7 +151,6 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
         {
             _cmd = allocator.Allocate(null);
             Device.Frame.BranchCount++;
-
             Device.Frame.Track(_cmd);
         }
 
@@ -167,9 +166,6 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
 
         Execute(_cmd);
         _cmd.Fence.Wait();
-
-        CommandAllocatorDX12 allocator = _cmdAllocators.Prepare();
-        _cmd.Reset(allocator, _pipelineState);
 
         return null;
     }
