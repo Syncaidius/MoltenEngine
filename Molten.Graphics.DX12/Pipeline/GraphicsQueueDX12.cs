@@ -92,6 +92,9 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
 
     internal void Transition(TextureDX12 texture, ResourceStates newState)
     {
+        if (texture.BarrierState == newState)
+            return;
+
         ResourceBarrier barrier = new()
         {
             Flags = ResourceBarrierFlags.None,

@@ -70,6 +70,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
 
         _heapManager = new DescriptorHeapManagerDX12(this);
         _cmdDirect = new GraphicsQueueDX12(Log, this, _builder, ref cmdDesc);
+        _presentFence = new FenceDX12(this, FenceFlags.None);
 
         Assembly includeAssembly = GetType().Assembly;
         _shaderCompiler = new HlslDxcCompiler(this, "\\Assets\\HLSL\\include\\", includeAssembly);
@@ -123,6 +124,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
     protected override void OnDispose(bool immediate)
     {
         _shaderCompiler?.Dispose(true);
+        _presentFence?.Dispose(true);
         _cmdDirect?.Dispose(true);
         _heapManager?.Dispose(true);
 
