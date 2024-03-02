@@ -112,7 +112,13 @@ public unsafe class GraphicsManagerDXGI : GraphicsManager
             Log.Error($"No supported GPU adapter found.");
     }
 
-    public IDXGISwapChain4* CreateSwapChain(DisplayModeDXGI mode, SwapEffect swapMode, uint bufferSize, Logger log, IUnknown* ptrDevice, IntPtr windowHandle)
+    public DxgiError CreateSwapChain(DisplayModeDXGI mode, 
+        SwapEffect swapMode, 
+        uint bufferSize,
+        Logger log, 
+        IUnknown* ptrDevice, 
+        IntPtr windowHandle, 
+        out IDXGISwapChain4* swapChain)
     {
         SwapChainDesc1 desc = new SwapChainDesc1()
         {
@@ -133,16 +139,20 @@ public unsafe class GraphicsManagerDXGI : GraphicsManager
         WinHResult hr = DxgiFactory->CreateSwapChainForHwnd(ptrDevice, windowHandle, &desc, null, null, &ptrSwap1);
         DxgiError de = hr.ToEnum<DxgiError>();
 
-        if (de != DxgiError.Ok)
+        if (de == DxgiError.Ok)
+        {
+            Guid swap4Guid = IDXGISwapChain4.Guid;
+            void* nativeSwap = null;
+            int r = ptrSwap1->QueryInterface(&swap4Guid, &nativeSwap);
+            swapChain = (IDXGISwapChain4*)nativeSwap;
+        }
+        else
         {
             log.Error($"Creation of swapchain failed with result: {de}");
-            return null;
+            swapChain = null;
         }
 
-        Guid swap4Guid = IDXGISwapChain4.Guid;
-        void* nativeSwap = null;
-        int r = ptrSwap1->QueryInterface(&swap4Guid, &nativeSwap);
-        return (IDXGISwapChain4*)nativeSwap;
+        return de;
     }
 
     /// <inheritdoc/>

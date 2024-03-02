@@ -131,7 +131,7 @@ internal class PipelineStateBuilderDX12
 
         Guid guid = ID3D12PipelineState.Guid;
         void* ptr = null;
-        HResult hr = device.Ptr->CreateGraphicsPipelineState(desc, &guid, &ptr);
+        HResult hr = device.Handle->CreateGraphicsPipelineState(desc, &guid, &ptr);
         if (!device.Log.CheckResult(hr, () => "Failed to create pipeline state object (PSO)"))
             return null;
 
@@ -172,7 +172,7 @@ internal class PipelineStateBuilderDX12
         // Create the root signature.
         Guid guid = ID3D12RootSignature.Guid;
         void* ptr = null;
-        hr = device.Ptr->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), &guid, &ptr);
+        hr = device.Handle->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), &guid, &ptr);
         if (!device.Log.CheckResult(hr, () => "Failed to create root signature"))
             hr.Throw();
 

@@ -65,6 +65,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
         CommandQueueDesc cmdDesc = new()
         {
             Type = CommandListType.Direct,
+            Flags = CommandQueueFlags.None
         };
 
         _heapManager = new DescriptorHeapManagerDX12(this);
@@ -252,7 +253,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
     /// <summary>
     /// The underlying, native device pointer.
     /// </summary>
-    internal ID3D12Device10* Ptr => _handle;
+    internal ID3D12Device10* Handle => _handle;
 
     /// <summary>
     /// Gets a protected reference to the underlying device pointer.

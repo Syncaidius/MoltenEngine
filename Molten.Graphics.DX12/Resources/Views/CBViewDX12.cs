@@ -8,7 +8,7 @@ internal class CBViewDX12 : ViewDX12<ConstantBufferViewDesc>
 
     protected override unsafe void OnCreate(ref ConstantBufferViewDesc desc, ID3D12Resource1* resource, ref CpuDescriptorHandle heapHandle, uint resourceIndex)
     {
-        Handle.Device.Ptr->CreateConstantBufferView(desc, heapHandle);
+        Handle.Device.Handle->CreateConstantBufferView(desc, heapHandle);
     }
 
     private protected override void OnAllocateHandle(uint numDescriptors, out HeapHandleDX12 handle)

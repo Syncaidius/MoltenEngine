@@ -11,7 +11,7 @@ namespace Molten.Graphics.DX12;
 /// <summary>A render target that is created from, and outputs to, a device's swap chain.</summary>
 public unsafe abstract class SwapChainSurfaceDX12 : RenderSurface2DDX12, ISwapChainSurface
 {
-    protected internal IDXGISwapChain4* NativeSwapChain;
+    protected internal IDXGISwapChain4* SwapChainHandle;
 
     PresentParameters* _presentParams;
     SwapChainDesc1 _swapDesc;
@@ -34,18 +34,18 @@ public unsafe abstract class SwapChainSurfaceDX12 : RenderSurface2DDX12, ISwapCh
     protected override unsafe ID3D12Resource1* OnCreateTexture()
     {
         // Resize the swap chain if needed.
-        if (NativeSwapChain != null)
+        if (SwapChainHandle != null)
         {
-            WinHResult result = NativeSwapChain->ResizeBuffers(Device.FrameBufferSize, Width, Height, GraphicsFormat.Unknown.ToApi(), 0U);
-            NativeSwapChain->GetDesc1(ref _swapDesc);
+            WinHResult result = SwapChainHandle->ResizeBuffers(Device.FrameBufferSize, Width, Height, GraphicsFormat.Unknown.ToApi(), 0U);
+            SwapChainHandle->GetDesc1(ref _swapDesc);
         }
         else
         {
-            NativeUtil.ReleasePtr(ref NativeSwapChain);
+            NativeUtil.ReleasePtr(ref SwapChainHandle);
             OnCreateSwapchain(ref Desc);
 
-            if(NativeSwapChain != null)
-                NativeSwapChain->GetDesc1(ref _swapDesc);
+            if(SwapChainHandle != null)
+                SwapChainHandle->GetDesc1(ref _swapDesc);
             else if(Debugger.IsAttached)
                 throw new InvalidOperationException("Swap chain creation failed.");
             else
@@ -67,7 +67,7 @@ public unsafe abstract class SwapChainSurfaceDX12 : RenderSurface2DDX12, ISwapCh
         {
             void* ppSurface = null;
             Guid riid = ID3D12Resource1.Guid;
-            WinHResult hr = NativeSwapChain->GetBuffer(i, &riid, &ppSurface);
+            WinHResult hr = SwapChainHandle->GetBuffer(i, &riid, &ppSurface);
             DxgiError err = hr.ToEnum<DxgiError>();
             _ptrSurfaces[i] = (ID3D12Resource1*)ppSurface;
 
@@ -110,9 +110,17 @@ public unsafe abstract class SwapChainSurfaceDX12 : RenderSurface2DDX12, ISwapCh
 
     protected void CreateSwapChain(DisplayModeDXGI mode, IntPtr controlHandle)
     {
+        // Swap-chain needs a D3D12 command queue so that it can force a swap-chain flush.
+        IUnknown* cmdQueueHandle = (IUnknown*)Device.Queue.Handle;
         GraphicsManagerDXGI dxgiManager = Device.Manager as GraphicsManagerDXGI;
 
-        NativeSwapChain = dxgiManager.CreateSwapChain(mode, SwapEffect.FlipDiscard, Device.FrameBufferSize, Device.Log, (IUnknown*)Device.Ptr, controlHandle);
+        DxgiError result = dxgiManager.CreateSwapChain(mode, SwapEffect.FlipDiscard, Device.FrameBufferSize, Device.Log, cmdQueueHandle, controlHandle, out SwapChainHandle);
+        if (result == DxgiError.DeviceRemoved)
+        {
+            WinHResult hr = Device.Handle->GetDeviceRemovedReason();
+            DxgiError dxgiReason = hr.ToEnum<DxgiError>();
+            Device.Log.Error($"Device removed reason: {dxgiReason}");
+        }
     }
 
     private void VSync_OnChanged(bool oldValue, bool newValue)
@@ -125,10 +133,10 @@ public unsafe abstract class SwapChainSurfaceDX12 : RenderSurface2DDX12, ISwapCh
     {
         Apply(Device.Queue);
 
-        if (OnPresent() && NativeSwapChain != null)
+        if (OnPresent() && SwapChainHandle != null)
         {
             // Update the RTV frame index, so that it points to the correct resource, SRV, UAV and RTV views.
-            uint bbIndex = NativeSwapChain->GetCurrentBackBufferIndex();
+            uint bbIndex = SwapChainHandle->GetCurrentBackBufferIndex();
             _handle.Index = bbIndex;
 
             // TODO implement partial-present - Partial Presentation (using scroll or dirty rects)
@@ -136,7 +144,7 @@ public unsafe abstract class SwapChainSurfaceDX12 : RenderSurface2DDX12, ISwapCh
             // Otherwise, the preserved back-buffer data would be uninitialized.
 
             // See for flags: https://learn.microsoft.com/en-us/windows/win32/direct3ddxgi/dxgi-present
-            WinHResult r = NativeSwapChain->Present1(_vsync, 0U, _presentParams);
+            WinHResult r = SwapChainHandle->Present1(_vsync, 0U, _presentParams);
             DxgiError de = r.ToEnum<DxgiError>();
 
             if (de != DxgiError.Ok)
@@ -163,7 +171,7 @@ public unsafe abstract class SwapChainSurfaceDX12 : RenderSurface2DDX12, ISwapCh
 
     protected override void OnGraphicsRelease()
     {
-        NativeUtil.ReleasePtr(ref NativeSwapChain);
+        NativeUtil.ReleasePtr(ref SwapChainHandle);
         EngineUtil.Free(ref _presentParams);
         base.OnGraphicsRelease();
     }

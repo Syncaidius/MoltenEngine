@@ -17,14 +17,14 @@ internal unsafe class DescriptorHeapDX12 : GraphicsObject<DeviceDX12>
     {
         Guid guid = ID3D12DescriptorHeap.Guid;
         void* ptr = null;
-        HResult hr = device.Ptr->CreateDescriptorHeap(desc, &guid, &ptr);
+        HResult hr = device.Handle->CreateDescriptorHeap(desc, &guid, &ptr);
 
         if(!device.Log.CheckResult(hr, () => $"Failed to create descriptor heap with capacity '{desc.NumDescriptors}'"))
             return;
 
         _capacity = desc.NumDescriptors;
         _handle = (ID3D12DescriptorHeap*)ptr;
-        _incrementSize = device.Ptr->GetDescriptorHandleIncrementSize(desc.Type);
+        _incrementSize = device.Handle->GetDescriptorHandleIncrementSize(desc.Type);
         _isGpuVisible = (desc.Flags & DescriptorHeapFlags.ShaderVisible) == DescriptorHeapFlags.ShaderVisible;
         _cpuStartHandle = _handle->GetCPUDescriptorHandleForHeapStart();
     }

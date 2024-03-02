@@ -31,7 +31,7 @@ internal unsafe class HeapDX12 : GraphicsObject<DeviceDX12>
             },
         };
 
-        HResult hr = device.Ptr->CreateHeap(_desc, &guid, &ptr);
+        HResult hr = device.Handle->CreateHeap(_desc, &guid, &ptr);
         if (!device.Log.CheckResult(hr, () => $"Failed to create heap with capacity '{_desc.SizeInBytes}'"))
             return;
 

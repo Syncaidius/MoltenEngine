@@ -10,7 +10,7 @@ namespace Molten.Graphics.DX11;
 /// <summary>A render target that is created from, and outputs to, a device's swap chain.</summary>
 public unsafe abstract class SwapChainSurfaceDX11 : RenderSurface2DDX11, ISwapChainSurface
 {
-    protected internal IDXGISwapChain4* NativeSwapChain;
+    protected internal IDXGISwapChain4* SwapChainHandle;
 
     PresentParameters* _presentParams;
     SwapChainDesc1 _swapDesc;
@@ -31,16 +31,16 @@ public unsafe abstract class SwapChainSurfaceDX11 : RenderSurface2DDX11, ISwapCh
     protected override ResourceHandleDX11<ID3D11Resource> CreateTexture(DeviceDX11 device)
     {
         // Resize the swap chain if needed.
-        if (NativeSwapChain != null)
+        if (SwapChainHandle != null)
         {
-            WinHResult result = NativeSwapChain->ResizeBuffers(Device.FrameBufferSize, Width, Height, GraphicsFormat.Unknown.ToApi(), 0U);
-            NativeSwapChain->GetDesc1(ref _swapDesc);
+            WinHResult result = SwapChainHandle->ResizeBuffers(Device.FrameBufferSize, Width, Height, GraphicsFormat.Unknown.ToApi(), 0U);
+            SwapChainHandle->GetDesc1(ref _swapDesc);
         }
         else
         {
-            NativeUtil.ReleasePtr(ref NativeSwapChain);
+            NativeUtil.ReleasePtr(ref SwapChainHandle);
             OnCreateSwapchain(ref Desc);
-            NativeSwapChain->GetDesc1(ref _swapDesc);
+            SwapChainHandle->GetDesc1(ref _swapDesc);
 
             _vsync = Device.Settings.VSync ? 1U : 0;
             Device.Settings.VSync.OnChanged += VSync_OnChanged;
@@ -54,7 +54,7 @@ public unsafe abstract class SwapChainSurfaceDX11 : RenderSurface2DDX11, ISwapCh
          */
         void* ppSurface = null;
         Guid riid = ID3D11Texture2D1.Guid;
-        WinHResult hr = NativeSwapChain->GetBuffer(0, &riid, &ppSurface);
+        WinHResult hr = SwapChainHandle->GetBuffer(0, &riid, &ppSurface);
         DxgiError err = hr.ToEnum<DxgiError>();
 
         if (err == DxgiError.Ok)
@@ -86,9 +86,16 @@ public unsafe abstract class SwapChainSurfaceDX11 : RenderSurface2DDX11, ISwapCh
 
     protected void CreateSwapChain(DisplayModeDXGI mode, bool windowed, IntPtr controlHandle)
     {
+        IUnknown* deviceHandle = (IUnknown*)Device.Ptr;
         GraphicsManagerDXGI dxgiManager = Device.Manager as GraphicsManagerDXGI;
 
-        NativeSwapChain = dxgiManager.CreateSwapChain(mode, SwapEffect.FlipDiscard, Device.FrameBufferSize, Device.Log, (IUnknown*)Device.Ptr, controlHandle);
+        DxgiError result = dxgiManager.CreateSwapChain(mode, SwapEffect.FlipDiscard, Device.FrameBufferSize, Device.Log, deviceHandle, controlHandle, out SwapChainHandle);
+        if (result == DxgiError.DeviceRemoved)
+        {
+            WinHResult hr = Device.Ptr->GetDeviceRemovedReason();
+            DxgiError dxgiReason = hr.ToEnum<DxgiError>();
+            Device.Log.Error($"Device removed reason: {dxgiReason}");
+        }
     }
 
     private void VSync_OnChanged(bool oldValue, bool newValue)
@@ -101,14 +108,14 @@ public unsafe abstract class SwapChainSurfaceDX11 : RenderSurface2DDX11, ISwapCh
     {
         Apply(Device.Queue);
 
-        if (OnPresent() && NativeSwapChain != null)
+        if (OnPresent() && SwapChainHandle != null)
         {
             // TODO implement partial-present - Partial Presentation (using scroll or dirty rects)
             // is not valid until first submitting a regular Present without scroll or dirty rects.
             // Otherwise, the preserved back-buffer data would be uninitialized.
 
             // See for flags: https://learn.microsoft.com/en-us/windows/win32/direct3ddxgi/dxgi-present
-            WinHResult r = NativeSwapChain->Present1(_vsync, 0U, _presentParams);
+            WinHResult r = SwapChainHandle->Present1(_vsync, 0U, _presentParams);
             DxgiError de = r.ToEnum<DxgiError>();
 
             if (de != DxgiError.Ok)
@@ -135,7 +142,7 @@ public unsafe abstract class SwapChainSurfaceDX11 : RenderSurface2DDX11, ISwapCh
 
     protected override void OnGraphicsRelease()
     {
-        NativeUtil.ReleasePtr(ref NativeSwapChain);
+        NativeUtil.ReleasePtr(ref SwapChainHandle);
         EngineUtil.Free(ref _presentParams);
         base.OnGraphicsRelease();
     }

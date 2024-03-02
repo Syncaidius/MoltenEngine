@@ -8,6 +8,14 @@ public enum DxgiUsage : uint
 {
     None = 0,
 
+    CpuAccessDynamic = 1,
+
+    CpuAccessReadWrite = 2,
+
+    CpuAccessScratch = 3,
+
+    CpuAccessField = 15,
+
     ShaderInput = 1 << (0 + 4),
 
     RenderTargetOutput = 1 << (1 + 4),
@@ -18,7 +26,7 @@ public enum DxgiUsage : uint
 
     ReadOnly = 1 << (4 + 4),
 
-    DiscardOnPresnet = 1 << (5+4),
+    DiscardOnPresent = 1 << (5+4),
 
     UnorderedAccess = 1 << (6 + 4),
 }

@@ -362,7 +362,7 @@ public class FormSurfaceDX12 : SwapChainSurfaceDX12, INativeSurface
         {
             unsafe
             {
-                NativeUtil.ReleasePtr(ref NativeSwapChain);
+                NativeUtil.ReleasePtr(ref SwapChainHandle);
             }
 
             DisposeForm();

@@ -30,7 +30,7 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
         void* cmdQueue = null;
 
         DeviceDX12 device = Device; 
-        HResult r = device.Ptr->CreateCommandQueue(_desc, &cmdGuid, &cmdQueue);
+        HResult r = device.Handle->CreateCommandQueue(_desc, &cmdGuid, &cmdQueue);
         if (!device.Log.CheckResult(r))
         {
             Log.Error($"Failed to initialize '{_desc.Type}' command queue");
@@ -117,6 +117,7 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
     {
         GraphicsCommandListDX12 cmd = (GraphicsCommandListDX12)list;
 
+        cmd.Close();
         ID3D12CommandList** lists = stackalloc ID3D12CommandList*[] { cmd.BaseHandle };
         _handle->ExecuteCommandLists(1, lists);
     }

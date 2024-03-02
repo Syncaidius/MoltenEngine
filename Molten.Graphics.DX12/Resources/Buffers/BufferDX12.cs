@@ -65,7 +65,7 @@ public class BufferDX12 : GraphicsBuffer
 
             Guid guid = ID3D12Resource1.Guid;
             void* ptr = null;
-            HResult hr = Device.Ptr->CreateCommittedResource(heapProp, heapFlags, desc, stateFlags, null, &guid, &ptr);
+            HResult hr = Device.Handle->CreateCommittedResource(heapProp, heapFlags, desc, stateFlags, null, &guid, &ptr);
             if (!Device.Log.CheckResult(hr, () => $"Failed to create {desc.Dimension} resource"))
                 return;
 

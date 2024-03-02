@@ -17,7 +17,7 @@ public unsafe class ProtectedSessionDX12 : GraphicsObject<DeviceDX12>
             NodeMask = 0,
             Flags = ProtectedResourceSessionFlags.None,
         };
-        device.Ptr->CreateProtectedResourceSession(&pDesc, &guid, &ptr);
+        device.Handle->CreateProtectedResourceSession(&pDesc, &guid, &ptr);
         _ptr = session;
 
         void* ptrFence = null;

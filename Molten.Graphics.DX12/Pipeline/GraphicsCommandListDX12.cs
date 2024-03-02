@@ -4,14 +4,19 @@ namespace Molten.Graphics.DX12;
 
 internal unsafe class GraphicsCommandListDX12 : CommandListDX12<ID3D12GraphicsCommandList>
 {
+    bool _isClosed;
+
     internal GraphicsCommandListDX12(CommandAllocatorDX12 allocator, ID3D12GraphicsCommandList* handle) :
         base(allocator, handle)
-    { }
+    {
+        Close();
+    }
 
     internal void Reset(CommandAllocatorDX12 allocator, PipelineStateDX12 initialState)
     {
         ID3D12PipelineState* pState = initialState != null ? initialState.Handle : null;
         Handle->Reset(allocator.Handle, pState);
+        _isClosed = false;
     }
 
     public void CopyResource(GraphicsResource dst, GraphicsResource src)
@@ -21,7 +26,11 @@ internal unsafe class GraphicsCommandListDX12 : CommandListDX12<ID3D12GraphicsCo
 
     public void Close()
     {
-        Handle->Close();
+        if (!_isClosed)
+        {
+            Handle->Close();
+            _isClosed = true;
+        }
     }
 
     public override void Free()

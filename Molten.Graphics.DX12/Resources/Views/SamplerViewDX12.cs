@@ -10,7 +10,7 @@ internal class SamplerViewDX12 : ViewDX12<SamplerDesc>
     {
         // TODO Samplers do not use ID3D12Resource - Refactor this to be more efficient.
 
-        Handle.Device.Ptr->CreateSampler(desc, heapHandle);
+        Handle.Device.Handle->CreateSampler(desc, heapHandle);
     }
 
     private protected override void OnAllocateHandle(uint numDescriptors, out HeapHandleDX12 handle)

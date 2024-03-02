@@ -360,7 +360,7 @@ public class FormSurfaceDX11 : SwapChainSurfaceDX11, INativeSurface
         {
             unsafe
             {
-                NativeUtil.ReleasePtr(ref NativeSwapChain);
+                NativeUtil.ReleasePtr(ref SwapChainHandle);
             }
 
             DisposeForm();

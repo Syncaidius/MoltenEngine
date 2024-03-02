@@ -17,7 +17,7 @@ internal unsafe class FenceDX12 : GraphicsFence
         _device = device;
         void* ptr = null;
         Guid guid = ID3D12Fence.Guid;
-        HResult hr = device.Ptr->CreateFence(_value, flags, &guid, &ptr);
+        HResult hr = device.Handle->CreateFence(_value, flags, &guid, &ptr);
         if (!device.Log.CheckResult(hr, () => "Failed to create fence"))
             return;
 

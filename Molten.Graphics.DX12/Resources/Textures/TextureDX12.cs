@@ -130,7 +130,7 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
 
         fixed (ResourceDesc1* ptrDesc = &_desc)
         {
-            HResult hr = Device.Ptr->CreateCommittedResource2(&heapProp, heapFlags, ptrDesc, stateFlags, ptrClearValue, _protectedSession, &guid, &ptr);
+            HResult hr = Device.Handle->CreateCommittedResource2(&heapProp, heapFlags, ptrDesc, stateFlags, ptrClearValue, _protectedSession, &guid, &ptr);
             if (!Device.Log.CheckResult(hr, () => $"Failed to create {_desc.Dimension} resource"))
                 return null;
         }

@@ -8,7 +8,7 @@ internal class DSViewDX12 : ViewDX12<DepthStencilViewDesc>
 
     protected override unsafe void OnCreate(ref DepthStencilViewDesc desc, ID3D12Resource1* resource, ref CpuDescriptorHandle heapHandle, uint resourceIndex)
     {
-        Handle.Device.Ptr->CreateDepthStencilView((ID3D12Resource*)resource, desc, heapHandle);
+        Handle.Device.Handle->CreateDepthStencilView((ID3D12Resource*)resource, desc, heapHandle);
     }
 
     private protected override void OnAllocateHandle(uint numDescriptors, out HeapHandleDX12 handle)
