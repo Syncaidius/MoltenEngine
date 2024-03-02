@@ -9,7 +9,7 @@ internal unsafe class UAViewDX11 : ViewDX11<ID3D11UnorderedAccessView1, Unordere
 
     protected override unsafe void OnCreateView(ID3D11Resource* resource, UnorderedAccessViewDesc1* desc, ref ID3D11UnorderedAccessView1* view)
     {
-        Handle.Device.Ptr->CreateUnorderedAccessView1(resource, desc, ref view);
+        Handle.Device.Handle->CreateUnorderedAccessView1(resource, desc, ref view);
     }
 
     public static implicit operator ID3D11UnorderedAccessView*(UAViewDX11 view)

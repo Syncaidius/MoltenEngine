@@ -13,7 +13,7 @@ namespace Molten.Graphics.DX11;
 /// <seealso cref="GraphicsQueueDX11" />
 public unsafe class DeviceDX11 : DeviceDXGI
 {
-    ID3D11Device5* _native;
+    ID3D11Device5* _handle;
     DeviceBuilderDX11 _builder;
     GraphicsManagerDXGI _displayManager;
     FxcCompiler _shaderCompiler;
@@ -75,7 +75,7 @@ public unsafe class DeviceDX11 : DeviceDXGI
         {
             Guid guidDebug = ID3D11Debug.Guid;
             void* ptr = null;
-            Ptr->QueryInterface(&guidDebug, &ptr);
+            Handle->QueryInterface(&guidDebug, &ptr);
             _debug = (ID3D11Debug*)ptr;
 
             Guid guidDebugInfo = ID3D11InfoQueue.Guid;
@@ -119,7 +119,7 @@ public unsafe class DeviceDX11 : DeviceDXGI
     internal GraphicsQueueDX11 GetDeferredContext()
     {
         ID3D11DeviceContext3* dc = null;
-        _native->CreateDeferredContext3(0, &dc);
+        _handle->CreateDeferredContext3(0, &dc);
 
         Guid cxt4Guid = ID3D11DeviceContext4.Guid;
         void* ptr4 = null;
@@ -164,7 +164,7 @@ public unsafe class DeviceDX11 : DeviceDXGI
     public override GraphicsFormatSupportFlags GetFormatSupport(GraphicsFormat format)
     {
         uint value = 0;
-        HResult hr = _native->CheckFormatSupport((Format)format, &value);
+        HResult hr = _handle->CheckFormatSupport((Format)format, &value);
         if (!Log.CheckResult(hr, () => "Failed to create pipeline state object (PSO)"))
             return GraphicsFormatSupportFlags.None;
 
@@ -319,25 +319,25 @@ public unsafe class DeviceDX11 : DeviceDXGI
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static implicit operator ID3D11Device5(DeviceDX11 device)
     {
-        return *device._native;
+        return *device._handle;
     }
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static implicit operator ID3D11Device5*(DeviceDX11 device)
     {
-        return device._native;
+        return device._handle;
     }
 
     /// <summary>
     /// The underlying, native device pointer.
     /// </summary>
-    internal ID3D11Device5* Ptr => _native;
+    internal ID3D11Device5* Handle => _handle;
 
     /// <summary>
     /// Gets a protected reference to the underlying device pointer.
     /// </summary>
-    protected ref ID3D11Device5* PtrRef => ref _native;
+    protected ref ID3D11Device5* PtrRef => ref _handle;
 
     /// <inheritdoc/>
     public override GraphicsQueueDX11 Queue => _queue;

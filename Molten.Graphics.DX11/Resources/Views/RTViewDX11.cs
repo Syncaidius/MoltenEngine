@@ -9,7 +9,7 @@ internal class RTViewDX11 : ViewDX11<ID3D11RenderTargetView1, RenderTargetViewDe
 
     protected override unsafe void OnCreateView(ID3D11Resource* resource, RenderTargetViewDesc1* desc, ref ID3D11RenderTargetView1* view)
     {
-        Handle.Device.Ptr->CreateRenderTargetView1(resource, desc, ref view);
+        Handle.Device.Handle->CreateRenderTargetView1(resource, desc, ref view);
     }
 
     public static unsafe implicit operator ID3D11RenderTargetView*(RTViewDX11 view)

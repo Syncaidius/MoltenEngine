@@ -86,13 +86,13 @@ public unsafe abstract class SwapChainSurfaceDX11 : RenderSurface2DDX11, ISwapCh
 
     protected void CreateSwapChain(DisplayModeDXGI mode, bool windowed, IntPtr controlHandle)
     {
-        IUnknown* deviceHandle = (IUnknown*)Device.Ptr;
+        IUnknown* deviceHandle = (IUnknown*)Device.Handle;
         GraphicsManagerDXGI dxgiManager = Device.Manager as GraphicsManagerDXGI;
 
         DxgiError result = dxgiManager.CreateSwapChain(mode, SwapEffect.FlipDiscard, Device.FrameBufferSize, Device.Log, deviceHandle, controlHandle, out SwapChainHandle);
         if (result == DxgiError.DeviceRemoved)
         {
-            WinHResult hr = Device.Ptr->GetDeviceRemovedReason();
+            WinHResult hr = Device.Handle->GetDeviceRemovedReason();
             DxgiError dxgiReason = hr.ToEnum<DxgiError>();
             Device.Log.Error($"Device removed reason: {dxgiReason}");
         }

@@ -21,7 +21,7 @@ public unsafe class RenderSurface1DDX11 : Texture1DDX11, IRenderSurface1D
     protected override ResourceHandleDX11<ID3D11Resource> CreateTexture(DeviceDX11 device)
     {
         fixed (Texture1DDesc* pDesc = &Desc)
-            Device.Ptr->CreateTexture1D(pDesc, null, ref NativeTexture);
+            Device.Handle->CreateTexture1D(pDesc, null, ref NativeTexture);
 
         SurfaceHandleDX11 handle = new SurfaceHandleDX11(this)
         {

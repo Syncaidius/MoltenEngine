@@ -44,7 +44,7 @@ internal unsafe class DepthStateDX11 : GraphicsObject<DeviceDX11>, IEquatable<De
             StencilPassOp = (StencilOp)parameters.DepthBackFace.StencilPass,
         };
 
-        device.Ptr->CreateDepthStencilState(dDesc, ref _native);
+        device.Handle->CreateDepthStencilState(dDesc, ref _native);
     }
 
     private bool StencilOpEqual(ref DepthStencilopDesc a, ref DepthStencilopDesc b)

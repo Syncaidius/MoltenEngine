@@ -25,7 +25,7 @@ public unsafe class RenderSurface2DDX11 : Texture2DDX11, IRenderSurface2D
     {
         ID3D11Texture2D1* ptrTex = null;
         fixed (Texture2DDesc1* pDesc = &Desc)
-            Device.Ptr->CreateTexture2D1(pDesc, null, ref ptrTex);
+            Device.Handle->CreateTexture2D1(pDesc, null, ref ptrTex);
 
         SurfaceHandleDX11 handle = new SurfaceHandleDX11(this)
         {

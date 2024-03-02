@@ -64,7 +64,7 @@ public unsafe class Texture1DDX11 : TextureDX11, ITexture1D
         SubresourceData* subData = GetImmutableData(Desc.Usage);
 
         fixed(Texture1DDesc* pDesc = &Desc)
-            Device.Ptr->CreateTexture1D(pDesc, subData, ref NativeTexture);
+            Device.Handle->CreateTexture1D(pDesc, subData, ref NativeTexture);
 
         EngineUtil.Free(ref subData);
 

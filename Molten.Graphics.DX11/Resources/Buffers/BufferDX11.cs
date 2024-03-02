@@ -100,7 +100,7 @@ public unsafe class BufferDX11 : GraphicsBuffer
         {
             SubresourceData srd = new SubresourceData(_initialData, _initialBytes, (uint)SizeInBytes);
             fixed (BufferDesc* pDesc = &Desc)
-                device.Ptr->CreateBuffer(pDesc, &srd, ref handle.NativePtr);
+                device.Handle->CreateBuffer(pDesc, &srd, ref handle.NativePtr);
 
             EngineUtil.Free(ref _initialData);
             _initialBytes = 0;
@@ -108,7 +108,7 @@ public unsafe class BufferDX11 : GraphicsBuffer
         else
         {
             fixed (BufferDesc* pDesc = &Desc)
-                device.Ptr->CreateBuffer(pDesc, null, ref handle.NativePtr);
+                device.Handle->CreateBuffer(pDesc, null, ref handle.NativePtr);
         }
 
         CreateViews(device, handle);

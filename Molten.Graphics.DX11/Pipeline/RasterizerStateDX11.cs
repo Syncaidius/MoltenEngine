@@ -30,7 +30,7 @@ internal unsafe class RasterizerStateDX11 : GraphicsObject<DeviceDX11>, IEquatab
         _desc.ForcedSampleCount = parameters.ForcedSampleCount;
         _desc.FrontCounterClockwise = parameters.IsFrontCounterClockwise;
 
-        device.Ptr->CreateRasterizerState2(_desc, ref _native);
+        device.Handle->CreateRasterizerState2(_desc, ref _native);
     }
 
     public override bool Equals(object obj) => obj switch

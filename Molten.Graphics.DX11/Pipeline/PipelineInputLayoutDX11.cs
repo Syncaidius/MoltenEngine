@@ -88,7 +88,7 @@ internal unsafe class PipelineInputLayoutDX11 : GraphicsObject<DeviceDX11>
             nuint numBytes = byteCode->GetBufferSize();
 
             fixed (InputElementDesc* ptrElements = &finalElements[0])
-                device.Ptr->CreateInputLayout(ptrElements, (uint)finalElements.Length, ptrByteCode, numBytes, ref _native);
+                device.Handle->CreateInputLayout(ptrElements, (uint)finalElements.Length, ptrByteCode, numBytes, ref _native);
 
             if (_native == null)
             {

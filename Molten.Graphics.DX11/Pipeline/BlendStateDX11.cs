@@ -50,7 +50,7 @@ public unsafe class BlendStateDX11 : GraphicsObject<DeviceDX11>, IEquatable<Blen
             parameters[i] = pBlend;
         }
 
-        device.Ptr->CreateBlendState1(_desc.Desc, ref _native);
+        device.Handle->CreateBlendState1(_desc.Desc, ref _native);
     }
 
     protected override void OnGraphicsRelease()

@@ -264,34 +264,34 @@ public unsafe class FxcCompiler : ShaderCompiler
                 passDX11.InputByteCode = byteCode;
 
                 ID3D11ComputeShader* csShader = null;
-                device.Ptr->CreateComputeShader(ptrBytecode, numBytes, null, &csShader);
+                device.Handle->CreateComputeShader(ptrBytecode, numBytes, null, &csShader);
                 return csShader;
 
             case ShaderStageType.Vertex:
                 passDX11.InputByteCode = byteCode;
 
                 ID3D11VertexShader* vsShader = null;
-                device.Ptr->CreateVertexShader(ptrBytecode, numBytes, null, &vsShader);
+                device.Handle->CreateVertexShader(ptrBytecode, numBytes, null, &vsShader);
                 return vsShader;
 
             case ShaderStageType.Hull:
                 ID3D11HullShader* hsShader = null;
-                device.Ptr->CreateHullShader(ptrBytecode, numBytes, null, &hsShader);
+                device.Handle->CreateHullShader(ptrBytecode, numBytes, null, &hsShader);
                 return hsShader;
 
             case ShaderStageType.Domain:
                 ID3D11DomainShader* dsShader = null;
-                device.Ptr->CreateDomainShader(ptrBytecode, numBytes, null, &dsShader);
+                device.Handle->CreateDomainShader(ptrBytecode, numBytes, null, &dsShader);
                 return dsShader;
 
             case ShaderStageType.Geometry:
                 ID3D11GeometryShader* gsShader = null;
-                device.Ptr->CreateGeometryShader(ptrBytecode, numBytes, null, &gsShader);
+                device.Handle->CreateGeometryShader(ptrBytecode, numBytes, null, &gsShader);
                 return gsShader;
 
             case ShaderStageType.Pixel:
                 ID3D11PixelShader* psShader = null;
-                device.Ptr->CreatePixelShader(ptrBytecode, numBytes, null, &psShader);
+                device.Handle->CreatePixelShader(ptrBytecode, numBytes, null, &psShader);
                 return psShader;
         }
 

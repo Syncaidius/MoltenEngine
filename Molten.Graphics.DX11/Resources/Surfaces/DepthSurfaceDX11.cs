@@ -106,12 +106,12 @@ public unsafe class DepthSurfaceDX11 : Texture2DDX11, IDepthStencilSurface
         SubresourceData* subData = null;
 
         fixed(DepthStencilViewDesc* pDesc = &_depthDesc)
-            device.Ptr->CreateDepthStencilView(handle, pDesc, ref _depthView);
+            device.Handle->CreateDepthStencilView(handle, pDesc, ref _depthView);
 
         // Create read-only depth view for passing to shaders.
         _depthDesc.Flags = (uint)GetReadOnlyFlags();
         fixed (DepthStencilViewDesc* pDesc = &_depthDesc)
-            device.Ptr->CreateDepthStencilView(handle, pDesc, ref _readOnlyView);
+            device.Handle->CreateDepthStencilView(handle, pDesc, ref _readOnlyView);
         _depthDesc.Flags = 0U; // (uint)DsvFlag.None;
 
         return handle;

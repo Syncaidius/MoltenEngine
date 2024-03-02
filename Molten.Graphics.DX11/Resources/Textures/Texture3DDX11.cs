@@ -53,7 +53,7 @@ public unsafe class Texture3DDX11 : TextureDX11, ITexture3D
         SubresourceData* subData = null;
 
         fixed(Texture3DDesc1* pDesc = &_desc)
-            Device.Ptr->CreateTexture3D1(pDesc, subData, ref NativeTexture);
+            Device.Handle->CreateTexture3D1(pDesc, subData, ref NativeTexture);
 
         EngineUtil.Free(ref subData);
 

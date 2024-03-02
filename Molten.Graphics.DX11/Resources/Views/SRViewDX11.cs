@@ -9,7 +9,7 @@ internal unsafe class SRViewDX11 : ViewDX11<ID3D11ShaderResourceView1, ShaderRes
 
     protected override unsafe void OnCreateView(ID3D11Resource* resource, ShaderResourceViewDesc1* desc, ref ID3D11ShaderResourceView1* view)
     {
-        Handle.Device.Ptr->CreateShaderResourceView1(resource, desc, ref view);
+        Handle.Device.Handle->CreateShaderResourceView1(resource, desc, ref view);
     }
 
     public static implicit operator ID3D11ShaderResourceView*(SRViewDX11 view)

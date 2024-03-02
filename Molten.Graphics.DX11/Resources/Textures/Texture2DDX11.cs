@@ -43,7 +43,7 @@ public unsafe class Texture2DDX11 : TextureDX11, ITexture2D
 
         ID3D11Texture2D1* ptrTex = null;
         fixed (Texture2DDesc1* pDesc = &Desc)
-            Device.Ptr->CreateTexture2D1(pDesc, subData, ref ptrTex);
+            Device.Handle->CreateTexture2D1(pDesc, subData, ref ptrTex);
 
         EngineUtil.Free(ref subData);
 

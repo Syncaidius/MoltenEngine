@@ -63,7 +63,7 @@ public unsafe class SamplerDX11 : ShaderSampler
                 throw new Exception($"Failed to parse filter name '{filterName}'");
         }
 
-        device.Ptr->CreateSamplerState(&desc, ref _native);
+        device.Handle->CreateSamplerState(&desc, ref _native);
     }
 
     protected override void OnGraphicsRelease()
