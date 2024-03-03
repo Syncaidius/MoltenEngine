@@ -52,6 +52,9 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
             },
             SamplerFeedbackMipRegion = new MipRegion() // Sampler feedback info: https://microsoft.github.io/DirectX-Specs/d3d/SamplerFeedback.html
         };
+
+        if(this is IRenderSurface)
+            Desc.Flags |= ResourceFlags.AllowRenderTarget;
     }
 
     protected ResourceFlags GetResourceFlags()
@@ -74,9 +77,9 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
         ShaderResourceViewDesc srvDesc = new ShaderResourceViewDesc
         {
             Format = DxgiFormat,
-            Shader4ComponentMapping = (uint)(ShaderComponentMapping.FromMemoryComponent0 |
-                    ShaderComponentMapping.FromMemoryComponent1 |
-                    ShaderComponentMapping.FromMemoryComponent2 |
+            Shader4ComponentMapping = EncodeShader4ComponentMapping(ShaderComponentMapping.FromMemoryComponent0,
+                    ShaderComponentMapping.FromMemoryComponent1,
+                    ShaderComponentMapping.FromMemoryComponent2,
                     ShaderComponentMapping.FromMemoryComponent3),
         };
 
@@ -105,7 +108,7 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
     {
         HeapFlags heapFlags = HeapFlags.None;
         ResourceFlags flags = Flags.ToResourceFlags();
-        HeapType heapType = Flags.ToHeapType();
+        HeapType heapType = HeapType.Default; // Flags.ToHeapType();
         ResourceStates stateFlags = Flags.ToResourceState();
 
         HeapProperties heapProp = new HeapProperties()
@@ -116,6 +119,14 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
             MemoryPoolPreference = MemoryPool.Unknown,
             VisibleNodeMask = 1,
         };
+
+
+        // TODO Adjust for GPU memory architecture based on UMA support.
+        // See for differences: https://microsoft.github.io/DirectX-Specs/d3d/D3D12GPUUploadHeaps.html
+        if (heapType == HeapType.Custom)
+        {
+            // TODO Set CPUPageProperty and MemoryPoolPreference based on UMA support.
+        }
 
         if (Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
             flags |= ResourceFlags.DenyShaderResource;
@@ -171,6 +182,19 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
         Dimensions = dimensions;
 
         OnCreateResource();
+    }
+
+    protected uint EncodeShader4ComponentMapping(ShaderComponentMapping Src0, ShaderComponentMapping Src1, ShaderComponentMapping Src2, ShaderComponentMapping Src3)
+    {
+        const int D3D12_SHADER_COMPONENT_MAPPING_MASK = 0x7;
+        const int D3D12_SHADER_COMPONENT_MAPPING_SHIFT = 3;
+        const int D3D12_SHADER_COMPONENT_MAPPING_ALWAYS_SET_BIT_AVOIDING_ZEROMEM_MISTAKES = 1 << (D3D12_SHADER_COMPONENT_MAPPING_SHIFT * 4);
+
+        return ((uint)Src0 & D3D12_SHADER_COMPONENT_MAPPING_MASK) |
+            (((uint)Src1 & D3D12_SHADER_COMPONENT_MAPPING_MASK) << D3D12_SHADER_COMPONENT_MAPPING_SHIFT) |
+            (((uint)Src2 & D3D12_SHADER_COMPONENT_MAPPING_MASK) << (D3D12_SHADER_COMPONENT_MAPPING_SHIFT * 2)) |
+            (((uint)Src3 & D3D12_SHADER_COMPONENT_MAPPING_MASK) << (D3D12_SHADER_COMPONENT_MAPPING_SHIFT * 3)) |
+        D3D12_SHADER_COMPONENT_MAPPING_ALWAYS_SET_BIT_AVOIDING_ZEROMEM_MISTAKES;
     }
 
     /// <summary>Gets the DXGI format of the texture.</summary>

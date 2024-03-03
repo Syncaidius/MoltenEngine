@@ -121,5 +121,5 @@ internal class ResourceManagerDX12 : GraphicsResourceManager<DeviceDX12>
     }
 
     /// <inheritdoc/>
-    public override DxcCompiler Compiler => _shaderCompiler;
+    protected override DxcCompiler Compiler => _shaderCompiler;
 }

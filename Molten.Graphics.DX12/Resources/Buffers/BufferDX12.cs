@@ -118,10 +118,7 @@ public class BufferDX12 : GraphicsBuffer
             {
                 Format = ResourceFormat.ToApi(),
                 ViewDimension = SrvDimension.Buffer,
-                Shader4ComponentMapping = (uint)(ShaderComponentMapping.FromMemoryComponent0 |
-                    ShaderComponentMapping.FromMemoryComponent1 |
-                    ShaderComponentMapping.FromMemoryComponent2 |
-                    ShaderComponentMapping.FromMemoryComponent3),
+                Shader4ComponentMapping = (uint)ShaderComponentMapping.ForceValue1,
                 Buffer = new BufferSrv()
                 {
                     FirstElement = Stride > 0 ? (Offset / Stride) : 0,

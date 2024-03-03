@@ -122,5 +122,5 @@ public class ResourceManagerVK :GraphicsResourceManager<DeviceVK>
     }
 
     /// <inheritdoc/>
-    public override DxcCompiler Compiler => _shaderCompiler;
+    protected override DxcCompiler Compiler => _shaderCompiler;
 }

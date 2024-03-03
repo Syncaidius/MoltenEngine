@@ -149,5 +149,5 @@ public class ResourceManagerDX11 : GraphicsResourceManager<DeviceDX11>
     }
 
     /// <inheritdoc/>
-    public override FxcCompiler Compiler => _shaderCompiler;
+    protected override FxcCompiler Compiler => _shaderCompiler;
 }
