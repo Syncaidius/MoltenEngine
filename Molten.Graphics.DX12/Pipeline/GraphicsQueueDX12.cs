@@ -101,6 +101,7 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
             },
         };        
 
+        buffer.BarrierState = newState;
         _cmd.Handle->ResourceBarrier(1, &barrier);
     }
 
@@ -122,6 +123,7 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
             },
         };
 
+        texture.BarrierState = newState;
         _cmd.Handle->ResourceBarrier(1, &barrier);
     }
 

@@ -40,6 +40,16 @@ public class DepthSurfaceDX12 : Texture2DDX12, IDepthStencilSurface
         UpdateViewport();
     }
 
+    /*protected override ClearValue GetClearValue()
+    {
+        // TODO Correctly implement to avoid: D3D12_CLEAR_VALUE::Format cannot be a typeless format. A fully qualified format must be supplied. Format = R24G8_TYPELESS.
+        
+        ClearValue val = new();
+        val.Format = DxgiFormat;
+        val.DepthStencil = new DepthStencilValue(1, 0);
+        return val;
+    }*/
+
     protected unsafe override ID3D12Resource1* OnCreateTexture()
     {
         UpdateViewport();
