@@ -8,6 +8,9 @@ public unsafe class ResourceHandleDX12 : GraphicsResourceHandle
 
     internal ResourceHandleDX12(GraphicsResource resource, params ID3D12Resource1*[] ptr) : base(resource)
     {
+        if (ptr == null || ptr.Length == 0)
+            throw new ArgumentException("Resource handle must contain at least one resource pointer.");
+
         SetResources(ptr);
         Device = resource.Device as DeviceDX12;
 
@@ -20,6 +23,9 @@ public unsafe class ResourceHandleDX12 : GraphicsResourceHandle
 
     internal ResourceHandleDX12(GraphicsResource resource, ID3D12Resource1** ptr, uint numResources) : base(resource)
     {
+        if (numResources == 0)
+            throw new ArgumentException("Resource handle must contain at least one resource pointer.");
+
         SetResources(ptr, numResources);
         Device = resource.Device as DeviceDX12;
 

@@ -53,4 +53,9 @@ public static class DepthFormatExtensions
                 return GraphicsFormat.R32_Float_X8X24_Typeless;
         }
     }
+
+    public static bool HasStencil(this DepthFormat format)
+    {
+        return format == DepthFormat.R24G8 || format == DepthFormat.R32G8X24;
+    }
 }

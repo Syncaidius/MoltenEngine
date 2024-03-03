@@ -1,4 +1,5 @@
 ﻿using Silk.NET.Direct3D12;
+using System.Drawing;
 
 namespace Molten.Graphics.DX12;
 
@@ -33,6 +34,9 @@ public class DepthSurfaceDX12 : Texture2DDX12, IDepthStencilSurface
     {
         DepthFormat = format;
 
+        name ??= "surface";
+        Name = $"depth_{name}";
+
         UpdateViewport();
     }
 
@@ -49,7 +53,51 @@ public class DepthSurfaceDX12 : Texture2DDX12, IDepthStencilSurface
 
     public void Clear(GraphicsPriority priority, DepthClearFlags flags, float depthValue = 1, byte stencilValue = 0)
     {
-        throw new NotImplementedException();
+        if (priority == GraphicsPriority.Immediate)
+        {
+            Apply(Device.Queue);
+            Device.Queue.Clear(this, depthValue, stencilValue);
+        }
+        else
+        {
+            DepthClearTaskDX12 task = Device.Tasks.Get<DepthClearTaskDX12>();
+            task.DepthValue = depthValue;
+            task.StencilValue = stencilValue;
+            Device.Tasks.Push(priority, this, task);
+        }
+    }
+
+    protected override unsafe ResourceHandleDX12 OnCreateHandle(ID3D12Resource1* ptr)
+    {
+        DepthStencilViewDesc desc = new()
+        {
+            Format = DepthFormat.ToDepthViewFormat().ToApi(),
+            Flags = 0U, // DsvFlag.None
+        };
+
+        if (MultiSampleLevel >= AntiAliasLevel.X2)
+        {
+            desc.ViewDimension = DsvDimension.Texture2Dmsarray;;
+            desc.Texture2DMSArray = new Tex2DmsArrayDsv()
+            {
+                ArraySize = ArraySize,
+                FirstArraySlice = 0,
+            };
+        }
+        else
+        {
+            desc.ViewDimension = DsvDimension.Texture2Darray;
+            desc.Texture2DArray = new Tex2DArrayDsv()
+            {
+                ArraySize = ArraySize,
+                FirstArraySlice = 0,
+                MipSlice = 0,
+            };
+        }
+
+        DSHandleDX12 dsv = new (this, ptr);
+        dsv.DSV.Initialize(ref desc);
+        return dsv;
     }
 
     protected override void SetSRVDescription(ref ShaderResourceViewDesc desc)

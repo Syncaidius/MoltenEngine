@@ -1,5 +1,6 @@
 ﻿using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
+using Silk.NET.DXGI;
 
 namespace Molten.Graphics.DX12;
 
@@ -34,16 +35,23 @@ public class BufferDX12 : GraphicsBuffer
         ResourceFlags flags = Flags.ToResourceFlags();
         HeapType heapType = Flags.ToHeapType();
         ResourceStates stateFlags = Flags.ToResourceState();
-        if (ParentBuffer == null && BufferType == GraphicsBufferType.Unknown)
+        if (ParentBuffer == null)
         {
             HeapProperties heapProp = new HeapProperties()
             {
-                Type = heapType,
+                Type = HeapType.Default, // heapType, // TODO Properly set heap properties based on access flags and UMA support.
                 CPUPageProperty = CpuPageProperty.Unknown,
                 CreationNodeMask = 1,
                 MemoryPoolPreference = MemoryPool.Unknown,
                 VisibleNodeMask = 1,
             };
+
+            // TODO Adjust for GPU memory architecture based on UMA support.
+            // See for differences: https://microsoft.github.io/DirectX-Specs/d3d/D3D12GPUUploadHeaps.html
+            if (heapType == HeapType.Custom)
+            {
+                // TODO Set CPUPageProperty and MemoryPoolPreference based on UMA support.
+            }
 
             if (Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
                 flags |= ResourceFlags.DenyShaderResource;
@@ -51,7 +59,7 @@ public class BufferDX12 : GraphicsBuffer
             if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
                 flags |= ResourceFlags.AllowUnorderedAccess;
 
-            ResourceDesc desc = new()
+            ResourceDesc1 desc = new()
             {
                 Dimension = ResourceDimension.Buffer,
                 Alignment = 0,
@@ -61,11 +69,13 @@ public class BufferDX12 : GraphicsBuffer
                 Layout = TextureLayout.LayoutRowMajor,
                 Format = ResourceFormat.ToApi(),
                 Flags = flags,
+                MipLevels = 1,
+                SampleDesc = new SampleDesc(1, 0),
             };
 
             Guid guid = ID3D12Resource1.Guid;
             void* ptr = null;
-            HResult hr = Device.Handle->CreateCommittedResource(heapProp, heapFlags, desc, stateFlags, null, &guid, &ptr);
+            HResult hr = Device.Handle->CreateCommittedResource2(heapProp, heapFlags, desc, stateFlags, null, null, &guid, &ptr);
             if (!Device.Log.CheckResult(hr, () => $"Failed to create {desc.Dimension} resource"))
                 return;
 

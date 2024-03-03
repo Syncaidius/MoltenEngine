@@ -72,6 +72,20 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
         }
     }
 
+    internal void Clear(DepthSurfaceDX12 surface, float depthValue, byte stencilValue)
+    {
+        Transition(surface, ResourceStates.DepthWrite);
+
+        DSHandleDX12 dsHandle = (DSHandleDX12)surface.Handle;
+        ref CpuDescriptorHandle cpuHandle = ref dsHandle.DSV.CpuHandle;
+        ClearFlags flags = ClearFlags.Depth;
+        if (surface.DepthFormat.HasStencil())
+            flags |= ClearFlags.Stencil;
+
+        // TODO Add support for clearing areas using Box2D structs.
+        _cmd.Handle->ClearDepthStencilView(cpuHandle, flags, depthValue, stencilValue, 0, null);
+    }
+
     internal void Transition(BufferDX12 buffer, ResourceStates newState)
     {
         ResourceBarrier barrier = new()

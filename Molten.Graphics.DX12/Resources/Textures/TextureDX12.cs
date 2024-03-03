@@ -53,21 +53,12 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
             SamplerFeedbackMipRegion = new MipRegion() // Sampler feedback info: https://microsoft.github.io/DirectX-Specs/d3d/SamplerFeedback.html
         };
 
-        if(this is IRenderSurface)
-            Desc.Flags |= ResourceFlags.AllowRenderTarget;
-    }
-
-    protected ResourceFlags GetResourceFlags()
-    {
-        ResourceFlags result = Flags.ToResourceFlags();
 
         if (this is IRenderSurface)
-            result |= ResourceFlags.AllowRenderTarget;
+            Desc.Flags |= ResourceFlags.AllowRenderTarget;
 
         if (this is IDepthStencilSurface)
-            result |= ResourceFlags.AllowDepthStencil;
-
-        return result;
+            Desc.Flags |= ResourceFlags.AllowDepthStencil;
     }
 
     protected unsafe override sealed void OnCreateResource()
@@ -108,7 +99,7 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
     {
         HeapFlags heapFlags = HeapFlags.None;
         ResourceFlags flags = Flags.ToResourceFlags();
-        HeapType heapType = HeapType.Default; // Flags.ToHeapType();
+        HeapType heapType = HeapType.Default; // Flags.ToHeapType(); // TODO Properly set heap properties based on access flags and UMA support.
         ResourceStates stateFlags = Flags.ToResourceState();
 
         HeapProperties heapProp = new HeapProperties()
