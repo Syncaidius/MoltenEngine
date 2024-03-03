@@ -142,7 +142,7 @@ public class AudioCapture : MoltenExample
 
     protected override Mesh GetTestCubeMesh()
     {
-        Mesh<CubeArrayVertex> cube = Engine.Renderer.Device.CreateMesh<CubeArrayVertex>(SampleVertexData.TextureArrayCubeVertices);
+        Mesh<CubeArrayVertex> cube = Engine.Renderer.Device.Resources.CreateMesh(SampleVertexData.TextureArrayCubeVertices);
         return cube;
     }
 

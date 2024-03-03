@@ -31,7 +31,7 @@ public abstract class Mesh : Renderable
 
         if (IndexFormat != GraphicsIndexFormat.None)
         {
-            _iBuffer = Renderer.Device.CreateIndexBuffer(mode, maxIndices, initialIndices);
+            _iBuffer = Renderer.Device.Resources.CreateIndexBuffer(mode, maxIndices, initialIndices);
 
             if (initialIndices != null)
                 IndexCount = (uint)initialIndices.Length;
@@ -59,7 +59,7 @@ public abstract class Mesh : Renderable
 
         if (IndexFormat != GraphicsIndexFormat.None)
         {
-            _iBuffer = Renderer.Device.CreateIndexBuffer(mode, maxIndices, initialIndices);
+            _iBuffer = Renderer.Device.Resources.CreateIndexBuffer(mode, maxIndices, initialIndices);
 
             if (initialIndices != null)
                 IndexCount = (uint)initialIndices.Length;
@@ -237,7 +237,7 @@ public class Mesh<T> : Mesh
         T[] initialVertices = null, ushort[] initialIndices = null) :
         base(renderer, mode, maxVertices, maxIndices, initialIndices)
     {
-        _vb = renderer.Device.CreateVertexBuffer(mode, maxVertices, initialVertices);
+        _vb = renderer.Device.Resources.CreateVertexBuffer(mode, maxVertices, initialVertices);
 
         if (initialVertices != null)
             VertexCount = (uint)initialVertices.Length;
@@ -248,7 +248,7 @@ public class Mesh<T> : Mesh
          T[] initialVertices = null, uint[] initialIndices = null) :
          base(renderer, mode, maxVertices, maxIndices, initialIndices)
     {
-        _vb = renderer.Device.CreateVertexBuffer(mode, maxVertices, initialVertices); 
+        _vb = renderer.Device.Resources.CreateVertexBuffer(mode, maxVertices, initialVertices); 
         
         if (initialVertices != null)
             VertexCount = (uint)initialVertices.Length;

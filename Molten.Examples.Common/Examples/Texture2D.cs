@@ -33,6 +33,6 @@ public class Texture2DCube : MoltenExample
 
     protected override Mesh GetTestCubeMesh()
     {
-        return Engine.Renderer.Device.CreateMesh<CubeArrayVertex>(SampleVertexData.TextureArrayCubeVertices);
+        return Engine.Renderer.Device.Resources.CreateMesh<CubeArrayVertex>(SampleVertexData.TextureArrayCubeVertices);
     }
 }

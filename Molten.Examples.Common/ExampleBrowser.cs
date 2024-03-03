@@ -248,7 +248,7 @@ public class ExampleBrowser<R, I, A> : Foundation
 
         if (_chkNativeWindow.IsChecked)
         {
-            binding.NativeWindow = Engine.Renderer.Device.CreateFormSurface(selected.Text, selected.Text.Replace(" ", ""), 800, 600);
+            binding.NativeWindow = Engine.Renderer.Device.Resources.CreateFormSurface(selected.Text, selected.Text.Replace(" ", ""), 800, 600);
 
             HookWindow(binding.NativeWindow);
 
@@ -269,7 +269,7 @@ public class ExampleBrowser<R, I, A> : Foundation
         }
         else
         {
-            IRenderSurface2D surface = Engine.Renderer.Device.CreateSurface(800, 600, name: $"{selected.Text} Example");
+            IRenderSurface2D surface = Engine.Renderer.Device.Resources.CreateSurface(800, 600, name: $"{selected.Text} Example");
 
             binding.Window = UI.Children.Add<UIWindow>(new Rectangle(400 + Rng.Next(10, 50), 100, 800, 620));
             {

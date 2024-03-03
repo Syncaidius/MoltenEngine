@@ -14,10 +14,10 @@ internal class SpirvCompiler : DxcCompiler
     ReflectionLogAdapter _logger;
     SpirvReflection _reflector;
 
-    public SpirvCompiler(Vk vk, DeviceVK device, string includePath, Assembly includeAssembly, SpirvCompileTarget spirvTarget) : 
+    public SpirvCompiler(DeviceVK device, string includePath, Assembly includeAssembly, SpirvCompileTarget spirvTarget) : 
         base(device, includePath, includeAssembly)
     {
-        _vk = vk;
+        _vk = device.VK;
         _logger = new ReflectionLogAdapter(device.Log);
         _reflector = new SpirvReflection(_logger);
 

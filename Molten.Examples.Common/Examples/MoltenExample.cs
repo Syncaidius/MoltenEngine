@@ -99,7 +99,7 @@ public abstract class MoltenExample
 
     protected virtual Mesh GetTestCubeMesh()
     {
-        return Engine.Renderer.Device.CreateMesh(SampleVertexData.TexturedCube);
+        return Engine.Renderer.Device.Resources.CreateMesh(SampleVertexData.TexturedCube);
     }
 
     private SceneObject SpawnTestCube(Mesh mesh, Vector3F pos)

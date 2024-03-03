@@ -63,7 +63,7 @@ public class SpriteFontManager : EngineObject
     private void CreateSurface(uint arraySize)
     {
         _camera.Surface?.Dispose();
-        _camera.Surface = _renderer.Device.CreateSurface((uint)PageSize, (uint)PageSize, 
+        _camera.Surface = _renderer.Device.Resources.CreateSurface((uint)PageSize, (uint)PageSize, 
             flags: GraphicsResourceFlags.GpuWrite | GraphicsResourceFlags.MipMapGeneration, 
             arraySize: arraySize, 
             name: "Sprite Font Sheet");

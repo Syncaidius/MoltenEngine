@@ -252,7 +252,7 @@ public abstract class RenderService : EngineService
 
     private void LoadDefaultShaders()
     {
-        ShaderCompileResult result = Device.LoadEmbeddedShader("Molten.Assets", "gbuffer.json");
+        ShaderCompileResult result = Device.Resources.LoadEmbeddedShader("Molten.Assets", "gbuffer.json");
         FxStandardMesh = result["gbuffer"];
         FxStandardMesh_NoNormalMap = result["gbuffer-sans-nmap"];
     }

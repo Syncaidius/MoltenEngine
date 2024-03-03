@@ -50,7 +50,7 @@ public class SurfaceTracker : IDisposable
 
     private IRenderSurface2D Create(AntiAliasLevel aa)
     {
-        IRenderSurface2D rs = _device.CreateSurface(_width, _height, _format, aaLevel:aa, name: $"{_name}_{aa}aa");
+        IRenderSurface2D rs = _device.Resources.CreateSurface(_width, _height, _format, aaLevel:aa, name: $"{_name}_{aa}aa");
         _surfaces[aa] = rs;
         return rs;
     }

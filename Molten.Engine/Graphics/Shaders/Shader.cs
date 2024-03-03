@@ -50,7 +50,7 @@ public class Shader : GraphicsObject
         // Create a new sampler
         if (parameters.LinkedSampler == null)
         {
-            parameters.LinkedSampler = Device.CreateSampler(parameters);
+            parameters.LinkedSampler = Device.Resources.CreateSampler(parameters);
             SharedSamplers.Add(parameters.LinkedSampler);
         }
     }

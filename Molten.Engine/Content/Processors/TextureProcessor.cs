@@ -122,13 +122,14 @@ public class TextureProcessor : ContentProcessor<TextureParameters>
     {
         ITexture tex = null;
         ContentManager manager = handle.Manager;
+        GraphicsDevice device = manager.Engine.Renderer.Device;
 
         if (handle.ContentType == typeof(ITexture2D))
-            tex = manager.Engine.Renderer.Device.CreateTexture2D(data);
+            tex = device.Resources.CreateTexture2D(data);
         else if (handle.ContentType == typeof(ITextureCube))
-            tex = manager.Engine.Renderer.Device.CreateTextureCube(data);
+            tex = device.Resources.CreateTextureCube(data);
         else if (handle.ContentType == typeof(ITexture1D))
-            tex = manager.Engine.Renderer.Device.CreateTexture1D(data);
+            tex = device.Resources.CreateTexture1D(data);
         else
             manager.Log.Error($"Unsupported texture type {handle.ContentType}", handle.RelativePath);
 
@@ -218,7 +219,7 @@ public class TextureProcessor : ContentProcessor<TextureParameters>
             // TODO finish support for writing textures directly
 
             ITexture tex = asset as ITexture;
-            ITexture staging = handle.Manager.Engine.Renderer.Device.CreateStagingTexture(tex);
+            ITexture staging = handle.Manager.Engine.Renderer.Device.Resources.CreateStagingTexture(tex);
 
             if (staging != null)
             {

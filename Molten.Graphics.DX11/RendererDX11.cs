@@ -2,7 +2,6 @@
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
-using System.Reflection;
 
 namespace Molten.Graphics.DX11;
 
@@ -16,7 +15,7 @@ public class RendererDX11 : RenderService
 
     protected unsafe override GraphicsManager OnInitializeDisplayManager(GraphicsSettings settings)
     {
-        _api = D3D11.GetApi();
+        _api = D3D11.GetApi(null);
         _deviceBuilder = new DeviceBuilderDX11(_api, this, 
             D3DFeatureLevel.Level111,
             D3DFeatureLevel.Level110, 

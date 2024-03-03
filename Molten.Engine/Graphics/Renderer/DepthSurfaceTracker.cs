@@ -47,7 +47,7 @@ internal class DepthSurfaceTracker : IDisposable
 
     internal IDepthStencilSurface Create(AntiAliasLevel aa)
     {
-        IDepthStencilSurface ds = _device.CreateDepthSurface(_width, _height, _format, aaLevel:aa, name:$"depth_{aa}aa");
+        IDepthStencilSurface ds = _device.Resources.CreateDepthSurface(_width, _height, _format, aaLevel:aa, name:$"depth_{aa}aa");
         _surfaces[aa] = ds;
         return ds;
     }

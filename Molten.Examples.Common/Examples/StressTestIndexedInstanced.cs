@@ -25,7 +25,7 @@ public class StressTestIndexedInstanced : MoltenExample
     protected override Mesh GetTestCubeMesh()
     {
         uint maxInstances = CUBE_COUNT + 50;
-        return Engine.Renderer.Device.CreateInstancedMesh<VertexColor, InstanceData>(
+        return Engine.Renderer.Device.Resources.CreateInstancedMesh<VertexColor, InstanceData>(
             SampleVertexData.IndexedColorCubeVertices,
             maxInstances,
             SampleVertexData.CubeIndices);

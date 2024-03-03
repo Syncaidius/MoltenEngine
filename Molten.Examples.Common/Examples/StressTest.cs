@@ -21,7 +21,7 @@ public class StressTest : MoltenExample
 
     protected override Mesh GetTestCubeMesh()
     {
-        return Engine.Renderer.Device.CreateMesh(SampleVertexData.ColoredCube);
+        return Engine.Renderer.Device.Resources.CreateMesh(SampleVertexData.ColoredCube);
     }
 
     protected override void OnLoadContent(ContentLoadBatch loader)

@@ -76,7 +76,7 @@ internal class ShaderStructureBuilder
         if (localName == "$Globals")
             localName += $"_{shader.Name}";
 
-        IConstantBuffer cBuffer = context.Compiler.Device.CreateConstantBuffer(info);
+        IConstantBuffer cBuffer = context.Compiler.Device.Resources.CreateConstantBuffer(info);
 
         // Duplication checks.
         if (context.TryGetResource(localName, out IConstantBuffer existing))

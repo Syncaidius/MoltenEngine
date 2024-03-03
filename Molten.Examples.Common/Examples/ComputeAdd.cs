@@ -65,14 +65,14 @@ public class ComputeAdd : MoltenExample
             }
 
             // Setup two input buffers for our numbers. By default these are immutable - cannot be changed after creation.
-            GraphicsBuffer numBuffer0 = Engine.Renderer.Device.CreateStructuredBuffer(_values0);
-            GraphicsBuffer numBuffer1 = Engine.Renderer.Device.CreateStructuredBuffer(_values1);
+            GraphicsBuffer numBuffer0 = Engine.Renderer.Device.Resources.CreateStructuredBuffer(_values0);
+            GraphicsBuffer numBuffer1 = Engine.Renderer.Device.Resources.CreateStructuredBuffer(_values1);
 
             // Setup one output buffer for results
-            GraphicsBuffer outBuffer = Engine.Renderer.Device.CreateStructuredBuffer<ComputeData>(GraphicsResourceFlags.GpuWrite | GraphicsResourceFlags.UnorderedAccess, NUM_SUMS);
+            GraphicsBuffer outBuffer = Engine.Renderer.Device.Resources.CreateStructuredBuffer<ComputeData>(GraphicsResourceFlags.GpuWrite | GraphicsResourceFlags.UnorderedAccess, NUM_SUMS);
 
             // Staging buffer for transferring our compute result off the GPU
-            GraphicsBuffer stagingBuffer = Engine.Renderer.Device.CreateStagingBuffer(true, false, numBytes);
+            GraphicsBuffer stagingBuffer = Engine.Renderer.Device.Resources.CreateStagingBuffer(true, false, numBytes);
 
             // Send our compute shader off to the renderer to be worked on.
             Engine.Renderer.Device.Tasks.Push(GraphicsTaskPriority.StartOfFrame, compute, NUM_SUMS, 1, 1, (task, successful) =>
@@ -94,7 +94,7 @@ public class ComputeAdd : MoltenExample
 
     protected override Mesh GetTestCubeMesh()
     {
-        return Engine.Renderer.Device.CreateMesh(SampleVertexData.TextureArrayCubeVertices);
+        return Engine.Renderer.Device.Resources.CreateMesh(SampleVertexData.TextureArrayCubeVertices);
     }
 
     protected override void OnDrawSprites(SpriteBatcher sb)

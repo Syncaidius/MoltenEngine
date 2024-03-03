@@ -12,10 +12,10 @@ internal class LightingStep : RenderStep
     {
         uint stride = (uint)Marshal.SizeOf<LightData>();
         uint maxLights = 2000; // TODO move to graphics settings
-        _lightBuffer = renderer.Device.CreateStructuredBuffer<LightData>(GraphicsResourceFlags.CpuWrite, maxLights);
+        _lightBuffer = renderer.Device.Resources.CreateStructuredBuffer<LightData>(GraphicsResourceFlags.CpuWrite, maxLights);
 
         // Load shaders
-        ShaderCompileResult result = renderer.Device.LoadEmbeddedShader("Molten.Assets", "light_point.json");
+        ShaderCompileResult result = renderer.Device.Resources.LoadEmbeddedShader("Molten.Assets", "light_point.json");
         _matPoint = result["light-point"];
         _matDebugPoint = result["light-point-debug"];
     }

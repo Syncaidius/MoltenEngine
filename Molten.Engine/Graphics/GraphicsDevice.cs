@@ -32,7 +32,6 @@ public abstract partial class GraphicsDevice : EngineObject
     uint _maxStagingSize;
 
     ThreadedList<GraphicsObject> _disposals;
-    ThreadedList<ISwapChainSurface> _outputSurfaces;
 
     /// <summary>
     /// Creates a new instance of <see cref="GraphicsDevice"/>.
@@ -49,7 +48,6 @@ public abstract partial class GraphicsDevice : EngineObject
         Tasks = new GraphicsTaskManager(this);
 
         Cache = new ObjectCache();
-        _outputSurfaces = new ThreadedList<ISwapChainSurface>();
         _disposals = new ThreadedList<GraphicsObject>();
 
         _maxStagingSize = (uint)ByteMath.FromMegabytes(renderer.Settings.Graphics.FrameStagingSize);
@@ -151,7 +149,7 @@ public abstract partial class GraphicsDevice : EngineObject
         }
 
         // Dispose of any registered output services.
-        _outputSurfaces.For(0, (index, surface) =>
+        Resources.OutputSurfaces.For(0, (index, surface) =>
         {
             surface.Dispose();
             return false;
@@ -217,7 +215,7 @@ public abstract partial class GraphicsDevice : EngineObject
                     for (int i = 0; i < FrameBufferSize; i++)
                     {
                         _frames[i] ??= new GraphicsFrame(INITIAL_BRANCH_COUNT);
-                        _frames[i].StagingBuffer = CreateStagingBuffer(true, true, _maxStagingSize);
+                        _frames[i].StagingBuffer = Resources.CreateStagingBuffer(true, true, _maxStagingSize);
                     }
                 }
                 else
@@ -231,7 +229,7 @@ public abstract partial class GraphicsDevice : EngineObject
 
     internal void BeginFrame()
     {
-        OnBeginFrame(_outputSurfaces);
+        OnBeginFrame(Resources.OutputSurfaces);
 
         // TODO check if _maxStagingSize has changed due to settings. May need to resize all existing staging buffers.
         CheckFrameBufferSize(true);
@@ -255,79 +253,15 @@ public abstract partial class GraphicsDevice : EngineObject
 
     internal void EndFrame(Timing time)
     {
-        OnEndFrame(_outputSurfaces);
+        OnEndFrame(Resources.OutputSurfaces);
 
         _frames[_frameIndex].FrameID = Renderer.FrameID;
         _frameIndex = (_frameIndex + 1U) % FrameBufferSize;
     }
 
-    protected abstract void OnBeginFrame(ThreadedList<ISwapChainSurface> surfaces);
+    protected abstract void OnBeginFrame(IReadOnlyThreadedList<ISwapChainSurface> surfaces);
 
-    protected abstract void OnEndFrame(ThreadedList<ISwapChainSurface> surfaces);
-
-    /// <summary>
-    /// Requests a new <see cref="ShaderSampler"/> from the current <see cref="GraphicsDevice"/>, with the implementation's default sampler settings.
-    /// </summary>
-    /// <param name="parameters">The parameters to use when creating the new <see cref="ShaderSampler"/>.</param>
-    /// <returns></returns>
-    public ShaderSampler CreateSampler(ShaderSamplerParameters parameters)
-    {
-        ShaderSampler sampler = OnCreateSampler(parameters);
-        Cache.Check(ref sampler);
-        return sampler;
-    }
-
-    protected abstract ShaderSampler OnCreateSampler(ShaderSamplerParameters parameters);
-
-    internal ShaderPass CreateShaderPass(Shader shader, string name = null)
-    {
-        return OnCreateShaderPass(shader, name);
-    }
-
-    protected abstract ShaderPass OnCreateShaderPass(Shader shader, string name);
-
-    /// <summary>
-    /// Loads an embedded shader from the target assembly. If an assembly is not provided, the current renderer's assembly is used instead.
-    /// </summary>
-    /// <param name="nameSpace"></param>
-    /// <param name="filename"></param>
-    /// <param name="assembly">The assembly that contains the embedded shadr. If an assembly is not provided, the current renderer's assembly is used instead.</param>
-    /// <returns></returns>
-    public ShaderCompileResult LoadEmbeddedShader(string nameSpace, string filename, Assembly assembly = null)
-    {
-        string src = "";
-        assembly ??= typeof(RenderService).Assembly;
-        Stream stream = EmbeddedResource.TryGetStream($"{nameSpace}.{filename}", assembly);
-        if (stream != null)
-        {
-            using (StreamReader reader = new StreamReader(stream))
-                src = reader.ReadToEnd();
-
-            stream.Dispose();
-        }
-        else
-        {
-            Log.Error($"Attempt to load embedded shader failed: '{filename}' not found in namespace '{nameSpace}' of assembly '{assembly.FullName}'");
-            return new ShaderCompileResult();
-        }
-
-        return Compiler.Compile(src, filename, ShaderCompileFlags.None, assembly, nameSpace);
-    }
-
-    /// <summary>Compiles a set of shaders from the provided source string.</summary>
-    /// <param name="source">The source code to be parsed and compiled.</param>
-    /// <param name="filename">The name of the source file. Used as a pouint of reference in debug/error messages only.</param>
-    /// <returns></returns>
-    public ShaderCompileResult CompileShaders(ref string source, string filename = null)
-    {
-        if (!string.IsNullOrWhiteSpace(filename))
-        {
-            FileInfo fInfo = new FileInfo(filename);
-            DirectoryInfo dir = fInfo.Directory;
-        }
-
-        return Compiler.Compile(source, filename, ShaderCompileFlags.None, null, null);
-    }
+    protected abstract void OnEndFrame(IReadOnlyThreadedList<ISwapChainSurface> surfaces);
 
     /// <summary>
     /// Gets the amount of VRAM that has been allocated on the current <see cref="GraphicsDevice"/>. 
@@ -429,7 +363,7 @@ public abstract partial class GraphicsDevice : EngineObject
     public GraphicsTaskManager Tasks { get; }
 
     /// <summary>
-    /// Gets the shader compiler bound to the current <see cref="GraphicsDevice"/>.
+    /// Gets the <see cref="GraphicsResourceManager"/> implementation for the current <see cref="GraphicsDevice"/>. 
     /// </summary>
-    public abstract ShaderCompiler Compiler { get; }
+    public abstract GraphicsResourceManager Resources { get; }
 }

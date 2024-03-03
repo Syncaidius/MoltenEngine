@@ -184,7 +184,7 @@ public abstract class ShaderCompiler : EngineObject
                 context.AddError($"Invalid format '{p.Value}' for '{p.Key}' in pass '{passDef.Name}'");
         }
 
-        ShaderPass pass = Device.CreateShaderPass(parent, passDef.Name ?? "Unnamed pass");
+        ShaderPass pass = Device.Resources.CreateShaderPass(parent, passDef.Name ?? "Unnamed pass");
         PassCompileResult result = new PassCompileResult(pass);
 
         // Compile each stage of the material pass.

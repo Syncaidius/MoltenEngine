@@ -35,7 +35,7 @@ public class SaveTexture : MoltenExample
         mat[ShaderBindType.Resource, 0] = tex;
         TestMesh.Shader = mat;
 
-        GraphicsTexture texStaging = Engine.Renderer.Device.CreateStagingTexture(tex);
+        GraphicsTexture texStaging = Engine.Renderer.Device.Resources.CreateStagingTexture(tex);
         TextureData loadedData = _hTexData.Get<TextureData>();
         loadedData.Decompress(Log);
 
@@ -56,7 +56,7 @@ public class SaveTexture : MoltenExample
 
     protected override Mesh GetTestCubeMesh()
     {
-        Mesh<CubeArrayVertex> cube = Engine.Renderer.Device.CreateMesh(SampleVertexData.TextureArrayCubeVertices);
+        Mesh<CubeArrayVertex> cube = Engine.Renderer.Device.Resources.CreateMesh(SampleVertexData.TextureArrayCubeVertices);
         return cube;
     }
 
