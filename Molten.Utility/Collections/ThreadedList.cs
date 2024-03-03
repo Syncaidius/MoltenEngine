@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Molten.Utility.Collections;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 
@@ -7,7 +8,7 @@ namespace Molten.Collections;
 /// <summary>A thread-safe list implementation. Basically wraps thread-safety around the vanilla list.</summary>
 /// <typeparam name="T">The type of object to be stored in the list.</typeparam>
 [DebuggerDisplay("Count = {Count}")]
-public partial class ThreadedList<T> : IList<T>, IProducerConsumerCollection<T>, IReadOnlyList<T>
+public partial class ThreadedList<T> : IList<T>, IProducerConsumerCollection<T>, IReadOnlyThreadedList<T>
 {
     static readonly T[] _emptyArray = new T[0];
 
