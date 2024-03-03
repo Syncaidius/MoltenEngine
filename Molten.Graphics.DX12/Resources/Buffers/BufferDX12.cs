@@ -39,7 +39,7 @@ public class BufferDX12 : GraphicsBuffer
         {
             HeapProperties heapProp = new HeapProperties()
             {
-                Type = HeapType.Default, // heapType, // TODO Properly set heap properties based on access flags and UMA support.
+                Type = heapType,
                 CPUPageProperty = CpuPageProperty.Unknown,
                 CreationNodeMask = 1,
                 MemoryPoolPreference = MemoryPool.Unknown,

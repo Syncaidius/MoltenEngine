@@ -105,7 +105,7 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
         _cmd.Handle->ResourceBarrier(1, &barrier);
     }
 
-    internal void Transition(TextureDX12 texture, ResourceStates newState)
+    internal void Transition(TextureDX12 texture, ResourceStates newState, uint subResource = 0)
     {
         if (texture.BarrierState == newState)
             return;
@@ -119,7 +119,7 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
                 PResource = texture.Handle,
                 StateAfter = newState,
                 StateBefore = texture.BarrierState,
-                Subresource = 0,
+                Subresource = subResource,
             },
         };
 
