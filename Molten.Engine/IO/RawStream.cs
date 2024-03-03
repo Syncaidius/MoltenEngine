@@ -12,13 +12,13 @@ public unsafe class RawStream : Stream
     byte* _ptrDataStart;
     byte* _ptrData;
 
-    public RawStream(void* ptrData, uint numBytes, bool canRead, bool canWrite)
+    public RawStream(void* ptrData, ulong numBytes, bool canRead, bool canWrite)
     {
         _ptrData = (byte*)ptrData;
         _ptrDataStart = _ptrData;
         CanRead = canRead;
         CanWrite = canWrite;
-        _length = numBytes;
+        _length = (long)numBytes;
     }
 
     public override void SetLength(long value)

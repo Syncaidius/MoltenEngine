@@ -4,11 +4,11 @@ public struct ResourceMap
 {
     public unsafe void* Ptr;
 
-    public uint RowPitch;
+    public ulong RowPitch;
 
-    public uint DepthPitch;
+    public ulong DepthPitch;
 
-    public unsafe ResourceMap(void* ptr, uint rowPitch, uint depthPitch)
+    public unsafe ResourceMap(void* ptr, ulong rowPitch, ulong depthPitch)
     {
         Ptr = ptr;
         RowPitch = rowPitch;

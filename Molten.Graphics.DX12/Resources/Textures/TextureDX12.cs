@@ -111,7 +111,6 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
             VisibleNodeMask = 1,
         };
 
-
         // TODO Adjust for GPU memory architecture based on UMA support.
         // See for differences: https://microsoft.github.io/DirectX-Specs/d3d/D3D12GPUUploadHeaps.html
         if (heapType == HeapType.Custom)

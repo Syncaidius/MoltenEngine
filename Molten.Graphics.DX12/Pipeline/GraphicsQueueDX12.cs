@@ -213,12 +213,56 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
 
     protected override ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, GraphicsMapType mapType)
     {
-        throw new NotImplementedException();
+        GraphicsResourceFlags flags = resource.Flags;
+
+        // Validate map type.
+        if (mapType == GraphicsMapType.Read)
+        {
+            if (!flags.Has(GraphicsResourceFlags.CpuRead))
+                throw new InvalidOperationException($"Resource '{resource.Name}' does not allow read access.");
+        }
+        else if (mapType == GraphicsMapType.Write)
+        {
+            if (!flags.Has(GraphicsResourceFlags.CpuWrite))
+                throw new InvalidOperationException($"Resource '{resource.Name}' does not allow write access.");
+        }
+        else if (mapType == GraphicsMapType.Discard)
+        {
+            // TODO Validate this.
+        }
+
+        if(resource.Handle is ResourceHandleDX12 handle)
+        {
+            ulong rowPitch = 0;
+            ulong depthPitch = 0;
+
+            if (resource is GraphicsTexture tex)
+            {
+                // TODO Calculate row pitch based on texture size, subresource level, format and dimensions. Also consider block-compression size.
+            }
+            else if (resource is GraphicsBuffer buffer)
+            {
+                rowPitch = buffer.SizeInBytes;
+                depthPitch = buffer.SizeInBytes;
+            }
+
+            void* ptrMap = null;
+            HResult hr = handle.Ptr1->Map(subresource, null, &ptrMap);
+            if (!Log.CheckResult(hr, () => $"Failed to map resource {resource.Name} for {mapType} access"))
+                return new ResourceMap();
+            else
+                return new ResourceMap(ptrMap, rowPitch, depthPitch);
+        }
+        else
+        {
+            throw new InvalidOperationException($"Resource '{resource.Name}' is not a valid DX12 resource.");
+        }        
     }
 
     protected override void OnUnmapResource(GraphicsResource resource, uint subresource)
     {
-        throw new NotImplementedException();
+        if (resource.Handle is ResourceHandleDX12 handle)
+            handle.Ptr1->Unmap(subresource, null);
     }
 
     protected override unsafe void UpdateResource(GraphicsResource resource, uint subresource, ResourceRegion? region, void* ptrData, uint rowPitch, uint slicePitch)

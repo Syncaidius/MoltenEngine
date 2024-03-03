@@ -177,7 +177,7 @@ public unsafe class TextureSlice : IDisposable
             fixed (byte* ptrFixedSlice = sliceData)
             {
                 byte* ptrSlice = ptrFixedSlice;
-                uint p = 0;
+                ulong p = 0;
                 while (p < stream.Map.DepthPitch)
                 {
                     stream.ReadRange(ptrSlice, expectedRowPitch);

@@ -163,6 +163,10 @@ public abstract class GraphicsQueue : EngineObject
     {
         resource.Apply(this);
         ResourceMap map = GetResourcePtr(resource, subresource, mapType);
+
+        if(map.Ptr == null)
+            throw new GraphicsResourceException(resource, "Failed to map resource.");
+
         GraphicsStream stream = new GraphicsStream(this, resource, ref map);
         stream.Position = (long)offsetBytes;
         return stream;
