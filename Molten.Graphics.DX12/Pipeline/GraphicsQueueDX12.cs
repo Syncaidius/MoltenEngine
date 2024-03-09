@@ -313,6 +313,8 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
         PipelineStateDX12 state = _stateBuilder.Build(pass, _inputLayout);
 
         _cmd.Handle->SetPipelineState(state.Handle);
+        _cmd.Handle->SetGraphicsRootSignature(state.RootSignature.Handle);
+
         Device.Heap.PrepareGpuHeap(pass, _cmd);
 
         _cmd.Handle->OMSetRenderTargets((uint)State.Surfaces.Length, _rtvs, false, _dsv);

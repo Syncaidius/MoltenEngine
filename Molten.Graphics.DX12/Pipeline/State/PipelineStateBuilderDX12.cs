@@ -172,7 +172,7 @@ internal class PipelineStateBuilderDX12
         if (!device.Log.CheckResult(hr, () => "Failed to create pipeline state object (PSO)"))
             return null;
 
-        result = new PipelineStateDX12(device, (ID3D12PipelineState*)ptr);
+        result = new PipelineStateDX12(device, (ID3D12PipelineState*)ptr, rootSig);
 
         // Add the new pipeline state to the cache.
         _cache.Add(ref cacheKey, ref result);

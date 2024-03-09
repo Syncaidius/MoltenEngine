@@ -18,4 +18,6 @@ internal unsafe class RootSignatureDX12 : GraphicsObject<DeviceDX12>
     {
         NativeUtil.ReleasePtr(ref _handle);
     }
+
+    public ref readonly ID3D12RootSignature* Handle => ref _handle;
 }

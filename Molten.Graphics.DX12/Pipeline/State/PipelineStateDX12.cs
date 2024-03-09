@@ -12,10 +12,11 @@ internal unsafe class PipelineStateDX12 : GraphicsObject<DeviceDX12>
     /// </summary>
     /// <param name="device"></param>
     /// <param name="handle"></param>
-    public PipelineStateDX12(DeviceDX12 device, ID3D12PipelineState* handle) : 
+    public PipelineStateDX12(DeviceDX12 device, ID3D12PipelineState* handle, RootSignatureDX12 rootSig) : 
         base(device)
     {
         _handle = handle;
+        RootSignature = rootSig;
     }
 
     public CachedPipelineState GetCachedBlob()
@@ -32,10 +33,11 @@ internal unsafe class PipelineStateDX12 : GraphicsObject<DeviceDX12>
 
     protected override void OnGraphicsRelease()
     {
+        RootSignature?.Dispose(true);
         NativeUtil.ReleasePtr(ref _handle);
     }
 
-    internal bool IsTemplate { get; }
-
     internal ID3D12PipelineState* Handle => _handle;
+
+    internal RootSignatureDX12 RootSignature { get; }
 }
