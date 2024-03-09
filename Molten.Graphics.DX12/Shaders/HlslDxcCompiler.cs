@@ -54,7 +54,7 @@ internal unsafe class HlslDxcCompiler : DxcCompiler
         ShaderDesc shaderDesc = new();
         reflection->GetDesc(&shaderDesc);
 
-        ShaderReflection result = new ShaderReflection();
+        ShaderReflection result = new();
         result.GSInputPrimitive = shaderDesc.GSOutputTopology.FromApi();
         result.GSMaxOutputVertexCount = shaderDesc.GSMaxOutputVertexCount;
 

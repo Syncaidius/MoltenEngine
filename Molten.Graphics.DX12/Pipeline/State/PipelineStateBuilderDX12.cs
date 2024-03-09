@@ -70,6 +70,10 @@ internal class PipelineStateBuilderDX12
         if (_cache.Check(ref cacheKey, ref result))
             return result;
 
+        /* TODO Validate topology:
+         *  - If the HS and DS members are specified, the PrimitiveTopologyType member for topology type must be set to D3D12_PRIMITIVE_TOPOLOGY_TYPE_PATCH.
+         */
+
         // Proceed to create new pipeline state.
         GraphicsPipelineStateDesc desc = new()
         {
@@ -84,9 +88,10 @@ internal class PipelineStateBuilderDX12
             DS = pass.GetBytecode(ShaderStageType.Domain),
             HS = pass.GetBytecode(ShaderStageType.Hull),
             PS = pass.GetBytecode(ShaderStageType.Pixel),
-            PrimitiveTopologyType = pass.GeometryPrimitive.ToApiToplogyType(),
+            PrimitiveTopologyType = pass.Topology.ToApiPrimitiveType(),
             NodeMask = 0,               // TODO Set this to the node mask of the device.
             IBStripCutValue = indexStripCutValue,
+            SampleDesc = new SampleDesc(1, 0),
         };
 
         // Check if cache data can be set.

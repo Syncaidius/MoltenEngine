@@ -141,4 +141,27 @@ internal static class ShaderInterop
     {
         return (D3DPrimitiveTopology)type;
     }
+
+    public static PrimitiveTopologyType ToApiPrimitiveType(this PrimitiveTopology type)
+    {
+        switch (type)
+        {
+            case PrimitiveTopology.Triangle:
+            case PrimitiveTopology.TriangleStrip:
+                return PrimitiveTopologyType.Triangle;
+
+            case PrimitiveTopology.Line:
+            case PrimitiveTopology.LineStrip:
+                return PrimitiveTopologyType.Line;
+
+            case PrimitiveTopology.Point:
+                return PrimitiveTopologyType.Point;
+
+            case PrimitiveTopology.Undefined:
+                return PrimitiveTopologyType.Undefined;
+
+            default:
+                return PrimitiveTopologyType.Patch;
+        }
+    }
 }
