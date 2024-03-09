@@ -37,6 +37,8 @@ internal class PipelineStateBuilderDX12
         }
     }
 
+    static readonly char[] _errorDelimiters = ['\r', '\n'];
+
     KeyedObjectCache<CacheKey, PipelineStateDX12> _cache = new();
     static readonly Dictionary<D3DRootSignatureVersion, RootSignaturePopulatorDX12> _rootPopulators = new()
     {
@@ -189,11 +191,14 @@ internal class PipelineStateBuilderDX12
 
         // Serialize the root signature.
         ID3D10Blob* signature = null;
-        ID3D10Blob* error = null;
+        ID3D10Blob* errors = null;
 
-        HResult hr = device.Renderer.Api.SerializeVersionedRootSignature(&sigDesc, &signature, &error);
+        HResult hr = device.Renderer.Api.SerializeVersionedRootSignature(&sigDesc, &signature, &errors);
         if (!device.Log.CheckResult(hr, () => "Failed to serialize root signature"))
+        {
+            ParseErrors(pass, hr, errors);
             hr.Throw();
+        }
 
         // TODO Read the error blob and log it if it contains any errors.
 
@@ -210,5 +215,27 @@ internal class PipelineStateBuilderDX12
         _rootSigPopulator.Free(ref sigDesc);
 
         return result;
+    }
+
+    private unsafe void ParseErrors(ShaderPassDX12 pass, HResult hr, ID3D10Blob* errors)
+    {
+        if (errors == null)
+            return;
+
+        void* ptrErrors = errors->GetBufferPointer();
+        nuint numBytes = errors->GetBufferSize();
+        string strErrors = SilkMarshal.PtrToString((nint)ptrErrors, NativeStringEncoding.UTF8);
+        string[] errorList = strErrors.Split(_errorDelimiters, StringSplitOptions.RemoveEmptyEntries);
+
+        if (hr.IsSuccess)
+        {
+            for (int i = 0; i < errorList.Length; i++)
+                pass.Device.Log.Warning($"[{nameof(PipelineStateBuilderDX12)}] {errorList[i]}");
+        }
+        else
+        {
+            for (int i = 0; i < errorList.Length; i++)
+                pass.Device.Log.Error($"[{nameof(PipelineStateBuilderDX12)}] {errorList[i]}");
+        }
     }
 }
