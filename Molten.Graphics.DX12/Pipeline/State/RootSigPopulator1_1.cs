@@ -49,38 +49,33 @@ internal class RootSigPopulator1_1 : RootSignaturePopulatorDX12
     private void PopulateRanges<V>(DescriptorRangeType type, List<DescriptorRange1> ranges, ShaderBind<V>[] variables)
         where V: ShaderVariable
     {
-        uint last = 0;
-        uint i = 0;
-        DescriptorRange1 r = new();
+        uint prevBindPoint = 0;
 
-        for (; i < variables.Length; i++)
+        DescriptorRange1 range = new();
+
+        for (uint i = 0; i < variables.Length; i++)
         {
-            ref ShaderBind<V> bind = ref variables[i];
-            if (bind.Object == null)
-                continue;
+            ref ShaderBind<V> bp = ref variables[i];
 
-            // Create a new range if there was a gap.
-            uint prev = i - 1; // What the previous should be.
-            if (last == i || last == prev)
+            if(prevBindPoint != bp.Info.BindPoint - 1)
             {
-                // Finalize previous range
-                if (last != i)
-                    r.NumDescriptors = i - r.BaseShaderRegister;
+                if(range.NumDescriptors > 0)
+                    ranges.Add(range);
 
-                // Start new range.
-                r = new DescriptorRange1();
-                r.BaseShaderRegister = bind.Info.BindPoint;
-                r.RangeType = type;
-                r.RegisterSpace = bind.Info.BindSpace;
-                r.OffsetInDescriptorsFromTableStart = 0;
-                r.Flags = DescriptorRangeFlags.None;
-                ranges.Add(r);
+                range = new DescriptorRange1();
+                range.BaseShaderRegister = bp.Info.BindPoint;
+                range.RangeType = type;
+                range.RegisterSpace = bp.Info.BindSpace;
+                range.OffsetInDescriptorsFromTableStart = 0;
+                range.Flags = DescriptorRangeFlags.None;
             }
 
-            last = i;
+            prevBindPoint = bp.Info.BindPoint;
+            range.NumDescriptors++;
         }
 
-        // Finalize last range to the list
-        r.NumDescriptors = i - r.BaseShaderRegister;
+        // Finalize the last range, if any.
+        if (range.NumDescriptors > 0)
+            ranges.Add(range);
     }
 }

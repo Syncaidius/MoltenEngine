@@ -200,8 +200,6 @@ internal class PipelineStateBuilderDX12
             hr.Throw();
         }
 
-        // TODO Read the error blob and log it if it contains any errors.
-
         // TODO Implement root signature caching - Store the serialized signature blob in cache file.
 
         // Create the root signature.
