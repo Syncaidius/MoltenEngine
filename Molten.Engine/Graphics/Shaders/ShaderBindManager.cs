@@ -1,4 +1,5 @@
 ﻿using Molten.Graphics.Textures;
+using Silk.NET.Core.Native;
 
 namespace Molten.Graphics;
 public class ShaderBindManager
@@ -97,17 +98,43 @@ public class ShaderBindManager
         result = points[index];
     }
 
-    internal ShaderSamplerVariable Add(ShaderSampler sampler, uint bindPoint, uint bindSpace = 0)
+    internal void Add(ShaderSampler sampler, uint bindPoint, uint bindSpace)
     {
-        ShaderSamplerVariable variable = new ShaderSamplerVariable();
-        variable.Value = sampler;
-        variable.IsImmutable = sampler.IsImmutable;
+        ShaderBind<ShaderSamplerVariable> result = default;
+        Add(sampler, bindPoint, bindSpace, ref result);
+    }
 
+    internal void Add(ShaderSampler sampler, uint bindPoint, uint bindSpace, ref ShaderBind<ShaderSamplerVariable> result)
+    {
+        ShaderBindInfo bp = new ShaderBindInfo(bindPoint, bindSpace);
+
+        // Check if the current bind manager has a duplicate bind-point for the current bind type.
+        for (int i = 0; i < _samplers.Length; i++)
+        {
+            if (_samplers[i] == bp)
+            {
+                result = _samplers[i];
+                return;
+            }
+        }
+
+        // If not, check the parent for a duplicate that we can reuse.
         int index = _samplers.Length;
         Array.Resize(ref _samplers, index + 1);
-        _samplers[index] = new ShaderBind<ShaderSamplerVariable>(bindPoint, bindSpace, variable);
 
-        return variable;
+        if (_parent != null)
+        {
+            _parent.Add(sampler, bindPoint, bindSpace, ref _samplers[index]);
+        }
+        else
+        {
+            ShaderSamplerVariable variable = new ShaderSamplerVariable();
+            variable.Value = sampler;
+            variable.IsImmutable = sampler.IsImmutable;
+            _samplers[index] = new ShaderBind<ShaderSamplerVariable>(bindPoint, bindSpace, variable);
+        }
+
+        result = _samplers[index];
     }
 
     /// <summary>

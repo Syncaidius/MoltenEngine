@@ -49,7 +49,7 @@ internal class ShaderStructureBuilder
 
                     }
 
-                    stage.Bindings.Add(samplerParams.LinkedSampler, bindPoint);
+                    stage.Bindings.Add(samplerParams.LinkedSampler, bindPoint, 0);
                     break;
 
                 case ShaderInputType.Structured:
