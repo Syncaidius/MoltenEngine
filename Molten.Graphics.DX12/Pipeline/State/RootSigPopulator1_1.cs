@@ -46,7 +46,8 @@ internal class RootSigPopulator1_1 : RootSignaturePopulatorDX12
         EngineUtil.Free(ref desc.PStaticSamplers);
     }
 
-    private void PopulateRanges(DescriptorRangeType type, List<DescriptorRange1> ranges, Array variables)
+    private void PopulateRanges<V>(DescriptorRangeType type, List<DescriptorRange1> ranges, ShaderBind<V>[] variables)
+        where V: ShaderVariable
     {
         uint last = 0;
         uint i = 0;
@@ -54,7 +55,8 @@ internal class RootSigPopulator1_1 : RootSignaturePopulatorDX12
 
         for (; i < variables.Length; i++)
         {
-            if (variables.GetValue(i) == null)
+            ref ShaderBind<V> bind = ref variables[i];
+            if (bind.Object == null)
                 continue;
 
             // Create a new range if there was a gap.
@@ -67,9 +69,9 @@ internal class RootSigPopulator1_1 : RootSignaturePopulatorDX12
 
                 // Start new range.
                 r = new DescriptorRange1();
-                r.BaseShaderRegister = i;
+                r.BaseShaderRegister = bind.Info.BindPoint;
                 r.RangeType = type;
-                r.RegisterSpace = 0; // TODO Populate - Requires reflection enhancements to support new HLSL register syntax: register(t0, space1);
+                r.RegisterSpace = bind.Info.BindSpace;
                 r.OffsetInDescriptorsFromTableStart = 0;
                 r.Flags = DescriptorRangeFlags.None;
                 ranges.Add(r);
