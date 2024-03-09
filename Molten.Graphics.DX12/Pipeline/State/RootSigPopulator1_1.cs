@@ -6,7 +6,8 @@ internal class RootSigPopulator1_1 : RootSignaturePopulatorDX12
 {
     internal override unsafe void Populate(ref VersionedRootSignatureDesc versionedDesc, 
         ref readonly GraphicsPipelineStateDesc psoDesc, 
-        ShaderPassDX12 pass)
+        ShaderPassDX12 pass,
+        PipelineInputLayoutDX12 layout)
     {
         ShaderBindManager bindings = pass.Parent.Bindings;
         ref RootSignatureDesc1 desc = ref versionedDesc.Desc11;
@@ -23,7 +24,7 @@ internal class RootSigPopulator1_1 : RootSignaturePopulatorDX12
         desc.NumParameters = 1;
         desc.PParameters = EngineUtil.AllocArray<RootParameter1>(desc.NumParameters);
         ref RootParameter1 param = ref desc.PParameters[0];
-        desc.Flags = GetFlags(in psoDesc, pass);
+        desc.Flags = GetFlags(in psoDesc, layout, pass);
 
         param.ParameterType = RootParameterType.TypeDescriptorTable;
         param.DescriptorTable.NumDescriptorRanges = (uint)ranges.Count;

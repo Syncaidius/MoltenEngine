@@ -1,13 +1,13 @@
 ﻿using Silk.NET.Direct3D12;
 using System.Runtime.InteropServices;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace Molten.Graphics.DX12;
 internal class RootSigPopulator1_0 : RootSignaturePopulatorDX12
 {
     internal override unsafe void Populate(ref VersionedRootSignatureDesc versionedDesc, 
         ref readonly GraphicsPipelineStateDesc psoDesc, 
-        ShaderPassDX12 pass)
+        ShaderPassDX12 pass,
+        PipelineInputLayoutDX12 layout)
     {
         ShaderBindManager bindings = pass.Parent.Bindings;
         ref RootSignatureDesc desc = ref versionedDesc.Desc10;
@@ -24,7 +24,7 @@ internal class RootSigPopulator1_0 : RootSignaturePopulatorDX12
         desc.NumParameters = 1;
         desc.PParameters = EngineUtil.AllocArray<RootParameter>(desc.NumParameters);
         ref RootParameter param = ref desc.PParameters[0];
-        desc.Flags = GetFlags(in psoDesc, pass);
+        desc.Flags = GetFlags(in psoDesc, layout, pass);
 
         param.ParameterType = RootParameterType.TypeDescriptorTable;
         param.DescriptorTable.NumDescriptorRanges = (uint)ranges.Count;

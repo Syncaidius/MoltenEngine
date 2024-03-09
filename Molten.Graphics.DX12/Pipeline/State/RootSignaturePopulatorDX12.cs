@@ -16,7 +16,8 @@ internal abstract class RootSignaturePopulatorDX12
     /// <returns></returns>
     internal abstract void Populate(ref VersionedRootSignatureDesc versionedDesc, 
         ref readonly GraphicsPipelineStateDesc psoDesc, 
-        ShaderPassDX12 pass);
+        ShaderPassDX12 pass,
+        PipelineInputLayoutDX12 layout);
 
     internal abstract void Free(ref VersionedRootSignatureDesc versionedDesc);
 
@@ -81,12 +82,15 @@ internal abstract class RootSignaturePopulatorDX12
         }
     }
 
-    protected unsafe RootSignatureFlags GetFlags(ref readonly GraphicsPipelineStateDesc psoDesc, ShaderPassDX12 pass)
+    protected unsafe RootSignatureFlags GetFlags(ref readonly GraphicsPipelineStateDesc psoDesc, PipelineInputLayoutDX12 layout, ShaderPassDX12 pass)
     {
         RootSignatureFlags flags = RootSignatureFlags.None;
 
         if (psoDesc.StreamOutput.PSODeclaration != null)
             flags |= RootSignatureFlags.AllowStreamOutput;
+
+        if (layout != null)
+            flags |= RootSignatureFlags.AllowInputAssemblerInputLayout;
 
         return flags;
     }
