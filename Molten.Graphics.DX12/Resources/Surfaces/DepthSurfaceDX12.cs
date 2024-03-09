@@ -50,6 +50,18 @@ public class DepthSurfaceDX12 : Texture2DDX12, IDepthStencilSurface
         return val;
     }*/
 
+    private DsvFlags GetReadOnlyFlags()
+    {
+        switch (DepthFormat)
+        {
+            default:
+            case DepthFormat.R24G8:
+                return DsvFlags.ReadOnlyDepth | DsvFlags.ReadOnlyStencil;
+            case DepthFormat.R32:
+                return DsvFlags.ReadOnlyDepth;
+        }
+    }
+
     protected unsafe override ID3D12Resource1* OnCreateTexture()
     {
         UpdateViewport();
@@ -82,7 +94,7 @@ public class DepthSurfaceDX12 : Texture2DDX12, IDepthStencilSurface
         DepthStencilViewDesc desc = new()
         {
             Format = DepthFormat.ToDepthViewFormat().ToApi(),
-            Flags = 0U, // DsvFlag.None
+            Flags = DsvFlags.None
         };
 
         if (MultiSampleLevel >= AntiAliasLevel.X2)
@@ -107,6 +119,10 @@ public class DepthSurfaceDX12 : Texture2DDX12, IDepthStencilSurface
 
         DSHandleDX12 dsv = new (this, ptr);
         dsv.DSV.Initialize(ref desc);
+
+        desc.Flags = GetReadOnlyFlags();
+        dsv.ReadOnlyDSV.Initialize(ref desc);
+
         return dsv;
     }
 

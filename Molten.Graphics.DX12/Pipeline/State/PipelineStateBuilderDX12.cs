@@ -3,12 +3,41 @@ using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
 using Silk.NET.DXGI;
 
-namespace Molten.Graphics.DX12.Pipeline;
+namespace Molten.Graphics.DX12;
 
 internal class PipelineStateBuilderDX12
 {
-    KeyedObjectCache<ShaderPassDX12, PipelineStateDX12> _cache = new();
-    Dictionary<ulong, PipelineStateDX12> _states = new();
+    struct CacheKey : IEquatable<CacheKey>
+    {
+        public ShaderPassDX12 Pass;
+
+        public PipelineInputLayoutDX12 InputLayout;
+
+        public bool IsValid => Pass != null && InputLayout != null;
+
+        public CacheKey(ShaderPassDX12 pass, PipelineInputLayoutDX12 layout)
+        {
+            Pass = pass;
+            InputLayout = layout;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if(obj is CacheKey key)
+                return Equals(key);
+            else
+                return false;
+        }
+
+        public bool Equals(CacheKey other)
+        {
+            return IsValid == other.IsValid 
+                && Pass.Equals(other.Pass) 
+                && InputLayout.Equals(other.InputLayout);
+        }
+    }
+
+    KeyedObjectCache<CacheKey, PipelineStateDX12> _cache = new();
     static readonly Dictionary<D3DRootSignatureVersion, RootSignaturePopulatorDX12> _rootPopulators = new()
     {
         [D3DRootSignatureVersion.Version10] = new RootSigPopulator1_0(),
@@ -31,11 +60,12 @@ internal class PipelineStateBuilderDX12
         IndexBufferStripCutValue indexStripCutValue = IndexBufferStripCutValue.ValueDisabled,
         CachedPipelineState? cachedState = null)
     {
+        CacheKey cacheKey = new(pass, layout);
         DeviceDX12 device = pass.Device as DeviceDX12;
         PipelineStateDX12 result = null;
 
         // Return the cached pipeline state.
-        if (_cache.Check(ref pass, ref result))
+        if (_cache.Check(ref cacheKey, ref result))
             return result;
 
         // Proceed to create new pipeline state.
@@ -138,7 +168,7 @@ internal class PipelineStateBuilderDX12
         result = new PipelineStateDX12(device, (ID3D12PipelineState*)ptr);
 
         // Add the new pipeline state to the cache.
-        _cache.Add(ref pass, ref result);
+        _cache.Add(ref cacheKey, ref result);
 
         // Free all GS stream output semantic name pointers, if any.
         for(int i = 0; i < desc.StreamOutput.NumEntries; i++)

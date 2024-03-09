@@ -136,4 +136,9 @@ internal static class ShaderInterop
     {
         return (VertexInputType)type;
     }
+
+    public static D3DPrimitiveTopology ToApi(this PrimitiveTopology type)
+    {
+        return (D3DPrimitiveTopology)type;
+    }
 }

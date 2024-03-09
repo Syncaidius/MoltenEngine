@@ -64,16 +64,18 @@ internal class DescriptorHeapManagerDX12 : GraphicsObject<DeviceDX12>
     /// <summary>
     /// Consolidates all of the CPU-side descriptors into a single GPU descriptor heap ready for use.
     /// </summary>
-    internal void PrepareGpuHeap(ShaderPassDX12 pass)
+    internal unsafe void PrepareGpuHeap(ShaderPassDX12 pass, GraphicsCommandListDX12 cmd)
     {
         int index = 0;
 
         GpuDescriptorHandle gpuHandle = _gpuResourceHeap.GetGpuHandle();
-        
+
         // TODO Iterate over pass resources
 
         // Populate SRV, UAV, and CBV descriptors first.
         // TODO Pull descriptor info from our pass, render targets, samplers, depth-stencil, etc.
+
+        cmd.Handle->SetGraphicsRootDescriptorTable(0, gpuHandle);
     }
 
     protected override void OnGraphicsRelease()

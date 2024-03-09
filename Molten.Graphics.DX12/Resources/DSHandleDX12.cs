@@ -7,19 +7,24 @@ internal class DSHandleDX12 : ResourceHandleDX12
         base(depthSurface, resources)
     {
         DSV = new DSViewDX12(this);
+        ReadOnlyDSV = new DSViewDX12(this);
     }
 
     internal unsafe DSHandleDX12(TextureDX12 texture, ID3D12Resource1** resources, uint numResources) : 
         base(texture, resources, numResources)
     {
         DSV = new DSViewDX12(this);
+        ReadOnlyDSV = new DSViewDX12(this);
     }
 
     public override void Dispose()
     {
         DSV.Dispose();
+        ReadOnlyDSV.Dispose();
         base.Dispose();
     }
 
     internal DSViewDX12 DSV { get; }
+
+    internal DSViewDX12 ReadOnlyDSV { get; }
 }

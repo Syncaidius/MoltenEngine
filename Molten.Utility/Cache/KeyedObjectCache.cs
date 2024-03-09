@@ -21,8 +21,9 @@ public class KeyedObjectCache<K, V>
     /// Creates a new instance of <see cref="TypedObjectCache{T}"/>.
     /// </summary>
     /// <param name="initialCapacity">The initial capacity of the cache.</param>
-    public KeyedObjectCache(int initialCapacity = 0)
+    public KeyedObjectCache(int initialCapacity = 1)
     {
+        initialCapacity = Math.Max(1, initialCapacity);
         _free = new Stack<int>(initialCapacity > 0 ? initialCapacity : 2);
         _pairs = new Pair[initialCapacity];
     }
@@ -58,7 +59,9 @@ public class KeyedObjectCache<K, V>
         }
 
         // Add the new key and value to the cache.
-        Add(ref key, ref value);
+        if(value != null)
+            Add(ref key, ref value);
+
         return false;
     }
 

@@ -1,5 +1,6 @@
 ﻿using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
+using Silk.NET.Maths;
 
 namespace Molten.Graphics.DX12;
 
@@ -13,6 +14,14 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
 
     GraphicsCommandListDX12 _cmd;
     GraphicsFrameBuffer<CommandAllocatorDX12> _cmdAllocators;
+    PipelineStateBuilderDX12 _stateBuilder;
+        
+    CpuDescriptorHandle* _rtvs;
+    CpuDescriptorHandle* _dsv;
+    uint _numRTVs;
+
+    D3DPrimitiveTopology _boundTopology;
+    GraphicsDepthWritePermission _boundDepthMode;
 
     internal GraphicsQueueDX12(Logger log, DeviceDX12 device, DeviceBuilderDX12 builder, ref CommandQueueDesc desc) : 
         base(device)
@@ -20,6 +29,10 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
         _desc = desc;
         Log = log;
         Device = device;
+
+        uint maxRTs = Device.Capabilities.PixelShader.MaxOutputTargets;
+        _rtvs = EngineUtil.AllocArray<CpuDescriptorHandle>(maxRTs);
+        _dsv = EngineUtil.AllocArray<CpuDescriptorHandle>(1);
 
         Initialize(builder);
     }
@@ -36,12 +49,11 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
             Log.Error($"Failed to initialize '{_desc.Type}' command queue");
             return;
         }
-        else
-        {
-            Log.WriteLine($"Initialized '{_desc.Type}' command queue");
-        }
+
+        Log.WriteLine($"Initialized '{_desc.Type}' command queue");
 
         _handle = (ID3D12CommandQueue*)cmdQueue;
+        _stateBuilder = new PipelineStateBuilderDX12(device);
         _cmdAllocators = new GraphicsFrameBuffer<CommandAllocatorDX12>(Device, (device) =>
         {
             return new CommandAllocatorDX12(this, CommandListType.Direct);
@@ -203,14 +215,149 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
         // See Also: https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/reference/tools/pix3/functions/pixscopedevent-overloads
     }
 
-    protected override GraphicsBindResult DoRenderPass(ShaderPass pass, QueueValidationMode mode, Action callback)
+    protected override GraphicsBindResult DoRenderPass(ShaderPass hlslPass, QueueValidationMode mode, Action callback)
     {
-        throw new NotImplementedException();
+        ShaderPassDX12 pass = hlslPass as ShaderPassDX12;
+        D3DPrimitiveTopology passTopology = pass.Topology.ToApi();
+
+        if (passTopology == D3DPrimitiveTopology.D3D11PrimitiveTopologyUndefined)
+            return GraphicsBindResult.UndefinedTopology;
+
+        // Clear output merger and rebind targets later.
+        _cmd.Handle->OMSetRenderTargets(0, null, false, null);
+
+        // Check topology
+        if (_boundTopology != passTopology)
+        {
+            _boundTopology = passTopology;
+            _cmd.Handle->IASetPrimitiveTopology(_boundTopology);
+        }
+ 
+        if (State.VertexBuffers.Bind(this))
+            BindVertexBuffers();
+
+        if (State.IndexBuffer.Bind(this))
+        {
+            GraphicsBuffer iBuffer = State.IndexBuffer.BoundValue;
+            if (iBuffer != null)
+            {
+                IBHandleDX12 ibHandle = (IBHandleDX12)iBuffer.Handle;
+                _cmd.Handle->IASetIndexBuffer(ibHandle.View);
+            }
+            else
+            {
+                _cmd.Handle->IASetIndexBuffer(null);
+            }
+        }
+
+        // Check if viewports need updating.
+        // TODO Consolidate - Molten viewports are identical in memory layout to DX11 viewports.
+        if (State.Viewports.IsDirty)
+        {
+            fixed (ViewportF* ptrViewports = State.Viewports.Items)
+                _cmd.Handle->RSSetViewports((uint)State.Viewports.Length, (Silk.NET.Direct3D12.Viewport*)ptrViewports);
+
+            State.Viewports.IsDirty = false;
+        }
+
+        // Check if scissor rects need updating
+        if (State.ScissorRects.IsDirty)
+        {
+            fixed (Rectangle* ptrRect = State.ScissorRects.Items)
+                _cmd.Handle->RSSetScissorRects((uint)State.ScissorRects.Length, (Box2D<int>*)ptrRect);
+
+            State.ScissorRects.IsDirty = false;
+        }
+
+        GraphicsDepthWritePermission depthWriteMode = pass.WritePermission;
+        bool surfaceChanged = State.Surfaces.Bind(this);
+        bool depthChanged = State.DepthSurface.Bind(this) || (_boundDepthMode != depthWriteMode);
+
+        if (surfaceChanged || depthChanged)
+        {
+            if (surfaceChanged)
+            {
+                _numRTVs = 0;
+
+                for (int i = 0; i < State.Surfaces.Length; i++)
+                {
+                    if (State.Surfaces.BoundValues[i] != null)
+                    {
+                        RTHandleDX12 rsHandle = State.Surfaces.BoundValues[i].Handle as RTHandleDX12;
+                        _rtvs[_numRTVs] = rsHandle.RTV.CpuHandle;
+                        _numRTVs++;
+                    }
+                }
+            }
+
+            if (depthChanged)
+            {
+                if (State.DepthSurface.BoundValue != null && depthWriteMode != GraphicsDepthWritePermission.Disabled)
+                {
+                    DSHandleDX12 dsHandle = State.DepthSurface.BoundValue.Handle as DSHandleDX12;
+                    if (depthWriteMode == GraphicsDepthWritePermission.ReadOnly)
+                        _dsv[0] = dsHandle.ReadOnlyDSV.CpuHandle;
+                    else
+                        _dsv[0] = dsHandle.DSV.CpuHandle;
+                }
+                else
+                {
+                    _dsv = null;
+                }
+
+                _boundDepthMode = depthWriteMode;
+            }
+        }
+
+        PipelineInputLayoutDX12 _inputLayout = GetInputLayout(pass);
+        PipelineStateDX12 state = _stateBuilder.Build(pass, _inputLayout);
+
+        _cmd.Handle->SetPipelineState(state.Handle);
+        Device.Heap.PrepareGpuHeap(pass, _cmd);
+
+        _cmd.Handle->OMSetRenderTargets((uint)State.Surfaces.Length, _rtvs, false, _dsv);
+        Profiler.BindSurfaceCalls++;
+
+        GraphicsBindResult vResult = Validate(mode);
+
+        if (vResult == GraphicsBindResult.Successful)
+        {
+            // Re-render the same pass for K iterations.
+            for (int k = 0; k < pass.Iterations; k++)
+            {
+                BeginEvent($"Iteration {k}");
+                callback();
+                Profiler.DrawCalls++;
+                EndEvent();
+            }
+        }
+
+        // Validate pipeline state.
+        return vResult;
     }
 
     protected override GraphicsBindResult DoComputePass(ShaderPass pass)
     {
         throw new NotImplementedException();
+    }
+
+    private void BindVertexBuffers()
+    {
+        int count = State.VertexBuffers.Length;
+        VertexBufferView* pBuffers = stackalloc VertexBufferView[count];
+        GraphicsBuffer buffer = null;
+
+        for (int i = 0; i < count; i++)
+        {
+            buffer = State.VertexBuffers.BoundValues[i];
+
+            if (buffer != null)
+                pBuffers[i] = ((VBHandleDX12)buffer.Handle).View;
+            else
+                pBuffers[i] = default;
+        }
+
+        _cmd.Handle->IASetVertexBuffers(0, (uint)count, pBuffers);
     }
 
     protected override ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, GraphicsMapType mapType)
@@ -322,6 +469,9 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
     protected override void OnDispose(bool immediate)
     {
         _cmdAllocators?.Dispose(true);
+
+        EngineUtil.Free(ref _rtvs);
+        EngineUtil.Free(ref _dsv);
         NativeUtil.ReleasePtr(ref _handle);
     }
 
