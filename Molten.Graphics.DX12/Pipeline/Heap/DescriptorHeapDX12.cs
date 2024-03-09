@@ -100,4 +100,8 @@ internal unsafe class DescriptorHeapDX12 : GraphicsObject<DeviceDX12>
     /// Gets the increment size of the heap, in bytes.
     /// </summary>
     public uint IncrementSize => _incrementSize;
+
+    internal CpuDescriptorHandle CpuStartHandle => _cpuStartHandle;
+
+    internal ref readonly ID3D12DescriptorHeap* Handle => ref _handle;
 }

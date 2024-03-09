@@ -14,9 +14,9 @@ internal class RootSigPopulator1_1 : RootSignaturePopulatorDX12
         PopulateStaticSamplers(ref desc.PStaticSamplers, ref desc.NumStaticSamplers, pass);
 
         List<DescriptorRange1> ranges = new();
+        PopulateRanges(DescriptorRangeType.Cbv, ranges, bindings.Resources[(int)ShaderBindType.ConstantBuffer]);
         PopulateRanges(DescriptorRangeType.Srv, ranges, bindings.Resources[(int)ShaderBindType.Resource]);
         PopulateRanges(DescriptorRangeType.Uav, ranges, bindings.Resources[(int)ShaderBindType.UnorderedAccess]);
-        PopulateRanges(DescriptorRangeType.Cbv, ranges, bindings.Resources[(int)ShaderBindType.ConstantBuffer]);
 
         // TODO Add support for heap-based samplers.
         // TODO Add support for static CBV (which require their own root parameter with the data_static flag set.

@@ -52,7 +52,6 @@ public class GraphicsFrameBuffer<T> : GraphicsObject
             _knownFrameBufferSize = _requestedFrameBufferSize;
         }
 
-
         // Dispose of any extra resource instances, if safe to do so.
         // We wait until we have surpassed the minimum frame-age threshold before disposing of any leftover resources.
         if (_resources.Length > Device.FrameBufferSize)

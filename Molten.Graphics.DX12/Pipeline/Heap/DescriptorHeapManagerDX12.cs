@@ -3,20 +3,23 @@
 namespace Molten.Graphics.DX12;
 internal class DescriptorHeapManagerDX12 : GraphicsObject<DeviceDX12>
 {
+    const int RESOURCE_HEAP_SIZE = 512;
+    const int SAMPLER_HEAP_SIZE = 256;
+
     DescriptorHeapAllocatorDX12 _resourceHeap;
     DescriptorHeapAllocatorDX12 _samplerHeap;
     DescriptorHeapAllocatorDX12 _dsvHeap;
     DescriptorHeapAllocatorDX12 _rtvHeap;
 
-    DescriptorHeapDX12 _gpuResourceHeap;
-    DescriptorHeapDX12 _gpuSamplerHeap;
+    GraphicsFrameBuffer<DescriptorHeapDX12> _gpuResourceHeap;
+    GraphicsFrameBuffer<DescriptorHeapDX12> _gpuSamplerHeap;
 
     /// <summary>
     /// Creates a new instance of <see cref="DescriptorHeapAllocatorDX12"/>.
     /// </summary>
     /// <param name="device">The device that the heap manager belongs to.</param>
     /// <param name="heapCapacity">The number of slots to provision within each individual heap.</param>
-    internal DescriptorHeapManagerDX12(DeviceDX12 device) :
+    internal unsafe DescriptorHeapManagerDX12(DeviceDX12 device) :
         base(device)
     {
         _resourceHeap = new DescriptorHeapAllocatorDX12(device, DescriptorHeapType.CbvSrvUav, DescriptorHeapFlags.None);
@@ -24,20 +27,26 @@ internal class DescriptorHeapManagerDX12 : GraphicsObject<DeviceDX12>
         _dsvHeap = new DescriptorHeapAllocatorDX12(device, DescriptorHeapType.Dsv, DescriptorHeapFlags.None);
         _rtvHeap = new DescriptorHeapAllocatorDX12(device, DescriptorHeapType.Rtv, DescriptorHeapFlags.None);
 
-        _gpuResourceHeap = new DescriptorHeapDX12(device, new DescriptorHeapDesc()
+        _gpuResourceHeap = new GraphicsFrameBuffer<DescriptorHeapDX12>(device, (creationDevice) =>
         {
-            NodeMask = 0,
-            Type = DescriptorHeapType.CbvSrvUav,
-            Flags = DescriptorHeapFlags.ShaderVisible,
-            NumDescriptors = 1024,
+            return new DescriptorHeapDX12(creationDevice as DeviceDX12, new DescriptorHeapDesc()
+            {
+                NodeMask = 0,
+                Type = DescriptorHeapType.CbvSrvUav,
+                Flags = DescriptorHeapFlags.ShaderVisible,
+                NumDescriptors = RESOURCE_HEAP_SIZE,
+            });
         });
 
-        _gpuSamplerHeap = new DescriptorHeapDX12(device, new DescriptorHeapDesc()
+        _gpuSamplerHeap = new GraphicsFrameBuffer<DescriptorHeapDX12>(device, (creationDevice) =>
         {
-            NodeMask = 0,
-            Type = DescriptorHeapType.Sampler,
-            Flags = DescriptorHeapFlags.ShaderVisible,
-            NumDescriptors = 512,
+            return new DescriptorHeapDX12(creationDevice as DeviceDX12, new DescriptorHeapDesc()
+            {
+                NodeMask = 0,
+                Type = DescriptorHeapType.Sampler,
+                Flags = DescriptorHeapFlags.ShaderVisible,
+                NumDescriptors = SAMPLER_HEAP_SIZE,
+            });
         });
     }
 
@@ -66,19 +75,78 @@ internal class DescriptorHeapManagerDX12 : GraphicsObject<DeviceDX12>
     /// </summary>
     internal unsafe void PrepareGpuHeap(ShaderPassDX12 pass, GraphicsCommandListDX12 cmd)
     {
-        int index = 0;
+        DeviceDX12 device = pass.Device as DeviceDX12;
+        DescriptorHeapDX12 resHeap = _gpuResourceHeap.Prepare();
+        CpuDescriptorHandle gpuResHandle = resHeap.CpuStartHandle;
 
-        GpuDescriptorHandle gpuHandle = _gpuResourceHeap.GetGpuHandle();
+        DescriptorHeapDX12 samplerHeap = _gpuSamplerHeap.Prepare();
+        CpuDescriptorHandle gpuSamplerHandle = samplerHeap.CpuStartHandle;
 
-        // TODO Iterate over pass resources
+        // Iterate over pass resources
+        for (int i = 0; i < pass.Bindings.Resources.Length; i++)
+        {
+            ShaderBindType bindType = (ShaderBindType)i;
+            ref ShaderBind<ShaderResourceVariable>[] resources = ref pass.Bindings.Resources[i];
+            for(int r = 0; r < resources.Length; r++)
+            {
+                ref ShaderBind<ShaderResourceVariable> bind = ref resources[r];
+                if(bind.Object?.Value != null)
+                {
+                    // TODO Improve this
+                    ResourceHandleDX12 resHandle = bind.Object.Resource.Handle as ResourceHandleDX12;
+                    CpuDescriptorHandle cpuHandle = default;
+                    switch(bindType)
+                    {
+                        case ShaderBindType.ConstantBuffer:
+                            CBHandleDX12 cbHandle = resHandle as CBHandleDX12;
+                            cpuHandle = cbHandle.CBV.CpuHandle;
+                            break;
+
+                        case ShaderBindType.Resource:
+                            cpuHandle = resHandle.SRV.CpuHandle;
+                            break;
+
+                        case ShaderBindType.UnorderedAccess:
+                            cpuHandle = resHandle.UAV.CpuHandle;
+                            break;
+                    }
+
+                    if (cpuHandle.Ptr != 0)
+                        device.Handle->CopyDescriptorsSimple(1, gpuResHandle, cpuHandle, DescriptorHeapType.CbvSrvUav);
+
+                    // Increment GPU heap handle
+                    gpuResHandle.Ptr += resHeap.IncrementSize;
+                }
+            }
+        }
+
+        // Iterate over pass samplers
+        for (int i = 0; i < pass.Bindings.Samplers.Length; i++)
+        {
+            ref ShaderBind<ShaderSamplerVariable> bind = ref pass.Bindings.Samplers[i];
+            if (!bind.Object.IsImmutable && bind.Object?.Value != null)
+            {
+                ShaderSampler heapSampler = bind.Object.Sampler;
+                // TODO _handleBuffer[index] = heapSampler.View.CpuHandle; 
+                gpuSamplerHandle.Ptr += samplerHeap.IncrementSize;
+            }
+        }
 
         // Populate SRV, UAV, and CBV descriptors first.
         // TODO Pull descriptor info from our pass, render targets, samplers, depth-stencil, etc.
 
-        cmd.Handle->SetGraphicsRootDescriptorTable(0, gpuHandle);
+        ID3D12DescriptorHeap* pHeaps = stackalloc ID3D12DescriptorHeap[2]
+        {
+            *resHeap.Handle,
+            *samplerHeap.Handle,
+        };
+
+        cmd.Handle->SetDescriptorHeaps(2, pHeaps);
+        cmd.Handle->SetGraphicsRootDescriptorTable(0, resHeap.GetGpuHandle());
+        cmd.Handle->SetGraphicsRootDescriptorTable(1, samplerHeap.GetGpuHandle());
     }
 
-    protected override void OnGraphicsRelease()
+    protected unsafe override void OnGraphicsRelease()
     {
         _resourceHeap.Dispose(true);
         _samplerHeap.Dispose(true);
