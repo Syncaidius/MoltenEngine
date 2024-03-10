@@ -29,8 +29,6 @@ internal unsafe class FenceDX12 : GpuFence
             hr = Marshal.GetLastWin32Error();
             hr.Throw();
         }
-
-        _ptr->SetEventOnCompletion(Value, _fenceEvent);
     }
 
     public override void Reset()
@@ -55,7 +53,8 @@ internal unsafe class FenceDX12 : GpuFence
 
         if (_ptr->GetCompletedValue() < fenceVal)
         {
-            uint msTimeout = (uint)nsTimeout / 1000000U; // Convert from nanoseconds to milliseconds.
+            uint msTimeout = nsTimeout > uint.MaxValue ? uint.MaxValue : (uint)nsTimeout / 1000000U; // uint.MaxValue = Infinite timeout.
+            _ptr->SetEventOnCompletion(Value, _fenceEvent);
             WaitForSingleObjectResult result = (WaitForSingleObjectResult)Win32Events.WaitForSingleObjectEx(_fenceEvent, msTimeout, false);
 
             // Handle wait result.

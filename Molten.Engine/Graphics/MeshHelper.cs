@@ -10,7 +10,7 @@ public static class MeshHelper
     /// <returns>The resultant normal.</returns>
     public static Vector3F CalculateNormal(ref Vector3F p1, ref Vector3F p2, ref Vector3F p3)
     {
-        //calculate normals
+        // Calculate normals
         Vector3F vec1 = p3 - p1;
         Vector3F vec2 = p2 - p1;
         Vector3F normal = Vector3F.Cross(ref vec1, ref vec2);
