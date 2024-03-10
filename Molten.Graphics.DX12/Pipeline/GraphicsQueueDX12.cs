@@ -180,7 +180,7 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
         {
             _cmd = allocator.Allocate(null);
             Device.Frame.BranchCount++;
-            Device.Frame.Track(_cmd);
+            //Device.Frame.Track(_cmd);
         }
 
         _cmd.Reset(allocator, _pipelineState);
@@ -380,6 +380,7 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
             // TODO Validate this.
         }
 
+        resource.Apply(this);
         if(resource.Handle is ResourceHandleDX12 handle)
         {
             ulong rowPitch = 0;
