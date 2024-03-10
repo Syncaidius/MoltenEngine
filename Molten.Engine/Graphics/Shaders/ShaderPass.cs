@@ -13,7 +13,7 @@ public abstract class ShaderPass : GpuObject, IEnumerable<ShaderPassStage>, IEnu
     /// </summary>
     /// <param name="pass">The pass that was completed.</param>
     /// <param name="customInfo">Custom information that can be passed between shader passes.</param>
-    public delegate void OnCompletedCallback(ShaderPass pass, GpuCommandQueue.CustomDrawInfo customInfo);
+    public delegate void OnCompletedCallback(ShaderPass pass, GpuCommandList.CustomDrawInfo customInfo);
 
     public ShaderBindManager Bindings { get; }
 
@@ -51,7 +51,7 @@ public abstract class ShaderPass : GpuObject, IEnumerable<ShaderPassStage>, IEnu
 
     protected abstract void OnInitialize(ShaderPassParameters parameters);
 
-    public void InvokeCompleted(GpuCommandQueue.CustomDrawInfo customInfo)
+    public void InvokeCompleted(GpuCommandList.CustomDrawInfo customInfo)
     {
         OnCompleted?.Invoke(this, customInfo);
     }

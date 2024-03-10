@@ -15,7 +15,7 @@ internal class RenderLayerReorder : GraphicsTask
 
     public override bool Validate() => true;
 
-    protected override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
+    protected override bool OnProcess(RenderService renderer, GpuCommandList cmd)
     {
         int indexOf = SceneData.Layers.IndexOf(LayerData);
         if (indexOf > -1)

@@ -117,7 +117,7 @@ public unsafe class GraphicsQueueVK : GraphicsQueue<DeviceVK>
         // Use empty fence handle if the CPU doesn't need to wait for the command list to finish.
         Fence fence = new Fence();
         if (_cmd.Fence != null)
-            fence = (_cmd.Fence as FenceVK).Ptr;
+            fence = _cmd.Fence.Ptr;
 
         // We're only submitting the current command buffer.
         _vk.EndCommandBuffer(_cmd);

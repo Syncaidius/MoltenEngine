@@ -24,7 +24,7 @@ public unsafe class CommandAllocatorDX12 : GraphicsObject<DeviceDX12>
         _allocated = new ThreadedList<CommandListDX12>();
     }
 
-    internal GraphicsCommandListDX12 Allocate(ID3D12PipelineState* pInitialState = null /*TODO Properly provide a PipelineStateDX12*/)
+    internal CommandListDX12 Allocate(ID3D12PipelineState* pInitialState = null /*TODO Properly provide a PipelineStateDX12*/)
     {
         void* ptr = null;
         Guid guid = ID3D12GraphicsCommandList.Guid;
@@ -34,7 +34,7 @@ public unsafe class CommandAllocatorDX12 : GraphicsObject<DeviceDX12>
 
         // TODO Check free list.
 
-        GraphicsCommandListDX12 list = new GraphicsCommandListDX12(this, (ID3D12GraphicsCommandList*) ptr);
+        CommandListDX12 list = new CommandListDX12(this, (ID3D12GraphicsCommandList*) ptr);
         _allocated.Add(list);
 
         return list;

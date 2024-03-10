@@ -55,7 +55,7 @@ public unsafe class TextureSetTask : GraphicsResourceTask<GraphicsTexture>
         return true;
     }
 
-    protected override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
+    protected override bool OnProcess(RenderService renderer, GpuCommandList cmd)
     {
         // Calculate size of a single array slice
         uint arraySliceBytes = 0;
@@ -101,7 +101,7 @@ public unsafe class TextureSetTask : GraphicsResourceTask<GraphicsTexture>
 
         if (Resource.Flags.Has(GpuResourceFlags.CpuWrite))
         {
-            using (GpuStream stream = queue.MapResource(Resource, subLevel, 0, MapType))
+            using (GpuStream stream = cmd.MapResource(Resource, subLevel, 0, MapType))
             {
                 // Are we constrained to an area of the texture?
                 if (Area != null)
@@ -126,7 +126,8 @@ public unsafe class TextureSetTask : GraphicsResourceTask<GraphicsTexture>
                     stream.WriteRange(ptrData, NumBytes);
                 }
             }
-            queue.Profiler.ResourceMapCalls++;
+
+            cmd.Profiler.ResourceMapCalls++;
         }
         else
         {
@@ -137,18 +138,18 @@ public unsafe class TextureSetTask : GraphicsResourceTask<GraphicsTexture>
                 uint bcPitch = BCHelper.GetBCPitch(levelWidth, blockSize);
 
                 // TODO support copy flags (DX11.1 feature)
-                queue.UpdateResource(Resource, subLevel, null, ptrData, bcPitch, arraySliceBytes);
+                cmd.UpdateResource(Resource, subLevel, null, ptrData, bcPitch, arraySliceBytes);
             }
             else
             {
                 if (Area != null)
                 {
                     uint rowPitch = Stride * Area.Value.Width;
-                    queue.UpdateResource(Resource, subLevel, Area.Value, ptrData, rowPitch, NumBytes);
+                    cmd.UpdateResource(Resource, subLevel, Area.Value, ptrData, rowPitch, NumBytes);
                 }
                 else
                 {
-                    queue.UpdateResource(Resource, subLevel, null, ptrData, Pitch, arraySliceBytes);
+                    cmd.UpdateResource(Resource, subLevel, null, ptrData, Pitch, arraySliceBytes);
                 }
             }
         }

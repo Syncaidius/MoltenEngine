@@ -7,27 +7,27 @@ namespace Molten.Graphics;
 /// </summary>
 public class GpuStream : RawStream
 {
-    public unsafe GpuStream(GpuCommandQueue queue, GpuResource resource, ref GpuResourceMap map) : 
+    public unsafe GpuStream(GpuCommandList cmd, GpuResource resource, ref GpuResourceMap map) : 
         base(map.Ptr, 
             map.DepthPitch, 
             resource.Flags.Has(GpuResourceFlags.CpuRead), 
             resource.Flags.Has(GpuResourceFlags.CpuWrite))
     {
         Map = map;
-        Queue = queue;
+        Cmd = cmd;
         Resource = resource;
     }
 
     protected override void Dispose(bool disposing)
     {
-        Queue.UnmapResource(this);
+        Cmd.UnmapResource(this);
         base.Dispose(disposing);
     }
 
     /// <summary>
-    /// Gets the <see cref="GpuCommandQueue"/> that the current <see cref="GpuStream"/> is bound to.
+    /// Gets the <see cref="GpuCommandList"/> that the current <see cref="GpuStream"/> is bound to.
     /// </summary>
-    public GpuCommandQueue Queue { get; }
+    public GpuCommandList Cmd { get; }
 
     /// <summary>
     /// Gets the <see cref="GpuResource"/> that the current <see cref="GpuStream"/> points to.

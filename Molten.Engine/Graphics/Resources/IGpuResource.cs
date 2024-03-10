@@ -30,8 +30,8 @@ public interface IGpuResource : IDisposable
     /// <summary>
     /// Invoked when the current <see cref="GpuResource"/> should apply any changes before being bound to a GPU context.
     /// </summary>
-    /// <param name="cmd">The <see cref="GpuCommandQueue"/> that the current <see cref="GpuResource"/> is to be bound to.</param>
-    void Apply(GpuCommandQueue cmd);
+    /// <param name="cmd">The <see cref="GpuCommandList"/> that the current <see cref="GpuResource"/> is to be bound to.</param>
+    void Apply(GpuCommandList cmd);
 
     /// <summary>
     /// Gets the <see cref="GpuResourceFlags"/> that were provided when the current <see cref="IGpuResource"/> was created.

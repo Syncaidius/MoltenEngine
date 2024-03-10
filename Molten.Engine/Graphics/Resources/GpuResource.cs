@@ -31,8 +31,8 @@ public abstract class GpuResource : GpuObject, IGpuResource
     /// <summary>
     /// Invoked when the current <see cref="GpuObject"/> should apply any changes before being bound to a GPU context.
     /// </summary>
-    /// <param name="queue">The <see cref="GpuCommandQueue"/> that the current <see cref="GpuObject"/> is to be bound to.</param>
-    public void Apply(GpuCommandQueue queue)
+    /// <param name="cmd">The <see cref="GpuCommandQueue"/> that the current <see cref="GpuObject"/> is to be bound to.</param>
+    public void Apply(GpuCommandList cmd)
     {
         if (IsDisposed)
             return;
@@ -43,17 +43,17 @@ public abstract class GpuResource : GpuObject, IGpuResource
         if (Handle == null)
             OnCreateResource();
 
-        OnApply(queue);
+        OnApply(cmd);
     }
 
     /// <summary>Applies any pending changes to the resource, from the specified priority queue.</summary>
     /// <param name="queue">The graphics queue to use when process changes.</param>
-    protected virtual void OnApply(GpuCommandQueue queue)
+    protected virtual void OnApply(GpuCommandList cmd)
     {
         if (ApplyQueue.Count > 0)
         {
             while (ApplyQueue.TryDequeue(out GraphicsTask task))
-                task.Process(queue);
+                task.Process(cmd);
         }
     }
 

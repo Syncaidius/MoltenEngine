@@ -14,12 +14,12 @@ public class ResourceCopyTask : GraphicsResourceTask<GpuResource>
         return true;
     }
 
-    protected override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
+    protected override bool OnProcess(RenderService renderer, GpuCommandList cmd)
     {
         if (Resource is GraphicsBuffer buffer && buffer.BufferType == GraphicsBufferType.Staging)
-            Resource.Apply(queue);
+            Resource.Apply(cmd);
 
-        queue.CopyResource(Resource, Destination);
+        cmd.CopyResource(Resource, Destination);
 
         return true;
     }

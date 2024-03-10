@@ -10,13 +10,18 @@ internal unsafe class CommandListVK : GpuCommandList
     DeviceVK _device;
 
     internal CommandListVK(CommandPoolAllocation allocation, CommandBuffer cmdBuffer) : 
-        base(allocation.Pool.Queue)
+        base(allocation.Pool.Queue.Device)
     {
         _allocation = allocation;
         _native = cmdBuffer;
         _device = allocation.Pool.Queue.Device;
         _vk = allocation.Pool.Queue.VK;
         Semaphore = new SemaphoreVK(_device);
+    }
+
+    public override void Wait(ulong nsTimeout = ulong.MaxValue)
+    {
+        throw new NotImplementedException();
     }
 
     public override void Free()
@@ -45,4 +50,6 @@ internal unsafe class CommandListVK : GpuCommandList
     internal CommandBufferLevel Level => _allocation.Level;
 
     internal SemaphoreVK Semaphore { get; }
+
+    internal FenceVK Fence { get; set; }
 }

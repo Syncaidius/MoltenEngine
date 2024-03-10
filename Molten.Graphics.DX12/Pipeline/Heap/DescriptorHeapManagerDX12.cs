@@ -73,7 +73,7 @@ internal class DescriptorHeapManagerDX12 : GraphicsObject<DeviceDX12>
     /// <summary>
     /// Consolidates all of the CPU-side descriptors into a single GPU descriptor heap ready for use.
     /// </summary>
-    internal unsafe void PrepareGpuHeap(ShaderPassDX12 pass, GraphicsCommandListDX12 cmd)
+    internal unsafe void PrepareGpuHeap(ShaderPassDX12 pass, CommandListDX12 cmd)
     {
         DeviceDX12 device = pass.Device as DeviceDX12;
         DescriptorHeapDX12 resHeap = _gpuResourceHeap.Prepare();
@@ -91,7 +91,7 @@ internal class DescriptorHeapManagerDX12 : GraphicsObject<DeviceDX12>
             for (int r = 0; r < resources.Length; r++)
             {
                 ref ShaderBind<ShaderResourceVariable> bind = ref resources[r];
-                bind.Object.Resource?.Apply(cmd.Queue);
+                bind.Object.Resource?.Apply(cmd);
             }
         }
 
