@@ -9,7 +9,7 @@ internal unsafe class ConstantBufferDX12 : BufferDX12, IConstantBuffer, IEquatab
     byte* _constData;
 
     internal ConstantBufferDX12(DeviceDX12 device, ConstantBufferInfo info)
-        : base(device, 1, info.Size, GraphicsResourceFlags.DenyShaderAccess | GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.GpuRead, GraphicsBufferType.Constant, 1)
+        : base(device, 1, info.Size + (256 - (info.Size % 256)), GraphicsResourceFlags.DenyShaderAccess | GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.GpuRead, GraphicsBufferType.Constant, 1)
     {
         _varLookup = new Dictionary<string, GraphicsConstantVariable>();
         _constData = (byte*)EngineUtil.Alloc(info.Size);
