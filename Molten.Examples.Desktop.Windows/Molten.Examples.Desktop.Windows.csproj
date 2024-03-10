@@ -22,7 +22,6 @@
     <ProjectReference Include="..\Molten.Engine.Windows\Molten.Engine.Windows.csproj" />
     <ProjectReference Include="..\Molten.Engine\Molten.Engine.csproj" />
     <ProjectReference Include="..\Molten.Examples.Common\Molten.Examples.Common.csproj" />
-    <ProjectReference Include="..\Molten.Graphics.DX11\Molten.Graphics.DX11.csproj" />
     <ProjectReference Include="..\Molten.Graphics.DX12\Molten.Graphics.DX12.csproj" />
     <ProjectReference Include="..\Molten.Graphics.Vulkan\Molten.Graphics.Vulkan.csproj" />
     <ProjectReference Include="..\Molten.Math\Molten.Math.csproj" />
