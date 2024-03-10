@@ -33,6 +33,7 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
         uint maxRTs = Device.Capabilities.PixelShader.MaxOutputTargets;
         _rtvs = EngineUtil.AllocArray<CpuDescriptorHandle>(maxRTs);
         _dsv = EngineUtil.AllocArray<CpuDescriptorHandle>(1);
+        _dsv[0] = default;
 
         Initialize(builder);
     }
@@ -141,7 +142,8 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
 
     protected override void OnResetState()
     {
-        throw new NotImplementedException();
+        // Unbind all output surfaces
+        _cmd.Handle->OMSetRenderTargets(0, null, false, null);
     }
 
     public override void Execute(GraphicsCommandList list)
@@ -269,44 +271,39 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
             State.ScissorRects.IsDirty = false;
         }
 
-        GraphicsDepthWritePermission depthWriteMode = pass.WritePermission;
-        bool surfaceChanged = State.Surfaces.Bind(this);
-        bool depthChanged = State.DepthSurface.Bind(this) || (_boundDepthMode != depthWriteMode);
 
-        if (surfaceChanged || depthChanged)
+        if (State.Surfaces.Bind(this))
         {
-            if (surfaceChanged)
-            {
-                _numRTVs = 0;
+            _numRTVs = 0;
 
-                for (int i = 0; i < State.Surfaces.Length; i++)
+            for (int i = 0; i < State.Surfaces.Length; i++)
+            {
+                if (State.Surfaces.BoundValues[i] != null)
                 {
-                    if (State.Surfaces.BoundValues[i] != null)
-                    {
-                        RTHandleDX12 rsHandle = State.Surfaces.BoundValues[i].Handle as RTHandleDX12;
-                        _rtvs[_numRTVs] = rsHandle.RTV.CpuHandle;
-                        _numRTVs++;
-                    }
+                    RTHandleDX12 rsHandle = State.Surfaces.BoundValues[i].Handle as RTHandleDX12;
+                    _rtvs[_numRTVs] = rsHandle.RTV.CpuHandle;
+                    _numRTVs++;
                 }
             }
+        }
 
-            if (depthChanged)
+        GraphicsDepthWritePermission depthWriteMode = pass.WritePermission;
+        if (State.DepthSurface.Bind(this) || (_boundDepthMode != depthWriteMode))
+        {
+            if (State.DepthSurface.BoundValue != null && depthWriteMode != GraphicsDepthWritePermission.Disabled)
             {
-                if (State.DepthSurface.BoundValue != null && depthWriteMode != GraphicsDepthWritePermission.Disabled)
-                {
-                    DSHandleDX12 dsHandle = State.DepthSurface.BoundValue.Handle as DSHandleDX12;
-                    if (depthWriteMode == GraphicsDepthWritePermission.ReadOnly)
-                        _dsv[0] = dsHandle.ReadOnlyDSV.CpuHandle;
-                    else
-                        _dsv[0] = dsHandle.DSV.CpuHandle;
-                }
+                DSHandleDX12 dsHandle = State.DepthSurface.BoundValue.Handle as DSHandleDX12;
+                if (depthWriteMode == GraphicsDepthWritePermission.ReadOnly)
+                    _dsv[0] = dsHandle.ReadOnlyDSV.CpuHandle;
                 else
-                {
-                    _dsv = null;
-                }
-
-                _boundDepthMode = depthWriteMode;
+                    _dsv[0] = dsHandle.DSV.CpuHandle;
             }
+            else
+            {
+                _dsv[0] = default;
+            }
+
+            _boundDepthMode = depthWriteMode;
         }
 
         PipelineInputLayoutDX12 _inputLayout = GetInputLayout(pass);
@@ -317,7 +314,8 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
 
         Device.Heap.PrepareGpuHeap(pass, _cmd);
 
-        _cmd.Handle->OMSetRenderTargets((uint)State.Surfaces.Length, _rtvs, false, _dsv);
+        CpuDescriptorHandle* dsvHandle = _dsv->Ptr != 0 ? _dsv : null;
+        _cmd.Handle->OMSetRenderTargets(_numRTVs, _rtvs, false, dsvHandle);
         Profiler.BindSurfaceCalls++;
 
         GraphicsBindResult vResult = Validate(mode);
