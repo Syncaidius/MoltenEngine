@@ -3,7 +3,7 @@
 /// <summary>A base class for DDS block readers.</summary>
 internal abstract class BCBlockParser
 {
-    public abstract GraphicsFormat ExpectedFormat { get; }
+    public abstract GpuResourceFormat ExpectedFormat { get; }
 
     internal abstract Color4[] Decode(BinaryReader imageReader, Logger log);
 

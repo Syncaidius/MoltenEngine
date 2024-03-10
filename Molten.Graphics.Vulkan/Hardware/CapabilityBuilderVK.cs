@@ -11,7 +11,7 @@ internal class CapabilityBuilderVK
         public void* PNext;
     }
 
-    internal unsafe GraphicsCapabilities Build(DeviceVK device, RendererVK renderer, ref PhysicalDeviceProperties properties)
+    internal unsafe GpuCapabilities Build(DeviceVK device, RendererVK renderer, ref PhysicalDeviceProperties properties)
     {
         PhysicalDeviceFeatures features;
 
@@ -27,11 +27,11 @@ internal class CapabilityBuilderVK
         }
 
         ref PhysicalDeviceLimits limits = ref properties.Limits;
-        GraphicsCapabilities cap = new GraphicsCapabilities();
+        GpuCapabilities cap = new GpuCapabilities();
 
-        cap.Flags = GraphicsCapFlags.DepthBoundsTesting;
-        cap.Flags |= features.ImageCubeArray ? GraphicsCapFlags.TextureCubeArrays : GraphicsCapFlags.None;
-        cap.Flags |= features.LogicOp ? GraphicsCapFlags.BlendLogicOp : GraphicsCapFlags.None;
+        cap.Flags = GpuCapFlags.DepthBoundsTesting;
+        cap.Flags |= features.ImageCubeArray ? GpuCapFlags.TextureCubeArrays : GpuCapFlags.None;
+        cap.Flags |= features.LogicOp ? GpuCapFlags.BlendLogicOp : GpuCapFlags.None;
 
         cap.MaxTexture1DSize = limits.MaxImageDimension1D;
         cap.MaxTexture2DSize = limits.MaxImageDimension2D;
@@ -63,7 +63,7 @@ internal class CapabilityBuilderVK
         cap.VertexShader.Flags |= ShaderCapFlags.IsSupported;
         cap.PixelShader.Flags |= ShaderCapFlags.IsSupported;
         cap.Compute.Flags |= ShaderCapFlags.IsSupported;
-        cap.Flags |= GraphicsCapFlags.ConcurrentResourceCreation;
+        cap.Flags |= GpuCapFlags.ConcurrentResourceCreation;
         cap.GeometryShader.Flags |= features.GeometryShader.ToCapFlag(ShaderCapFlags.IsSupported);
         cap.HullShader.Flags |= features.TessellationShader.ToCapFlag(ShaderCapFlags.IsSupported);
         cap.DomainShader.Flags |= features.TessellationShader.ToCapFlag(ShaderCapFlags.IsSupported);
@@ -126,7 +126,7 @@ internal class CapabilityBuilderVK
         return cap;
     }
 
-    private void PopulateMemoryProperties(DeviceVK device, GraphicsCapabilities cap)
+    private void PopulateMemoryProperties(DeviceVK device, GpuCapabilities cap)
     {
         for(uint i = 0; i < device.Memory.HeapCount; i++)
         {

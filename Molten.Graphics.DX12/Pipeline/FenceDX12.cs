@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace Molten.Graphics.DX12;
 
-internal unsafe class FenceDX12 : GraphicsFence
+internal unsafe class FenceDX12 : GpuFence
 {
     ID3D12Fence* _ptr;
     DeviceDX12 _device;

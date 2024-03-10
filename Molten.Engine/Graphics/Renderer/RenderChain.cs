@@ -64,7 +64,7 @@ internal class RenderChain : EngineObject
         return first;
     }
 
-    internal void Render(GraphicsQueue queue, SceneRenderData sceneData, RenderCamera camera, Timing time)
+    internal void Render(GpuCommandQueue queue, SceneRenderData sceneData, RenderCamera camera, Timing time)
     {
         RenderChainContext context = ContextPool.GetInstance();
         Renderer.Surfaces.MultiSampleLevel = camera.MultiSampleLevel;

@@ -14,7 +14,7 @@ internal class RemoveCamera : GraphicsTask
 
     public override bool Validate() => true;
 
-    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
     {
         Data.Cameras.Remove(Camera);
         return true;

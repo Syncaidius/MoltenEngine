@@ -7,8 +7,8 @@ public unsafe class UniformBufferVK : BufferVK, IConstantBuffer, IEquatable<Unif
     Dictionary<string, GraphicsConstantVariable> _varLookup;
     byte* _constData;
 
-    internal UniformBufferVK(GraphicsDevice device, ConstantBufferInfo info) : 
-        base(device, GraphicsBufferType.Constant, GraphicsResourceFlags.DenyShaderAccess | GraphicsResourceFlags.CpuWrite, 1, info.Size, 1)
+    internal UniformBufferVK(GpuDevice device, ConstantBufferInfo info) : 
+        base(device, GraphicsBufferType.Constant, GpuResourceFlags.DenyShaderAccess | GpuResourceFlags.CpuWrite, 1, info.Size, 1)
     {
         _varLookup = new Dictionary<string, GraphicsConstantVariable>();
         _constData = (byte*)EngineUtil.Alloc(info.Size);
@@ -26,7 +26,7 @@ public unsafe class UniformBufferVK : BufferVK, IConstantBuffer, IEquatable<Unif
         return GraphicsConstantVariable.AreEqual(Variables, other.Variables);
     }
 
-    protected override void OnApply(GraphicsQueue cmd)
+    protected override void OnApply(GpuCommandQueue cmd)
     {
         // Setting data via shader variabls takes precedent. All standard buffer changes (set/append) will be ignored and wiped.
         if (IsDirty)
@@ -37,7 +37,7 @@ public unsafe class UniformBufferVK : BufferVK, IConstantBuffer, IEquatable<Unif
             foreach (GraphicsConstantVariable v in Variables)
                 v.Write(_constData + v.ByteOffset);
 
-            using (GraphicsStream stream = cmd.MapResource(this, 0, 0, GraphicsMapType.Discard))
+            using (GpuStream stream = cmd.MapResource(this, 0, 0, GpuMapType.Discard))
                 stream.WriteRange(_constData, (uint)SizeInBytes);
         }
 

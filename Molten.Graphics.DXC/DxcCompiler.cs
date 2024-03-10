@@ -42,7 +42,7 @@ public unsafe abstract class DxcCompiler : ShaderCompiler
     /// <param name="device">The device which owns the compiler.</param>
     /// <param name="includePath">The default path for engine/game HLSL include files.</param>
     /// <param name="includeAssembly"></param>
-    public DxcCompiler(GraphicsDevice device, string includePath, Assembly includeAssembly) : 
+    public DxcCompiler(GpuDevice device, string includePath, Assembly includeAssembly) : 
         base(device, includePath, includeAssembly)
     {
         Model = Device.Capabilities.MaxShaderModel.Clamp(MIN_SHADER_MODEL, MAX_SHADER_MODEL);

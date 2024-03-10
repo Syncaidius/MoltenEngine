@@ -4,7 +4,7 @@ using Monitor = Silk.NET.GLFW.Monitor;
 
 namespace Molten.Graphics.Vulkan;
 
-internal unsafe class DisplayManagerVK : GraphicsManager
+internal unsafe class DisplayManagerVK : GpuManager
 {
     List<DeviceVK> _devices;
     DeviceVK _defaultAdapter;
@@ -120,16 +120,16 @@ internal unsafe class DisplayManagerVK : GraphicsManager
         throw new NotImplementedException();
     }
 
-    public override void GetCompatibleAdapters(GraphicsCapabilities capabilities, List<GraphicsDevice> adapters)
+    public override void GetCompatibleAdapters(GpuCapabilities capabilities, List<GpuDevice> adapters)
     {
         throw new NotImplementedException();
     }
 
     /// <inheritdoc/>
-    public override GraphicsDevice DefaultDevice => _defaultAdapter;
+    public override GpuDevice DefaultDevice => _defaultAdapter;
 
     /// <inheritdoc/>
-    public override GraphicsDevice PrimaryDevice
+    public override GpuDevice PrimaryDevice
     {
         get => _selectedAdapter;
         set
@@ -137,10 +137,10 @@ internal unsafe class DisplayManagerVK : GraphicsManager
             if (value != null)
             {
                 if (value is not DeviceVK Device)
-                    throw new GraphicsDeviceException(value, "The adapter is not a valid Vulkan device.");
+                    throw new GpuDeviceException(value, "The adapter is not a valid Vulkan device.");
 
                 if (value.Manager != this)
-                    throw new GraphicsDeviceException(value, "The adapter not owned by the current display manager.");
+                    throw new GpuDeviceException(value, "The adapter not owned by the current display manager.");
 
                 _selectedAdapter = Device;
             }
@@ -156,7 +156,7 @@ internal unsafe class DisplayManagerVK : GraphicsManager
     internal DisplayOutputVK PrimaryOutput { get; private set; }
 
     /// <inheritdoc/>
-    public override IReadOnlyList<GraphicsDevice> Devices => _devices;
+    public override IReadOnlyList<GpuDevice> Devices => _devices;
 
     internal RendererVK Renderer { get; }
 

@@ -21,9 +21,9 @@ public unsafe abstract class SwapChainSurfaceDX12 : RenderSurface2DDX12, ISwapCh
     uint _vsync;
     RTHandleDX12 _handle;
 
-    internal SwapChainSurfaceDX12(DeviceDX12 device, uint width, uint height, uint mipCount, GraphicsFormat format = GraphicsFormat.R8G8B8A8_UNorm, string name = null)
+    internal SwapChainSurfaceDX12(DeviceDX12 device, uint width, uint height, uint mipCount, GpuResourceFormat format = GpuResourceFormat.R8G8B8A8_UNorm, string name = null)
         : base(device, width, height, 
-              GraphicsResourceFlags.DenyShaderAccess | GraphicsResourceFlags.None | GraphicsResourceFlags.GpuWrite,
+              GpuResourceFlags.DenyShaderAccess | GpuResourceFlags.None | GpuResourceFlags.GpuWrite,
               format, mipCount, 1, AntiAliasLevel.None, MSAAQuality.Default, name)
     {
         _dispatchQueue = new ThreadedQueue<Action>();
@@ -36,7 +36,7 @@ public unsafe abstract class SwapChainSurfaceDX12 : RenderSurface2DDX12, ISwapCh
         // Resize the swap chain if needed.
         if (SwapChainHandle != null)
         {
-            WinHResult result = SwapChainHandle->ResizeBuffers(Device.FrameBufferSize, Width, Height, GraphicsFormat.Unknown.ToApi(), 0U);
+            WinHResult result = SwapChainHandle->ResizeBuffers(Device.FrameBufferSize, Width, Height, GpuResourceFormat.Unknown.ToApi(), 0U);
             SwapChainHandle->GetDesc1(ref _swapDesc);
         }
         else

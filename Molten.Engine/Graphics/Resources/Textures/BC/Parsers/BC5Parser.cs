@@ -2,7 +2,7 @@
 
 internal class BC5UParser : BCBlockParser
 {
-    public override GraphicsFormat ExpectedFormat => GraphicsFormat.BC5_UNorm;
+    public override GpuResourceFormat ExpectedFormat => GpuResourceFormat.BC5_UNorm;
 
     internal override Color4[] Decode(BinaryReader imageReader, Logger log)
     {
@@ -20,7 +20,7 @@ internal class BC5UParser : BCBlockParser
 
 internal class BC5SParser : BCBlockParser
 {
-    public override GraphicsFormat ExpectedFormat => GraphicsFormat.BC5_SNorm;
+    public override GpuResourceFormat ExpectedFormat => GpuResourceFormat.BC5_SNorm;
 
     internal override Color4[] Decode(BinaryReader imageReader, Logger log)
     {

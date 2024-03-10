@@ -4,12 +4,12 @@ public class TextureResizeTask : GraphicsResourceTask<GraphicsTexture>
 {
     public TextureDimensions NewDimensions;
 
-    public GraphicsFormat NewFormat;
+    public GpuResourceFormat NewFormat;
 
     public override void ClearForPool()
     {
         NewDimensions = new TextureDimensions();
-        NewFormat = GraphicsFormat.Unknown;
+        NewFormat = GpuResourceFormat.Unknown;
     }
 
     public override bool Validate()
@@ -17,7 +17,7 @@ public class TextureResizeTask : GraphicsResourceTask<GraphicsTexture>
         return true;
     }
 
-    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
     {
         Resource.ResizeTexture(NewDimensions, NewFormat);
         Resource.Version++;

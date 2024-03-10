@@ -9,7 +9,7 @@ internal class GenerateMipMapsTask : GraphicsResourceTask<GraphicsTexture>
         return true;
     }
 
-    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
     {
         queue.GenerateMipMaps(Resource);
         Resource.Version++;

@@ -27,7 +27,7 @@ public unsafe class DisplayOutputDXGI : EngineObject, IDisplayOutput
         NativeUtil.ReleasePtr(ref Native);
     }
 
-    public IReadOnlyList<IDisplayMode> GetModes(GraphicsFormat format)
+    public IReadOnlyList<IDisplayMode> GetModes(GpuResourceFormat format)
     {
         uint flags = DXGI.EnumModesInterlaced | DXGI.EnumModesScaling | DXGI.EnumModesStereo;
 
@@ -54,5 +54,5 @@ public unsafe class DisplayOutputDXGI : EngineObject, IDisplayOutput
     public DisplayOrientation Orientation => (DisplayOrientation)_desc->Rotation;
 
     /// <summary>Gets the adapter that the display device is connected to.</summary>
-    public GraphicsDevice Device => _device;
+    public GpuDevice Device => _device;
 }

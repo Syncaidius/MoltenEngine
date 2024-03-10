@@ -31,7 +31,7 @@ public class DDSReader : TextureReader
         {
             Levels = _levelData,
             Format = _headerDXT10.ImageFormat,
-            Flags = GraphicsResourceFlags.GpuWrite,
+            Flags = GpuResourceFlags.GpuWrite,
             IsCompressed = true,
             MultiSampleLevel = AntiAliasLevel.None,
             HighestMipMap = 0,
@@ -95,40 +95,40 @@ public class DDSReader : TextureReader
             switch (_header.PixelFormat.FourCC)
             {
                 case "DXT1":
-                    _headerDXT10.ImageFormat = GraphicsFormat.BC1_UNorm;
+                    _headerDXT10.ImageFormat = GpuResourceFormat.BC1_UNorm;
                     break;
 
                 case "DXT2":
                 case "DXT3":
-                    _headerDXT10.ImageFormat = GraphicsFormat.BC2_UNorm;
+                    _headerDXT10.ImageFormat = GpuResourceFormat.BC2_UNorm;
                     break;
 
                 case "DXT4":
                 case "DXT5":
-                    _headerDXT10.ImageFormat = GraphicsFormat.BC3_UNorm;
+                    _headerDXT10.ImageFormat = GpuResourceFormat.BC3_UNorm;
                     break;
 
                 case "BC4U":
-                    _headerDXT10.ImageFormat = GraphicsFormat.BC4_UNorm;
+                    _headerDXT10.ImageFormat = GpuResourceFormat.BC4_UNorm;
                     break;
 
                 case "BC4S":
-                    _headerDXT10.ImageFormat = GraphicsFormat.BC4_SNorm;
+                    _headerDXT10.ImageFormat = GpuResourceFormat.BC4_SNorm;
                     break;
 
                 case "BC5U":
-                    _headerDXT10.ImageFormat = GraphicsFormat.BC5_UNorm;
+                    _headerDXT10.ImageFormat = GpuResourceFormat.BC5_UNorm;
                     break;
 
                 case "BC5S":
-                    _headerDXT10.ImageFormat = GraphicsFormat.BC5_SNorm;
+                    _headerDXT10.ImageFormat = GpuResourceFormat.BC5_SNorm;
                     break;
 
                 case "DX10":
                     //read DX10 header.
                     _headerDXT10 = new DDSHeaderDXT10()
                     {
-                        ImageFormat = (GraphicsFormat)reader.ReadUInt32(),
+                        ImageFormat = (GpuResourceFormat)reader.ReadUInt32(),
                         Dimension = (DDSResourceDimension)reader.ReadUInt32(),
                         MiscFlags = (DDSMiscFlags)reader.ReadUInt32(),
                         ArraySize = reader.ReadUInt32(),
@@ -138,7 +138,7 @@ public class DDSReader : TextureReader
 
                 default:
                     log.Error($"Unrecognised DDS block-compression format '{_header.PixelFormat.FourCC}'", filename);
-                    _headerDXT10.ImageFormat = GraphicsFormat.R8G8B8A8_UNorm;
+                    _headerDXT10.ImageFormat = GpuResourceFormat.R8G8B8A8_UNorm;
                     break;
             }
         }

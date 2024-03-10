@@ -23,8 +23,8 @@ public abstract class GraphicsTask : IPoolable
     /// <summary>
     /// Invoked when the current <see cref="GraphicsTask"/> needs to be processed.
     /// </summary>
-    /// <param name="queue">The <see cref="GraphicsQueue"/> that should process the task.</param>
-    public void Process(GraphicsQueue queue)
+    /// <param name="queue">The <see cref="GpuCommandQueue"/> that should process the task.</param>
+    public void Process(GpuCommandQueue queue)
     {
         if(OnProcess(queue.Device.Renderer, queue))
             OnCompleted?.Invoke(this, true);
@@ -38,10 +38,10 @@ public abstract class GraphicsTask : IPoolable
     }
 
     /// <summary>
-    /// Invoked when the task should be processed by the specified <see cref="GraphicsQueue"/>.
+    /// Invoked when the task should be processed by the specified <see cref="GpuCommandQueue"/>.
     /// </summary>
     /// <param name="renderer">The renderer that the task is bound to.</param>
-    /// <param name="queue">The <see cref="GraphicsQueue"/> that should process the current <see cref="GraphicsTask"/>.</param>
+    /// <param name="queue">The <see cref="GpuCommandQueue"/> that should process the current <see cref="GraphicsTask"/>.</param>
     /// <returns></returns>
-    protected abstract bool OnProcess(RenderService renderer, GraphicsQueue queue);
+    protected abstract bool OnProcess(RenderService renderer, GpuCommandQueue queue);
 }

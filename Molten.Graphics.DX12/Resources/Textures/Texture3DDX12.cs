@@ -15,7 +15,7 @@ public unsafe class Texture3DDX12 : TextureDX12, ITexture3D
     /// of the provided texture in to the new instance.</summary>
     /// <param name="other"></param>
     /// <param name="flags">A set of flags to override those of the provided texture.</param>
-    internal Texture3DDX12(Texture3DDX12 other, GraphicsResourceFlags flags)
+    internal Texture3DDX12(Texture3DDX12 other, GpuResourceFlags flags)
         : this(other.Device, other.Width, other.Height, other.Depth, flags, other.ResourceFormat, other.MipMapCount)
     { }
 
@@ -24,8 +24,8 @@ public unsafe class Texture3DDX12 : TextureDX12, ITexture3D
         uint width,
         uint height,
         uint depth,
-        GraphicsResourceFlags flags,
-        GraphicsFormat format = GraphicsFormat.R8G8B8A8_UNorm,
+        GpuResourceFlags flags,
+        GpuResourceFormat format = GpuResourceFormat.R8G8B8A8_UNorm,
         uint mipCount = 1,
         string name = null,
         ProtectedSessionDX12 protectedSession = null)
@@ -58,7 +58,7 @@ public unsafe class Texture3DDX12 : TextureDX12, ITexture3D
         };
     }
 
-    public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount = 0, GraphicsFormat newFormat = GraphicsFormat.Unknown)
+    public void Resize(GpuPriority priority, uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount = 0, GpuResourceFormat newFormat = GpuResourceFormat.Unknown)
     {
         Resize(priority, newWidth, newHeight, ArraySize, newMipMapCount, newDepth, newFormat);
     }

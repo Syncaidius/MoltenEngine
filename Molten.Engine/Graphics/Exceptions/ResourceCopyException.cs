@@ -2,11 +2,11 @@
 
 public class ResourceCopyException : Exception
 {
-    public ResourceCopyException(GraphicsResource source, GraphicsResource destination)
+    public ResourceCopyException(GpuResource source, GpuResource destination)
     : this(source, destination, "Invalid copy operation.")
     { }
 
-    public ResourceCopyException(GraphicsResource source, GraphicsResource destination, string message)
+    public ResourceCopyException(GpuResource source, GpuResource destination, string message)
         : base(message)
     {
         Source = source;
@@ -16,10 +16,10 @@ public class ResourceCopyException : Exception
     /// <summary>
     /// The source texture.
     /// </summary>
-    public GraphicsResource Source { get; private set; }
+    public GpuResource Source { get; private set; }
 
     /// <summary>
     /// The destination texture.
     /// </summary>
-    public GraphicsResource Destination { get; private set; }
+    public GpuResource Destination { get; private set; }
 }

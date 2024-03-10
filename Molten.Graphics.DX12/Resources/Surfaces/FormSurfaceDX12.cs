@@ -77,7 +77,7 @@ public class FormSurfaceDX12 : SwapChainSurfaceDX12, INativeSurface
     System.Drawing.Rectangle? _preBorderlessScreenArea;
 
     public FormSurfaceDX12(DeviceDX12 device, uint width, uint height, uint mipCount, string title, string controlName,
-        GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm) : 
+        GpuResourceFormat format = GpuResourceFormat.B8G8R8A8_UNorm) : 
         base(device, width, height, mipCount, format)
     {
         _title = title;
@@ -153,7 +153,7 @@ public class FormSurfaceDX12 : SwapChainSurfaceDX12, INativeSurface
         }
     }
 
-    protected override void OnResizeTexture(ref readonly TextureDimensions dimensions, GraphicsFormat format)
+    protected override void OnResizeTexture(ref readonly TextureDimensions dimensions, GpuResourceFormat format)
     {
         base.OnResizeTexture(dimensions, format);
         RequestFormResize(dimensions.Width, dimensions.Height);

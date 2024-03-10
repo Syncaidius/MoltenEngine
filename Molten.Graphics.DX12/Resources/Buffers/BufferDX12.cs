@@ -10,13 +10,13 @@ public class BufferDX12 : GraphicsBuffer
     ResourceBarrier _barrier;
     ResourceStates _barrierState;
 
-    internal BufferDX12(DeviceDX12 device, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type, uint alignment) :
+    internal BufferDX12(DeviceDX12 device, uint stride, ulong numElements, GpuResourceFlags flags, GraphicsBufferType type, uint alignment) :
         base(device, stride, numElements, flags, type, alignment)
     {
         Device = device;
     }
 
-    private BufferDX12(BufferDX12 parentBuffer, ulong offset, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type, uint alignment)
+    private BufferDX12(BufferDX12 parentBuffer, ulong offset, uint stride, ulong numElements, GpuResourceFlags flags, GraphicsBufferType type, uint alignment)
         : base(parentBuffer.Device, stride, numElements, flags, type, alignment)
     {
         if (ParentBuffer != null)
@@ -55,10 +55,10 @@ public class BufferDX12 : GraphicsBuffer
                 // TODO Set CPUPageProperty and MemoryPoolPreference based on UMA support.
             }
 
-            if (Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
+            if (Flags.Has(GpuResourceFlags.DenyShaderAccess))
                 flags |= ResourceFlags.DenyShaderResource;
 
-            if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
+            if (Flags.Has(GpuResourceFlags.UnorderedAccess))
                 flags |= ResourceFlags.AllowUnorderedAccess;
 
             ResourceDesc1 desc = new()
@@ -126,7 +126,7 @@ public class BufferDX12 : GraphicsBuffer
         //      
         //      If not, we throw an exception stating this.
 
-        if (!Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
+        if (!Flags.Has(GpuResourceFlags.DenyShaderAccess))
         {
             ShaderResourceViewDesc desc = new()
             {
@@ -145,7 +145,7 @@ public class BufferDX12 : GraphicsBuffer
             _handle.SRV.Initialize(ref desc);
         }
 
-        if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
+        if (Flags.Has(GpuResourceFlags.UnorderedAccess))
         {
             UnorderedAccessViewDesc desc = new()
             {
@@ -171,7 +171,7 @@ public class BufferDX12 : GraphicsBuffer
         ulong offset, 
         uint stride, 
         ulong numElements, 
-        GraphicsResourceFlags flags,
+        GpuResourceFlags flags,
         GraphicsBufferType type,
         uint alignment)
     {
@@ -188,7 +188,7 @@ public class BufferDX12 : GraphicsBuffer
     public override ResourceHandleDX12 Handle => _handle;
 
     /// <inheritdoc/>
-    public override GraphicsFormat ResourceFormat { get; protected set; }
+    public override GpuResourceFormat ResourceFormat { get; protected set; }
 
     public new DeviceDX12 Device { get; }
 

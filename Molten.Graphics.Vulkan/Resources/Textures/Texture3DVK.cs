@@ -5,11 +5,11 @@ namespace Molten.Graphics.Vulkan;
 public class Texture3DVK : TextureVK, ITexture3D
 {
     public Texture3DVK(DeviceVK device,
-        TextureDimensions dimensions, GraphicsFormat format, GraphicsResourceFlags flags, string name) :
+        TextureDimensions dimensions, GpuResourceFormat format, GpuResourceFlags flags, string name) :
         base(device, dimensions, format, flags, name)
     { }
 
-    public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount = 0, GraphicsFormat newFormat = GraphicsFormat.Unknown)
+    public void Resize(GpuPriority priority, uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount = 0, GpuResourceFormat newFormat = GpuResourceFormat.Unknown)
     {
         Resize(priority, newWidth, newHeight, ArraySize, newMipMapCount, newDepth, newFormat);
     }

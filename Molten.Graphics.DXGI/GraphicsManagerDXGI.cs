@@ -8,7 +8,7 @@ public unsafe delegate DeviceDXGI DXGICreateDeviceCallback(GraphicsSettings sett
 
 public unsafe delegate void DXGIDetectCapabilitiesCallback(GraphicsSettings settings, DeviceDXGI device);
 
-public unsafe class GraphicsManagerDXGI : GraphicsManager
+public unsafe class GraphicsManagerDXGI : GpuManager
 {
     const uint DXGI_CREATE_FACTORY_NODEBUG = 0x0;
     const uint DXGI_CREATE_FACTORY_DEBUG = 0x01;
@@ -156,7 +156,7 @@ public unsafe class GraphicsManagerDXGI : GraphicsManager
     }
 
     /// <inheritdoc/>
-    public override void GetCompatibleAdapters(GraphicsCapabilities cap, List<GraphicsDevice> devices)
+    public override void GetCompatibleAdapters(GpuCapabilities cap, List<GpuDevice> devices)
     {
         for (int i = 0; i < _devices.Count; i++)
         {
@@ -172,7 +172,7 @@ public unsafe class GraphicsManagerDXGI : GraphicsManager
     public override DeviceDXGI DefaultDevice => _defaultDevice;
 
     /// <inheritdoc/>
-    public override GraphicsDevice PrimaryDevice
+    public override GpuDevice PrimaryDevice
     {
         get => _selectedAdapter;
         set
@@ -180,10 +180,10 @@ public unsafe class GraphicsManagerDXGI : GraphicsManager
             if (value != null)
             {
                 if (value is not DeviceDXGI dxgiDevice)
-                    throw new GraphicsDeviceException(value, "The device is not a valid DXGI device.");
+                    throw new GpuDeviceException(value, "The device is not a valid DXGI device.");
 
                 if (value.Manager != this)
-                    throw new GraphicsDeviceException(value, "The device not owned by the current display manager.");
+                    throw new GpuDeviceException(value, "The device not owned by the current display manager.");
 
                 _selectedAdapter = dxgiDevice;
             }

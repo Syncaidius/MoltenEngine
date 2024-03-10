@@ -36,7 +36,7 @@ public class ShaderCompilerContext
     }
 
     public void AddResource<T>(string name, T resource) 
-        where T : IGraphicsResource
+        where T : IGpuResource
     {
         if (!_resources.TryGetValue(typeof(T), out Dictionary<string, object> lookup))
         {
@@ -48,7 +48,7 @@ public class ShaderCompilerContext
     }
 
     public bool TryGetResource<T>(string name, out T resource)
-        where T : class, IGraphicsResource
+        where T : class, IGpuResource
     {
         if (!_resources.TryGetValue(typeof(T), out Dictionary<string, object> lookup))
         {

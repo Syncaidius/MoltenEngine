@@ -90,45 +90,45 @@ public class DDSWriter : TextureWriter
 
         switch (data.Format)
         {
-            case GraphicsFormat.BC1_UNorm:
+            case GpuResourceFormat.BC1_UNorm:
                 result.FourCC = "DXT1";
                 result.RGBBitCount = 32;
                 break;
 
-            case GraphicsFormat.BC2_UNorm:
+            case GpuResourceFormat.BC2_UNorm:
                 result.FourCC = "DXT3";
                 result.RGBBitCount = 32;
                 break;
 
-            case GraphicsFormat.BC3_UNorm:
+            case GpuResourceFormat.BC3_UNorm:
                 result.FourCC = "DXT5";
                 result.RGBBitCount = 32;
                 break;
 
-            case GraphicsFormat.BC4_UNorm:
+            case GpuResourceFormat.BC4_UNorm:
                 result.FourCC = "BC4U";
                 result.RGBBitCount = 8;
                 break;
 
-            case GraphicsFormat.BC4_SNorm:
+            case GpuResourceFormat.BC4_SNorm:
                 result.FourCC = "BC4S";
                 result.RGBBitCount = 8;
                 break;
 
-            case GraphicsFormat.BC5_UNorm:
+            case GpuResourceFormat.BC5_UNorm:
                 result.FourCC = "BC5U";
                 result.RGBBitCount = 16;
                 break;
 
-            case GraphicsFormat.BC5_SNorm:
+            case GpuResourceFormat.BC5_SNorm:
                 result.FourCC = "BC5S";
                 result.RGBBitCount = 16;
                 break;
 
-            case GraphicsFormat.BC7_UNorm:
-            case GraphicsFormat.BC7_UNorm_SRgb:
-            case GraphicsFormat.BC6H_Sf16:
-            case GraphicsFormat.BC6H_Uf16:
+            case GpuResourceFormat.BC7_UNorm:
+            case GpuResourceFormat.BC7_UNorm_SRgb:
+            case GpuResourceFormat.BC6H_Sf16:
+            case GpuResourceFormat.BC6H_Uf16:
                 result.FourCC = "DX10";
                 result.RGBBitCount = 8;
                 break;

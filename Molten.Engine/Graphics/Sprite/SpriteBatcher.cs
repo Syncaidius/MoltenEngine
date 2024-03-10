@@ -9,7 +9,7 @@ public partial class SpriteBatcher : IDisposable
 {
     protected delegate void FlushRangeCallback(uint firstRangeID, uint rangeCount, uint dataStartIndex, uint numDataInBuffer);
 
-    protected delegate Shader CheckerCallback(GraphicsQueue queue, ref SpriteRange range, ObjectRenderData data);
+    protected delegate Shader CheckerCallback(GpuCommandQueue queue, ref SpriteRange range, ObjectRenderData data);
 
     protected struct SpriteRange
     {
@@ -69,7 +69,7 @@ public partial class SpriteBatcher : IDisposable
     uint _dataCount;
     uint _flushIndex;
 
-    GraphicsFrameBuffer<GraphicsBuffer> _buffer;
+    GpuFrameBuffer<GraphicsBuffer> _buffer;
 
     CheckerCallback[] _checkers;
     Shader _matDefault;
@@ -86,7 +86,7 @@ public partial class SpriteBatcher : IDisposable
     /// </summary>
     RectStyle _rectStyle;
 
-    public unsafe SpriteBatcher(GraphicsDevice device, uint dataCapacity, uint rangeCapacity)
+    public unsafe SpriteBatcher(GpuDevice device, uint dataCapacity, uint rangeCapacity)
     {
         _rectStyle = RectStyle.Default;
 
@@ -100,8 +100,8 @@ public partial class SpriteBatcher : IDisposable
         Reset();
 
         //throw new NotImplementedException("Implement per-frame buffer");
-        _buffer = new GraphicsFrameBuffer<GraphicsBuffer>(device, (device) =>
-            device.Resources.CreateStructuredBuffer<GpuData>(GraphicsResourceFlags.CpuWrite | GraphicsResourceFlags.GpuRead, FlushCapacity));
+        _buffer = new GpuFrameBuffer<GraphicsBuffer>(device, (device) =>
+            device.Resources.CreateStructuredBuffer<GpuData>(GpuResourceFlags.CpuWrite | GpuResourceFlags.GpuRead, FlushCapacity));
 
         ShaderCompileResult result = device.Resources.LoadEmbeddedShader("Molten.Assets", "sprite.json");
         _matDefaultNoTexture = result["sprite-no-texture"];
@@ -483,7 +483,7 @@ public partial class SpriteBatcher : IDisposable
         }
     }
 
-    public void Flush(GraphicsQueue queue, RenderCamera camera, ObjectRenderData data)
+    public void Flush(GpuCommandQueue queue, RenderCamera camera, ObjectRenderData data)
     {
         if (_dataCount > 0)
         {
@@ -527,9 +527,9 @@ public partial class SpriteBatcher : IDisposable
         Reset();
     }
 
-    private unsafe void FlushBuffer(GraphicsQueue cmd, RenderCamera camera, ObjectRenderData data, uint rangeID, uint rangeCount, uint vertexStartIndex, uint vertexCount)
+    private unsafe void FlushBuffer(GpuCommandQueue cmd, RenderCamera camera, ObjectRenderData data, uint rangeID, uint rangeCount, uint vertexStartIndex, uint vertexCount)
     {
-        GraphicsMapType map = GraphicsMapType.Discard;
+        GpuMapType map = GpuMapType.Discard;
         uint flushByteOffset = 0;
 
         GraphicsBuffer dataBuffer = _buffer.Prepare();
@@ -544,7 +544,7 @@ public partial class SpriteBatcher : IDisposable
             // Check if we actually need to discard. If we have enough space in the buffer, we can just write to it.
             if (vertexCount <= (FlushCapacity - _flushIndex))
             {
-                map = GraphicsMapType.Write;
+                map = GpuMapType.Write;
                 flushByteOffset = _flushIndex * (uint)sizeof(GpuData);
             }
             else
@@ -553,7 +553,7 @@ public partial class SpriteBatcher : IDisposable
             }
         }
 
-        using (GraphicsStream stream = cmd.MapResource(dataBuffer, 0, flushByteOffset, map))
+        using (GpuStream stream = cmd.MapResource(dataBuffer, 0, flushByteOffset, map))
             stream.WriteRange(Data, vertexStartIndex, vertexCount);
 
         uint bufferOffset = _flushIndex;
@@ -597,7 +597,7 @@ public partial class SpriteBatcher : IDisposable
         }
     }
 
-    private Shader CheckSpriteRange(GraphicsQueue cmd, ref SpriteRange range, ObjectRenderData data)
+    private Shader CheckSpriteRange(GpuCommandQueue cmd, ref SpriteRange range, ObjectRenderData data)
     {
         if (range.Texture != null)
             return range.Texture.IsMultisampled ? _matDefaultMS : _matDefault;
@@ -605,7 +605,7 @@ public partial class SpriteBatcher : IDisposable
             return _matDefaultNoTexture;
     }
 
-    private Shader CheckMsdfRange(GraphicsQueue cmd, ref SpriteRange range, ObjectRenderData data)
+    private Shader CheckMsdfRange(GpuCommandQueue cmd, ref SpriteRange range, ObjectRenderData data)
     {
         if (range.Texture != null)
         {
@@ -620,22 +620,22 @@ public partial class SpriteBatcher : IDisposable
         }
     }
 
-    private Shader CheckLineRange(GraphicsQueue cmd, ref SpriteRange range, ObjectRenderData data)
+    private Shader CheckLineRange(GpuCommandQueue cmd, ref SpriteRange range, ObjectRenderData data)
     {
         return _matLine;
     }
 
-    private Shader CheckEllipseRange(GraphicsQueue cmd, ref SpriteRange range, ObjectRenderData data)
+    private Shader CheckEllipseRange(GpuCommandQueue cmd, ref SpriteRange range, ObjectRenderData data)
     {
         return range.Texture != null ? _matCircle : _matCircleNoTexture;
     }
 
-    private Shader CheckGridRange(GraphicsQueue cmd, ref SpriteRange range, ObjectRenderData data)
+    private Shader CheckGridRange(GpuCommandQueue cmd, ref SpriteRange range, ObjectRenderData data)
     {
         return _matGrid; // range.Texture != null ? _matCircle : _matCircleNoTexture;
     }
 
-    private Shader NoCheckRange(GraphicsQueue cmd, ref SpriteRange range, ObjectRenderData data)
+    private Shader NoCheckRange(GpuCommandQueue cmd, ref SpriteRange range, ObjectRenderData data)
     {
         return null;
     }

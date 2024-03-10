@@ -50,18 +50,18 @@ public unsafe class GraphicsQueueVK : GraphicsQueue<DeviceVK>
         _poolTransient = new CommandPoolVK(this, CommandPoolCreateFlags.ResetCommandBufferBit | CommandPoolCreateFlags.TransientBit, 5);
     }
 
-    public override unsafe void Begin(GraphicsCommandListFlags flags)
+    public override unsafe void Begin(GpuCommandListFlags flags)
     {
         base.Begin();
 
-        CommandBufferLevel level = flags.Has(GraphicsCommandListFlags.Deferred) ?
+        CommandBufferLevel level = flags.Has(GpuCommandListFlags.Deferred) ?
             CommandBufferLevel.Secondary :
             CommandBufferLevel.Primary;
 
         CommandBufferBeginInfo beginInfo = new CommandBufferBeginInfo(StructureType.CommandBufferBeginInfo);
         beginInfo.Flags = CommandBufferUsageFlags.None;
 
-        if(flags.Has(GraphicsCommandListFlags.SingleSubmit))
+        if(flags.Has(GpuCommandListFlags.SingleSubmit))
             beginInfo.Flags |= CommandBufferUsageFlags.OneTimeSubmitBit;
 
         _cmd = _poolFrame.Allocate(level, Device.Frame.BranchCount, flags);
@@ -71,13 +71,13 @@ public unsafe class GraphicsQueueVK : GraphicsQueue<DeviceVK>
         _vk.BeginCommandBuffer(_cmd, &beginInfo);
     }
 
-    public override GraphicsCommandList End()
+    public override GpuCommandList End()
     {
         base.End();
 
         _vk.EndCommandBuffer(_cmd);
 
-        if (_cmd.Flags.Has(GraphicsCommandListFlags.Deferred))
+        if (_cmd.Flags.Has(GpuCommandListFlags.Deferred))
             return _cmd;
 
         // Use empty fence handle if the CPU doesn't need to wait for the command list to finish.
@@ -91,7 +91,7 @@ public unsafe class GraphicsQueueVK : GraphicsQueue<DeviceVK>
     }
 
     /// <inheritdoc/>
-    public override unsafe void Execute(GraphicsCommandList list)
+    public override unsafe void Execute(GpuCommandList list)
     {
         CommandListVK vkList = list as CommandListVK;
         if (vkList.Level != CommandBufferLevel.Secondary)
@@ -102,7 +102,7 @@ public unsafe class GraphicsQueueVK : GraphicsQueue<DeviceVK>
     }
 
     /// <inheritdoc/>
-    public override unsafe void Sync(GraphicsCommandListFlags flags = GraphicsCommandListFlags.None)
+    public override unsafe void Sync(GpuCommandListFlags flags = GpuCommandListFlags.None)
     {
         if (_cmd.Level != CommandBufferLevel.Primary)
         {
@@ -110,7 +110,7 @@ public unsafe class GraphicsQueueVK : GraphicsQueue<DeviceVK>
         }
         else
         {
-            if (flags.Has(GraphicsCommandListFlags.Deferred))
+            if (flags.Has(GpuCommandListFlags.Deferred))
                 throw new InvalidOperationException($"An immediate/primary command list branch cannot use deferred flag during Sync() calls.");
         }
 
@@ -167,7 +167,7 @@ public unsafe class GraphicsQueueVK : GraphicsQueue<DeviceVK>
         throw new NotImplementedException();
     }
 
-    protected override void GenerateMipMaps(GraphicsResource texture)
+    protected override void GenerateMipMaps(GpuResource texture)
     {
         throw new NotImplementedException();
     }
@@ -271,22 +271,22 @@ public unsafe class GraphicsQueueVK : GraphicsQueue<DeviceVK>
         EngineUtil.Free(ref ptrString);
     }
 
-    protected override unsafe ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, GraphicsMapType mapType)
+    protected override unsafe GpuResourceMap GetResourcePtr(GpuResource resource, uint subresource, GpuMapType mapType)
     {
         ResourceHandleVK handle = (ResourceHandleVK)resource.Handle;
-        if (mapType == GraphicsMapType.Discard)
+        if (mapType == GpuMapType.Discard)
             handle.Discard();
 
-        ResourceMap map = new ResourceMap(null, (uint)resource.SizeInBytes, (uint)resource.SizeInBytes); // TODO Calculate correct RowPitch value when mapping textures
+        GpuResourceMap map = new GpuResourceMap(null, (uint)resource.SizeInBytes, (uint)resource.SizeInBytes); // TODO Calculate correct RowPitch value when mapping textures
         Result r = _vk.MapMemory(_device, handle.Memory, 0, resource.SizeInBytes, 0, &map.Ptr);
 
         if (!r.Check(_device))
-            return new ResourceMap();
+            return new GpuResourceMap();
 
         return map;
     }
 
-    protected override unsafe void OnUnmapResource(GraphicsResource resource, uint subresource)
+    protected override unsafe void OnUnmapResource(GpuResource resource, uint subresource)
     {
         // TODO unmap isn't actually needed in certain circumstances. If the mapped memory will be re-populated every frame (e.g. uniform buffer)
         //      we can permenantly leave the memory mapped via vkMapMemory().
@@ -294,7 +294,7 @@ public unsafe class GraphicsQueueVK : GraphicsQueue<DeviceVK>
         _vk.UnmapMemory(_device, (((ResourceHandleVK)resource.Handle).Memory));
     }
 
-    protected override unsafe void UpdateResource(GraphicsResource resource, uint subresource, ResourceRegion? region, void* ptrData, uint rowPitch, uint slicePitch)
+    protected override unsafe void UpdateResource(GpuResource resource, uint subresource, ResourceRegion? region, void* ptrData, uint rowPitch, uint slicePitch)
     {
         ResourceHandleVK handle = (ResourceHandleVK)resource.Handle;
 
@@ -303,20 +303,20 @@ public unsafe class GraphicsQueueVK : GraphicsQueue<DeviceVK>
         {
             // TODO set the offset to match the provided region, writing row-by-row based on the rowPitch.
 
-            using (GraphicsStream stream = MapResource(resource, subresource, 0, GraphicsMapType.Write))
+            using (GpuStream stream = MapResource(resource, subresource, 0, GpuMapType.Write))
                 stream.WriteRange(ptrData, slicePitch);
         }
         else
         {
             // Use a staging buffer to transfer the data to the provided resource instead.
-            using (GraphicsStream stream = MapResource(Device.Frame.StagingBuffer, 0, 0, GraphicsMapType.Write))
+            using (GpuStream stream = MapResource(Device.Frame.StagingBuffer, 0, 0, GpuMapType.Write))
                 stream.WriteRange(ptrData, slicePitch);
 
             CopyResource(Device.Frame.StagingBuffer, resource);
         }
     }
 
-    protected override unsafe void CopyResource(GraphicsResource src, GraphicsResource dest)
+    protected override unsafe void CopyResource(GpuResource src, GpuResource dest)
     {
         if (src is BufferVK srcBuffer)
         {
@@ -386,17 +386,17 @@ public unsafe class GraphicsQueueVK : GraphicsQueue<DeviceVK>
         }
     }
 
-    public override unsafe void CopyResourceRegion(GraphicsResource source, uint srcSubresource, ResourceRegion? sourceRegion, GraphicsResource dest, uint destSubresource, Vector3UI destStart)
+    public override unsafe void CopyResourceRegion(GpuResource source, uint srcSubresource, ResourceRegion? sourceRegion, GpuResource dest, uint destSubresource, Vector3UI destStart)
     {
         throw new NotImplementedException();
     }
 
-    protected override unsafe GraphicsBindResult DoRenderPass(ShaderPass hlslPass, QueueValidationMode mode, Action callback)
+    protected override unsafe GpuBindResult DoRenderPass(ShaderPass hlslPass, QueueValidationMode mode, Action callback)
     {
         ShaderPassVK pass = hlslPass as ShaderPassVK;
-        GraphicsBindResult vResult = Validate(mode);
+        GpuBindResult vResult = Validate(mode);
 
-        if (vResult != GraphicsBindResult.Successful)
+        if (vResult != GpuBindResult.Successful)
             return vResult;
 
         DepthSurfaceVK depthSurface = State.DepthSurface.Value as DepthSurfaceVK;
@@ -464,14 +464,14 @@ public unsafe class GraphicsQueueVK : GraphicsQueue<DeviceVK>
                 iBuffer = *vkIndexBuffer.Handle.NativePtr;
                 switch (vkIndexBuffer.ResourceFormat)
                 {
-                    case GraphicsFormat.R16_UInt:
+                    case GpuResourceFormat.R16_UInt:
                         iType = IndexType.Uint16;
                         break;
-                    case GraphicsFormat.R32_UInt:
+                    case GpuResourceFormat.R32_UInt:
                         iType = IndexType.Uint32;
                         break;
 
-                    case GraphicsFormat.R8_UInt:
+                    case GpuResourceFormat.R8_UInt:
                         iType = IndexType.Uint8Ext;
                         break;
 
@@ -511,10 +511,10 @@ public unsafe class GraphicsQueueVK : GraphicsQueue<DeviceVK>
             EndEvent();
         }
 
-        return GraphicsBindResult.Successful;
+        return GpuBindResult.Successful;
     }
 
-    protected override GraphicsBindResult DoComputePass(ShaderPass hlslPass)
+    protected override GpuBindResult DoComputePass(ShaderPass hlslPass)
     {
         ShaderPassVK pass = hlslPass as ShaderPassVK;
         Vector3UI groups = DrawInfo.Custom.ComputeGroups;
@@ -530,8 +530,8 @@ public unsafe class GraphicsQueueVK : GraphicsQueue<DeviceVK>
 
         DrawInfo.ComputeGroups = groups;
 
-        GraphicsBindResult vResult = Validate(QueueValidationMode.Compute);
-        if (vResult != GraphicsBindResult.Successful)
+        GpuBindResult vResult = Validate(QueueValidationMode.Compute);
+        if (vResult != GpuBindResult.Successful)
             return vResult;
 
         // Re-render the same pass for K iterations.
@@ -551,39 +551,39 @@ public unsafe class GraphicsQueueVK : GraphicsQueue<DeviceVK>
         }
 
         pass.InvokeCompleted(DrawInfo.Custom);
-        return GraphicsBindResult.Successful;
+        return GpuBindResult.Successful;
     }
 
-    public override GraphicsBindResult Draw(Shader shader, uint vertexCount, uint vertexStartIndex = 0)
+    public override GpuBindResult Draw(Shader shader, uint vertexCount, uint vertexStartIndex = 0)
     {
         return ApplyState(shader, QueueValidationMode.Unindexed, () => 
             _vk.CmdDraw(_cmd, vertexCount, 1, vertexStartIndex, 0));
     }
 
-    public override GraphicsBindResult DrawInstanced(Shader shader, uint vertexCountPerInstance, uint instanceCount, uint vertexStartIndex = 0, uint instanceStartIndex = 0)
+    public override GpuBindResult DrawInstanced(Shader shader, uint vertexCountPerInstance, uint instanceCount, uint vertexStartIndex = 0, uint instanceStartIndex = 0)
     {
         return ApplyState(shader, QueueValidationMode.Instanced, () =>
             _vk.CmdDraw(_cmd, vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex));
     }
 
-    public override GraphicsBindResult DrawIndexed(Shader shader, uint indexCount, int vertexIndexOffset = 0, uint startIndex = 0)
+    public override GpuBindResult DrawIndexed(Shader shader, uint indexCount, int vertexIndexOffset = 0, uint startIndex = 0)
     {
         return ApplyState(shader, QueueValidationMode.Indexed, () => 
             _vk.CmdDrawIndexed(_cmd, indexCount, 1, startIndex, vertexIndexOffset, 0));
     }
 
-    public override GraphicsBindResult DrawIndexedInstanced(Shader shader, uint indexCountPerInstance, uint instanceCount, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
+    public override GpuBindResult DrawIndexedInstanced(Shader shader, uint indexCountPerInstance, uint instanceCount, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
     {
         return ApplyState(shader, QueueValidationMode.InstancedIndexed, () => 
             _vk.CmdDrawIndexed(_cmd, indexCountPerInstance, instanceCount, startIndex, vertexIndexOffset, instanceStartIndex));
     }
 
-    public override GraphicsBindResult Dispatch(Shader shader, Vector3UI groups)
+    public override GpuBindResult Dispatch(Shader shader, Vector3UI groups)
     {
         return ApplyState(shader, QueueValidationMode.Compute, null);
     }
 
-    protected override GraphicsBindResult CheckInstancing()
+    protected override GpuBindResult CheckInstancing()
     {
         throw new NotImplementedException();
     }
@@ -617,5 +617,5 @@ public unsafe class GraphicsQueueVK : GraphicsQueue<DeviceVK>
     /// <summary>
     /// Gets the current command list, if any.
     /// </summary>
-    protected override GraphicsCommandList Cmd => _cmd;
+    protected override GpuCommandList Cmd => _cmd;
 }

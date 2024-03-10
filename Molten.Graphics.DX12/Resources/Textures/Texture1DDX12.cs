@@ -7,8 +7,8 @@ public class Texture1DDX12 : TextureDX12, ITexture1D
     public Texture1DDX12(
         DeviceDX12 device,
         uint width,
-        GraphicsResourceFlags flags,
-        GraphicsFormat format = GraphicsFormat.R8G8B8A8_UNorm,
+        GpuResourceFlags flags,
+        GpuResourceFormat format = GpuResourceFormat.R8G8B8A8_UNorm,
         uint mipCount = 1,
         uint arraySize = 1,
         string name = null,

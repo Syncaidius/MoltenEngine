@@ -13,44 +13,44 @@ public enum DepthFormat : byte
 
 public static class DepthFormatExtensions
 {
-    public static GraphicsFormat ToSRVFormat(this DepthFormat format)
+    public static GpuResourceFormat ToSRVFormat(this DepthFormat format)
     {
         return format switch
         {
-            DepthFormat.R32 => GraphicsFormat.R32_Float,
-            DepthFormat.R16 => GraphicsFormat.R16_Float,
-            DepthFormat.R32G8X24 => GraphicsFormat.R32_Float_X8X24_Typeless,
-            _ => GraphicsFormat.R24_UNorm_X8_Typeless,
+            DepthFormat.R32 => GpuResourceFormat.R32_Float,
+            DepthFormat.R16 => GpuResourceFormat.R16_Float,
+            DepthFormat.R32G8X24 => GpuResourceFormat.R32_Float_X8X24_Typeless,
+            _ => GpuResourceFormat.R24_UNorm_X8_Typeless,
         };
     }
 
-    public static GraphicsFormat ToGraphicsFormat(this DepthFormat format)
+    public static GpuResourceFormat ToGraphicsFormat(this DepthFormat format)
     {
         return format switch
         {
-            DepthFormat.R32 => GraphicsFormat.R32_Typeless,
-            DepthFormat.R16 => GraphicsFormat.R16_Typeless,
-            DepthFormat.R32G8X24 => GraphicsFormat.R32G8X24_Typeless,
-            _ => GraphicsFormat.R24G8_Typeless,
+            DepthFormat.R32 => GpuResourceFormat.R32_Typeless,
+            DepthFormat.R16 => GpuResourceFormat.R16_Typeless,
+            DepthFormat.R32G8X24 => GpuResourceFormat.R32G8X24_Typeless,
+            _ => GpuResourceFormat.R24G8_Typeless,
         };
     }
 
-    public static GraphicsFormat ToDepthViewFormat(this DepthFormat format)
+    public static GpuResourceFormat ToDepthViewFormat(this DepthFormat format)
     {
         switch (format)
         {
             default:
             case DepthFormat.R24G8:
-                return GraphicsFormat.D24_UNorm_S8_UInt;
+                return GpuResourceFormat.D24_UNorm_S8_UInt;
 
             case DepthFormat.R32:
-                return GraphicsFormat.D32_Float;
+                return GpuResourceFormat.D32_Float;
 
             case DepthFormat.R16:
-                return GraphicsFormat.R16_Float;
+                return GpuResourceFormat.R16_Float;
 
             case DepthFormat.R32G8X24:
-                return GraphicsFormat.R32_Float_X8X24_Typeless;
+                return GpuResourceFormat.R32_Float_X8X24_Typeless;
         }
     }
 

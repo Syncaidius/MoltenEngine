@@ -2,7 +2,7 @@
 
 /// <summary>Represents a 1D texture, while also acting as the base for all other texture implementations.</summary>
 /// <seealso cref="IDisposable" />
-public interface ITexture : IGraphicsResource
+public interface ITexture : IGpuResource
 {
     /// <summary>
     /// Occurs after the <see cref="ITexture"/> is done resizing. Executed by the renderer thread it is bound to.
@@ -14,7 +14,7 @@ public interface ITexture : IGraphicsResource
     /// </summary>
     /// <param name="priority"></param>
     /// <param name="completeCallback"></param>
-    void GenerateMipMaps(GraphicsPriority priority, GraphicsTask.EventHandler completeCallback = null);
+    void GenerateMipMaps(GpuPriority priority, GraphicsTask.EventHandler completeCallback = null);
 
     /// <summary>Copies data fom the provided <see cref="TextureData"/> instance into the current texture.</summary>
     /// <param name="priority">The priority of the operation.</param>
@@ -26,7 +26,7 @@ public interface ITexture : IGraphicsResource
     /// <param name="destMipIndex">The mip-map index within the current texture to start copying to.</param>
     /// <param name="destArraySlice">The array slice index within the current texture to start copying to.</param>
     /// <param name="completeCallback">A callback to run once the operation has completed.</param>
-    void SetData(GraphicsPriority priority, TextureData data, uint srcMipIndex, uint srcArraySlice,
+    void SetData(GpuPriority priority, TextureData data, uint srcMipIndex, uint srcArraySlice,
         uint mipCount, uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0,
         GraphicsTask.EventHandler completeCallback = null);
 
@@ -39,7 +39,7 @@ public interface ITexture : IGraphicsResource
     /// <param name="count">The number of elements to copy from the provided data array.</param>
     /// <param name="arraySlice">The position in the texture array to start copying the texture data to. For a non-array texture, this should be 0.</param>
     /// <param name="completeCallback">A callback to run once the operation has completed.</param>
-    void SetData<T>(GraphicsPriority priority, uint level, T[] data, uint startIndex,
+    void SetData<T>(GpuPriority priority, uint level, T[] data, uint startIndex,
         uint count, uint pitch, uint arraySlice = 0,
         GraphicsTask.EventHandler completeCallback = null) where T : unmanaged;
 
@@ -49,7 +49,7 @@ public interface ITexture : IGraphicsResource
     /// <param name="mipLevel">The mip-map level at which to start copying to within the texture.</param>
     /// <param name="arraySlice">The position in the texture array to start copying the texture data to. For a non-array texture, this should be 0.</param>
     /// <param name="completeCallback">A callback to run once the operation has completed.</param>
-    void SetData(GraphicsPriority priority, TextureSlice data, uint mipLevel, uint arraySlice, GraphicsTask.EventHandler completeCallback = null);
+    void SetData(GpuPriority priority, TextureSlice data, uint mipLevel, uint arraySlice, GraphicsTask.EventHandler completeCallback = null);
 
     /// <summary>
     /// 
@@ -62,19 +62,19 @@ public interface ITexture : IGraphicsResource
     /// <param name="level"></param>
     /// <param name="arrayIndex"></param>
     /// <param name="completeCallback">A callback to run once the operation has completed.</param>
-    void SetData<T>(GraphicsPriority priority, ResourceRegion area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0, GraphicsTask.EventHandler completeCallback = null) where T : unmanaged;
+    void SetData<T>(GpuPriority priority, ResourceRegion area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0, GraphicsTask.EventHandler completeCallback = null) where T : unmanaged;
 
     /// <summary>Returns the data contained within a texture via a staging texture or directly from the texture itself if possible.</summary>
     /// <param name="priority">The priority of the operation.</param>
     /// <param name="callback">The callback for when the data retrieval is completed.</param>
-    void GetData(GraphicsPriority priority, Action<TextureData> callback = null);
+    void GetData(GpuPriority priority, Action<TextureData> callback = null);
 
     /// <summary>Returns the data from a single mip-map level within a slice of the texture. For 2D, non-array textures, this will always be slice 0.</summary>
     /// <param name="priority">The priority of the operation.</param>
     /// <param name="level">The mip-map level to retrieve.</param>
     /// <param name="arrayIndex">The array slice/index to access.</param>
     /// <param name="callback">The callback for when the data retrieval is completed.</param>
-    void GetData(GraphicsPriority priority, uint level, uint arrayIndex, Action<TextureSlice> callback = null);
+    void GetData(GpuPriority priority, uint level, uint arrayIndex, Action<TextureSlice> callback = null);
 
     /// <summary>Gets the width of the texture.</summary>
     uint Width { get; }

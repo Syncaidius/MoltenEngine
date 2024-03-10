@@ -16,7 +16,7 @@ internal unsafe class PipelineInputLayoutDX12 : GraphicsObject<DeviceDX12>
     ShaderIOLayout _sourceLayout;
 
     internal PipelineInputLayoutDX12(DeviceDX12 device,
-        GraphicsStateValueGroup<GraphicsBuffer> vbSlots,
+        GpuStateValueGroup<GraphicsBuffer> vbSlots,
         ShaderPassDX12 pass) :
         base(device)
     {
@@ -86,7 +86,7 @@ internal unsafe class PipelineInputLayoutDX12 : GraphicsObject<DeviceDX12>
         elements.CopyTo(elementSpan);
     }
 
-    public bool IsMatch(GraphicsStateValueGroup<GraphicsBuffer> grp)
+    public bool IsMatch(GpuStateValueGroup<GraphicsBuffer> grp)
     {
         int lastIndex = _expectedBindings.Length - 1;
 

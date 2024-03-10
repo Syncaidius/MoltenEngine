@@ -19,7 +19,7 @@ public unsafe class RendererDX12 : RenderService
 
     public RendererDX12() { }
 
-    protected override unsafe GraphicsManager OnInitializeDisplayManager(GraphicsSettings settings)
+    protected override unsafe GpuManager OnInitializeDisplayManager(GraphicsSettings settings)
     {
         _api = D3D12.GetApi();
 
@@ -43,9 +43,9 @@ public unsafe class RendererDX12 : RenderService
         return new DeviceDX12(this, _displayManager, adapter, Builder);
     }
 
-    protected override List<GraphicsDevice> OnInitializeDevices(GraphicsSettings settings, GraphicsManager manager)
+    protected override List<GpuDevice> OnInitializeDevices(GraphicsSettings settings, GpuManager manager)
     {
-        List<GraphicsDevice> result = new List<GraphicsDevice>();
+        List<GpuDevice> result = new List<GpuDevice>();
       
         // Initialize the primary device
         NativeDevice = _displayManager.PrimaryDevice as DeviceDX12;
@@ -53,12 +53,12 @@ public unsafe class RendererDX12 : RenderService
         result.Add(NativeDevice);
 
         // Initialize all secondary devices
-        foreach(GraphicsDevice device in _displayManager.Devices)
+        foreach(GpuDevice device in _displayManager.Devices)
         {
             DeviceDX12 dxDevice = device as DeviceDX12;
             if (dxDevice == NativeDevice ||
-                dxDevice.Type == GraphicsDeviceType.Cpu ||
-                dxDevice.Type == GraphicsDeviceType.Other)
+                dxDevice.Type == GpuDeviceType.Cpu ||
+                dxDevice.Type == GpuDeviceType.Other)
                 continue;
 
             if(dxDevice.Initialize())

@@ -42,7 +42,7 @@ public class GraphicsSettings : SettingBank
         return backBufferSize;
     }
 
-    /// <summary>Gets or sets the UID of the <see cref="GraphicsDevice"/> that was last used.</summary>
+    /// <summary>Gets or sets the UID of the <see cref="GpuDevice"/> that was last used.</summary>
     [DataMember]
     public SettingValue<DeviceID> AdapterID { get; }
 

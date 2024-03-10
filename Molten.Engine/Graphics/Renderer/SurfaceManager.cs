@@ -36,12 +36,12 @@ public class SurfaceManager : IDisposable
 
     internal void Initialize(uint width, uint height)
     {
-        RegisterMainSurface(MainSurfaceType.Scene, width, height, GraphicsFormat.R8G8B8A8_UNorm);
-        RegisterMainSurface(MainSurfaceType.Normals, width, height, GraphicsFormat.R11G11B10_Float);
-        RegisterMainSurface(MainSurfaceType.Emissive, width, height, GraphicsFormat.R8G8B8A8_UNorm);
-        RegisterMainSurface(MainSurfaceType.Composition1, width, height, GraphicsFormat.R16G16B16A16_Float);
-        RegisterMainSurface(MainSurfaceType.Composition2, width, height, GraphicsFormat.R16G16B16A16_Float);
-        RegisterMainSurface(MainSurfaceType.Lighting, width, height, GraphicsFormat.R16G16B16A16_Float);
+        RegisterMainSurface(MainSurfaceType.Scene, width, height, GpuResourceFormat.R8G8B8A8_UNorm);
+        RegisterMainSurface(MainSurfaceType.Normals, width, height, GpuResourceFormat.R11G11B10_Float);
+        RegisterMainSurface(MainSurfaceType.Emissive, width, height, GpuResourceFormat.R8G8B8A8_UNorm);
+        RegisterMainSurface(MainSurfaceType.Composition1, width, height, GpuResourceFormat.R16G16B16A16_Float);
+        RegisterMainSurface(MainSurfaceType.Composition2, width, height, GpuResourceFormat.R16G16B16A16_Float);
+        RegisterMainSurface(MainSurfaceType.Lighting, width, height, GpuResourceFormat.R16G16B16A16_Float);
         _depthSurface = new DepthSurfaceTracker(_renderer.Device, _aaLevels, width, height, DepthFormat.R24G8);
     }
 
@@ -52,7 +52,7 @@ public class SurfaceManager : IDisposable
 
         if(!_firstCleared.Contains(surface))
         {
-            surface.Clear(GraphicsPriority.Immediate, color);
+            surface.Clear(GpuPriority.Immediate, color);
             _firstCleared.Add(surface);
         }
     }
@@ -66,7 +66,7 @@ public class SurfaceManager : IDisposable
         MainSurfaceType mainType,
         uint width,
         uint height,
-        GraphicsFormat format,
+        GpuResourceFormat format,
         SurfaceSizeMode sizeMode = SurfaceSizeMode.Full)
     {
         string key = mainType.ToString();
@@ -80,7 +80,7 @@ public class SurfaceManager : IDisposable
         _depthSurface.RefreshSize(requiredWidth, requiredHeight);
     }
 
-    internal SurfaceTracker RegisterSurface(string key, uint width, uint height, GraphicsFormat format, SurfaceSizeMode sizeMode = SurfaceSizeMode.Full)
+    internal SurfaceTracker RegisterSurface(string key, uint width, uint height, GpuResourceFormat format, SurfaceSizeMode sizeMode = SurfaceSizeMode.Full)
     {
         key = key.ToLower();
         if (!_surfacesByKey.TryGetValue(key, out SurfaceTracker config))

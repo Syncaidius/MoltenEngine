@@ -9,7 +9,7 @@ public class SpriteRenderer : Renderable
 
     public Action<SpriteBatcher> Callback { get; set; }
 
-    protected override void OnRender(GraphicsQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
+    protected override void OnRender(GpuCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
     {
         Callback?.Invoke(renderer.SpriteBatch);
         renderer.SpriteBatch.Flush(cmd, camera, data);

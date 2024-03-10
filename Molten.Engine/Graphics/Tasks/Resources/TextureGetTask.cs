@@ -6,12 +6,12 @@ internal class TextureGetTask : GraphicsResourceTask<GraphicsTexture>
 {
     public Action<TextureData> OnGetData;
 
-    public GraphicsMapType MapType;
+    public GpuMapType MapType;
 
     public override void ClearForPool()
     {
         OnGetData = null;
-        MapType = GraphicsMapType.Read;
+        MapType = GpuMapType.Read;
     }
 
     public override bool Validate()
@@ -19,7 +19,7 @@ internal class TextureGetTask : GraphicsResourceTask<GraphicsTexture>
         return true;
     }
 
-    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
     {
         TextureData data = new TextureData(Resource.Width, Resource.Height, Resource.Depth, Resource.MipMapCount, Resource.ArraySize)
         {

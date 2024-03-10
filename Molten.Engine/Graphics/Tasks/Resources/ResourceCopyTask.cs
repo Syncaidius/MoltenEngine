@@ -1,8 +1,8 @@
 ﻿namespace Molten.Graphics;
 
-public class ResourceCopyTask : GraphicsResourceTask<GraphicsResource>
+public class ResourceCopyTask : GraphicsResourceTask<GpuResource>
 {
-    public GraphicsResource Destination;
+    public GpuResource Destination;
 
     public override void ClearForPool()
     {
@@ -14,7 +14,7 @@ public class ResourceCopyTask : GraphicsResourceTask<GraphicsResource>
         return true;
     }
 
-    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
     {
         if (Resource is GraphicsBuffer buffer && buffer.BufferType == GraphicsBufferType.Staging)
             Resource.Apply(queue);

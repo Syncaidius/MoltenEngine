@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics;
 
-public abstract class GraphicsBuffer : GraphicsResource
+public abstract class GraphicsBuffer : GpuResource
 {
     List<GraphicsBuffer> _allocations;
     List<GraphicsBuffer> _freeAllocations;
@@ -8,18 +8,18 @@ public abstract class GraphicsBuffer : GraphicsResource
     /// <summary>
     /// Creates a new instance of <see cref="GraphicsBuffer"/>.
     /// </summary>
-    /// <param name="device">The <see cref="GraphicsDevice"/> that the buffer is bound to.</param>
+    /// <param name="device">The <see cref="GpuDevice"/> that the buffer is bound to.</param>
     /// <param name="stride">The number of bytes per buffer element, in bytes.</param>
     /// <param name="numElements">The number of elements in the buffer.</param>
     /// <param name="flags">Resource flags which define how the buffer can be used.</param>
     /// <param name="type">The type of buffer.</param>
     /// <param name="alignment">The alignment of the buffer, in bytes.</param>
-    protected GraphicsBuffer(GraphicsDevice device, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type, uint alignment) :
+    protected GraphicsBuffer(GpuDevice device, uint stride, ulong numElements, GpuResourceFlags flags, GraphicsBufferType type, uint alignment) :
         base(device, flags)
     {
         _allocations = new List<GraphicsBuffer>();
         _freeAllocations = new List<GraphicsBuffer>();
-        ResourceFormat = GraphicsFormat.Unknown;
+        ResourceFormat = GpuResourceFormat.Unknown;
         BufferType = type;
         Stride = stride;
         ElementCount = numElements;
@@ -36,7 +36,7 @@ public abstract class GraphicsBuffer : GraphicsResource
     /// <param name="flags"></param>
     /// <param name="type"></param>
     /// <returns></returns>
-    public GraphicsBuffer Allocate(uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type, uint alignment = 1)
+    public GraphicsBuffer Allocate(uint stride, ulong numElements, GpuResourceFlags flags, GraphicsBufferType type, uint alignment = 1)
     {
         ulong required = stride * numElements;
         ulong alignedOffset = EngineUtil.Align(Offset + AllocatedBytes, alignment);
@@ -84,7 +84,7 @@ public abstract class GraphicsBuffer : GraphicsResource
     /// <param name="flags"></param>
     /// <param name="type"></param>
     /// <returns></returns>
-    public GraphicsBuffer Allocate(ulong numBytes, GraphicsResourceFlags flags, GraphicsBufferType type, uint alignment = 1)
+    public GraphicsBuffer Allocate(ulong numBytes, GpuResourceFlags flags, GraphicsBufferType type, uint alignment = 1)
     {
         return Allocate(1, numBytes, flags, type, alignment);
     }
@@ -136,7 +136,7 @@ public abstract class GraphicsBuffer : GraphicsResource
     /// <param name="type"></param>
     /// <param name="alignment"></param>
     /// <returns></returns>
-    protected abstract GraphicsBuffer OnAllocateSubBuffer(ulong offset, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type, uint alignment);
+    protected abstract GraphicsBuffer OnAllocateSubBuffer(ulong offset, uint stride, ulong numElements, GpuResourceFlags flags, GraphicsBufferType type, uint alignment);
 
     /// <summary>
     /// 
@@ -146,7 +146,7 @@ public abstract class GraphicsBuffer : GraphicsResource
     /// <param name="data"></param>
     /// <param name="discard">Discard the data currently in the buffer and allocate fresh memory for the provided data.</param>
     /// <param name="completeCallback"></param>
-    public void SetData<T>(GraphicsPriority priority, T[] data, bool discard, GraphicsTask.EventHandler completeCallback = null)
+    public void SetData<T>(GpuPriority priority, T[] data, bool discard, GraphicsTask.EventHandler completeCallback = null)
         where T : unmanaged
     {
         SetData(priority, data, 0, (uint)data.Length, discard, 0, completeCallback);
@@ -163,7 +163,7 @@ public abstract class GraphicsBuffer : GraphicsResource
     /// <param name="byteOffset">The start location within the buffer to start copying from, in bytes.</param>
     /// <param name="completeCallback"></param>
     /// <param name="discard">If true, the previous data will be discarded. Ignored if not applicable to the current buffer.</param>
-    public void SetData<T>(GraphicsPriority priority, T[] data, uint startIndex, uint elementCount, bool discard, uint byteOffset = 0, 
+    public void SetData<T>(GpuPriority priority, T[] data, uint startIndex, uint elementCount, bool discard, uint byteOffset = 0, 
         GraphicsTask.EventHandler completeCallback = null)
         where T : unmanaged
     {
@@ -171,11 +171,11 @@ public abstract class GraphicsBuffer : GraphicsResource
         op.ByteOffset = Offset + byteOffset;
         op.OnCompleted += completeCallback;
         op.DestBuffer = this;
-        op.MapType = discard ? GraphicsMapType.Discard : GraphicsMapType.Write;
+        op.MapType = discard ? GpuMapType.Discard : GpuMapType.Write;
         op.ElementCount = elementCount;
 
         // Custom handling of immediate command, so that we potentially avoid a data copy.
-        if (priority == GraphicsPriority.Immediate)
+        if (priority == GpuPriority.Immediate)
         {
             op.Data = data;
             op.DataStartIndex = startIndex;
@@ -199,11 +199,11 @@ public abstract class GraphicsBuffer : GraphicsResource
     /// <param name="count">The number of elements to retrieve</param>
     /// <param name="byteOffset">The start location within the buffer to start copying from, in bytes.</param>
     /// <param name="completionCallback">A callback to run once the operation is completed.</param>
-    public void GetData<T>(GraphicsPriority priority, T[] destination, uint startIndex, uint count, uint byteOffset, Action<T[]> completionCallback = null)
+    public void GetData<T>(GpuPriority priority, T[] destination, uint startIndex, uint count, uint byteOffset, Action<T[]> completionCallback = null)
         where T : unmanaged
     {
-        if (!Flags.Has(GraphicsResourceFlags.CpuRead))
-            throw new GraphicsResourceException(this, "Cannot use GetData() on a non-readable buffer.");
+        if (!Flags.Has(GpuResourceFlags.CpuRead))
+            throw new GpuResourceException(this, "Cannot use GetData() on a non-readable buffer.");
 
         if (destination.Length < count)
             throw new ArgumentException("The provided destination array is not large enough.");
@@ -213,7 +213,7 @@ public abstract class GraphicsBuffer : GraphicsResource
         task.Count = count;
         task.DestArray = destination;
         task.DestIndex = startIndex;
-        task.MapType = GraphicsMapType.Read;
+        task.MapType = GpuMapType.Read;
         task.OnGetData += completionCallback;
         Device.Tasks.Push(priority, this, task);
     }

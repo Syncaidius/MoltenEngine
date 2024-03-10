@@ -2,11 +2,11 @@
 
 namespace Molten.Graphics.Vulkan;
 
-public unsafe abstract class ResourceHandleVK : GraphicsResourceHandle
+public unsafe abstract class ResourceHandleVK : GpuResourceHandle
 {
     bool _disposed;
 
-    protected ResourceHandleVK(GraphicsResource resource) : base(resource)
+    protected ResourceHandleVK(GpuResource resource) : base(resource)
     {
         Device = resource.Device as DeviceVK;
     }
@@ -52,7 +52,7 @@ public unsafe class ResourceHandleVK<T, SH> : ResourceHandleVK
     int _subIndex;
     SH _sub;
 
-    internal ResourceHandleVK(GraphicsResource resource, bool allocate, DiscardCallback discardCallback) :
+    internal ResourceHandleVK(GpuResource resource, bool allocate, DiscardCallback discardCallback) :
         base(resource)
     {
         _subHandles = new List<SH>();

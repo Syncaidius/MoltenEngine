@@ -22,7 +22,7 @@ public class DepthSurfaceDX12 : Texture2DDX12, IDepthStencilSurface
     internal DepthSurfaceDX12(DeviceDX12 device,
         uint width,
         uint height,
-        GraphicsResourceFlags flags = GraphicsResourceFlags.GpuWrite,
+        GpuResourceFlags flags = GpuResourceFlags.GpuWrite,
         DepthFormat format = DepthFormat.R24G8,
         uint mipCount = 1,
         uint arraySize = 1,
@@ -73,12 +73,12 @@ public class DepthSurfaceDX12 : Texture2DDX12, IDepthStencilSurface
         Viewport = new ViewportF(0, 0, Desc.Width, Desc.Height);
     }
 
-    public void Clear(GraphicsPriority priority, DepthClearFlags flags, float depthValue = 1, byte stencilValue = 0)
+    public void Clear(GpuPriority priority, DepthClearFlags flags, float depthValue = 1, byte stencilValue = 0)
     {
-        if (priority == GraphicsPriority.Immediate)
+        if (priority == GpuPriority.Immediate)
         {
             Apply(Device.Queue);
-            Device.Queue.Clear(this, depthValue, stencilValue);
+            Device.Queue.Clear(this, depthValue, stencilValue, flags);
         }
         else
         {

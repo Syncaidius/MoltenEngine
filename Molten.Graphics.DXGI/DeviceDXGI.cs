@@ -3,7 +3,7 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics.Dxgi;
 
-public abstract unsafe class DeviceDXGI : GraphicsDevice
+public abstract unsafe class DeviceDXGI : GpuDevice
 {
     /// <summary>Gets the native DXGI adapter that this instance represents.</summary>
     public IDXGIAdapter4* _adapter;
@@ -15,7 +15,7 @@ public abstract unsafe class DeviceDXGI : GraphicsDevice
         base(renderer, manager)
     {
         _adapter = adapter;
-        Capabilities = new GraphicsCapabilities();
+        Capabilities = new GpuCapabilities();
 
         AdapterDesc3 desc = new AdapterDesc3();
         _adapterDesc = desc;
@@ -56,18 +56,18 @@ public abstract unsafe class DeviceDXGI : GraphicsDevice
         }
     }
 
-    private GraphicsDeviceType GetAdapterType(GraphicsCapabilities cap, AdapterFlag3 flags)
+    private GpuDeviceType GetAdapterType(GpuCapabilities cap, AdapterFlag3 flags)
     {
         if ((flags & AdapterFlag3.Software) == AdapterFlag3.Software)
-            return GraphicsDeviceType.Cpu;
+            return GpuDeviceType.Cpu;
 
         if (cap.DedicatedVideoMemory > 0)
-            return GraphicsDeviceType.DiscreteGpu;
+            return GpuDeviceType.DiscreteGpu;
 
         if (cap.DedicatedSystemMemory > 0 || cap.SharedSystemMemory > 0)
-            return GraphicsDeviceType.IntegratedGpu;
+            return GpuDeviceType.IntegratedGpu;
 
-        return GraphicsDeviceType.Other;
+        return GpuDeviceType.Other;
     }
 
     public override void AddActiveOutput(IDisplayOutput output)
@@ -111,7 +111,7 @@ public abstract unsafe class DeviceDXGI : GraphicsDevice
     public override DeviceVendor Vendor { get;  }
 
     /// <inheritdoc/>
-    public override GraphicsDeviceType Type { get; }
+    public override GpuDeviceType Type { get; }
 
     internal ref readonly AdapterDesc3 Description => ref _adapterDesc;
 

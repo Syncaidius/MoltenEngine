@@ -2,20 +2,20 @@
 
 public abstract class ShaderResourceVariable : ShaderVariable
 {
-    GraphicsResource _resource;
-    GraphicsResource _default;
+    GpuResource _resource;
+    GpuResource _default;
 
-    protected abstract bool ValidateResource(GraphicsResource value);
+    protected abstract bool ValidateResource(GpuResource value);
 
-    private void SetResource(ref GraphicsResource dest, object value, string logKey)
+    private void SetResource(ref GpuResource dest, object value, string logKey)
     {
         if (dest != value)
         {
             if (value != null)
             {
-                if (value is GraphicsResource res && ValidateResource(res))
+                if (value is GpuResource res && ValidateResource(res))
                 {
-                    if (ExpectedFormat != GraphicsFormat.Unknown && res.ResourceFormat != ExpectedFormat)
+                    if (ExpectedFormat != GpuResourceFormat.Unknown && res.ResourceFormat != ExpectedFormat)
                     {
                         Parent.Device.Log.Error($"Resource ({logKey}) format mismatch on '{Name}' of '{Parent.Name}':");
                         Parent.Device.Log.Error($"\tResource: {res.Name}");
@@ -40,7 +40,7 @@ public abstract class ShaderResourceVariable : ShaderVariable
     }
 
     /// <summary>Gets the resource bound to the variable.</summary>
-    public GraphicsResource Resource => _resource ?? _default;
+    public GpuResource Resource => _resource ?? _default;
 
     /// <summary>
     /// Gets or sets the value of the resource variable.
@@ -63,7 +63,7 @@ public abstract class ShaderResourceVariable : ShaderVariable
     /// <summary>
     /// Gets the expected format of the <see cref="Value"/> resource.
     /// </summary>
-    public GraphicsFormat ExpectedFormat { get; internal set; }
+    public GpuResourceFormat ExpectedFormat { get; internal set; }
 }
 
 /// <summary>
@@ -72,7 +72,7 @@ public abstract class ShaderResourceVariable : ShaderVariable
 /// <typeparam name="T"></typeparam>
 public class ShaderResourceVariable<T> : ShaderResourceVariable
 {
-    protected override sealed bool ValidateResource(GraphicsResource value)
+    protected override sealed bool ValidateResource(GpuResource value)
     {
         return value is T;
     }

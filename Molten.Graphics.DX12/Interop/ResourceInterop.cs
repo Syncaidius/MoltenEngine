@@ -4,20 +4,20 @@ namespace Molten.Graphics.DX12;
 
 internal static class ResourceInterop
 {
-    internal static ResourceFlags ToResourceFlags(this GraphicsResourceFlags flags)
+    internal static ResourceFlags ToResourceFlags(this GpuResourceFlags flags)
     {
         ResourceFlags result = 0;
 
-        if (flags.Has(GraphicsResourceFlags.UnorderedAccess))
+        if (flags.Has(GpuResourceFlags.UnorderedAccess))
             result |= ResourceFlags.AllowUnorderedAccess;
 
-        if (flags.Has(GraphicsResourceFlags.DenyShaderAccess))
+        if (flags.Has(GpuResourceFlags.DenyShaderAccess))
             result |= ResourceFlags.DenyShaderResource;
 
-        if (flags.Has(GraphicsResourceFlags.SharedAccess))
+        if (flags.Has(GpuResourceFlags.SharedAccess))
             result |= ResourceFlags.AllowSimultaneousAccess;
 
-        if (flags.Has(GraphicsResourceFlags.CrossAdapter))
+        if (flags.Has(GpuResourceFlags.CrossAdapter))
             result |= ResourceFlags.AllowCrossAdapter;
 
         return result;

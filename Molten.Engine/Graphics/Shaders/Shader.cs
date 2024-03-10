@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics;
 
-public class Shader : GraphicsObject
+public class Shader : GpuObject
 {
     public static readonly ShaderBindType[] BindTypes = Enum.GetValues<ShaderBindType>();
 
@@ -27,7 +27,7 @@ public class Shader : GraphicsObject
     /// </summary>
     public string Filename { get; }
 
-    internal Shader(GraphicsDevice device, ShaderDefinition def, string filename = null) : 
+    internal Shader(GpuDevice device, ShaderDefinition def, string filename = null) : 
         base(device)
     {
         Bindings = new ShaderBindManager(this, null);
@@ -96,7 +96,7 @@ public class Shader : GraphicsObject
     /// <param name="bindSpace"></param>
     /// <param name="type">The bind type.</param>
     /// <returns></returns>
-    public IGraphicsResource this[ShaderBindType type, uint bindSlot, uint bindSpace = 0]
+    public IGpuResource this[ShaderBindType type, uint bindSlot, uint bindSpace = 0]
     {
         get
         {
@@ -121,7 +121,7 @@ public class Shader : GraphicsObject
             {
                 if (bp == points[i])
                 {
-                    points[i].Object.DefaultValue = value as GraphicsResource;
+                    points[i].Object.DefaultValue = value as GpuResource;
                     return;
                 }
             }

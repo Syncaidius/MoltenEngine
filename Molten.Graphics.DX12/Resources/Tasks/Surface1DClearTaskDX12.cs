@@ -14,7 +14,7 @@ internal class Surface1DClearTaskDX12 : GraphicsResourceTask<RenderSurface1DDX12
         return true;
     }
 
-    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
     {
         Resource.Apply(queue);
         (queue as GraphicsQueueDX12).ClearDSV(Resource, Color);

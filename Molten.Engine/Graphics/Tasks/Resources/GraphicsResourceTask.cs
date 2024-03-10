@@ -3,10 +3,10 @@
 namespace Molten.Graphics;
 
 public abstract class GraphicsResourceTask<R> : GraphicsTask
-    where R : GraphicsResource
+    where R : GpuResource
 {
     /// <summary>
-    /// The target <see cref="GraphicsResource"/>. This is set by the <see cref="RenderService"/> when the task is queued.
+    /// The target <see cref="GpuResource"/>. This is set by the <see cref="RenderService"/> when the task is queued.
     /// </summary>
     public R Resource;
 }

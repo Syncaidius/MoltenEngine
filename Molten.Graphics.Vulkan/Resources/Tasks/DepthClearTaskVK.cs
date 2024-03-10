@@ -19,7 +19,7 @@ internal class DepthClearTaskVK : GraphicsResourceTask<DepthSurfaceVK>
         return true;
     }
 
-    protected unsafe override bool OnProcess(RenderService renderer, GraphicsQueue queue)
+    protected unsafe override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
     {
         // TODO Implement proper handling of barrier transitions.
         //  -- Transition from the current layout to the one we need.
@@ -32,7 +32,7 @@ internal class DepthClearTaskVK : GraphicsResourceTask<DepthSurfaceVK>
             GraphicsQueueVK vkCmd = queue as GraphicsQueueVK;
             Resource.Apply(queue);
 
-            vkCmd.Sync(GraphicsCommandListFlags.SingleSubmit);
+            vkCmd.Sync(GpuCommandListFlags.SingleSubmit);
             Resource.Transition(vkCmd, ImageLayout.Undefined, ImageLayout.TransferDstOptimal);
 
             ImageSubresourceRange range = new ImageSubresourceRange

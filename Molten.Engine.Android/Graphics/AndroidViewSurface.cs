@@ -85,67 +85,67 @@ public class AndroidViewSurface : INativeSurface
         throw new NotImplementedException();
     }
 
-    public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight)
+    public void Resize(GpuPriority priority, uint newWidth, uint newHeight)
     {
         throw new NotImplementedException();
     }
 
-    public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight, uint newMipMapCount = 0, uint newArraySize = 0, GraphicsFormat newFormat = GraphicsFormat.Unknown)
+    public void Resize(GpuPriority priority, uint newWidth, uint newHeight, uint newMipMapCount = 0, uint newArraySize = 0, GpuResourceFormat newFormat = GpuResourceFormat.Unknown)
     {
         throw new NotImplementedException();
     }
 
-    public void Clear(GraphicsPriority priority, Color color)
+    public void Clear(GpuPriority priority, Color color)
     {
         throw new NotImplementedException();
     }
 
-    public void GenerateMipMaps(GraphicsPriority priority, Action<GraphicsResource> completeCallback = null)
+    public void GenerateMipMaps(GpuPriority priority, Action<GpuResource> completeCallback = null)
     {
         throw new NotImplementedException();
     }
 
-    public void SetData(GraphicsPriority priority, TextureData data, uint srcMipIndex, uint srcArraySlice, uint mipCount, uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0, Action<GraphicsResource> completeCallback = null)
+    public void SetData(GpuPriority priority, TextureData data, uint srcMipIndex, uint srcArraySlice, uint mipCount, uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0, Action<GpuResource> completeCallback = null)
     {
         throw new NotImplementedException();
     }
 
-    public void SetData<T>(GraphicsPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arraySlice = 0, Action<GraphicsResource> completeCallback = null) where T : unmanaged
+    public void SetData<T>(GpuPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arraySlice = 0, Action<GpuResource> completeCallback = null) where T : unmanaged
     {
         throw new NotImplementedException();
     }
 
-    public void SetData(GraphicsPriority priority, TextureSlice data, uint mipLevel, uint arraySlice, Action<GraphicsResource> completeCallback = null)
+    public void SetData(GpuPriority priority, TextureSlice data, uint mipLevel, uint arraySlice, Action<GpuResource> completeCallback = null)
     {
         throw new NotImplementedException();
     }
 
-    public void SetData<T>(GraphicsPriority priority, ResourceRegion area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0, Action<GraphicsResource> completeCallback = null) where T : unmanaged
+    public void SetData<T>(GpuPriority priority, ResourceRegion area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0, Action<GpuResource> completeCallback = null) where T : unmanaged
     {
         throw new NotImplementedException();
     }
 
-    public void GetData(GraphicsPriority priority, Action<TextureData> completeCallback = null)
+    public void GetData(GpuPriority priority, Action<TextureData> completeCallback = null)
     {
         throw new NotImplementedException();
     }
 
-    public void GetData(GraphicsPriority priority, uint level, uint arrayIndex, Action<TextureSlice> completeCallback = null)
+    public void GetData(GpuPriority priority, uint level, uint arrayIndex, Action<TextureSlice> completeCallback = null)
     {
         throw new NotImplementedException();
     }
 
-    public void CopyTo(GraphicsPriority priority, GraphicsResource destination, Action<GraphicsResource> completeCallback = null)
+    public void CopyTo(GpuPriority priority, GpuResource destination, Action<GpuResource> completeCallback = null)
     {
         throw new NotImplementedException();
     }
 
-    public void CopyTo(GraphicsPriority priority, uint sourceLevel, uint sourceSlice, GraphicsResource destination, uint destLevel, uint destSlice, Action<GraphicsResource> completeCallback = null)
+    public void CopyTo(GpuPriority priority, uint sourceLevel, uint sourceSlice, GpuResource destination, uint destLevel, uint destSlice, Action<GpuResource> completeCallback = null)
     {
         throw new NotImplementedException();
     }
 
-    public void Apply(GraphicsQueue cmd)
+    public void Apply(GpuCommandQueue cmd)
     {
         throw new NotImplementedException();
     }
@@ -160,37 +160,37 @@ public class AndroidViewSurface : INativeSurface
         throw new NotImplementedException();
     }
 
-    public void GenerateMipMaps(GraphicsPriority priority, GraphicsTask.EventHandler completeCallback = null)
+    public void GenerateMipMaps(GpuPriority priority, GraphicsTask.EventHandler completeCallback = null)
     {
         throw new NotImplementedException();
     }
 
-    public void SetData(GraphicsPriority priority, TextureData data, uint srcMipIndex, uint srcArraySlice, uint mipCount, uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0, GraphicsTask.EventHandler completeCallback = null)
+    public void SetData(GpuPriority priority, TextureData data, uint srcMipIndex, uint srcArraySlice, uint mipCount, uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0, GraphicsTask.EventHandler completeCallback = null)
     {
         throw new NotImplementedException();
     }
 
-    public void SetData<T>(GraphicsPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arraySlice = 0, GraphicsTask.EventHandler completeCallback = null) where T : unmanaged
+    public void SetData<T>(GpuPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arraySlice = 0, GraphicsTask.EventHandler completeCallback = null) where T : unmanaged
     {
         throw new NotImplementedException();
     }
 
-    public void SetData(GraphicsPriority priority, TextureSlice data, uint mipLevel, uint arraySlice, GraphicsTask.EventHandler completeCallback = null)
+    public void SetData(GpuPriority priority, TextureSlice data, uint mipLevel, uint arraySlice, GraphicsTask.EventHandler completeCallback = null)
     {
         throw new NotImplementedException();
     }
 
-    public void SetData<T>(GraphicsPriority priority, ResourceRegion area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0, GraphicsTask.EventHandler completeCallback = null) where T : unmanaged
+    public void SetData<T>(GpuPriority priority, ResourceRegion area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0, GraphicsTask.EventHandler completeCallback = null) where T : unmanaged
     {
         throw new NotImplementedException();
     }
 
-    public void CopyTo(GraphicsPriority priority, GraphicsResource destination, GraphicsTask.EventHandler completeCallback = null)
+    public void CopyTo(GpuPriority priority, GpuResource destination, GraphicsTask.EventHandler completeCallback = null)
     {
         throw new NotImplementedException();
     }
 
-    public void CopyTo(GraphicsPriority priority, uint sourceLevel, uint sourceSlice, GraphicsResource destination, uint destLevel, uint destSlice, GraphicsTask.EventHandler completeCallback = null)
+    public void CopyTo(GpuPriority priority, uint sourceLevel, uint sourceSlice, GpuResource destination, uint destLevel, uint destSlice, GraphicsTask.EventHandler completeCallback = null)
     {
         throw new NotImplementedException();
     }
@@ -224,7 +224,7 @@ public class AndroidViewSurface : INativeSurface
         set => throw new NotImplementedException();
     }
 
-    public GraphicsFormat DataFormat => throw new NotImplementedException();
+    public GpuResourceFormat DataFormat => throw new NotImplementedException();
 
     public bool IsBlockCompressed => throw new NotImplementedException();
 
@@ -248,15 +248,15 @@ public class AndroidViewSurface : INativeSurface
 
     public ViewportF Viewport => _vp;
 
-    public GraphicsDevice Device => throw new NotImplementedException();
+    public GpuDevice Device => throw new NotImplementedException();
 
     public uint Version { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     public uint LastUsedFrameID => throw new NotImplementedException();
 
-    public GraphicsResourceFlags Flags => throw new NotImplementedException();
+    public GpuResourceFlags Flags => throw new NotImplementedException();
 
-    public GraphicsFormat ResourceFormat => throw new NotImplementedException();
+    public GpuResourceFormat ResourceFormat => throw new NotImplementedException();
 
     public MSAAQuality SampleQuality => throw new NotImplementedException();
 
@@ -266,7 +266,7 @@ public class AndroidViewSurface : INativeSurface
 
     public bool IsEnabled { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-    GraphicsResourceHandle IGraphicsResource.Handle => throw new NotImplementedException();
+    GpuResourceHandle IGpuResource.Handle => throw new NotImplementedException();
 
     public ulong EOID => throw new NotImplementedException();
 

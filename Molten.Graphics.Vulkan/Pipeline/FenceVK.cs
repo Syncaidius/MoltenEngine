@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.Vulkan;
 
-internal class FenceVK : GraphicsFence
+internal class FenceVK : GpuFence
 {
     Fence _native;
     DeviceVK _device;

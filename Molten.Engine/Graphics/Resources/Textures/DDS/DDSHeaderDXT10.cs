@@ -2,7 +2,7 @@
 
 internal struct DDSHeaderDXT10
 {
-    public GraphicsFormat ImageFormat;
+    public GpuResourceFormat ImageFormat;
 
     public DDSResourceDimension Dimension;
 

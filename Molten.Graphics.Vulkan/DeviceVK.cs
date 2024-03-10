@@ -11,7 +11,7 @@ using Semaphore = Silk.NET.Vulkan.Semaphore;
 
 namespace Molten.Graphics.Vulkan;
 
-public unsafe class DeviceVK : GraphicsDevice
+public unsafe class DeviceVK : GpuDevice
 {
     public event DisplayOutputChanged OnOutputActivated;
     public event DisplayOutputChanged OnOutputDeactivated;
@@ -85,7 +85,7 @@ public unsafe class DeviceVK : GraphicsDevice
         Name = SilkMarshal.PtrToString((nint)p.DeviceName, NativeStringEncoding.UTF8);
         ID = ParseDeviceID(p.DeviceID);
         Vendor = ParseVendorID(p.VendorID);
-        Type = (GraphicsDeviceType)p.DeviceType;
+        Type = (GpuDeviceType)p.DeviceType;
 
         Capabilities = _manager.CapBuilder.Build(this, _manager.Renderer, ref p);
 
@@ -95,7 +95,7 @@ public unsafe class DeviceVK : GraphicsDevice
         ActiveOutputs = _activeOutputs.AsReadOnly();
     }
 
-    public override GraphicsFormatSupportFlags GetFormatSupport(GraphicsFormat format)
+    public override GpuFormatSupportFlags GetFormatSupport(GpuResourceFormat format)
     {
         throw new NotImplementedException();
     }
@@ -454,7 +454,7 @@ public unsafe class DeviceVK : GraphicsDevice
     public override DeviceVendor Vendor { get; }
 
     /// <inheritdoc/>
-    public override GraphicsDeviceType Type { get; }
+    public override GpuDeviceType Type { get; }
 
     /// <inheritdoc/>
     public override IReadOnlyList<IDisplayOutput> Outputs { get; }

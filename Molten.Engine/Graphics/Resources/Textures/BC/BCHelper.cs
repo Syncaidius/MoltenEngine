@@ -13,11 +13,11 @@ internal static class BCHelper
     /// </summary>
     public const int BLOCK_DIMENSIONS = 4;
 
-    static Dictionary<GraphicsFormat, BCBlockParser> _parsers;
+    static Dictionary<GpuResourceFormat, BCBlockParser> _parsers;
 
     static BCHelper()
     {
-        _parsers = new Dictionary<GraphicsFormat, BCBlockParser>();
+        _parsers = new Dictionary<GpuResourceFormat, BCBlockParser>();
         IEnumerable<Type> parserTypes = ReflectionHelper.FindType<BCBlockParser>();
         foreach (Type t in parserTypes)
         {
@@ -53,7 +53,7 @@ internal static class BCHelper
                 }
             }
 
-            data.Format = GraphicsFormat.R8G8B8A8_UNorm;
+            data.Format = GpuResourceFormat.R8G8B8A8_UNorm;
             data.IsCompressed = false;
         }
     }
@@ -119,7 +119,7 @@ internal static class BCHelper
 
         TextureSlice[] levels = data.Levels;
         data.Levels = new TextureSlice[levels.Length];
-        GraphicsFormat gFormat = compressionFormat.ToGraphicsFormat();
+        GpuResourceFormat gFormat = compressionFormat.ToGraphicsFormat();
 
         BCBlockParser parser = null;
         if (_parsers.TryGetValue(gFormat, out parser))
@@ -203,30 +203,30 @@ internal static class BCHelper
     /// A block is 4x4 pixels.</summary>
     /// <param name="format">The format.</param>
     /// <returns></returns>
-    public static uint GetBlockSize(GraphicsFormat format)
+    public static uint GetBlockSize(GpuResourceFormat format)
     {
         switch (format)
         {
-            case GraphicsFormat.BC1_UNorm:
-            case GraphicsFormat.BC1_UNorm_SRgb:
-            case GraphicsFormat.BC4_SNorm:
-            case GraphicsFormat.BC4_UNorm:
-            case GraphicsFormat.BC4_Typeless:
+            case GpuResourceFormat.BC1_UNorm:
+            case GpuResourceFormat.BC1_UNorm_SRgb:
+            case GpuResourceFormat.BC4_SNorm:
+            case GpuResourceFormat.BC4_UNorm:
+            case GpuResourceFormat.BC4_Typeless:
                 return 8U;
 
-            case GraphicsFormat.BC2_UNorm:
-            case GraphicsFormat.BC2_UNorm_SRgb:
-            case GraphicsFormat.BC3_UNorm:
-            case GraphicsFormat.BC3_UNorm_SRgb:
-            case GraphicsFormat.BC5_SNorm:
-            case GraphicsFormat.BC5_UNorm:
-            case GraphicsFormat.BC5_Typeless:
-            case GraphicsFormat.BC6H_Uf16:
-            case GraphicsFormat.BC6H_Sf16:
-            case GraphicsFormat.BC6H_Typeless:
-            case GraphicsFormat.BC7_UNorm_SRgb:
-            case GraphicsFormat.BC7_UNorm:
-            case GraphicsFormat.BC7_Typeless:
+            case GpuResourceFormat.BC2_UNorm:
+            case GpuResourceFormat.BC2_UNorm_SRgb:
+            case GpuResourceFormat.BC3_UNorm:
+            case GpuResourceFormat.BC3_UNorm_SRgb:
+            case GpuResourceFormat.BC5_SNorm:
+            case GpuResourceFormat.BC5_UNorm:
+            case GpuResourceFormat.BC5_Typeless:
+            case GpuResourceFormat.BC6H_Uf16:
+            case GpuResourceFormat.BC6H_Sf16:
+            case GpuResourceFormat.BC6H_Typeless:
+            case GpuResourceFormat.BC7_UNorm_SRgb:
+            case GpuResourceFormat.BC7_UNorm:
+            case GpuResourceFormat.BC7_Typeless:
                 return 16U;
         }
 
@@ -238,7 +238,7 @@ internal static class BCHelper
     /// </summary>
     /// <param name="format">The graphics format.</param>
     /// <returns>A boolean value.</returns>
-    public static bool GetBlockCompressed(GraphicsFormat format)
+    public static bool GetBlockCompressed(GpuResourceFormat format)
     {
         return GetBlockSize(format) > 0;
     }
@@ -248,7 +248,7 @@ internal static class BCHelper
     /// <param name="height">The expected height.</param>
     /// <param name="width">The expected width.</param>
     /// <returns></returns>
-    public static uint GetBCSliceSize(GraphicsFormat format, uint width, uint height)
+    public static uint GetBCSliceSize(GpuResourceFormat format, uint width, uint height)
     {
         uint blockSize = GetBlockSize(format);
         uint blockCountX = Math.Max(1, (width + 3) / 4);
@@ -264,7 +264,7 @@ internal static class BCHelper
     /// <param name="height">The expected height.</param>
     /// <param name="width">The expected width.</param>
     /// <param name="numLevels">The number of mip-map levels.</param>
-    public static uint GetBCSize(GraphicsFormat format, uint width, uint height, uint numLevels)
+    public static uint GetBCSize(GpuResourceFormat format, uint width, uint height, uint numLevels)
     {
         uint totalBytes = 0;
         for(uint i = 0; i < numLevels; i++)

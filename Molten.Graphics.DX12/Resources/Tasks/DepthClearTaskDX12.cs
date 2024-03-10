@@ -20,7 +20,7 @@ internal class DepthClearTaskDX12 : GraphicsResourceTask<DepthSurfaceDX12>
         return true;
     }
 
-    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
     {
         Resource.Apply(queue);
         (queue as GraphicsQueueDX12).Clear(Resource, DepthValue, StencilValue, ClearFlags);

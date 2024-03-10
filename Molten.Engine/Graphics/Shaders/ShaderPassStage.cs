@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics;
 
-public unsafe class ShaderPassStage : GraphicsObject
+public unsafe class ShaderPassStage : GpuObject
 {
     public ShaderBindManager Bindings { get; }
 

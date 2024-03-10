@@ -29,8 +29,8 @@ public abstract class SwapChainSurfaceVK : RenderSurface2DVK, INativeSurface
     ResourceHandleVK<Image, ImageHandleVK>[] _handles;
 
     protected SwapChainSurfaceVK(DeviceVK device, string title, uint width, uint height, uint mipCount,
-        GraphicsResourceFlags flags = GraphicsResourceFlags.None,
-        GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm,
+        GpuResourceFlags flags = GpuResourceFlags.None,
+        GpuResourceFormat format = GpuResourceFormat.B8G8R8A8_UNorm,
         PresentModeKHR presentMode = PresentModeKHR.ImmediateKhr,
         string name = null) :
         base(device, width, height, mipCount, 1, AntiAliasLevel.None, MSAAQuality.Default, format, flags, name)
@@ -39,7 +39,7 @@ public abstract class SwapChainSurfaceVK : RenderSurface2DVK, INativeSurface
         FrameFence = device.GetFence();
     }
 
-    private unsafe SurfaceFormatKHR GetPreferredFormat(KhrSurface extSurface, GraphicsFormat preferredFormat, ColorSpaceKHR preferredColorSpace)
+    private unsafe SurfaceFormatKHR GetPreferredFormat(KhrSurface extSurface, GpuResourceFormat preferredFormat, ColorSpaceKHR preferredColorSpace)
     {
         Format pFormat = preferredFormat.ToApi();
 

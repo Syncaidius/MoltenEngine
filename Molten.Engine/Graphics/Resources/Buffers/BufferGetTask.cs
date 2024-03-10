@@ -11,13 +11,13 @@ internal class BufferGetTask<T> : GraphicsResourceTask<GraphicsBuffer>
     /// <summary>The first index at which to start placing the retrieved data within <see cref="DestArray"/>.</summary>
     internal uint DestIndex;
 
-    internal GraphicsMapType MapType;
+    internal GpuMapType MapType;
 
     /// <summary>The destination array to store the retrieved data.</summary>
     internal T[] DestArray;
 
     /// <summary>
-    /// Invoked when data retrieval has been completed by the assigned <see cref="GraphicsQueue"/>.
+    /// Invoked when data retrieval has been completed by the assigned <see cref="GpuCommandQueue"/>.
     /// </summary>
     public event Action<T[]> OnGetData;
 
@@ -26,7 +26,7 @@ internal class BufferGetTask<T> : GraphicsResourceTask<GraphicsBuffer>
         ByteOffset = 0;
         Count = 0;
         DestIndex = 0;
-        MapType = GraphicsMapType.Read;
+        MapType = GpuMapType.Read;
     }
 
     public override bool Validate()
@@ -35,12 +35,12 @@ internal class BufferGetTask<T> : GraphicsResourceTask<GraphicsBuffer>
         return true;
     }
 
-    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
     {
         DestArray ??= new T[Count];
 
         // Now set the structured variable's data
-        using (GraphicsStream stream = queue.MapResource(Resource, 0, ByteOffset, MapType))
+        using (GpuStream stream = queue.MapResource(Resource, 0, ByteOffset, MapType))
             stream.ReadRange(DestArray, DestIndex, Count);
 
         OnGetData?.Invoke(DestArray);

@@ -4,7 +4,7 @@ namespace Molten.Graphics.Textures;
 
 internal class BC6HUParser : BCBlockParser
 {
-    public override GraphicsFormat ExpectedFormat => GraphicsFormat.BC6H_Uf16;
+    public override GpuResourceFormat ExpectedFormat => GpuResourceFormat.BC6H_Uf16;
     ObjectPool<D3DX_BC6H.Context> _contextPool = new ObjectPool<D3DX_BC6H.Context>(() => new D3DX_BC6H.Context());
 
     internal unsafe override Color4[] Decode(BinaryReader imageReader, Logger log)
@@ -35,7 +35,7 @@ internal class BC6HUParser : BCBlockParser
 
 internal class BC6HSParser : BCBlockParser
 {
-    public override GraphicsFormat ExpectedFormat => GraphicsFormat.BC6H_Sf16;
+    public override GpuResourceFormat ExpectedFormat => GpuResourceFormat.BC6H_Sf16;
     ObjectPool<D3DX_BC6H.Context> _contextPool = new ObjectPool<D3DX_BC6H.Context>(() => new D3DX_BC6H.Context());
 
     internal unsafe override Color4[] Decode(BinaryReader imageReader, Logger log)

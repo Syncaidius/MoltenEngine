@@ -6,17 +6,17 @@ public class SurfaceTracker : IDisposable
     SurfaceSizeMode _mode;
     Dictionary<AntiAliasLevel, IRenderSurface2D> _surfaces;
 
-    GraphicsDevice _device;
+    GpuDevice _device;
     uint _width;
     uint _height;
-    GraphicsFormat _format;
+    GpuResourceFormat _format;
     string _name;
 
-    internal SurfaceTracker(GraphicsDevice device,
+    internal SurfaceTracker(GpuDevice device,
         AntiAliasLevel[] aaLevels,
         uint width,
         uint height,
-        GraphicsFormat format,
+        GpuResourceFormat format,
         string name,
         SurfaceSizeMode mode = SurfaceSizeMode.Full)
     {
@@ -38,12 +38,12 @@ public class SurfaceTracker : IDisposable
         {
             case SurfaceSizeMode.Full:
                 foreach(IRenderSurface2D rs in _surfaces.Values)
-                    rs?.Resize(GraphicsPriority.Apply, minWidth, minHeight);
+                    rs?.Resize(GpuPriority.Apply, minWidth, minHeight);
                 break;
 
             case SurfaceSizeMode.Half:
                 foreach (IRenderSurface2D rs in _surfaces.Values)
-                    rs?.Resize(GraphicsPriority.Apply, (minWidth / 2) + 1, (minHeight / 2) + 1);
+                    rs?.Resize(GpuPriority.Apply, (minWidth / 2) + 1, (minHeight / 2) + 1);
                 break;
         }
     }
@@ -72,7 +72,7 @@ public class SurfaceTracker : IDisposable
             }
             else if (rs.Width != _width || rs.Height != _height)
             {
-                rs.Resize(GraphicsPriority.Apply, _width, _height);
+                rs.Resize(GpuPriority.Apply, _width, _height);
             }
 
             return rs;

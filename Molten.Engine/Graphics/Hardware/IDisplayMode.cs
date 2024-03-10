@@ -24,7 +24,7 @@ public interface IDisplayMode
     /// <summary>
     /// Gets the format of the current <see cref="IDisplayMode"/>.
     /// </summary>
-    GraphicsFormat Format { get; }
+    GpuResourceFormat Format { get; }
 
     /// <summary>
     /// Gets the scaling mode of the current <see cref="IDisplayMode"/>.

@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics;
 
-public interface IConstantBuffer : IGraphicsResource
+public interface IConstantBuffer : IGpuResource
 {
     /// <summary>
     /// Gets the name of the constant buffer.

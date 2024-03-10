@@ -182,7 +182,7 @@ internal unsafe class RenderPassVK : GraphicsObject<DeviceVK>, IEquatable<Render
         }
         else
         {
-            if (!surface.Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
+            if (!surface.Flags.Has(GpuResourceFlags.DenyShaderAccess))
                 desc.FinalLayout = ImageLayout.ColorAttachmentOptimal;
             else
                 desc.FinalLayout = ImageLayout.ShaderReadOnlyOptimal;

@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.Vulkan;
 
-internal class DescriptorSetVK : GraphicsObject
+internal class DescriptorSetVK : GpuObject
 {
     DescriptorSetLayoutVK _layout;
     DescriptorSet _set;

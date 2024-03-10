@@ -5,7 +5,7 @@ public class RenderSurface2DVK : Texture2DVK, IRenderSurface2D, IRenderSurfaceVK
     /// <summary>
     /// Creates a new instance of <see cref="RenderSurface2DVK"/>.
     /// </summary>
-    /// <param name="device">The parent <see cref="GraphicsDevice"/>.</param>
+    /// <param name="device">The parent <see cref="GpuDevice"/>.</param>
     /// <param name="dimensions">The image dimensions.</param>
     /// <param name="aaLevel">The anti-aliasing/multi-sample level.</param>
     /// <param name="sampleQuality">The sample quality.</param>
@@ -15,7 +15,7 @@ public class RenderSurface2DVK : Texture2DVK, IRenderSurface2D, IRenderSurfaceVK
     /// <param name="name"></param>
     public RenderSurface2DVK(DeviceVK device, uint width, uint height, uint mipCount, uint arraySize, 
         AntiAliasLevel aaLevel, MSAAQuality sampleQuality, 
-        GraphicsFormat format, GraphicsResourceFlags flags, string name) : 
+        GpuResourceFormat format, GpuResourceFlags flags, string name) : 
         base(device, 
             width, height, mipCount, arraySize,
             aaLevel, 
@@ -28,7 +28,7 @@ public class RenderSurface2DVK : Texture2DVK, IRenderSurface2D, IRenderSurfaceVK
     }
 
     /// <inheritdoc/>
-    public void Clear(GraphicsPriority priority, Color color)
+    public void Clear(GpuPriority priority, Color color)
     {
         SurfaceClearTaskVK task = Device.Tasks.Get<SurfaceClearTaskVK>();
         task.Color = color;

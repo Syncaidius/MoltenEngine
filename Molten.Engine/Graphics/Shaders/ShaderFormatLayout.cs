@@ -13,28 +13,28 @@ public unsafe struct ShaderFormatLayout : IEquatable<ShaderFormatLayout>
     public fixed byte RawFormats[8];
 
     [FieldOffset(0)]
-    public GraphicsFormat Target0;
+    public GpuResourceFormat Target0;
 
     [FieldOffset(1)]
-    public GraphicsFormat Target1;
+    public GpuResourceFormat Target1;
 
     [FieldOffset(2)]
-    public GraphicsFormat Target2;
+    public GpuResourceFormat Target2;
 
     [FieldOffset(3)]
-    public GraphicsFormat Target3;
+    public GpuResourceFormat Target3;
 
     [FieldOffset(4)]
-    public GraphicsFormat Target4;
+    public GpuResourceFormat Target4;
 
     [FieldOffset(5)]
-    public GraphicsFormat Target5;
+    public GpuResourceFormat Target5;
 
     [FieldOffset(6)]
-    public GraphicsFormat Target6;
+    public GpuResourceFormat Target6;
 
     [FieldOffset(7)]
-    public GraphicsFormat Target7;
+    public GpuResourceFormat Target7;
 
     [FieldOffset(8)]
     public DepthFormat Depth;
@@ -64,7 +64,7 @@ public unsafe struct ShaderFormatLayout : IEquatable<ShaderFormatLayout>
             if (surfaces[i] == null)
                 continue;
 
-            if (surfaces[i].ResourceFormat != (GraphicsFormat)RawFormats[i])
+            if (surfaces[i].ResourceFormat != (GpuResourceFormat)RawFormats[i])
                 return i;
         }
 
@@ -83,7 +83,7 @@ public unsafe struct ShaderFormatLayout : IEquatable<ShaderFormatLayout>
 
         log.Error("Expected:");
         for(int i = 0; i < 8; i++)
-            log.Error($"\t{i}: - {(GraphicsFormat)RawFormats[i]}");
+            log.Error($"\t{i}: - {(GpuResourceFormat)RawFormats[i]}");
 
         log.Error("Given:");
         for(int i = 0; i < surfaces.Length; i++)

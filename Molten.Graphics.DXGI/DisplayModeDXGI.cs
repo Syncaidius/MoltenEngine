@@ -25,7 +25,7 @@ public class DisplayModeDXGI : IDisplayMode
 
     public uint RefreshRate => Description.RefreshRate.Numerator;
 
-    public GraphicsFormat Format => Description.Format.FromApi();
+    public GpuResourceFormat Format => Description.Format.FromApi();
 
     public DisplayScalingMode Scaling => Description.Scaling.FromApi();
 

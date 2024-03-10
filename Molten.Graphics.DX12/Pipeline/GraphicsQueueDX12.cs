@@ -13,7 +13,7 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
     List<PipelineInputLayoutDX12> _cachedLayouts = new List<PipelineInputLayoutDX12>();
 
     GraphicsCommandListDX12 _cmd;
-    GraphicsFrameBuffer<CommandAllocatorDX12> _cmdAllocators;
+    GpuFrameBuffer<CommandAllocatorDX12> _cmdAllocators;
     PipelineStateBuilderDX12 _stateBuilder;
         
     CpuDescriptorHandle* _rtvs;
@@ -21,7 +21,7 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
     uint _numRTVs;
 
     D3DPrimitiveTopology _boundTopology;
-    GraphicsDepthWritePermission _boundDepthMode;
+    GpuDepthWritePermission _boundDepthMode;
 
     internal GraphicsQueueDX12(Logger log, DeviceDX12 device, DeviceBuilderDX12 builder, ref CommandQueueDesc desc) : 
         base(device)
@@ -55,13 +55,13 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
 
         _handle = (ID3D12CommandQueue*)cmdQueue;
         _stateBuilder = new PipelineStateBuilderDX12(device);
-        _cmdAllocators = new GraphicsFrameBuffer<CommandAllocatorDX12>(Device, (device) =>
+        _cmdAllocators = new GpuFrameBuffer<CommandAllocatorDX12>(Device, (device) =>
         {
             return new CommandAllocatorDX12(this, CommandListType.Direct);
         });
     }
 
-    protected override void GenerateMipMaps(GraphicsResource texture)
+    protected override void GenerateMipMaps(GpuResource texture)
     {
         // TODO: Implement compute-based mip-map generation - This can then be commonized for DX11/Vulkan too.
         //       See: https://www.3dgep.com/learning-directx-12-4/#Generate_Mipmaps_Compute_Shader
@@ -81,7 +81,7 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
         }
         else
         {
-            throw new GraphicsResourceException(surface, "Cannot clear a non-render surface texture.");
+            throw new GpuResourceException(surface, "Cannot clear a non-render surface texture.");
         }
     }
 
@@ -151,7 +151,7 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
         _cmd.Handle->OMSetRenderTargets(0, null, false, null);
     }
 
-    public override void Execute(GraphicsCommandList list)
+    public override void Execute(GpuCommandList list)
     {
         GraphicsCommandListDX12 cmd = (GraphicsCommandListDX12)list;
 
@@ -160,9 +160,9 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
         _handle->ExecuteCommandLists(1, lists);
     }
 
-    public override void Sync(GraphicsCommandListFlags flags)
+    public override void Sync(GpuCommandListFlags flags)
     {
-        if (flags.Has(GraphicsCommandListFlags.Deferred))
+        if (flags.Has(GpuCommandListFlags.Deferred))
             throw new InvalidOperationException($"An immediate/primary command list branch cannot use deferred flag during Sync() calls.");
 
         Execute(_cmd);
@@ -176,12 +176,12 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
         _cmd.Reset(allocator, _pipelineState);
     }
 
-    public override void Begin(GraphicsCommandListFlags flags = GraphicsCommandListFlags.None)
+    public override void Begin(GpuCommandListFlags flags = GpuCommandListFlags.None)
     {
         base.Begin(flags);
 
         CommandAllocatorDX12 allocator = _cmdAllocators.Prepare();
-        if (_cmd == null || _cmd.Flags.HasFlag(GraphicsCommandListFlags.Deferred))
+        if (_cmd == null || _cmd.Flags.HasFlag(GpuCommandListFlags.Deferred))
         {
             _cmd = allocator.Allocate(null);
             Device.Frame.BranchCount++;
@@ -191,11 +191,11 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
         _cmd.Reset(allocator, _pipelineState);
     }
 
-    public override GraphicsCommandList End()
+    public override GpuCommandList End()
     {
         base.End();
 
-        if (_cmd.Flags.HasFlag(GraphicsCommandListFlags.Deferred))
+        if (_cmd.Flags.HasFlag(GpuCommandListFlags.Deferred))
             return _cmd;
 
         Execute(_cmd);
@@ -222,13 +222,13 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
         // See Also: https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/reference/tools/pix3/functions/pixscopedevent-overloads
     }
 
-    protected override GraphicsBindResult DoRenderPass(ShaderPass hlslPass, QueueValidationMode mode, Action callback)
+    protected override GpuBindResult DoRenderPass(ShaderPass hlslPass, QueueValidationMode mode, Action callback)
     {
         ShaderPassDX12 pass = hlslPass as ShaderPassDX12;
         D3DPrimitiveTopology passTopology = pass.Topology.ToApi();
 
         if (passTopology == D3DPrimitiveTopology.D3D11PrimitiveTopologyUndefined)
-            return GraphicsBindResult.UndefinedTopology;
+            return GpuBindResult.UndefinedTopology;
 
         // Clear output merger and rebind targets later.
         _cmd.Handle->OMSetRenderTargets(0, null, false, null);
@@ -292,13 +292,13 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
             }
         }
 
-        GraphicsDepthWritePermission depthWriteMode = pass.WritePermission;
+        GpuDepthWritePermission depthWriteMode = pass.WritePermission;
         if (State.DepthSurface.Bind(this) || (_boundDepthMode != depthWriteMode))
         {
-            if (State.DepthSurface.BoundValue != null && depthWriteMode != GraphicsDepthWritePermission.Disabled)
+            if (State.DepthSurface.BoundValue != null && depthWriteMode != GpuDepthWritePermission.Disabled)
             {
                 DSHandleDX12 dsHandle = State.DepthSurface.BoundValue.Handle as DSHandleDX12;
-                if (depthWriteMode == GraphicsDepthWritePermission.ReadOnly)
+                if (depthWriteMode == GpuDepthWritePermission.ReadOnly)
                     _dsv[0] = dsHandle.ReadOnlyDSV.CpuHandle;
                 else
                     _dsv[0] = dsHandle.DSV.CpuHandle;
@@ -323,9 +323,9 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
         _cmd.Handle->OMSetRenderTargets(_numRTVs, _rtvs, false, dsvHandle);
         Profiler.BindSurfaceCalls++;
 
-        GraphicsBindResult vResult = Validate(mode);
+        GpuBindResult vResult = Validate(mode);
 
-        if (vResult == GraphicsBindResult.Successful)
+        if (vResult == GpuBindResult.Successful)
         {
             // Re-render the same pass for K iterations.
             for (int k = 0; k < pass.Iterations; k++)
@@ -341,7 +341,7 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
         return vResult;
     }
 
-    protected override GraphicsBindResult DoComputePass(ShaderPass pass)
+    protected override GpuBindResult DoComputePass(ShaderPass pass)
     {
         throw new NotImplementedException();
     }
@@ -365,22 +365,22 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
         _cmd.Handle->IASetVertexBuffers(0, (uint)count, pBuffers);
     }
 
-    protected override ResourceMap GetResourcePtr(GraphicsResource resource, uint subresource, GraphicsMapType mapType)
+    protected override GpuResourceMap GetResourcePtr(GpuResource resource, uint subresource, GpuMapType mapType)
     {
-        GraphicsResourceFlags flags = resource.Flags;
+        GpuResourceFlags flags = resource.Flags;
 
         // Validate map type.
-        if (mapType == GraphicsMapType.Read)
+        if (mapType == GpuMapType.Read)
         {
-            if (!flags.Has(GraphicsResourceFlags.CpuRead))
+            if (!flags.Has(GpuResourceFlags.CpuRead))
                 throw new InvalidOperationException($"Resource '{resource.Name}' does not allow read access.");
         }
-        else if (mapType == GraphicsMapType.Write)
+        else if (mapType == GpuMapType.Write)
         {
-            if (!flags.Has(GraphicsResourceFlags.CpuWrite))
+            if (!flags.Has(GpuResourceFlags.CpuWrite))
                 throw new InvalidOperationException($"Resource '{resource.Name}' does not allow write access.");
         }
-        else if (mapType == GraphicsMapType.Discard)
+        else if (mapType == GpuMapType.Discard)
         {
             // TODO Validate this.
         }
@@ -404,9 +404,9 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
             void* ptrMap = null;
             HResult hr = handle.Ptr1->Map(subresource, null, &ptrMap);
             if (!Log.CheckResult(hr, () => $"Failed to map resource {resource.Name} for {mapType} access"))
-                return new ResourceMap();
+                return new GpuResourceMap();
             else
-                return new ResourceMap(ptrMap, rowPitch, depthPitch);
+                return new GpuResourceMap(ptrMap, rowPitch, depthPitch);
         }
         else
         {
@@ -414,13 +414,13 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
         }        
     }
 
-    protected override void OnUnmapResource(GraphicsResource resource, uint subresource)
+    protected override void OnUnmapResource(GpuResource resource, uint subresource)
     {
         if (resource.Handle is ResourceHandleDX12 handle)
             handle.Ptr1->Unmap(subresource, null);
     }
 
-    protected override unsafe void UpdateResource(GraphicsResource resource, uint subresource, ResourceRegion? region, void* ptrData, uint rowPitch, uint slicePitch)
+    protected override unsafe void UpdateResource(GpuResource resource, uint subresource, ResourceRegion? region, void* ptrData, uint rowPitch, uint slicePitch)
     {
         Box* destBox = null;
 
@@ -432,14 +432,14 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
         
         // TODO Calculate byte offset and number of bytes from resource region.
 
-        using (GraphicsStream stream = MapResource(resource, subresource, 0, GraphicsMapType.Write))
+        using (GpuStream stream = MapResource(resource, subresource, 0, GpuMapType.Write))
         {
             stream.Write(ptrData, slicePitch);
             Profiler.SubResourceUpdateCalls++;
         }
     }
 
-    protected override void CopyResource(GraphicsResource src, GraphicsResource dest)
+    protected override void CopyResource(GpuResource src, GpuResource dest)
     {
         src.Apply(this);
         dest.Apply(this);
@@ -448,18 +448,18 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
         Profiler.ResourceCopyCalls++;
     }
 
-    public override unsafe void CopyResourceRegion(GraphicsResource source, uint srcSubresource, ResourceRegion? sourceRegion, GraphicsResource dest, uint destSubresource, Vector3UI destStart)
+    public override unsafe void CopyResourceRegion(GpuResource source, uint srcSubresource, ResourceRegion? sourceRegion, GpuResource dest, uint destSubresource, Vector3UI destStart)
     {
         throw new NotImplementedException();
     }
 
-    public override GraphicsBindResult Draw(Shader shader, uint vertexCount, uint vertexStartIndex = 0)
+    public override GpuBindResult Draw(Shader shader, uint vertexCount, uint vertexStartIndex = 0)
     {
         return ApplyState(shader, QueueValidationMode.Unindexed, () =>
             _cmd.Handle->DrawInstanced(vertexCount, 1, vertexStartIndex, 0));
     }
 
-    public override GraphicsBindResult DrawInstanced(Shader shader, uint vertexCountPerInstance,
+    public override GpuBindResult DrawInstanced(Shader shader, uint vertexCountPerInstance,
         uint instanceCount,
         uint vertexStartIndex = 0,
         uint instanceStartIndex = 0)
@@ -468,19 +468,19 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
             _cmd.Handle->DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex));
     }
 
-    public override GraphicsBindResult DrawIndexed(Shader shader, uint indexCount, int vertexIndexOffset = 0, uint startIndex = 0)
+    public override GpuBindResult DrawIndexed(Shader shader, uint indexCount, int vertexIndexOffset = 0, uint startIndex = 0)
     {
         return ApplyState(shader, QueueValidationMode.Indexed, () =>
             _cmd.Handle->DrawIndexedInstanced(indexCount, 1, startIndex, vertexIndexOffset, 0));
     }
 
-    public override GraphicsBindResult DrawIndexedInstanced(Shader shader, uint indexCountPerInstance, uint instanceCount, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
+    public override GpuBindResult DrawIndexedInstanced(Shader shader, uint indexCountPerInstance, uint instanceCount, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
     {
         return ApplyState(shader, QueueValidationMode.InstancedIndexed, () =>
             _cmd.Handle->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndex, vertexIndexOffset, instanceStartIndex));
     }
 
-    public override GraphicsBindResult Dispatch(Shader shader, Vector3UI groups)
+    public override GpuBindResult Dispatch(Shader shader, Vector3UI groups)
     {
         DrawInfo.Custom.ComputeGroups = groups;
         return ApplyState(shader, QueueValidationMode.Compute, null);
@@ -495,12 +495,12 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
         NativeUtil.ReleasePtr(ref _handle);
     }
 
-    protected override GraphicsBindResult CheckInstancing()
+    protected override GpuBindResult CheckInstancing()
     {
         if (_inputLayout != null && _inputLayout.IsInstanced)
-            return GraphicsBindResult.Successful;
+            return GpuBindResult.Successful;
         else
-            return GraphicsBindResult.NonInstancedVertexLayout;
+            return GpuBindResult.NonInstancedVertexLayout;
     }
 
     /// <summary>Retrieves or creates a usable input layout for the provided vertex buffers and sub-effect.</summary>

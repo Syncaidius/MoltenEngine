@@ -44,7 +44,7 @@ internal unsafe class DeviceBuilderDX12
 
     internal void GetCapabilities(GraphicsSettings settings, DeviceDXGI device)
     {
-        GraphicsCapabilities cap = device.Capabilities;
+        GpuCapabilities cap = device.Capabilities;
         CapabilitiesDX12 features = (device as DeviceDX12).CapabilitiesDX12;
 
         ID3D12Device10* ptrDevice = null;
@@ -113,18 +113,18 @@ internal unsafe class DeviceBuilderDX12
         FeatureDataD3D12Options12 features12_12 = GetFeatureSupport<FeatureDataD3D12Options12>(ptrDevice, Feature.D3D12Options12);
         FeatureDataD3D12Options13 features12_13 = GetFeatureSupport<FeatureDataD3D12Options13>(ptrDevice, Feature.D3D12Options13);
 
-        cap.Flags |= GraphicsCapFlags.HardwareInstancing;
-        cap.Flags |= GraphicsCapFlags.NonPowerOfTwoTextures;
-        cap.Flags |= GraphicsCapFlags.OcculsionQueries;
-        cap.Flags |= GraphicsCapFlags.TextureCubeArrays;
+        cap.Flags |= GpuCapFlags.HardwareInstancing;
+        cap.Flags |= GpuCapFlags.NonPowerOfTwoTextures;
+        cap.Flags |= GpuCapFlags.OcculsionQueries;
+        cap.Flags |= GpuCapFlags.TextureCubeArrays;
 
-        cap.Flags |= (featuresArc.TileBasedRenderer > 0).ToCapFlag(GraphicsCapFlags.TileBasedRendering);
-        cap.Flags |= features12_0.ROVsSupported.ToCapFlag(GraphicsCapFlags.RasterizerOrderViews);
-        cap.Flags |= (features12_0.OutputMergerLogicOp > 0).ToCapFlag(GraphicsCapFlags.BlendLogicOp);
-        cap.Flags |= features12_1.WaveOps.ToCapFlag(GraphicsCapFlags.WaveOperations);
-        cap.Flags |= features12_2.DepthBoundsTestSupported.ToCapFlag(GraphicsCapFlags.DepthBoundsTesting);
-        cap.Flags |= features12_3.BarycentricsSupported.ToCapFlag(GraphicsCapFlags.Barycentrics);
-        cap.Flags |= features12_13.AlphaBlendFactorSupported.ToCapFlag(GraphicsCapFlags.AlphaBlendFactor);
+        cap.Flags |= (featuresArc.TileBasedRenderer > 0).ToCapFlag(GpuCapFlags.TileBasedRendering);
+        cap.Flags |= features12_0.ROVsSupported.ToCapFlag(GpuCapFlags.RasterizerOrderViews);
+        cap.Flags |= (features12_0.OutputMergerLogicOp > 0).ToCapFlag(GpuCapFlags.BlendLogicOp);
+        cap.Flags |= features12_1.WaveOps.ToCapFlag(GpuCapFlags.WaveOperations);
+        cap.Flags |= features12_2.DepthBoundsTestSupported.ToCapFlag(GpuCapFlags.DepthBoundsTesting);
+        cap.Flags |= features12_3.BarycentricsSupported.ToCapFlag(GpuCapFlags.Barycentrics);
+        cap.Flags |= features12_13.AlphaBlendFactorSupported.ToCapFlag(GpuCapFlags.AlphaBlendFactor);
 
         cap.MaxTexture1DSize = D3D12.ReqTexture1DUDimension;
         cap.MaxTexture2DSize = D3D12.ReqTexture2DUOrVDimension;
@@ -181,7 +181,7 @@ internal unsafe class DeviceBuilderDX12
         NativeUtil.ReleasePtr(ref ptrDevice);
     }
 
-    private void DetectShaderStages(GraphicsCapabilities cap, 
+    private void DetectShaderStages(GpuCapabilities cap, 
         ShaderMinPrecisionSupport minPrecision,
         bool float64Support, bool int64Support, 
         ref FeatureDataD3D12Options7 features12_7,

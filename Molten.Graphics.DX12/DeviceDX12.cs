@@ -74,7 +74,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
         return true;
     }
 
-    public override GraphicsFormatSupportFlags GetFormatSupport(GraphicsFormat format)
+    public override GpuFormatSupportFlags GetFormatSupport(GpuResourceFormat format)
     {
         uint sizeOf = (uint)sizeof(FeatureDataFormatSupport);
         void* pData = null;
@@ -83,11 +83,11 @@ public unsafe class DeviceDX12 : DeviceDXGI
         if (!Log.CheckResult(r))
         {
             Log.Error($"Failed to retrieve format '{format}' support. Code: {r}");
-            return GraphicsFormatSupportFlags.None;
+            return GpuFormatSupportFlags.None;
         }
 
         FeatureDataFormatSupport* supportData = (FeatureDataFormatSupport*)pData;
-        return (GraphicsFormatSupportFlags)supportData->Support1;
+        return (GpuFormatSupportFlags)supportData->Support1;
     }
 
     private void ProcessDebugMessage(MessageCategory category, MessageSeverity severity, MessageID id, byte* pDescription, void* prContext)
@@ -183,5 +183,5 @@ public unsafe class DeviceDX12 : DeviceDXGI
     internal DescriptorHeapManagerDX12 Heap => _heapManager;
 
     /// <inheritdoc/>
-    public override GraphicsResourceManager Resources => _resources;
+    public override GpuResourceManager Resources => _resources;
 }

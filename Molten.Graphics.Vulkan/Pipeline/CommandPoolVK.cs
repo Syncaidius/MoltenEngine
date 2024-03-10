@@ -27,7 +27,7 @@ internal unsafe class CommandPoolVK : EngineObject
         _allocations = new List<CommandPoolAllocation>();
     }
 
-    internal CommandListVK Allocate(CommandBufferLevel level, uint branchIndex, GraphicsCommandListFlags flags)
+    internal CommandListVK Allocate(CommandBufferLevel level, uint branchIndex, GpuCommandListFlags flags)
     {
         CommandListVK result = null;
         foreach(CommandPoolAllocation a in _allocations)
@@ -52,7 +52,7 @@ internal unsafe class CommandPoolVK : EngineObject
             result = allocation.Get();
         }
 
-        if (flags.Has(GraphicsCommandListFlags.CpuSyncable))
+        if (flags.Has(GpuCommandListFlags.CpuSyncable))
         {
             if (result.Fence != null)
                 result.Fence.Reset();
@@ -88,5 +88,5 @@ internal unsafe class CommandPoolVK : EngineObject
     /// </summary>
     internal bool IsTransient { get; }
 
-    internal GraphicsCommandListFlags ListType { get; }
+    internal GpuCommandListFlags ListType { get; }
 }

@@ -8,7 +8,7 @@ namespace Molten.Graphics;
 /// <param name="texture">The texture instance that triggered the event.</param>
 public delegate void TextureHandler(GraphicsTexture texture);
 
-public abstract class GraphicsTexture : GraphicsResource, ITexture
+public abstract class GraphicsTexture : GpuResource, ITexture
 {
     /// <summary>
     /// Invoked after resizing of the texture has completed.
@@ -16,18 +16,18 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
     public event TextureHandler OnResize;
 
     TextureDimensions _dimensions;
-    GraphicsFormat _format;
+    GpuResourceFormat _format;
 
     /// <summary>
     /// Creates a new instance of <see cref="GraphicsTexture"/>.
     /// </summary>
     /// <param name="device">The <see cref="GraphicsTexture"/> that the buffer is bound to.</param>
     /// <param name="dimensions">The dimensions of the texture.</param>
-    /// <param name="format">The <see cref="GraphicsFormat"/> of the texture.</param>
+    /// <param name="format">The <see cref="GpuResourceFormat"/> of the texture.</param>
     /// <param name="flags">Resource flags which define how the texture can be used.</param>
     /// <param name="name">The name of the texture. This is mainly used for debug purposes.</param>
     /// <exception cref="ArgumentException"></exception>
-    protected GraphicsTexture(GraphicsDevice device, ref TextureDimensions dimensions, GraphicsFormat format, GraphicsResourceFlags flags, string name)
+    protected GraphicsTexture(GpuDevice device, ref TextureDimensions dimensions, GpuResourceFormat format, GpuResourceFlags flags, string name)
         : base(device, flags)
     {
         if(dimensions.IsCubeMap && dimensions.ArraySize % 6 != 0)
@@ -54,16 +54,16 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
     protected override void ValidateFlags()
     {
         // Validate RT mip-maps
-        if (Flags.Has(GraphicsResourceFlags.MipMapGeneration))
+        if (Flags.Has(GpuResourceFlags.MipMapGeneration))
         {
-            if (Flags.Has(GraphicsResourceFlags.DenyShaderAccess) || !(this is IRenderSurface2D))
-                throw new GraphicsResourceException(this, "Mip-map generation is only available on render-surface shader resources.");
+            if (Flags.Has(GpuResourceFlags.DenyShaderAccess) || !(this is IRenderSurface2D))
+                throw new GpuResourceException(this, "Mip-map generation is only available on render-surface shader resources.");
         }
 
         base.ValidateFlags();
     }
 
-    public void Resize(GraphicsPriority priority, uint newWidth)
+    public void Resize(GpuPriority priority, uint newWidth)
     {
         Resize(priority, newWidth, MipMapCount, ResourceFormat);
     }
@@ -74,8 +74,8 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
     /// <param name="priority">The priority of the resize operation.</param>
     /// <param name="newWidth">The new width.</param>      
     /// <param name="newMipMapCount">The number of mip-map levels per array slice/layer. If set to 0, the current <see cref="MipMapCount"/> will be used.</param>
-    /// <param name="newFormat">The new format. If set to <see cref="GraphicsFormat.Unknown"/>, the existing format will be used.</param>
-    public void Resize(GraphicsPriority priority, uint newWidth, uint newMipMapCount = 0, GraphicsFormat newFormat = GraphicsFormat.Unknown)
+    /// <param name="newFormat">The new format. If set to <see cref="GpuResourceFormat.Unknown"/>, the existing format will be used.</param>
+    public void Resize(GpuPriority priority, uint newWidth, uint newMipMapCount = 0, GpuResourceFormat newFormat = GpuResourceFormat.Unknown)
     {
         Resize(priority, newWidth, Height, ArraySize, newMipMapCount, Depth, newFormat);
     }
@@ -86,7 +86,7 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
     /// <param name="priority">The priority of the resize operation.</param>
     /// <param name="newWidth">The new width.</param>
     /// <param name="newHeight">The new height. If the texture is 1D, height will be defaulted to 1.</param> 
-    public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight)
+    public void Resize(GpuPriority priority, uint newWidth, uint newHeight)
     {
         Resize(priority, newWidth, newHeight, ArraySize, MipMapCount, Depth, ResourceFormat);
     }
@@ -102,8 +102,8 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
     /// <para>If set to 0, the existing <see cref="Depth"/> or <see cref="ArraySize"/> will be used.</para></param>
     /// <param name="depth">The new depth. Only applicable for 3D textures.</param>
     /// <param name="mipMapCount">The number of mip-map levels per array slice/layer. If set to 0, the current <see cref="MipMapCount"/> will be used.</param>
-    /// <param name="newFormat">The new format. If set to <see cref="GraphicsFormat.Unknown"/>, the existing format will be used.</param>
-    public void Resize(GraphicsPriority priority, uint width, uint height, uint arraySize = 0, uint mipMapCount = 0, uint depth = 0, GraphicsFormat newFormat = GraphicsFormat.Unknown)
+    /// <param name="newFormat">The new format. If set to <see cref="GpuResourceFormat.Unknown"/>, the existing format will be used.</param>
+    public void Resize(GpuPriority priority, uint width, uint height, uint arraySize = 0, uint mipMapCount = 0, uint depth = 0, GpuResourceFormat newFormat = GpuResourceFormat.Unknown)
     {
         if (this is ITexture1D)
             height = 1;
@@ -112,7 +112,7 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
             depth = 1;
 
         TextureResizeTask task = Device.Tasks.Get<TextureResizeTask>();
-        task.NewFormat = newFormat == GraphicsFormat.Unknown ? ResourceFormat : newFormat;
+        task.NewFormat = newFormat == GpuResourceFormat.Unknown ? ResourceFormat : newFormat;
         task.NewDimensions = new TextureDimensions()
         {
             Width = width,
@@ -124,7 +124,7 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
         Device.Tasks.Push(priority, this, task);
     }
 
-    public unsafe void SetData<T>(GraphicsPriority priority, ResourceRegion area, T* data, uint numElements, uint bytesPerPixel, uint level, uint arrayIndex = 0,
+    public unsafe void SetData<T>(GpuPriority priority, ResourceRegion area, T* data, uint numElements, uint bytesPerPixel, uint level, uint arrayIndex = 0,
         GraphicsTask.EventHandler completeCallback = null)
         where T : unmanaged
     {
@@ -160,7 +160,7 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
     /// <param name="arrayCount">The number of array slices to copy from the provided <see cref="TextureData"/>.</param>
     /// <param name="destMipIndex">The mip-map index within the current texture to start copying to.</param>
     /// <param name="destArraySlice">The array slice index within the current texture to start copying to.<</param>
-    public unsafe void SetData(GraphicsPriority priority, TextureData data, uint srcMipIndex, uint srcArraySlice, uint mipCount,
+    public unsafe void SetData(GpuPriority priority, TextureData data, uint srcMipIndex, uint srcArraySlice, uint mipCount,
         uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0, GraphicsTask.EventHandler completeCallback = null)
     {
         TextureSlice level = null;
@@ -183,7 +183,7 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
         }
     }
 
-    public unsafe void SetData(GraphicsPriority priority, TextureSlice data, uint mipIndex, uint arraySlice, GraphicsTask.EventHandler completeCallback = null)
+    public unsafe void SetData(GpuPriority priority, TextureSlice data, uint mipIndex, uint arraySlice, GraphicsTask.EventHandler completeCallback = null)
     {
         TextureSetTask task = Device.Tasks.Get<TextureSetTask>();
         task.Initialize(data.Data, 1, 0, data.TotalBytes);
@@ -194,7 +194,7 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
         Device.Tasks.Push(priority, this, task);
     }
 
-    public unsafe void SetData<T>(GraphicsPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arrayIndex,
+    public unsafe void SetData<T>(GpuPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arrayIndex,
         GraphicsTask.EventHandler completeCallback = null)
         where T : unmanaged
     {
@@ -210,7 +210,7 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
         }
     }
 
-    public unsafe void SetData<T>(GraphicsPriority priority, ResourceRegion area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0,
+    public unsafe void SetData<T>(GpuPriority priority, ResourceRegion area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0,
         GraphicsTask.EventHandler completeCallback = null)
         where T : unmanaged
     {
@@ -218,7 +218,7 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
             SetData(priority, area, ptrData, (uint)data.Length, bytesPerPixel, level, arrayIndex, completeCallback);
     }
 
-    public unsafe void SetData<T>(GraphicsPriority priority, uint level, T* data, uint startIndex, uint count, uint pitch, uint arrayIndex,
+    public unsafe void SetData<T>(GpuPriority priority, uint level, T* data, uint startIndex, uint count, uint pitch, uint arrayIndex,
         GraphicsTask.EventHandler completeCallback = null)
         where T : unmanaged
     {
@@ -231,14 +231,14 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
         Device.Tasks.Push(priority, this, task);
     }
 
-    public void GetData(GraphicsPriority priority, Action<TextureData> callback)
+    public void GetData(GpuPriority priority, Action<TextureData> callback)
     {
         TextureGetTask task = Device.Tasks.Get<TextureGetTask>();
         task.OnGetData = callback;
         Device.Tasks.Push(priority, this, task);
     }
 
-    public void GetData(GraphicsPriority priority, uint mipLevel, uint arrayIndex, Action<TextureSlice> callback)
+    public void GetData(GpuPriority priority, uint mipLevel, uint arrayIndex, Action<TextureSlice> callback)
     {
         TextureGetSliceTask task = Device.Tasks.Get<TextureGetSliceTask>();
         task.OnGetData = callback;
@@ -247,7 +247,7 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
         Device.Tasks.Push(priority, this, task);
     }
 
-    internal void ResizeTexture(in TextureDimensions newDimensions, GraphicsFormat newFormat)
+    internal void ResizeTexture(in TextureDimensions newDimensions, GpuResourceFormat newFormat)
     {
         // Avoid resizing/recreation if nothing has actually changed.
         if (_dimensions == newDimensions && ResourceFormat == newFormat)
@@ -261,14 +261,14 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
         OnResize?.Invoke(this);
     }
 
-    protected abstract void OnResizeTexture(ref readonly TextureDimensions dimensions, GraphicsFormat format);
+    protected abstract void OnResizeTexture(ref readonly TextureDimensions dimensions, GpuResourceFormat format);
 
     /// <summary>Generates mip maps for the texture via the current <see cref="GraphicsTexture"/>, if allowed.</summary>
     /// <param name="priority">The priority of the copy operation.</param>
     /// <param name="callback">A callback to run once the operation has completed.</param>
-    public void GenerateMipMaps(GraphicsPriority priority, GraphicsTask.EventHandler callback = null)
+    public void GenerateMipMaps(GpuPriority priority, GraphicsTask.EventHandler callback = null)
     {
-        if (!Flags.Has(GraphicsResourceFlags.MipMapGeneration))
+        if (!Flags.Has(GpuResourceFlags.MipMapGeneration))
             throw new Exception("Cannot generate mip-maps for texture. Must have flag: TextureFlags.AllowMipMapGeneration.");
 
         GenerateMipMapsTask task = Device.Tasks.Get<GenerateMipMapsTask>();
@@ -320,7 +320,7 @@ public abstract class GraphicsTexture : GraphicsResource, ITexture
     public MSAAQuality SampleQuality { get; protected set; }
 
     /// <inheritdoc/>
-    public override GraphicsFormat ResourceFormat
+    public override GpuResourceFormat ResourceFormat
     {
         get => _format;
         protected set

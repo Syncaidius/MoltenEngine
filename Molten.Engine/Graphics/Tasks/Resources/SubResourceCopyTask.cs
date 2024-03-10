@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics;
 
-public class SubResourceCopyTask : GraphicsResourceTask<GraphicsResource>
+public class SubResourceCopyTask : GraphicsResourceTask<GpuResource>
 {
     public ResourceRegion? SrcRegion;
 
@@ -11,7 +11,7 @@ public class SubResourceCopyTask : GraphicsResourceTask<GraphicsResource>
     /// <para>For textures, this will vary depending on the number of texture dimensions.</para></summary>
     public Vector3UI DestStart;
 
-    public GraphicsResource DestResource;
+    public GpuResource DestResource;
 
     public uint DestSubResource;
 
@@ -29,9 +29,9 @@ public class SubResourceCopyTask : GraphicsResourceTask<GraphicsResource>
         return true;
     }
 
-    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
     {
-        if (DestResource.Flags.Has(GraphicsResourceFlags.GpuWrite))
+        if (DestResource.Flags.Has(GpuResourceFlags.GpuWrite))
             throw new ResourceCopyException(Resource, DestResource, "The destination resource must have GPU write access for writing the copied data.");
 
         if (Resource is GraphicsBuffer buffer && buffer.BufferType == GraphicsBufferType.Staging)

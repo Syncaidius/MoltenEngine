@@ -14,7 +14,7 @@ public unsafe class TextureSetTask : GraphicsResourceTask<GraphicsTexture>
 
     public uint ArrayIndex;
 
-    public GraphicsMapType MapType;
+    public GpuMapType MapType;
 
     public uint NumElements { get; private set; }
 
@@ -41,7 +41,7 @@ public unsafe class TextureSetTask : GraphicsResourceTask<GraphicsTexture>
         StartIndex = 0;
         Pitch = 0;
         ArrayIndex = 0;
-        MapType = GraphicsMapType.Read;
+        MapType = GpuMapType.Read;
         NumElements = 0;
         NumBytes = 0;
         Stride = 0;
@@ -55,7 +55,7 @@ public unsafe class TextureSetTask : GraphicsResourceTask<GraphicsTexture>
         return true;
     }
 
-    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
     {
         // Calculate size of a single array slice
         uint arraySliceBytes = 0;
@@ -99,9 +99,9 @@ public unsafe class TextureSetTask : GraphicsResourceTask<GraphicsTexture>
 
         uint subLevel = (Resource.MipMapCount * ArrayIndex) + MipLevel;
 
-        if (Resource.Flags.Has(GraphicsResourceFlags.CpuWrite))
+        if (Resource.Flags.Has(GpuResourceFlags.CpuWrite))
         {
-            using (GraphicsStream stream = queue.MapResource(Resource, subLevel, 0, MapType))
+            using (GpuStream stream = queue.MapResource(Resource, subLevel, 0, MapType))
             {
                 // Are we constrained to an area of the texture?
                 if (Area != null)

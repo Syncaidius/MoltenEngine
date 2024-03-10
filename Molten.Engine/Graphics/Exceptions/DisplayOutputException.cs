@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics;
 
-public class DisplayOutputException : GraphicsDeviceException
+public class DisplayOutputException : GpuDeviceException
 {
     public DisplayOutputException(IDisplayOutput output, string message) : base(output.Device, message)
     {

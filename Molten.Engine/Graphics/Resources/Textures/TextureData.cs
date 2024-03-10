@@ -22,8 +22,8 @@ public unsafe class TextureData : ICloneable
     public uint HighestMipMap = 0;
 
     public TextureSlice[] Levels;
-    public GraphicsFormat Format;
-    public GraphicsResourceFlags Flags = GraphicsResourceFlags.None;
+    public GpuResourceFormat Format;
+    public GpuResourceFlags Flags = GpuResourceFlags.None;
 
     public bool IsCompressed;
 
@@ -68,7 +68,7 @@ public unsafe class TextureData : ICloneable
         if (IsCompressed)
             BCHelper.Decompress(this, log);
 
-        if (Format == GraphicsFormat.B8G8R8A8_UNorm || Format == GraphicsFormat.B8G8R8A8_Typeless || Format == GraphicsFormat.B8G8R8A8_UNorm_SRgb)
+        if (Format == GpuResourceFormat.B8G8R8A8_UNorm || Format == GpuResourceFormat.B8G8R8A8_Typeless || Format == GpuResourceFormat.B8G8R8A8_UNorm_SRgb)
         {
             foreach (TextureSlice s in Levels)
             {

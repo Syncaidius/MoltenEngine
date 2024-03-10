@@ -8,8 +8,8 @@ public unsafe class Texture2DDX12 : TextureDX12, ITexture2D
         DeviceDX12 device,
         uint width,
         uint height,
-        GraphicsResourceFlags flags,
-        GraphicsFormat format = GraphicsFormat.R8G8B8A8_UNorm,
+        GpuResourceFlags flags,
+        GpuResourceFormat format = GpuResourceFormat.R8G8B8A8_UNorm,
         uint mipCount = 1,
         uint arraySize = 1,
         AntiAliasLevel aaLevel = AntiAliasLevel.None,
@@ -75,8 +75,8 @@ public unsafe class Texture2DDX12 : TextureDX12, ITexture2D
         };
     }
 
-    public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight, uint newMipMapCount = 0,
-        uint newArraySize = 0, GraphicsFormat newFormat = GraphicsFormat.Unknown)
+    public void Resize(GpuPriority priority, uint newWidth, uint newHeight, uint newMipMapCount = 0,
+        uint newArraySize = 0, GpuResourceFormat newFormat = GpuResourceFormat.Unknown)
     {
         Resize(priority, newWidth, newHeight, newArraySize, newMipMapCount, Depth, newFormat);
     }

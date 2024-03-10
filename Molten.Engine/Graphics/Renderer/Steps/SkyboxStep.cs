@@ -27,7 +27,7 @@ internal class SkyboxStep : RenderStep
         _sphereMesh.Dispose();
     }
 
-    internal override void Render(GraphicsQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
+    internal override void Render(GpuCommandQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
     {
         // No skybox texture or we're not on the first layer.
         if (context.Scene.SkyboxTexture == null || context.Scene.Layers.First() != context.Layer)

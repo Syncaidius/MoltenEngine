@@ -11,8 +11,8 @@ internal unsafe class WindowSurfaceVK : SwapChainSurfaceVK, IWindow
     bool _visible;
 
     internal unsafe WindowSurfaceVK(DeviceVK device, string title, uint width, uint height, uint mipCount,
-        GraphicsResourceFlags flags = GraphicsResourceFlags.None,
-        GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm,
+        GpuResourceFlags flags = GpuResourceFlags.None,
+        GpuResourceFormat format = GpuResourceFormat.B8G8R8A8_UNorm,
         PresentModeKHR presentMode = PresentModeKHR.ImmediateKhr,
         string name = null) : 
         base(device, title, width, height, mipCount, flags, format, presentMode, name)

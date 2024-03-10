@@ -1,7 +1,7 @@
 ﻿namespace Molten.Graphics;
 
 /// <summary>
-/// Represents profiling statistics for a <see cref="GraphicsQueue"/>.
+/// Represents profiling statistics for a <see cref="GpuCommandQueue"/>.
 /// </summary>
 public class GraphicsQueueProfiler
 {

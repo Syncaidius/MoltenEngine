@@ -10,8 +10,8 @@ public unsafe class TextureCubeDX12 : Texture2DDX12, ITextureCube
     /// </summary>
     const int CUBE_SLICE_COUNT = 6;
 
-    internal TextureCubeDX12(DeviceDX12 device, uint width, uint height, GraphicsResourceFlags flags, 
-        GraphicsFormat format = GraphicsFormat.R8G8B8A8_UNorm, uint mipCount = 1, uint cubeCount = 1, uint arraySize = 1, string name = null,
+    internal TextureCubeDX12(DeviceDX12 device, uint width, uint height, GpuResourceFlags flags, 
+        GpuResourceFormat format = GpuResourceFormat.R8G8B8A8_UNorm, uint mipCount = 1, uint cubeCount = 1, uint arraySize = 1, string name = null,
         ProtectedSessionDX12 protectedSession = null)
         : base(device, width, height, flags, format, mipCount, CUBE_SLICE_COUNT * cubeCount * arraySize, AntiAliasLevel.None, MSAAQuality.Default, name, protectedSession)
     {
@@ -46,7 +46,7 @@ public unsafe class TextureCubeDX12 : Texture2DDX12, ITextureCube
         };
     }
 
-    public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight, uint newMipMapCount)
+    public void Resize(GpuPriority priority, uint newWidth, uint newHeight, uint newMipMapCount)
     {
         TextureResizeTask task = Device.Tasks.Get<TextureResizeTask>();
         task.NewFormat = ResourceFormat;

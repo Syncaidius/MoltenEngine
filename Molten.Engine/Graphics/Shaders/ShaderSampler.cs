@@ -1,10 +1,10 @@
 ﻿namespace Molten.Graphics;
 
-public abstract class ShaderSampler : GraphicsObject, IEquatable<ShaderSampler>, IEquatable<ShaderSamplerParameters>
+public abstract class ShaderSampler : GpuObject, IEquatable<ShaderSampler>, IEquatable<ShaderSamplerParameters>
 {
     readonly ShaderSamplerParameters _parameters;
 
-    protected ShaderSampler(GraphicsDevice device, ShaderSamplerParameters parameters) : 
+    protected ShaderSampler(GpuDevice device, ShaderSamplerParameters parameters) : 
         base(device)
     {
         IsComparisonSampler = parameters.IsComparison;

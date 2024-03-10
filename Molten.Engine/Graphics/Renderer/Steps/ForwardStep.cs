@@ -10,7 +10,7 @@ internal class ForwardStep : RenderStep
 
     protected override void OnInitialize(RenderService service) { }
 
-    internal override void Render(GraphicsQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
+    internal override void Render(GpuCommandQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
     {
         if (context.Layer.Renderables.Count == 0)
             return;

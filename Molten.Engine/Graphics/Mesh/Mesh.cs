@@ -7,7 +7,7 @@ public abstract class Mesh : Renderable
 {
     GraphicsBuffer _iBuffer;
     Shader _shader;
-    ShaderBind<GraphicsResource>[][] _resources;
+    ShaderBind<GpuResource>[][] _resources;
     bool _applied;
 
     /// <summary>
@@ -18,10 +18,10 @@ public abstract class Mesh : Renderable
     /// <param name="mode"></param>
     /// <param name="maxIndices">The maximum number of indices to allow in the current <see cref="Mesh"/>.</param>
     /// <param name="initialIndices"></param>
-    protected Mesh(RenderService renderer, GraphicsResourceFlags mode, ushort maxVertices, uint maxIndices, ushort[] initialIndices = null) :
+    protected Mesh(RenderService renderer, GpuResourceFlags mode, ushort maxVertices, uint maxIndices, ushort[] initialIndices = null) :
         base(renderer)
     {
-        _resources = new ShaderBind<GraphicsResource>[Shader.BindTypes.Length][];
+        _resources = new ShaderBind<GpuResource>[Shader.BindTypes.Length][];
         for(int i = 0; i < _resources.Length; i++)
             _resources[i] = [];
 
@@ -46,10 +46,10 @@ public abstract class Mesh : Renderable
     /// <param name="mode"></param>
     /// <param name="maxIndices">The maximum number of indices to allow in the current <see cref="Mesh"/>.</param>
     /// <param name="initialIndices"></param>
-    protected Mesh(RenderService renderer, GraphicsResourceFlags mode, uint maxVertices, uint maxIndices, uint[] initialIndices = null) :
+    protected Mesh(RenderService renderer, GpuResourceFlags mode, uint maxVertices, uint maxIndices, uint[] initialIndices = null) :
         base(renderer)
     {
-        _resources = new ShaderBind<GraphicsResource>[Shader.BindTypes.Length][];
+        _resources = new ShaderBind<GpuResource>[Shader.BindTypes.Length][];
         for (int i = 0; i < _resources.Length; i++)
             _resources[i] = [];
 
@@ -71,7 +71,7 @@ public abstract class Mesh : Renderable
         for (int i = 0; i < _shader.Bindings.Resources.Length; i++)
         {
             ref ShaderBind<ShaderResourceVariable>[] variables = ref _shader.Bindings.Resources[i];
-            ref ShaderBind<GraphicsResource>[] resources = ref _resources[i];
+            ref ShaderBind<GpuResource>[] resources = ref _resources[i];
 
             for(int r = 0; r < variables.Length; r++)
                 variables[r].Object.Value = resources[r].Object;
@@ -95,20 +95,20 @@ public abstract class Mesh : Renderable
             throw new InvalidOperationException($"Mesh is not indexed. Must be created with index format that isn't IndexBufferFormat.None.");
 
         IndexCount = count;
-        _iBuffer.SetData(GraphicsPriority.Apply, data, startIndex, count, IsDiscard, 0);
+        _iBuffer.SetData(GpuPriority.Apply, data, startIndex, count, IsDiscard, 0);
     }
 
-    protected virtual void OnApply(GraphicsQueue queue)
+    protected virtual void OnApply(GpuCommandQueue queue)
     {
         queue.State.IndexBuffer.Value = _iBuffer;
     }
 
-    protected virtual void OnPostDraw(GraphicsQueue queue)
+    protected virtual void OnPostDraw(GpuCommandQueue queue)
     {
         queue.State.IndexBuffer.Value = null;
     }
 
-    protected virtual void OnDraw(GraphicsQueue queue)
+    protected virtual void OnDraw(GpuCommandQueue queue)
     {
         if(_iBuffer != null)
             queue.DrawIndexed(Shader, IndexCount);
@@ -116,7 +116,7 @@ public abstract class Mesh : Renderable
             queue.Draw(Shader, VertexCount);
     }
 
-    protected override sealed void OnRender(GraphicsQueue queue, RenderService renderer, RenderCamera camera, ObjectRenderData data)
+    protected override sealed void OnRender(GpuCommandQueue queue, RenderService renderer, RenderCamera camera, ObjectRenderData data)
     {
         if (Shader == null)
             return;
@@ -171,7 +171,7 @@ public abstract class Mesh : Renderable
                     for(int i = 0; i < value.Bindings.Resources.Length; i++)
                     {
                         ref ShaderBind<ShaderResourceVariable>[] variables = ref value.Bindings.Resources[i];
-                        ref ShaderBind<GraphicsResource>[] resources = ref _resources[i];
+                        ref ShaderBind<GpuResource>[] resources = ref _resources[i];
 
                         if(resources.Length < variables.Length)
                             Array.Resize(ref resources, variables.Length);
@@ -194,12 +194,12 @@ public abstract class Mesh : Renderable
     /// <param name="bindSpace"></param>
     /// <param name="type">The bind type.</param>
     /// <returns></returns>
-    public IGraphicsResource this[ShaderBindType type, uint bindSlot, uint bindSpace = 0]
+    public IGpuResource this[ShaderBindType type, uint bindSlot, uint bindSpace = 0]
     {
         get
         {
             ShaderBindInfo bp = new(bindSlot, bindSpace);
-            ref readonly ShaderBind<GraphicsResource>[] points = ref _resources[(int)type];
+            ref readonly ShaderBind<GpuResource>[] points = ref _resources[(int)type];
 
             for(int i = 0; i < points.Length; i++)
             {
@@ -213,13 +213,13 @@ public abstract class Mesh : Renderable
         set
         {
             ShaderBindInfo bp = new(bindSlot, bindSpace);
-            ref ShaderBind<GraphicsResource>[] points = ref _resources[(int)type];
+            ref ShaderBind<GpuResource>[] points = ref _resources[(int)type];
 
             for (int i = 0; i < points.Length; i++)
             {
                 if (bp == points[i])
                 {
-                    points[i].Object = value as GraphicsResource;
+                    points[i].Object = value as GpuResource;
                     return;
                 }
             }
@@ -233,7 +233,7 @@ public class Mesh<T> : Mesh
     GraphicsBuffer _vb;
 
     internal Mesh(RenderService renderer, 
-        GraphicsResourceFlags mode, ushort maxVertices, uint maxIndices,
+        GpuResourceFlags mode, ushort maxVertices, uint maxIndices,
         T[] initialVertices = null, ushort[] initialIndices = null) :
         base(renderer, mode, maxVertices, maxIndices, initialIndices)
     {
@@ -244,7 +244,7 @@ public class Mesh<T> : Mesh
     }
 
     internal Mesh(RenderService renderer,
-         GraphicsResourceFlags mode, uint maxVertices, uint maxIndices,
+         GpuResourceFlags mode, uint maxVertices, uint maxIndices,
          T[] initialVertices = null, uint[] initialIndices = null) :
          base(renderer, mode, maxVertices, maxIndices, initialIndices)
     {
@@ -267,16 +267,16 @@ public class Mesh<T> : Mesh
     public void SetVertices(T[] data, uint startIndex, uint count)
     {
         VertexCount = count;
-        _vb.SetData(GraphicsPriority.Apply, data, startIndex, count, IsDiscard, 0);
+        _vb.SetData(GpuPriority.Apply, data, startIndex, count, IsDiscard, 0);
     }
 
-    protected override void OnApply(GraphicsQueue queue)
+    protected override void OnApply(GpuCommandQueue queue)
     {
         base.OnApply(queue);
         queue.State.VertexBuffers[0] = _vb;
     }
 
-    protected override void OnPostDraw(GraphicsQueue cmd)
+    protected override void OnPostDraw(GpuCommandQueue cmd)
     {
         base.OnPostDraw(cmd);
         cmd.State.VertexBuffers[0] = null;

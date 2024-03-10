@@ -15,7 +15,7 @@ internal class RenderAddScene : GraphicsTask
         return true;
     }
 
-    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
     {
         renderer.Scenes.Add(Data);
         return true;

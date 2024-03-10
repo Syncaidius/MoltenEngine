@@ -14,7 +14,7 @@ public abstract class RenderService : EngineService
     bool _surfaceResizeRequired;
 
     RenderChain _chain;
-    List<GraphicsDevice> _devices;
+    List<GpuDevice> _devices;
 
     AntiAliasLevel _requestedMultiSampleLevel = AntiAliasLevel.None;
 
@@ -27,7 +27,7 @@ public abstract class RenderService : EngineService
     /// </summary>
     public RenderService()
     {
-        _devices = new List<GraphicsDevice>();
+        _devices = new List<GpuDevice>();
 
         Surfaces = new SurfaceManager(this);
         Overlay = new OverlayProvider();
@@ -77,7 +77,7 @@ public abstract class RenderService : EngineService
 
         try
         {
-            List<GraphicsDevice> devices = OnInitializeDevices(settings.Graphics, DisplayManager);
+            List<GpuDevice> devices = OnInitializeDevices(settings.Graphics, DisplayManager);
             _devices.AddRange(devices);
 
             Device = _devices[0];
@@ -142,7 +142,7 @@ public abstract class RenderService : EngineService
         // Also ensure the backbuffer is always big enough for the largest scene render surface.
         SceneRenderData data;
         RenderCamera camera;
-        GraphicsDevice device;
+        GpuDevice device;
 
         for (int i =0; i < Scenes.Count; i++)
         {
@@ -229,7 +229,7 @@ public abstract class RenderService : EngineService
         }
     }
 
-    internal void RenderSceneLayer(GraphicsQueue cmd, LayerRenderData layerData, RenderCamera camera)
+    internal void RenderSceneLayer(GpuCommandQueue cmd, LayerRenderData layerData, RenderCamera camera)
     {
         // TODO To start with we're just going to draw ALL objects in the render tree.
         // Sorting and culling will come later
@@ -290,7 +290,7 @@ public abstract class RenderService : EngineService
     /// Invoked during the first stage of service initialization to allow any api-related objects to be created/initialized prior to renderer initialization.
     /// </summary>
     /// <param name="settings">The <see cref="GraphicsSettings"/> bound to the current engine instance.</param>
-    protected abstract GraphicsManager OnInitializeDisplayManager(GraphicsSettings settings);
+    protected abstract GpuManager OnInitializeDisplayManager(GraphicsSettings settings);
 
     /// <summary>
     /// Invoked during render service initialization to allow the provisioning and initialization of any available/supported graphics devices on the host system.
@@ -298,7 +298,7 @@ public abstract class RenderService : EngineService
     /// <param name="settings"></param>
     /// <param name="manager"></param>
     /// <returns></returns>
-    protected abstract List<GraphicsDevice> OnInitializeDevices(GraphicsSettings settings, GraphicsManager manager);
+    protected abstract List<GpuDevice> OnInitializeDevices(GraphicsSettings settings, GpuManager manager);
 
     /// <summary>
     /// Occurs when the current <see cref="RenderService"/> instance/implementation is being disposed.
@@ -315,7 +315,7 @@ public abstract class RenderService : EngineService
         _chain.Dispose();
         SpriteBatch.Dispose();
 
-        foreach (GraphicsDevice device in _devices)
+        foreach (GpuDevice device in _devices)
             device.Dispose();
 
         _devices.Clear();
@@ -335,20 +335,20 @@ public abstract class RenderService : EngineService
     /// <summary>
     /// Gets the display manager bound to the renderer.
     /// </summary>
-    public GraphicsManager DisplayManager { get; private set; }
+    public GpuManager DisplayManager { get; private set; }
 
     /// <summary>
-    /// Gets the primary <see cref="GraphicsDevice"/> bound to the current <see cref="RenderService"/>. 
+    /// Gets the primary <see cref="GpuDevice"/> bound to the current <see cref="RenderService"/>. 
     /// <para>This device is allocated the majority of render workload, but certain tasks may be offloaded to secondary devices, if available.</para>
     /// </summary>
-    public GraphicsDevice Device { get; private set; }
+    public GpuDevice Device { get; private set; }
 
     /// <summary>
-    /// Gets a <see cref="GraphicsDevice"/> by it's index. The primary <see cref="Device"/> is always at index 0, if it exists.
+    /// Gets a <see cref="GpuDevice"/> by it's index. The primary <see cref="Device"/> is always at index 0, if it exists.
     /// </summary>
     /// <param name="index"></param>
     /// <returns></returns>
-    internal GraphicsDevice this[int index] => _devices[index];
+    internal GpuDevice this[int index] => _devices[index];
 
     /// <summary>
     /// Gets a list of all the scenes current attached to the renderer.

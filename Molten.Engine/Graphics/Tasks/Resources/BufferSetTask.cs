@@ -9,7 +9,7 @@ internal class BufferSetTask<T> : GraphicsResourceTask<GraphicsBuffer>
     /// <summary>The number of elements to be copied.</summary>
     internal uint ElementCount;
 
-    internal GraphicsMapType MapType;
+    internal GpuMapType MapType;
 
     internal uint DataStartIndex;
 
@@ -22,7 +22,7 @@ internal class BufferSetTask<T> : GraphicsResourceTask<GraphicsBuffer>
     {
         ByteOffset = 0;
         ElementCount = 0;
-        MapType = GraphicsMapType.Read;
+        MapType = GpuMapType.Read;
         DataStartIndex = 0;
         Data = null;
         DestBuffer = null;
@@ -33,17 +33,17 @@ internal class BufferSetTask<T> : GraphicsResourceTask<GraphicsBuffer>
         return true;
     }
 
-    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
     {
-        if (Resource.Flags.Has(GraphicsResourceFlags.CpuWrite))
+        if (Resource.Flags.Has(GpuResourceFlags.CpuWrite))
         {
-            using (GraphicsStream stream = queue.MapResource(Resource, 0, ByteOffset, MapType))
+            using (GpuStream stream = queue.MapResource(Resource, 0, ByteOffset, MapType))
                 stream.WriteRange(Data, DataStartIndex, ElementCount);
         }
         else
         {
             GraphicsBuffer staging = queue.Device.Frame.StagingBuffer;
-            using (GraphicsStream stream = queue.MapResource(staging, 0, ByteOffset, GraphicsMapType.Write))
+            using (GpuStream stream = queue.MapResource(staging, 0, ByteOffset, GpuMapType.Write))
                 stream.WriteRange(Data, DataStartIndex, ElementCount);
 
             queue.CopyResource(staging, Resource);

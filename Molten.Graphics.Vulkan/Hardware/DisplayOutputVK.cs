@@ -33,7 +33,7 @@ public unsafe class DisplayOutputVK : IDisplayOutput
             _modes.Add(new DisplayModeVK(modes++));
     }
 
-    public IReadOnlyList<IDisplayMode> GetModes(GraphicsFormat format)
+    public IReadOnlyList<IDisplayMode> GetModes(GpuResourceFormat format)
     {
         return _modes.AsReadOnly();
     }
@@ -44,7 +44,7 @@ public unsafe class DisplayOutputVK : IDisplayOutput
 
     internal DeviceVK AssociatedDevice { get; set; }
 
-    public GraphicsDevice Device => AssociatedDevice;
+    public GpuDevice Device => AssociatedDevice;
 
     internal Monitor* Ptr => _monitor;
 

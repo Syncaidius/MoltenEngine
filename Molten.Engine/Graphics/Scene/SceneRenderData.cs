@@ -29,9 +29,9 @@ public class SceneRenderData
 
     public List<LayerRenderData> Layers = new List<LayerRenderData>();
 
-    GraphicsTaskManager _taskManager;
+    GpuTaskManager _taskManager;
 
-    internal SceneRenderData(GraphicsTaskManager taskManager)
+    internal SceneRenderData(GpuTaskManager taskManager)
     {
         _taskManager = taskManager;
     }

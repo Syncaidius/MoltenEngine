@@ -14,10 +14,10 @@ internal unsafe class DisplayModeVK : IDisplayMode
         {
             string modeName = $"R{_mode->RedBits}G{_mode->GreenBits}B{_mode->BlueBits}A8_SNorm";
 
-            if (Enum.TryParse(modeName, out GraphicsFormat format))
+            if (Enum.TryParse(modeName, out GpuResourceFormat format))
                 Format = format;
             else
-                Format = GraphicsFormat.R8G8B8A8_SNorm;
+                Format = GpuResourceFormat.R8G8B8A8_SNorm;
         }
     }
 
@@ -31,5 +31,5 @@ internal unsafe class DisplayModeVK : IDisplayMode
 
     public bool StereoPresent => false;
 
-    public GraphicsFormat Format { get; }
+    public GpuResourceFormat Format { get; }
 }

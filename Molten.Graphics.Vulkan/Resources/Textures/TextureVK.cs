@@ -10,7 +10,7 @@ public unsafe abstract class TextureVK : GraphicsTexture
 
     ResourceHandleVK<Image, ImageHandleVK> _handle;
 
-    protected TextureVK(DeviceVK device, TextureDimensions dimensions, GraphicsFormat format, GraphicsResourceFlags flags, string name) :
+    protected TextureVK(DeviceVK device, TextureDimensions dimensions, GpuResourceFormat format, GpuResourceFlags flags, string name) :
         base(device, ref dimensions, format, flags, name)
     {
         Device = device;
@@ -25,21 +25,21 @@ public unsafe abstract class TextureVK : GraphicsTexture
     {
         // In Vulkan, the CPU either has read AND write access, or none at all.
         // If either of the CPU access flags were provided, we need to add both.
-        if (Flags.Has(GraphicsResourceFlags.CpuRead) || Flags.Has(GraphicsResourceFlags.CpuWrite))
-            Flags |= GraphicsResourceFlags.CpuRead | GraphicsResourceFlags.CpuWrite;
+        if (Flags.Has(GpuResourceFlags.CpuRead) || Flags.Has(GpuResourceFlags.CpuWrite))
+            Flags |= GpuResourceFlags.CpuRead | GpuResourceFlags.CpuWrite;
 
 
         ImageUsageFlags flags = ImageUsageFlags.None;
-        if (Flags.Has(GraphicsResourceFlags.GpuRead))
+        if (Flags.Has(GpuResourceFlags.GpuRead))
             flags |= ImageUsageFlags.TransferSrcBit;
 
-        if (Flags.Has(GraphicsResourceFlags.GpuWrite))
+        if (Flags.Has(GpuResourceFlags.GpuWrite))
             flags |= ImageUsageFlags.TransferDstBit;
 
-        if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
+        if (Flags.Has(GpuResourceFlags.UnorderedAccess))
             flags |= ImageUsageFlags.StorageBit;
 
-        if (!Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
+        if (!Flags.Has(GpuResourceFlags.DenyShaderAccess))
             flags |= ImageUsageFlags.SampledBit;
 
         _info = new ImageCreateInfo(StructureType.ImageCreateInfo);
@@ -82,24 +82,24 @@ public unsafe abstract class TextureVK : GraphicsTexture
             //    throw new GraphicsResourceException(this, "A depth surface texture cannot use linear tiling mode");
 
             if (_info.ImageType != ImageType.Type2D)
-                throw new GraphicsResourceException(this, "A non-2D texture cannot use linear tiling mode");
+                throw new GpuResourceException(this, "A non-2D texture cannot use linear tiling mode");
 
             if (_info.MipLevels != 1)
-                throw new GraphicsResourceException(this, "Texture linear-tiled texture must have only 1 mip-map level.");
+                throw new GpuResourceException(this, "Texture linear-tiled texture must have only 1 mip-map level.");
 
             if (_info.ArrayLayers != 1)
-                throw new GraphicsResourceException(this, "Texture linear-tiled texture must have only 1 array layer.");
+                throw new GpuResourceException(this, "Texture linear-tiled texture must have only 1 array layer.");
 
             if (_info.Samples != SampleCountFlags.Count1Bit)
-                throw new GraphicsResourceException(this, "Texture linear-tiled texture must have a sample count of 1.");
+                throw new GpuResourceException(this, "Texture linear-tiled texture must have a sample count of 1.");
 
             if (_info.Usage > (ImageUsageFlags.TransferSrcBit | ImageUsageFlags.TransferDstBit))
-                throw new GraphicsResourceException(this, "A linear-tiled texture must have only source and/or destination transfer bits set. Any other usage flags are invalid.");
+                throw new GpuResourceException(this, "A linear-tiled texture must have only source and/or destination transfer bits set. Any other usage flags are invalid.");
         }
 
         // Does the memory need to be host-visible?
         MemoryPropertyFlags memFlags = MemoryPropertyFlags.None;
-        if (Flags.Has(GraphicsResourceFlags.CpuRead) || Flags.Has(GraphicsResourceFlags.CpuWrite))
+        if (Flags.Has(GpuResourceFlags.CpuRead) || Flags.Has(GpuResourceFlags.CpuWrite))
             memFlags |= MemoryPropertyFlags.HostCoherentBit | MemoryPropertyFlags.HostVisibleBit;
         else
             memFlags |= MemoryPropertyFlags.DeviceLocalBit;
@@ -130,7 +130,7 @@ public unsafe abstract class TextureVK : GraphicsTexture
         subHandle.Memory = device.Memory.Allocate(ref memRequirements, memFlags);
 
         if (subHandle.Memory == null)
-            throw new GraphicsResourceException(this, "Failed to allocate memory for image resource");
+            throw new GpuResourceException(this, "Failed to allocate memory for image resource");
 
         _viewInfo.Image = *subHandle.Ptr;
         r = device.VK.BindImageMemory(device, *subHandle.Ptr, subHandle.Memory, 0);
@@ -142,7 +142,7 @@ public unsafe abstract class TextureVK : GraphicsTexture
             return;
     }
 
-    protected override void OnResizeTexture(ref readonly TextureDimensions dimensions, GraphicsFormat format)
+    protected override void OnResizeTexture(ref readonly TextureDimensions dimensions, GpuResourceFormat format)
     {
         throw new NotImplementedException();
     }
@@ -152,7 +152,7 @@ public unsafe abstract class TextureVK : GraphicsTexture
         Transition(cmd, oldLayout, newLayout, ResourceFormat, MipMapCount, ArraySize);
     }
 
-    internal void Transition(GraphicsQueueVK cmd, ImageLayout oldLayout, ImageLayout newLayout, GraphicsFormat newFormat, uint newMipMapCount, uint newArraySize)
+    internal void Transition(GraphicsQueueVK cmd, ImageLayout oldLayout, ImageLayout newLayout, GpuResourceFormat newFormat, uint newMipMapCount, uint newArraySize)
     {
         ImageMemoryBarrier barrier = new ImageMemoryBarrier()
         {
@@ -187,7 +187,7 @@ public unsafe abstract class TextureVK : GraphicsTexture
         switch (layout)
         {
             default:
-                throw new GraphicsResourceException(this, $"Unsupported transition image layout '{layout}'.");
+                throw new GpuResourceException(this, $"Unsupported transition image layout '{layout}'.");
 
             case ImageLayout.SharedPresentKhr:
             case ImageLayout.PresentSrcKhr:

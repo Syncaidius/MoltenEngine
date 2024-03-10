@@ -4,14 +4,14 @@ internal class DepthSurfaceTracker : IDisposable
 {
     SurfaceSizeMode _mode;
     Dictionary<AntiAliasLevel, IDepthStencilSurface> _surfaces;
-    GraphicsDevice _device;
+    GpuDevice _device;
 
     uint _width;
     uint _height;
     DepthFormat _format;
 
     internal DepthSurfaceTracker(
-        GraphicsDevice device,
+        GpuDevice device,
         AntiAliasLevel[] aaLevels,
         uint width,
         uint height,
@@ -35,12 +35,12 @@ internal class DepthSurfaceTracker : IDisposable
         {
             case SurfaceSizeMode.Full:
                 foreach(IDepthStencilSurface rs in _surfaces.Values)
-                    rs?.Resize(GraphicsPriority.Apply, minWidth, minHeight);
+                    rs?.Resize(GpuPriority.Apply, minWidth, minHeight);
                 break;
 
             case SurfaceSizeMode.Half:
                 foreach (IDepthStencilSurface rs in _surfaces.Values)
-                    rs?.Resize(GraphicsPriority.Apply, (minWidth / 2) + 1, (minHeight / 2) + 1);
+                    rs?.Resize(GpuPriority.Apply, (minWidth / 2) + 1, (minHeight / 2) + 1);
                 break;
         }
     }
@@ -69,7 +69,7 @@ internal class DepthSurfaceTracker : IDisposable
             }
             else if (rs.Width != _width || rs.Height != _height)
             {
-                rs.Resize(GraphicsPriority.Apply, _width, _height);
+                rs.Resize(GpuPriority.Apply, _width, _height);
             }
 
             return rs;

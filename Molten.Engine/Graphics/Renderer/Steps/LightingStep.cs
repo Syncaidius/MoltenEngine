@@ -12,7 +12,7 @@ internal class LightingStep : RenderStep
     {
         uint stride = (uint)Marshal.SizeOf<LightData>();
         uint maxLights = 2000; // TODO move to graphics settings
-        _lightBuffer = renderer.Device.Resources.CreateStructuredBuffer<LightData>(GraphicsResourceFlags.CpuWrite, maxLights);
+        _lightBuffer = renderer.Device.Resources.CreateStructuredBuffer<LightData>(GpuResourceFlags.CpuWrite, maxLights);
 
         // Load shaders
         ShaderCompileResult result = renderer.Device.Resources.LoadEmbeddedShader("Molten.Assets", "light_point.json");
@@ -27,12 +27,12 @@ internal class LightingStep : RenderStep
         _matDebugPoint.Dispose();
     }
 
-    internal override void Render(GraphicsQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
+    internal override void Render(GpuCommandQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
     {
         IRenderSurface2D _surfaceLighting = Renderer.Surfaces[MainSurfaceType.Lighting];
         IDepthStencilSurface sDepth = Renderer.Surfaces.GetDepth();
 
-        _surfaceLighting.Clear(GraphicsPriority.Immediate, context.Scene.AmbientLightColor);
+        _surfaceLighting.Clear(GpuPriority.Immediate, context.Scene.AmbientLightColor);
         queue.State.Surfaces.Reset();
         queue.State.Surfaces[0] = _surfaceLighting;
         queue.State.DepthSurface.Value = sDepth;
@@ -40,7 +40,7 @@ internal class LightingStep : RenderStep
         RenderPointLights(Renderer, queue, camera, context.Scene, sDepth);
     }
 
-    private void RenderPointLights(RenderService renderer, GraphicsQueue queue, RenderCamera camera, SceneRenderData scene, IDepthStencilSurface dsSurface)
+    private void RenderPointLights(RenderService renderer, GpuCommandQueue queue, RenderCamera camera, SceneRenderData scene, IDepthStencilSurface dsSurface)
     {
         IRenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
         IRenderSurface2D sNormals = renderer.Surfaces[MainSurfaceType.Normals];
@@ -62,7 +62,7 @@ internal class LightingStep : RenderStep
             scene.PointLights.Data[i] = ld;
         }
 
-        _lightBuffer.SetData(GraphicsPriority.Immediate, scene.PointLights.Data, true);
+        _lightBuffer.SetData(GpuPriority.Immediate, scene.PointLights.Data, true);
 
         // Set data buffer on domain and pixel shaders
         _matPoint.Light.Data.Value = _lightBuffer; // TODO Need to implement a dynamic structured buffer we can reuse here.

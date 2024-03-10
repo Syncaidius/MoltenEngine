@@ -126,14 +126,14 @@ internal class ShaderStructureBuilder
     private void OnBuildTextureVariable(ShaderCompilerContext context, ShaderPassStage stage, ShaderResourceInfo info, ShaderPassDefinition passDef)
     {
         ShaderResourceVariable obj = null;
-        GraphicsFormatSupportFlags supportFlags = GraphicsFormatSupportFlags.None;
+        GpuFormatSupportFlags supportFlags = GpuFormatSupportFlags.None;
 
         switch (info.Dimension)
         {
             case ShaderResourceDimension.Texture1DArray:
             case ShaderResourceDimension.Texture1D:
                 obj = BuildResourceVariable<ShaderResourceVariable<ITexture1D>>(context, stage, info, ShaderBindType.Resource);
-                supportFlags |= GraphicsFormatSupportFlags.Texture1D;
+                supportFlags |= GpuFormatSupportFlags.Texture1D;
                 break;
 
             case ShaderResourceDimension.Texture2DMS:
@@ -141,26 +141,26 @@ internal class ShaderStructureBuilder
             case ShaderResourceDimension.Texture2DArray:
             case ShaderResourceDimension.Texture2D:
                 obj = BuildResourceVariable<ShaderResourceVariable<ITexture2D>>(context, stage, info, ShaderBindType.Resource);
-                supportFlags |= GraphicsFormatSupportFlags.Texture2D;
+                supportFlags |= GpuFormatSupportFlags.Texture2D;
                 break;
 
             case ShaderResourceDimension.Texture3D:
                 obj = BuildResourceVariable<ShaderResourceVariable<ITexture3D>>(context, stage, info, ShaderBindType.Resource);
-                supportFlags |= GraphicsFormatSupportFlags.Texture3D;
+                supportFlags |= GpuFormatSupportFlags.Texture3D;
                 break;
 
             case ShaderResourceDimension.TextureCube:
                 obj = BuildResourceVariable<ShaderResourceVariable<ITextureCube>>(context, stage, info, ShaderBindType.Resource);
-                supportFlags |= GraphicsFormatSupportFlags.Texturecube;
+                supportFlags |= GpuFormatSupportFlags.Texturecube;
                 break;
         }
 
         // Set the expected format.
-        if (passDef.Parameters.Formats.TryGetValue($"t{info.BindPoint}", out GraphicsFormat format))
+        if (passDef.Parameters.Formats.TryGetValue($"t{info.BindPoint}", out GpuResourceFormat format))
         {
             if (!stage.Device.IsFormatSupported(format, supportFlags))
             {
-                GraphicsFormatSupportFlags supported = stage.Device.GetFormatSupport(format);
+                GpuFormatSupportFlags supported = stage.Device.GetFormatSupport(format);
                 context.AddError($"Format 't{info.BindPoint}' not supported for texture ('{info.Name}') in pass '{passDef.Name}'");
                 context.AddError($"\tFormat: {format}");
                 context.AddError($"\tSupported: {supported}");

@@ -4,7 +4,7 @@ namespace Molten.Graphics.Textures;
 
 internal class BC7Parser : BCBlockParser
 {
-    public override GraphicsFormat ExpectedFormat => GraphicsFormat.BC7_UNorm;
+    public override GpuResourceFormat ExpectedFormat => GpuResourceFormat.BC7_UNorm;
     ObjectPool<BCContext> _contextPool = new ObjectPool<BCContext>(() => new BCContext());
 
     internal unsafe override Color4[] Decode(BinaryReader imageReader, Logger log)

@@ -231,7 +231,7 @@ public partial class ShaderPassParameters
     /// <summary>
     /// Gets or sets whether or not depth bounds testing is enabled. 
     /// <para>This property should throw a <see cref="NotSupportedException"/>, 
-    /// if <see cref="GraphicsCapabilities.DepthBoundsTesting"/> is false in <see cref="GraphicsDevice.Adapter"/>.</para>
+    /// if <see cref="GpuCapabilities.DepthBoundsTesting"/> is false in <see cref="GpuDevice.Adapter"/>.</para>
     /// </summary>
     public bool DepthBoundsTestEnabled;
 
@@ -312,6 +312,6 @@ public partial class ShaderPassParameters
     public Dictionary<string, string> RawFormats { get; set; } = new();
 
     [JsonIgnore]
-    public Dictionary<string, GraphicsFormat> Formats { get; } = new();
+    public Dictionary<string, GpuResourceFormat> Formats { get; } = new();
     #endregion
 }

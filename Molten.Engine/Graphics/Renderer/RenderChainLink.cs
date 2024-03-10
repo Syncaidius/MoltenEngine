@@ -74,7 +74,7 @@ internal class RenderChainLink : IPoolable
         link._chain.LinkPool.Recycle(link);
     }
 
-    internal void Run(GraphicsQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
+    internal void Run(GpuCommandQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
     {
         bool canStart = true;
 

@@ -32,13 +32,13 @@ internal class CompositionStep : RenderStep
         _fxCompose.Dispose();
     }
 
-    internal override void Render(GraphicsQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
+    internal override void Render(GpuCommandQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
     {
         _orthoCamera.Surface = camera.Surface;
 
         RectangleF vpBounds = camera.Surface.Viewport.Bounds;
 
-        context.CompositionSurface.Clear(GraphicsPriority.Immediate, camera.BackgroundColor);
+        context.CompositionSurface.Clear(GpuPriority.Immediate, camera.BackgroundColor);
         queue.State.Surfaces.Reset();
         queue.State.Surfaces[0] = context.CompositionSurface;
         queue.State.DepthSurface.Value = null;

@@ -22,7 +22,7 @@ internal unsafe class GraphicsCommandListDX12 : CommandListDX12<ID3D12GraphicsCo
         _isClosed = false;
     }
 
-    public void CopyResource(GraphicsResource dst, GraphicsResource src)
+    public void CopyResource(GpuResource dst, GpuResource src)
     {
         Handle->CopyResource((ResourceHandleDX12)dst.Handle, (ResourceHandleDX12)src.Handle);
     }

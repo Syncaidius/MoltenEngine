@@ -6,14 +6,14 @@ namespace Molten.Graphics;
 /// <summary>
 /// An a base class implementation for key shader components, such as materials, material passes or compute tasks.
 /// </summary>
-public abstract class ShaderPass : GraphicsObject, IEnumerable<ShaderPassStage>, IEnumerable<ShaderStageType>
+public abstract class ShaderPass : GpuObject, IEnumerable<ShaderPassStage>, IEnumerable<ShaderStageType>
 {
     /// <summary>
     /// A callback that is used by <see cref="ShaderPass"/> when it has finished its draw/dispatch call.
     /// </summary>
     /// <param name="pass">The pass that was completed.</param>
     /// <param name="customInfo">Custom information that can be passed between shader passes.</param>
-    public delegate void OnCompletedCallback(ShaderPass pass, GraphicsQueue.CustomDrawInfo customInfo);
+    public delegate void OnCompletedCallback(ShaderPass pass, GpuCommandQueue.CustomDrawInfo customInfo);
 
     public ShaderBindManager Bindings { get; }
 
@@ -51,7 +51,7 @@ public abstract class ShaderPass : GraphicsObject, IEnumerable<ShaderPassStage>,
 
     protected abstract void OnInitialize(ShaderPassParameters parameters);
 
-    public void InvokeCompleted(GraphicsQueue.CustomDrawInfo customInfo)
+    public void InvokeCompleted(GpuCommandQueue.CustomDrawInfo customInfo)
     {
         OnCompleted?.Invoke(this, customInfo);
     }
@@ -125,9 +125,9 @@ public abstract class ShaderPass : GraphicsObject, IEnumerable<ShaderPassStage>,
     public GeometryHullTopology GeometryPrimitive { get; set; }
 
     /// <summary>
-    /// Gets or sets the depth write permission. the default value is <see cref="GraphicsDepthWritePermission.Enabled"/>.
+    /// Gets or sets the depth write permission. the default value is <see cref="GpuDepthWritePermission.Enabled"/>.
     /// </summary>
-    public GraphicsDepthWritePermission WritePermission { get; set; } = GraphicsDepthWritePermission.Enabled;
+    public GpuDepthWritePermission WritePermission { get; set; } = GpuDepthWritePermission.Enabled;
 
     /// <summary>
     /// Gets or sets the number of iterations the shader/component should be run.

@@ -2,7 +2,7 @@
 
 internal class BC2Parser : BCBlockParser
 {
-    public override GraphicsFormat ExpectedFormat => GraphicsFormat.BC2_UNorm;
+    public override GpuResourceFormat ExpectedFormat => GpuResourceFormat.BC2_UNorm;
 
     internal override Color4[] Decode(BinaryReader imageReader, Logger log)
     {

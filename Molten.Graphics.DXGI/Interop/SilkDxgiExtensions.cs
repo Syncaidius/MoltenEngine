@@ -20,13 +20,13 @@ public static class SilkDxgiExtensions
         return new Rectangle(r.Min.X, r.Min.Y, r.Size.X, r.Size.Y);
     }
 
-    public static Format ToApi(this GraphicsFormat format)
+    public static Format ToApi(this GpuResourceFormat format)
     {
         return (Format)format;
     }
 
-    public static GraphicsFormat FromApi(this Format format)
+    public static GpuResourceFormat FromApi(this Format format)
     {
-        return (GraphicsFormat)format;
+        return (GpuResourceFormat)format;
     }
 }

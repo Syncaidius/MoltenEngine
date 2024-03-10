@@ -4,34 +4,34 @@ namespace Molten.Graphics.DX12;
 
 internal static class DescriptionInterop
 {
-    internal static HeapType ToHeapType(this GraphicsResourceFlags flags)
+    internal static HeapType ToHeapType(this GpuResourceFlags flags)
     {
-        if (flags.Has(GraphicsResourceFlags.CpuRead)
-            || flags.Has(GraphicsResourceFlags.CpuWrite)
-            || flags.Has(GraphicsResourceFlags.GpuRead)
-            || flags.Has(GraphicsResourceFlags.GpuWrite))
+        if (flags.Has(GpuResourceFlags.CpuRead)
+            || flags.Has(GpuResourceFlags.CpuWrite)
+            || flags.Has(GpuResourceFlags.GpuRead)
+            || flags.Has(GpuResourceFlags.GpuWrite))
         {
             // GPU read.
-            if (flags.Has(GraphicsResourceFlags.GpuRead))
+            if (flags.Has(GpuResourceFlags.GpuRead))
             {
                 // GPU read/write.
-                if (flags.Has(GraphicsResourceFlags.GpuWrite))
+                if (flags.Has(GpuResourceFlags.GpuWrite))
                 {
                     // D3D12_HEAP_TYPE_DEFAULT - GPU read/write, CPU must be inaccessible.
-                    if (!flags.Has(GraphicsResourceFlags.CpuRead) && !flags.Has(GraphicsResourceFlags.CpuWrite))
+                    if (!flags.Has(GpuResourceFlags.CpuRead) && !flags.Has(GpuResourceFlags.CpuWrite))
                         return HeapType.Default;
                 }
                 else
                 {
                     // D3D12_HEAP_TYPE_UPLOAD - GPU read, CPU write.
-                    if (flags.Has(GraphicsResourceFlags.CpuWrite))
+                    if (flags.Has(GpuResourceFlags.CpuWrite))
                         return HeapType.Upload;
                 }
             }
-            else if (flags.Has(GraphicsResourceFlags.GpuWrite)) // GPU write
+            else if (flags.Has(GpuResourceFlags.GpuWrite)) // GPU write
             {
                 // D3D12_HEAP_TYPE_READBACK - GPU write, CPU read.
-                if (flags.Has(GraphicsResourceFlags.CpuRead))
+                if (flags.Has(GpuResourceFlags.CpuRead))
                     return HeapType.Readback;
             }
 
@@ -44,7 +44,7 @@ internal static class DescriptionInterop
         }
     }
 
-    internal static ResourceStates ToResourceState(this GraphicsResourceFlags flags)
+    internal static ResourceStates ToResourceState(this GpuResourceFlags flags)
     {
         HeapType heapType = flags.ToHeapType();
 

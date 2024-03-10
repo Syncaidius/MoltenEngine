@@ -24,12 +24,12 @@ public class ResourceManagerVK :GraphicsResourceManager<DeviceVK>
         throw new NotImplementedException();
     }
 
-    protected unsafe override GraphicsBuffer CreateBuffer<T>(GraphicsBufferType type, GraphicsResourceFlags flags, GraphicsFormat format, uint numElements, T[] initialData)
+    protected unsafe override GraphicsBuffer CreateBuffer<T>(GraphicsBufferType type, GpuResourceFlags flags, GpuResourceFormat format, uint numElements, T[] initialData)
     {
         BufferVK buffer = new BufferVK(Device, type, flags, (uint)sizeof(T), numElements, 1);
 
         if (initialData != null)
-            buffer.SetData(GraphicsPriority.Apply, initialData, false);
+            buffer.SetData(GpuPriority.Apply, initialData, false);
 
         return buffer;
     }
@@ -46,15 +46,15 @@ public class ResourceManagerVK :GraphicsResourceManager<DeviceVK>
 
     public override IDepthStencilSurface CreateDepthSurface(uint width, uint height,
         DepthFormat format = DepthFormat.R24G8,
-        GraphicsResourceFlags flags = GraphicsResourceFlags.None | GraphicsResourceFlags.GpuWrite,
+        GpuResourceFlags flags = GpuResourceFlags.None | GpuResourceFlags.GpuWrite,
         uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, string name = null)
     {
         return new DepthSurfaceVK(Device, width, height, mipCount, arraySize, aaLevel, MSAAQuality.Default, format, flags, name);
     }
 
     public override IRenderSurface2D CreateSurface(uint width, uint height,
-        GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm,
-        GraphicsResourceFlags flags = GraphicsResourceFlags.None | GraphicsResourceFlags.GpuWrite,
+        GpuResourceFormat format = GpuResourceFormat.R8G8B8A8_SNorm,
+        GpuResourceFlags flags = GpuResourceFlags.None | GpuResourceFlags.GpuWrite,
         uint mipCount = 1, uint arraySize = 1,
         AntiAliasLevel aaLevel = AntiAliasLevel.None, string name = null)
     {
@@ -66,10 +66,10 @@ public class ResourceManagerVK :GraphicsResourceManager<DeviceVK>
         string formName,
         uint width,
         uint height,
-        GraphicsFormat format = GraphicsFormat.B8G8R8A8_UNorm,
+        GpuResourceFormat format = GpuResourceFormat.B8G8R8A8_UNorm,
         uint mipCount = 1)
     {
-        return new WindowSurfaceVK(Device, formTitle, width, height, mipCount, GraphicsResourceFlags.None, format);
+        return new WindowSurfaceVK(Device, formTitle, width, height, mipCount, GpuResourceFlags.None, format);
     }
 
     public override void ResolveTexture(GraphicsTexture source, GraphicsTexture destination)
@@ -82,14 +82,14 @@ public class ResourceManagerVK :GraphicsResourceManager<DeviceVK>
         throw new NotImplementedException();
     }
 
-    public override ITexture1D CreateTexture1D(uint width, uint mipCount, uint arraySize, GraphicsFormat format, GraphicsResourceFlags flags, string name = null)
+    public override ITexture1D CreateTexture1D(uint width, uint mipCount, uint arraySize, GpuResourceFormat format, GpuResourceFlags flags, string name = null)
     {
         return new Texture1DVK(Device, width, mipCount, arraySize, format, flags, name);
     }
 
     public override ITexture2D CreateTexture2D(uint width, uint height, uint mipCount, uint arraySize,
-        GraphicsFormat format,
-        GraphicsResourceFlags flags,
+        GpuResourceFormat format,
+        GpuResourceFlags flags,
         AntiAliasLevel aaLevel = AntiAliasLevel.None,
         MSAAQuality aaQuality = MSAAQuality.Default,
         string name = null)
@@ -102,16 +102,16 @@ public class ResourceManagerVK :GraphicsResourceManager<DeviceVK>
     }
 
     public override ITexture3D CreateTexture3D(uint width, uint height, uint depth, uint mipCount,
-        GraphicsFormat format,
-        GraphicsResourceFlags flags,
+        GpuResourceFormat format,
+        GpuResourceFlags flags,
         string name = null)
     {
         TextureDimensions dim = new TextureDimensions(width, height, depth, mipCount, 1);
         return new Texture3DVK(Device, dim, format, flags, name);
     }
     public override ITextureCube CreateTextureCube(uint width, uint height, uint mipCount,
-        GraphicsFormat format, uint cubeCount = 1, uint arraySize = 1,
-        GraphicsResourceFlags flags = GraphicsResourceFlags.None, string name = null)
+        GpuResourceFormat format, uint cubeCount = 1, uint arraySize = 1,
+        GpuResourceFlags flags = GpuResourceFlags.None, string name = null)
     {
         return new TextureCubeVK(Device, width, height, mipCount, 1, cubeCount, format, flags, name);
     }

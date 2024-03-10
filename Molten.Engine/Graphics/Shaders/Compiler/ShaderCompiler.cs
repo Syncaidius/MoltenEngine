@@ -29,7 +29,7 @@ public abstract class ShaderCompiler : EngineObject
     /// <param name="device"></param>
     /// <param name="includePath"></param>
     /// <param name="includeAssembly"></param>
-    protected ShaderCompiler(GraphicsDevice device, string includePath, Assembly includeAssembly)
+    protected ShaderCompiler(GpuDevice device, string includePath, Assembly includeAssembly)
     {
         Model = ShaderModel.Model5_0;
         Device = device;
@@ -176,7 +176,7 @@ public abstract class ShaderCompiler : EngineObject
         // Populate the format lookup of the pass parameters.
         foreach (KeyValuePair<string, string> p in passDef.Parameters.RawFormats)
         {
-            if (Enum.TryParse(p.Value, true, out GraphicsFormat format))
+            if (Enum.TryParse(p.Value, true, out GpuResourceFormat format))
                 passDef.Parameters.Formats[p.Key] = format;
             else if (Enum.TryParse(p.Value, true, out DepthFormat depthFormat))
                 passDef.Parameters.Formats[p.Key] = depthFormat.ToGraphicsFormat();
@@ -233,14 +233,14 @@ public abstract class ShaderCompiler : EngineObject
                 for(int i = 0; i < sc.OutputLayout.Metadata.Length; i++)
                 {
                     uint slot = sc.OutputLayout.Metadata[i].SemanticIndex;
-                    if (passDef.Parameters.Formats.TryGetValue($"os{slot}", out GraphicsFormat format))
+                    if (passDef.Parameters.Formats.TryGetValue($"os{slot}", out GpuResourceFormat format))
                         pass.FormatLayout.RawFormats[slot] = (byte)format;
                     else
                         context.AddError($"No 'os{slot}' format defined for output surface {i} in pass '{passDef.Name}' of '{parent.Name}'");
                 }
 
                 // Apply depth-stencil format if either depth or stencil testing is enabled.
-                if(passDef.Parameters.Formats.TryGetValue("depth", out GraphicsFormat depthFormat))
+                if(passDef.Parameters.Formats.TryGetValue("depth", out GpuResourceFormat depthFormat))
                     pass.FormatLayout.Depth = depthFormat.ToDepthFormat();
                 else if(passDef.Parameters.IsDepthEnabled || passDef.Parameters.IsStencilEnabled)
                     context.AddError($"No 'depth' format defined for depth-stencil surface in pass '{passDef.Name}' of '{parent.Name}'");
@@ -488,7 +488,7 @@ public abstract class ShaderCompiler : EngineObject
     public ShaderModel Model { get; set; }
 
     /// <summary>
-    /// Gets the <see cref="GraphicsDevice"/> that the shader compiler is bound to.
+    /// Gets the <see cref="GpuDevice"/> that the shader compiler is bound to.
     /// </summary>
-    public GraphicsDevice Device { get; }
+    public GpuDevice Device { get; }
 }

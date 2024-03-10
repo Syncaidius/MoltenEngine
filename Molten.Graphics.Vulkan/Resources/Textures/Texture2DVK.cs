@@ -5,14 +5,14 @@ namespace Molten.Graphics.Vulkan;
 public class Texture2DVK : TextureVK, ITexture2D
 {
     internal Texture2DVK(DeviceVK device, uint width, uint height, uint mipCount, uint arraySize,
-        AntiAliasLevel aaLevel, MSAAQuality sampleQuality, GraphicsFormat format,
-        GraphicsResourceFlags flags, string name) :
+        AntiAliasLevel aaLevel, MSAAQuality sampleQuality, GpuResourceFormat format,
+        GpuResourceFlags flags, string name) :
         base(device,
             new TextureDimensions(width, height, 1, mipCount, arraySize, aaLevel, sampleQuality), format, flags, name)
     { }
 
-    public void Resize(GraphicsPriority priority, uint newWidth, uint newHeight, uint newMipMapCount = 0,
-        uint newArraySize = 0, GraphicsFormat newFormat = GraphicsFormat.Unknown)
+    public void Resize(GpuPriority priority, uint newWidth, uint newHeight, uint newMipMapCount = 0,
+        uint newArraySize = 0, GpuResourceFormat newFormat = GpuResourceFormat.Unknown)
     {
         Resize(priority, newWidth, newHeight, newArraySize, newMipMapCount, Depth, newFormat);
     }

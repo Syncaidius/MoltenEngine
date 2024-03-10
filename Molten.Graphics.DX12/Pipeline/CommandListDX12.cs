@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.DX12;
 
-public abstract class CommandListDX12 : GraphicsCommandList
+public abstract class CommandListDX12 : GpuCommandList
 {
     protected CommandListDX12(GraphicsQueueDX12 queue, CommandAllocatorDX12 allocator) : base(queue)
     {

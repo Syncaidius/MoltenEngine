@@ -55,8 +55,8 @@ public class SdfGenerator
         uint rowPitch = (src.Width * (uint)sizeof(Color));
         Color[] finalData = new Color[src.Width * src.Height];
         ITexture2D tex = renderer.Device.Resources.CreateTexture2D(src.Width, src.Height, 1, 1, 
-            GraphicsFormat.R8G8B8A8_UNorm, 
-            GraphicsResourceFlags.None, name: $"SDF_{src.Width}x{src.Height}");
+            GpuResourceFormat.R8G8B8A8_UNorm, 
+            GpuResourceFlags.None, name: $"SDF_{src.Width}x{src.Height}");
 
         fixed (Color* ptr = finalData)
         {
@@ -75,7 +75,7 @@ public class SdfGenerator
             }
         }
 
-        tex.SetData(GraphicsPriority.Apply, 0, finalData, 0, (uint)finalData.Length, rowPitch);
+        tex.SetData(GpuPriority.Apply, 0, finalData, 0, (uint)finalData.Length, rowPitch);
         return tex;
     }
 

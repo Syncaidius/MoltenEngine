@@ -8,7 +8,7 @@ internal class DepthSurfaceVK : Texture2DVK, IDepthStencilSurface
         AntiAliasLevel aaLevel, 
         MSAAQuality sampleQuality, 
         DepthFormat format, 
-        GraphicsResourceFlags flags, 
+        GpuResourceFlags flags, 
         string name) : 
         base(device, width, height, mipCount, arraySize, aaLevel, sampleQuality, format.ToGraphicsFormat(), flags, name)
     {
@@ -16,7 +16,7 @@ internal class DepthSurfaceVK : Texture2DVK, IDepthStencilSurface
         Viewport = new ViewportF(0, 0, Width, Height);
     }
 
-    public void Clear(GraphicsPriority priority, DepthClearFlags flags, float depthValue = 1.0f, byte stencilValue = 0)
+    public void Clear(GpuPriority priority, DepthClearFlags flags, float depthValue = 1.0f, byte stencilValue = 0)
     {
         DepthClearTaskVK task = Device.Tasks.Get<DepthClearTaskVK>();
         task.DepthValue = depthValue;

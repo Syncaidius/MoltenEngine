@@ -26,8 +26,8 @@ public class DefaultTextureReader : TextureReader
             IsCompressed = false,
             HighestMipMap = 0,
             MultiSampleLevel = AntiAliasLevel.None,
-            Flags = GraphicsResourceFlags.GpuWrite,
-            Format = GraphicsFormat.R8G8B8A8_UNorm,
+            Flags = GpuResourceFlags.GpuWrite,
+            Format = GpuResourceFormat.R8G8B8A8_UNorm,
         };
 
         image.Warning -= Image_Warning;

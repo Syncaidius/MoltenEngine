@@ -2,11 +2,11 @@
 
 namespace Molten.Graphics.DX12;
 
-public unsafe class ResourceHandleDX12 : GraphicsResourceHandle
+public unsafe class ResourceHandleDX12 : GpuResourceHandle
 {
     ID3D12Resource1*[] _ptr;
 
-    internal ResourceHandleDX12(GraphicsResource resource, params ID3D12Resource1*[] ptr) : base(resource)
+    internal ResourceHandleDX12(GpuResource resource, params ID3D12Resource1*[] ptr) : base(resource)
     {
         if (ptr == null || ptr.Length == 0)
             throw new ArgumentException("Resource handle must contain at least one resource pointer.");
@@ -14,14 +14,14 @@ public unsafe class ResourceHandleDX12 : GraphicsResourceHandle
         SetResources(ptr);
         Device = resource.Device as DeviceDX12;
 
-        if (!resource.Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
+        if (!resource.Flags.Has(GpuResourceFlags.DenyShaderAccess))
             SRV = new SRViewDX12(this);
 
-        if(resource.Flags.Has(GraphicsResourceFlags.UnorderedAccess))
+        if(resource.Flags.Has(GpuResourceFlags.UnorderedAccess))
             UAV = new UAViewDX12(this);
     }
 
-    internal ResourceHandleDX12(GraphicsResource resource, ID3D12Resource1** ptr, uint numResources) : base(resource)
+    internal ResourceHandleDX12(GpuResource resource, ID3D12Resource1** ptr, uint numResources) : base(resource)
     {
         if (numResources == 0)
             throw new ArgumentException("Resource handle must contain at least one resource pointer.");
@@ -29,10 +29,10 @@ public unsafe class ResourceHandleDX12 : GraphicsResourceHandle
         SetResources(ptr, numResources);
         Device = resource.Device as DeviceDX12;
 
-        if (!resource.Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
+        if (!resource.Flags.Has(GpuResourceFlags.DenyShaderAccess))
             SRV = new SRViewDX12(this);
 
-        if (resource.Flags.Has(GraphicsResourceFlags.UnorderedAccess))
+        if (resource.Flags.Has(GpuResourceFlags.UnorderedAccess))
             UAV = new UAViewDX12(this);
     }
 

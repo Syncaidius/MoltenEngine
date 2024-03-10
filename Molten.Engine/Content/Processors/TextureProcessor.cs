@@ -122,7 +122,7 @@ public class TextureProcessor : ContentProcessor<TextureParameters>
     {
         ITexture tex = null;
         ContentManager manager = handle.Manager;
-        GraphicsDevice device = manager.Engine.Renderer.Device;
+        GpuDevice device = manager.Engine.Renderer.Device;
 
         if (handle.ContentType == typeof(ITexture2D))
             tex = device.Resources.CreateTexture2D(data);
@@ -146,9 +146,9 @@ public class TextureProcessor : ContentProcessor<TextureParameters>
                 if (texCube.Width != data.Width ||
                     texCube.Height != data.Height ||
                     tex.MipMapCount != data.MipMapLevels)
-                    texCube.Resize(GraphicsPriority.Apply, data.Width, data.Height, data.MipMapLevels);
+                    texCube.Resize(GpuPriority.Apply, data.Width, data.Height, data.MipMapLevels);
 
-                texCube.SetData(GraphicsPriority.Apply, data, 0, 0, data.MipMapLevels, Math.Min(data.ArraySize, 6), 0, 0);
+                texCube.SetData(GpuPriority.Apply, data, 0, 0, data.MipMapLevels, Math.Min(data.ArraySize, 6), 0, 0);
                 break;
 
             case ITexture2D tex2d:
@@ -158,18 +158,18 @@ public class TextureProcessor : ContentProcessor<TextureParameters>
                     tex2d.ArraySize != data.ArraySize ||
                     tex.MipMapCount != data.MipMapLevels)
                 {
-                    tex2d.Resize(GraphicsPriority.Apply, data.Width, data.Height, data.MipMapLevels, data.ArraySize, data.Format);
+                    tex2d.Resize(GpuPriority.Apply, data.Width, data.Height, data.MipMapLevels, data.ArraySize, data.Format);
                 }
 
-                tex2d.SetData(GraphicsPriority.Apply, data, 0, 0, data.MipMapLevels, data.ArraySize, 0, 0);
+                tex2d.SetData(GpuPriority.Apply, data, 0, 0, data.MipMapLevels, data.ArraySize, 0, 0);
                 break;
 
             case ITexture1D tex1d:
                 // TODO include mip-map count in resize
                 if (tex1d.Width != data.Width || tex.MipMapCount != data.MipMapLevels)
-                    tex1d.Resize(GraphicsPriority.Apply, data.Width, data.MipMapLevels, data.Format);
+                    tex1d.Resize(GpuPriority.Apply, data.Width, data.MipMapLevels, data.Format);
 
-                tex.SetData(GraphicsPriority.Apply, data, 0, 0, data.MipMapLevels, data.ArraySize, 0, 0);
+                tex.SetData(GpuPriority.Apply, data, 0, 0, data.MipMapLevels, data.ArraySize, 0, 0);
                 break;
         }
     }
@@ -224,7 +224,7 @@ public class TextureProcessor : ContentProcessor<TextureParameters>
             if (staging != null)
             {
                 TextureData tData = null;
-                tex.GetData(GraphicsPriority.EndOfFrame, (data) =>
+                tex.GetData(GpuPriority.EndOfFrame, (data) =>
                 {
                     tData = data;
                 });

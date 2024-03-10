@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.Vulkan;
 
-internal unsafe class CommandListVK : GraphicsCommandList
+internal unsafe class CommandListVK : GpuCommandList
 {
     CommandPoolAllocation _allocation;
     CommandBuffer _native;

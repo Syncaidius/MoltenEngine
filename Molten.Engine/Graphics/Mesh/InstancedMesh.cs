@@ -15,13 +15,13 @@ public class InstancedMesh<V, I> : Mesh<V>
     /// <param name="maxVertices"></param>
     /// <param name="maxIndices"></param>
     /// <param name="maxInstances"></param>
-    internal InstancedMesh(RenderService renderer, GraphicsResourceFlags mode, ushort maxVertices, uint maxIndices, uint maxInstances,
+    internal InstancedMesh(RenderService renderer, GpuResourceFlags mode, ushort maxVertices, uint maxIndices, uint maxInstances,
         V[] initialVertices = null,
         ushort[] initialIndices = null) : 
         base(renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices)
     {
         MaxInstances = maxInstances;
-        _instanceBuffer = Renderer.Device.Resources.CreateVertexBuffer<I>(GraphicsResourceFlags.CpuWrite, maxIndices, null);
+        _instanceBuffer = Renderer.Device.Resources.CreateVertexBuffer<I>(GpuResourceFlags.CpuWrite, maxIndices, null);
     }
 
     /// <summary>
@@ -32,13 +32,13 @@ public class InstancedMesh<V, I> : Mesh<V>
     /// <param name="maxVertices"></param>
     /// <param name="maxIndices"></param>
     /// <param name="maxInstances"></param>
-    internal InstancedMesh(RenderService renderer, GraphicsResourceFlags mode, uint maxVertices, uint maxIndices, uint maxInstances,
+    internal InstancedMesh(RenderService renderer, GpuResourceFlags mode, uint maxVertices, uint maxIndices, uint maxInstances,
         V[] initialVertices = null,
         uint[] initialIndices = null) :
         base(renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices)
     {
         MaxInstances = maxInstances;
-        _instanceBuffer = Renderer.Device.Resources.CreateVertexBuffer<I>(GraphicsResourceFlags.CpuWrite, maxInstances, null);
+        _instanceBuffer = Renderer.Device.Resources.CreateVertexBuffer<I>(GpuResourceFlags.CpuWrite, maxInstances, null);
     }
 
     public void SetInstanceData(I[] data)
@@ -54,22 +54,22 @@ public class InstancedMesh<V, I> : Mesh<V>
     public void SetInstanceData(I[] data, uint startIndex, uint count)
     {
         _instanceCount = count;
-        _instanceBuffer.SetData(GraphicsPriority.Apply, data, startIndex, count, true, 0);
+        _instanceBuffer.SetData(GpuPriority.Apply, data, startIndex, count, true, 0);
     }
 
-    protected override void OnApply(GraphicsQueue queue)
+    protected override void OnApply(GpuCommandQueue queue)
     {
         base.OnApply(queue);
         queue.State.VertexBuffers[1] = _instanceBuffer;
     }
 
-    protected override void OnPostDraw(GraphicsQueue queue)
+    protected override void OnPostDraw(GpuCommandQueue queue)
     {
         base.OnPostDraw(queue);
         queue.State.VertexBuffers[1] = null;
     }
 
-    protected override void OnDraw(GraphicsQueue queue)
+    protected override void OnDraw(GpuCommandQueue queue)
     {
         if (MaxIndices > 0)
             queue.DrawIndexedInstanced(Shader, IndexCount, _instanceCount);
@@ -77,7 +77,7 @@ public class InstancedMesh<V, I> : Mesh<V>
             queue.DrawInstanced(Shader, VertexCount, _instanceCount, 0, 0);
     }
 
-    protected override bool OnBatchRender(GraphicsQueue cmd, RenderService renderer, RenderCamera camera, RenderDataBatch batch)
+    protected override bool OnBatchRender(GpuCommandQueue cmd, RenderService renderer, RenderCamera camera, RenderDataBatch batch)
     {
         _instanceCount = (uint)batch.Data.Count;
 
@@ -91,7 +91,7 @@ public class InstancedMesh<V, I> : Mesh<V>
             uint start = 0;
             uint byteOffset = 0;
 
-            using (GraphicsStream stream = cmd.MapResource(_instanceBuffer, 0, byteOffset, GraphicsMapType.Discard))
+            using (GpuStream stream = cmd.MapResource(_instanceBuffer, 0, byteOffset, GpuMapType.Discard))
             {
                 for (int i = (int)start; i < batch.Data.Count; i++)
                     I.WriteBatchData(stream, batch.Data[i]);

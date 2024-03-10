@@ -144,20 +144,20 @@ public unsafe class TextureSlice : IDisposable
             sr.UpdateReference();
     }
 
-    /// <summary>Gets a new instance of <see cref="TextureSlice"/> that is populated with data from a texture <see cref="GraphicsResource"/>.</summary>
+    /// <summary>Gets a new instance of <see cref="TextureSlice"/> that is populated with data from a texture <see cref="GpuResource"/>.</summary>
     /// <param name="cmd">The command queue that is to perform the retrieval.</param>
     /// <param name="staging">The staging texture to copy the data to.</param>
     /// <param name="level">The mip-map level.</param>
     /// <param name="arraySlice">The array slice.</param>
     /// <returns></returns>
-    internal static unsafe TextureSlice FromTextureSlice(GraphicsQueue cmd, GraphicsTexture tex, uint level, uint arraySlice, GraphicsMapType mapType)
+    internal static unsafe TextureSlice FromTextureSlice(GpuCommandQueue cmd, GraphicsTexture tex, uint level, uint arraySlice, GpuMapType mapType)
     {
         uint subID = (arraySlice * tex.MipMapCount) + level;
         uint subWidth = tex.Width >> (int)level;
         uint subHeight = tex.Height >> (int)level;
         uint subDepth = tex.Depth >> (int)level;
 
-        GraphicsResource resMap = tex;
+        GpuResource resMap = tex;
 
         uint blockSize = BCHelper.GetBlockSize(tex.ResourceFormat);
         uint expectedRowPitch = 4 * tex.Width; // 4-bytes per pixel * Width.
@@ -169,7 +169,7 @@ public unsafe class TextureSlice : IDisposable
         byte[] sliceData = new byte[expectedSlicePitch];
 
         // Now pull data from it
-        using (GraphicsStream stream = cmd.MapResource(resMap, subID, 0, mapType))
+        using (GpuStream stream = cmd.MapResource(resMap, subID, 0, mapType))
         {
             // NOTE: Databox: "The row pitch in the mapping indicate the offsets you need to use to jump between rows."
             // https://gamedev.stackexchange.com/questions/106308/problem-with-id3d11devicecontextcopyresource-method-how-to-properly-read-a-t/106347#106347

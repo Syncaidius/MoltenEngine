@@ -69,7 +69,7 @@ public class ComputeAdd : MoltenExample
             GraphicsBuffer numBuffer1 = Engine.Renderer.Device.Resources.CreateStructuredBuffer(_values1);
 
             // Setup one output buffer for results
-            GraphicsBuffer outBuffer = Engine.Renderer.Device.Resources.CreateStructuredBuffer<ComputeData>(GraphicsResourceFlags.GpuWrite | GraphicsResourceFlags.UnorderedAccess, NUM_SUMS);
+            GraphicsBuffer outBuffer = Engine.Renderer.Device.Resources.CreateStructuredBuffer<ComputeData>(GpuResourceFlags.GpuWrite | GpuResourceFlags.UnorderedAccess, NUM_SUMS);
 
             // Staging buffer for transferring our compute result off the GPU
             GraphicsBuffer stagingBuffer = Engine.Renderer.Device.Resources.CreateStagingBuffer(true, false, numBytes);
@@ -78,8 +78,8 @@ public class ComputeAdd : MoltenExample
             Engine.Renderer.Device.Tasks.Push(GraphicsTaskPriority.StartOfFrame, compute, NUM_SUMS, 1, 1, (task, successful) =>
             {
                 // We can get our data immediately, since the render thread is calling the completionCallback.
-                outBuffer.CopyTo(GraphicsPriority.Immediate, stagingBuffer);
-                stagingBuffer.GetData(GraphicsPriority.Immediate, _result, 0, NUM_SUMS, 0);
+                outBuffer.CopyTo(GpuPriority.Immediate, stagingBuffer);
+                stagingBuffer.GetData(GpuPriority.Immediate, _result, 0, NUM_SUMS, 0);
                 _computeFinished = true;
             });
 

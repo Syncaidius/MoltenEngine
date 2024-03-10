@@ -16,7 +16,7 @@ internal class FinalizeStep : RenderStep
 
     }
 
-    internal override void Render(GraphicsQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
+    internal override void Render(GpuCommandQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
     {
         _orthoCamera.Surface = camera.Surface;
 

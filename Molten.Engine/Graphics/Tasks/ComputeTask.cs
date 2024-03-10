@@ -17,7 +17,7 @@ internal class ComputeTask : GraphicsTask
         return true;
     }
 
-    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
     {
         //queue.Begin();
         queue.Dispatch(Shader, Groups);

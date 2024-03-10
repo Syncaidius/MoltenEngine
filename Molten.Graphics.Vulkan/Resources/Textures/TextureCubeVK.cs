@@ -5,7 +5,7 @@ namespace Molten.Graphics.Vulkan;
 public class TextureCubeVK : Texture2DVK, ITextureCube
 {
     public TextureCubeVK(DeviceVK device, uint width, uint height, uint mipCount, uint arraySize, uint cubeCount, 
-        GraphicsFormat format, GraphicsResourceFlags flags, string name) : 
+        GpuResourceFormat format, GpuResourceFlags flags, string name) : 
         base(device, width, height, mipCount, arraySize, 
             AntiAliasLevel.None, 
             MSAAQuality.Default, 

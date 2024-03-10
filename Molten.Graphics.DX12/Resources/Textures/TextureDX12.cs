@@ -15,7 +15,7 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
     protected TextureDX12(DeviceDX12 device,
         ResourceDimension resourceDimension,
         TextureDimensions dimensions,
-        GraphicsFormat format, GraphicsResourceFlags flags, string name,
+        GpuResourceFormat format, GpuResourceFlags flags, string name,
         ProtectedSessionDX12 protectedSession = null) : 
         base(device, ref dimensions, format, flags, name)
     {
@@ -74,13 +74,13 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
                     ShaderComponentMapping.FromMemoryComponent3),
         };
 
-        if (!Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
+        if (!Flags.Has(GpuResourceFlags.DenyShaderAccess))
         {
             SetSRVDescription(ref srvDesc);
             _handle.SRV.Initialize(ref srvDesc);
         }
 
-        if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
+        if (Flags.Has(GpuResourceFlags.UnorderedAccess))
         {
             UnorderedAccessViewDesc uavDesc = default;
             SetUAVDescription(ref srvDesc, ref uavDesc);
@@ -118,10 +118,10 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
             // TODO Set CPUPageProperty and MemoryPoolPreference based on UMA support.
         }
 
-        if (Flags.Has(GraphicsResourceFlags.DenyShaderAccess))
+        if (Flags.Has(GpuResourceFlags.DenyShaderAccess))
             flags |= ResourceFlags.DenyShaderResource;
 
-        if (Flags.Has(GraphicsResourceFlags.UnorderedAccess))
+        if (Flags.Has(GpuResourceFlags.UnorderedAccess))
             flags |= ResourceFlags.AllowUnorderedAccess;
 
         ClearValue clearValue = GetClearValue();
@@ -153,7 +153,7 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
 
     protected abstract void SetSRVDescription(ref ShaderResourceViewDesc desc);
 
-    protected override void OnResizeTexture(ref readonly TextureDimensions dimensions, GraphicsFormat format)
+    protected override void OnResizeTexture(ref readonly TextureDimensions dimensions, GpuResourceFormat format)
     {
         _desc.Width = dimensions.Width;
         _desc.MipLevels = (ushort)dimensions.MipMapCount;

@@ -11,8 +11,8 @@ internal class DescriptorHeapManagerDX12 : GraphicsObject<DeviceDX12>
     DescriptorHeapAllocatorDX12 _dsvHeap;
     DescriptorHeapAllocatorDX12 _rtvHeap;
 
-    GraphicsFrameBuffer<DescriptorHeapDX12> _gpuResourceHeap;
-    GraphicsFrameBuffer<DescriptorHeapDX12> _gpuSamplerHeap;
+    GpuFrameBuffer<DescriptorHeapDX12> _gpuResourceHeap;
+    GpuFrameBuffer<DescriptorHeapDX12> _gpuSamplerHeap;
 
     /// <summary>
     /// Creates a new instance of <see cref="DescriptorHeapAllocatorDX12"/>.
@@ -27,7 +27,7 @@ internal class DescriptorHeapManagerDX12 : GraphicsObject<DeviceDX12>
         _dsvHeap = new DescriptorHeapAllocatorDX12(device, DescriptorHeapType.Dsv, DescriptorHeapFlags.None);
         _rtvHeap = new DescriptorHeapAllocatorDX12(device, DescriptorHeapType.Rtv, DescriptorHeapFlags.None);
 
-        _gpuResourceHeap = new GraphicsFrameBuffer<DescriptorHeapDX12>(device, (creationDevice) =>
+        _gpuResourceHeap = new GpuFrameBuffer<DescriptorHeapDX12>(device, (creationDevice) =>
         {
             return new DescriptorHeapDX12(creationDevice as DeviceDX12, new DescriptorHeapDesc()
             {
@@ -38,7 +38,7 @@ internal class DescriptorHeapManagerDX12 : GraphicsObject<DeviceDX12>
             });
         });
 
-        _gpuSamplerHeap = new GraphicsFrameBuffer<DescriptorHeapDX12>(device, (creationDevice) =>
+        _gpuSamplerHeap = new GpuFrameBuffer<DescriptorHeapDX12>(device, (creationDevice) =>
         {
             return new DescriptorHeapDX12(creationDevice as DeviceDX12, new DescriptorHeapDesc()
             {

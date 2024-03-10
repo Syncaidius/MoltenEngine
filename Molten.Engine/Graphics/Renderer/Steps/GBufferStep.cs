@@ -6,7 +6,7 @@ internal class GBufferStep : RenderStep
 
     protected override void OnInitialize(RenderService service) { }
 
-    internal override void Render(GraphicsQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
+    internal override void Render(GpuCommandQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
     {
         IRenderSurface2D sScene = Renderer.Surfaces[MainSurfaceType.Scene];
         IRenderSurface2D sNormals = Renderer.Surfaces[MainSurfaceType.Normals];

@@ -47,7 +47,7 @@ public unsafe class RendererVK : RenderService
         return _instanceLoader.HasExtension(extName);
     }
 
-    protected override GraphicsManager OnInitializeDisplayManager(GraphicsSettings settings)
+    protected override GpuManager OnInitializeDisplayManager(GraphicsSettings settings)
     {
         // TODO Store baseline profiles for each OS/platform where possible, or default to Moltens own.
         // For android see: https://developer.android.com/ndk/guides/graphics/android-baseline-profile
@@ -76,10 +76,10 @@ public unsafe class RendererVK : RenderService
         return _displayManager;
     }
 
-    protected override List<GraphicsDevice> OnInitializeDevices(GraphicsSettings settings, GraphicsManager manager)
+    protected override List<GpuDevice> OnInitializeDevices(GraphicsSettings settings, GpuManager manager)
     {
         // Initialize the primary device
-        List<GraphicsDevice> result = new List<GraphicsDevice>();
+        List<GpuDevice> result = new List<GpuDevice>();
         NativeDevice = _displayManager.PrimaryDevice as DeviceVK;
         NativeDevice.PreInitialize(CommandSetCapabilityFlags.Graphics);
         NativeDevice.AddExtension<KhrSwapchain>();
@@ -88,7 +88,7 @@ public unsafe class RendererVK : RenderService
             result.Add(NativeDevice);
 
         // Initialize all secondary devices.
-        foreach(GraphicsDevice device in _displayManager.Devices)
+        foreach(GpuDevice device in _displayManager.Devices)
         {
             if (device == NativeDevice)
                 continue;

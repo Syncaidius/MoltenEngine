@@ -8,14 +8,14 @@ internal class TextureGetSliceTask : GraphicsResourceTask<GraphicsTexture>
 
     public uint ArrayIndex;
 
-    public GraphicsMapType MapType;
+    public GpuMapType MapType;
 
     public override void ClearForPool()
     {
         OnGetData = null;
         MipMapLevel = 0;
         ArrayIndex = 0;
-        MapType = GraphicsMapType.Read;
+        MapType = GpuMapType.Read;
     }
 
     public override bool Validate()
@@ -23,9 +23,9 @@ internal class TextureGetSliceTask : GraphicsResourceTask<GraphicsTexture>
         return true;
     }
 
-    protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
+    protected override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
     {
-        bool isStaging = Resource.Flags.Has(GraphicsResourceFlags.AllReadWrite);
+        bool isStaging = Resource.Flags.Has(GpuResourceFlags.AllReadWrite);
         TextureSlice slice = TextureSlice.FromTextureSlice(queue, Resource, MipMapLevel, ArrayIndex, MapType);
 
         // Return resulting data

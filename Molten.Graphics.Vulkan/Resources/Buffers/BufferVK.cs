@@ -9,18 +9,18 @@ public unsafe class BufferVK : GraphicsBuffer
     ResourceHandleVK<Buffer, BufferHandleVK> _handle;
     MemoryAllocationVK _memory;
 
-    internal BufferVK(GraphicsDevice device,
+    internal BufferVK(GpuDevice device,
         GraphicsBufferType type,
-        GraphicsResourceFlags flags,
+        GpuResourceFlags flags,
         uint stride,
         uint numElements,
         uint alignment) :
         base(device, stride, numElements, flags, type, alignment)
     {
-        ResourceFormat = GraphicsFormat.Unknown;
+        ResourceFormat = GpuResourceFormat.Unknown;
     }
 
-    protected override GraphicsBuffer OnAllocateSubBuffer(ulong offset, uint stride, ulong numElements, GraphicsResourceFlags flags, GraphicsBufferType type, uint alignment)
+    protected override GraphicsBuffer OnAllocateSubBuffer(ulong offset, uint stride, ulong numElements, GpuResourceFlags flags, GraphicsBufferType type, uint alignment)
     {
         throw new NotImplementedException();
     }
@@ -33,10 +33,10 @@ public unsafe class BufferVK : GraphicsBuffer
         BufferUsageFlags usageFlags = BufferUsageFlags.None;
         MemoryPropertyFlags memFlags = MemoryPropertyFlags.None;
 
-        if (Flags.Has(GraphicsResourceFlags.None))
+        if (Flags.Has(GpuResourceFlags.None))
             usageFlags |= BufferUsageFlags.TransferSrcBit;
 
-        if (Flags.Has(GraphicsResourceFlags.GpuWrite))
+        if (Flags.Has(GpuResourceFlags.GpuWrite))
             usageFlags |= BufferUsageFlags.TransferDstBit;
 
         // Check if any extra flags need to be enforced based on buffer type.
@@ -51,7 +51,7 @@ public unsafe class BufferVK : GraphicsBuffer
                 break;
 
             case GraphicsBufferType.Staging: // Staging buffers always require CPU write access.
-                Flags |= GraphicsResourceFlags.CpuWrite;
+                Flags |= GpuResourceFlags.CpuWrite;
                 break;
 
             case GraphicsBufferType.Constant:
@@ -60,11 +60,11 @@ public unsafe class BufferVK : GraphicsBuffer
         }
 
         // Does the memory need to be host-visible?
-        if (Flags.Has(GraphicsResourceFlags.CpuRead) || Flags.Has(GraphicsResourceFlags.CpuWrite))
+        if (Flags.Has(GpuResourceFlags.CpuRead) || Flags.Has(GpuResourceFlags.CpuWrite))
         {
             // In Vulkan, the CPU either has read AND write access, or none at all.
             // If either of the CPU access flags were provided, we need to add both.
-            Flags |= GraphicsResourceFlags.CpuRead | GraphicsResourceFlags.CpuWrite;
+            Flags |= GpuResourceFlags.CpuRead | GpuResourceFlags.CpuWrite;
             memFlags |= MemoryPropertyFlags.HostCoherentBit | MemoryPropertyFlags.HostVisibleBit;
         }
         else
@@ -94,7 +94,7 @@ public unsafe class BufferVK : GraphicsBuffer
         device.VK.GetBufferMemoryRequirements(device, *subHandle.Ptr, &memRequirements);
         subHandle.Memory = device.Memory.Allocate(ref memRequirements, memFlags);
         if (subHandle.Memory == null)
-            throw new GraphicsResourceException(this, "Unable to allocate memory for buffer.");
+            throw new GpuResourceException(this, "Unable to allocate memory for buffer.");
 
         r = device.VK.BindBufferMemory(device, *subHandle.Ptr, subHandle.Memory, 0);
         if (!r.Check(device))
@@ -113,5 +113,5 @@ public unsafe class BufferVK : GraphicsBuffer
 
     public override unsafe ResourceHandleVK<Buffer, BufferHandleVK> Handle => _handle;
 
-    public override GraphicsFormat ResourceFormat { get; protected set; }
+    public override GpuResourceFormat ResourceFormat { get; protected set; }
 }

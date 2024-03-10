@@ -7,8 +7,8 @@ public unsafe class RenderSurface1DDX12 : Texture1DDX12, IRenderSurface1D
     internal RenderSurface1DDX12(
         DeviceDX12 device,
         uint width,
-        GraphicsResourceFlags flags = GraphicsResourceFlags.None,
-        GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm,
+        GpuResourceFlags flags = GpuResourceFlags.None,
+        GpuResourceFormat format = GpuResourceFormat.R8G8B8A8_SNorm,
         uint mipCount = 1,
         uint arraySize = 1, 
         string name = null,
@@ -48,9 +48,9 @@ public unsafe class RenderSurface1DDX12 : Texture1DDX12, IRenderSurface1D
         return handle;
     }
 
-    public void Clear(GraphicsPriority priority, Color color)
+    public void Clear(GpuPriority priority, Color color)
     {
-        if (priority == GraphicsPriority.Immediate)
+        if (priority == GpuPriority.Immediate)
         {
             Apply(Device.Queue);
             Device.Queue.ClearDSV(this, color);
