@@ -148,11 +148,8 @@ internal class DescriptorHeapManagerDX12 : GraphicsObject<DeviceDX12>
         // Populate SRV, UAV, and CBV descriptors first.
         // TODO Pull descriptor info from our pass, render targets, samplers, depth-stencil, etc.
 
-        ID3D12DescriptorHeap* pHeaps = stackalloc ID3D12DescriptorHeap[2]
-        {
-            *resHeap.Handle,
-            *samplerHeap.Handle,
-        };
+        ID3D12DescriptorHeap** pHeaps = stackalloc ID3D12DescriptorHeap*[2] { resHeap.Handle, samplerHeap.Handle };
+
 
         cmd.Handle->SetDescriptorHeaps(2, pHeaps);
         cmd.Handle->SetGraphicsRootDescriptorTable(0, resHeap.GetGpuHandle());
