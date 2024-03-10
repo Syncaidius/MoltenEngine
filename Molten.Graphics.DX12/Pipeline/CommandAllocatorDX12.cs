@@ -16,7 +16,7 @@ public unsafe class CommandAllocatorDX12 : GraphicsObject<DeviceDX12>
         Queue = queue;
 
         void* ptr = null;
-        HResult hr = Device.Handle->CreateCommandAllocator(CommandListType.Direct, &guid, &ptr);
+        HResult hr = Device.Handle->CreateCommandAllocator(type, &guid, &ptr);
         if (!queue.Device.Log.CheckResult(hr, () => "Failed to create command allocator"))
             hr.Throw();
 

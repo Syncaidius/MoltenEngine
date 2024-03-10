@@ -69,7 +69,7 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
         throw new NotImplementedException();
     }
 
-    internal void Clear(TextureDX12 surface, Color color)
+    internal void ClearDSV(TextureDX12 surface, Color color)
     {
         if (surface.Handle is RTHandleDX12 rtHandle)
         {
@@ -85,18 +85,23 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
         }
     }
 
-    internal void Clear(DepthSurfaceDX12 surface, float depthValue, byte stencilValue)
+    internal void Clear(DepthSurfaceDX12 surface, float depthValue, byte stencilValue, DepthClearFlags clearFlags)
     {
         Transition(surface, ResourceStates.DepthWrite);
 
         DSHandleDX12 dsHandle = (DSHandleDX12)surface.Handle;
         ref CpuDescriptorHandle cpuHandle = ref dsHandle.DSV.CpuHandle;
-        ClearFlags flags = ClearFlags.Depth;
-        if (surface.DepthFormat.HasStencil())
+        ClearFlags flags = 0;
+
+        if (clearFlags.Has(DepthClearFlags.Depth))
+            flags = ClearFlags.Depth;
+
+        if (surface.DepthFormat.HasStencil() && clearFlags.HasFlag(DepthClearFlags.Stencil))
             flags |= ClearFlags.Stencil;
 
         // TODO Add support for clearing areas using Box2D structs.
-        _cmd.Handle->ClearDepthStencilView(cpuHandle, flags, depthValue, stencilValue, 0, null);
+        if(flags > 0)
+            _cmd.Handle->ClearDepthStencilView(cpuHandle, flags, depthValue, stencilValue, 0, null);
     }
 
     internal void Transition(BufferDX12 buffer, ResourceStates newState)

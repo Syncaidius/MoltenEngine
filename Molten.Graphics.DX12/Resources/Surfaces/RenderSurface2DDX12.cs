@@ -54,7 +54,7 @@ public unsafe class RenderSurface2DDX12 : Texture2DDX12, IRenderSurface2D
         if (priority == GraphicsPriority.Immediate)
         {
             Apply(Device.Queue);
-            Device.Queue.Clear(this, color);
+            Device.Queue.ClearDSV(this, color);
         }
         else
         {

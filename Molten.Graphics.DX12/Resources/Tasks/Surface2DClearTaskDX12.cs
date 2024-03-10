@@ -17,7 +17,7 @@ internal class Surface2DClearTaskDX12 : GraphicsResourceTask<RenderSurface2DDX12
     protected override bool OnProcess(RenderService renderer, GraphicsQueue queue)
     {
         Resource.Apply(queue);
-        (queue as GraphicsQueueDX12).Clear(Resource, Color);
+        (queue as GraphicsQueueDX12).ClearDSV(Resource, Color);
         return true;
     }
 }

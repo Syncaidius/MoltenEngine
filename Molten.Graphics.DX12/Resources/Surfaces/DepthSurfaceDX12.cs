@@ -85,6 +85,7 @@ public class DepthSurfaceDX12 : Texture2DDX12, IDepthStencilSurface
             DepthClearTaskDX12 task = Device.Tasks.Get<DepthClearTaskDX12>();
             task.DepthValue = depthValue;
             task.StencilValue = stencilValue;
+            task.ClearFlags = flags;
             Device.Tasks.Push(priority, this, task);
         }
     }

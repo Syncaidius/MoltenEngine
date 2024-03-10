@@ -2,9 +2,6 @@
 
 public abstract class GraphicsQueue : EngineObject
 {
-    protected delegate void CmdQueueDrawCallback();
-    protected delegate void CmdQueueDrawFailCallback(ShaderPass pass, uint passNumber, GraphicsBindResult result);
-
     /// <summary>
     /// A container for storing application data to share between completion callbacks of <see cref="Shader"/> passes.
     /// </summary>
@@ -196,7 +193,6 @@ public abstract class GraphicsQueue : EngineObject
         GraphicsResource dest, uint destSubresource, Vector3UI destStart);
 
     protected abstract void OnResetState();
-
 
     protected GraphicsBindResult ApplyState(Shader shader, QueueValidationMode mode, Action callback)
     {
