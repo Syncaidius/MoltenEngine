@@ -100,15 +100,15 @@ internal class DescriptorHeapManagerDX12 : GraphicsObject<DeviceDX12>
         {
             ShaderBindType bindType = (ShaderBindType)i;
             ref ShaderBind<ShaderResourceVariable>[] resources = ref pass.Bindings.Resources[i];
-            for(int r = 0; r < resources.Length; r++)
+            for (int r = 0; r < resources.Length; r++)
             {
                 ref ShaderBind<ShaderResourceVariable> bind = ref resources[r];
-                if(bind.Object?.Value != null)
+                if (bind.Object?.Value != null)
                 {
                     // TODO Improve this
                     ResourceHandleDX12 resHandle = bind.Object.Resource.Handle as ResourceHandleDX12;
                     CpuDescriptorHandle cpuHandle = default;
-                    switch(bindType)
+                    switch (bindType)
                     {
                         case ShaderBindType.ConstantBuffer:
                             CBHandleDX12 cbHandle = resHandle as CBHandleDX12;
@@ -148,12 +148,26 @@ internal class DescriptorHeapManagerDX12 : GraphicsObject<DeviceDX12>
         // Populate SRV, UAV, and CBV descriptors first.
         // TODO Pull descriptor info from our pass, render targets, samplers, depth-stencil, etc.
 
-        ID3D12DescriptorHeap** pHeaps = stackalloc ID3D12DescriptorHeap*[2] { resHeap.Handle, samplerHeap.Handle };
+        if (gpuResHandle.Ptr != resHeap.CpuStartHandle.Ptr 
+            && gpuSamplerHandle.Ptr != samplerHeap.CpuStartHandle.Ptr)
+        {
+            ID3D12DescriptorHeap** pHeaps = stackalloc ID3D12DescriptorHeap*[2] { resHeap.Handle, samplerHeap.Handle };
 
-
-        cmd.Handle->SetDescriptorHeaps(2, pHeaps);
-        cmd.Handle->SetGraphicsRootDescriptorTable(0, resHeap.GetGpuHandle());
-        cmd.Handle->SetGraphicsRootDescriptorTable(1, samplerHeap.GetGpuHandle());
+            cmd.Handle->SetDescriptorHeaps(2, pHeaps);
+            cmd.Handle->SetGraphicsRootDescriptorTable(0, resHeap.GetGpuHandle());
+            cmd.Handle->SetGraphicsRootDescriptorTable(1, samplerHeap.GetGpuHandle());
+        }else if (gpuResHandle.Ptr != resHeap.CpuStartHandle.Ptr)
+        {
+            ID3D12DescriptorHeap** pHeaps = stackalloc ID3D12DescriptorHeap*[1] { resHeap.Handle };
+            cmd.Handle->SetDescriptorHeaps(1, pHeaps);
+            cmd.Handle->SetGraphicsRootDescriptorTable(0, resHeap.GetGpuHandle());
+        }
+        else if (gpuSamplerHandle.Ptr != samplerHeap.CpuStartHandle.Ptr)
+        {
+            ID3D12DescriptorHeap** pHeaps = stackalloc ID3D12DescriptorHeap*[1] { samplerHeap.Handle };
+            cmd.Handle->SetDescriptorHeaps(1, pHeaps);
+            cmd.Handle->SetGraphicsRootDescriptorTable(0, samplerHeap.GetGpuHandle());
+        }
     }
 
     protected unsafe override void OnGraphicsRelease()

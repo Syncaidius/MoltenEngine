@@ -418,7 +418,21 @@ public unsafe class GraphicsQueueDX12 : GraphicsQueue<DeviceDX12>
 
     protected override unsafe void UpdateResource(GraphicsResource resource, uint subresource, ResourceRegion? region, void* ptrData, uint rowPitch, uint slicePitch)
     {
-        throw new NotImplementedException();
+        Box* destBox = null;
+
+        if (region != null)
+        {
+            ResourceRegion value = region.Value;
+            destBox = (Box*)&value;
+        }
+        
+        // TODO Calculate byte offset and number of bytes from resource region.
+
+        using (GraphicsStream stream = MapResource(resource, subresource, 0, GraphicsMapType.Write))
+        {
+            stream.Write(ptrData, slicePitch);
+            Profiler.SubResourceUpdateCalls++;
+        }
     }
 
     protected override void CopyResource(GraphicsResource src, GraphicsResource dest)

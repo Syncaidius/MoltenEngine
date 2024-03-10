@@ -8,7 +8,7 @@ namespace Molten.Examples;
 
 internal class Program
 {
-    static ExampleBrowser<RendererDX11, WinInputService, AudioServiceAL> _browser;
+    static ExampleBrowser<RendererDX12, WinInputService, AudioServiceAL> _browser;
 
     static void Main(string[] args)
     {
@@ -17,7 +17,7 @@ internal class Program
         settings.Graphics.VSync.Value = true;
         settings.Graphics.FrameBufferMode.Value = FrameBufferMode.Double;
 
-        _browser = new ExampleBrowser<RendererDX11, WinInputService, AudioServiceAL>("Example Browser");
+        _browser = new ExampleBrowser<RendererDX12, WinInputService, AudioServiceAL>("Example Browser");
         _browser.Start(settings, true);
     }
 }
