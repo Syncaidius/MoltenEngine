@@ -35,6 +35,8 @@ public class BufferDX12 : GraphicsBuffer
         ResourceFlags flags = Flags.ToResourceFlags();
         HeapType heapType = Flags.ToHeapType();
         ResourceStates stateFlags = Flags.ToResourceState();
+        ID3D12Resource1* resource = null;
+
         if (ParentBuffer == null)
         {
             HeapProperties heapProp = new HeapProperties()
@@ -79,12 +81,14 @@ public class BufferDX12 : GraphicsBuffer
             if (!Device.Log.CheckResult(hr, () => $"Failed to create {desc.Dimension} resource"))
                 return;
 
-            _handle = new ResourceHandleDX12(this, (ID3D12Resource1*)ptr);
+            resource = (ID3D12Resource1*)ptr;
         }
         else
         {
-            _handle = OnCreateHandle((ID3D12Resource1*)RootBuffer.Handle.Ptr);
+            resource = (ID3D12Resource1*)RootBuffer.Handle.Ptr;
         }
+
+        _handle = OnCreateHandle(resource);
     }
 
     private unsafe ResourceHandleDX12 OnCreateHandle(ID3D12Resource1* ptr)
