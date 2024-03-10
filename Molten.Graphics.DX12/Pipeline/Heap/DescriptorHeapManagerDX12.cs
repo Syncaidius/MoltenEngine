@@ -82,6 +82,19 @@ internal class DescriptorHeapManagerDX12 : GraphicsObject<DeviceDX12>
         DescriptorHeapDX12 samplerHeap = _gpuSamplerHeap.Prepare();
         CpuDescriptorHandle gpuSamplerHandle = samplerHeap.CpuStartHandle;
 
+        // TODO Replace this once DX11 is removed and resources can be created during instantiation instead of during Apply().
+        // Apply resources.
+        for (int i = 0; i < pass.Bindings.Resources.Length; i++)
+        {
+            ShaderBindType bindType = (ShaderBindType)i;
+            ref ShaderBind<ShaderResourceVariable>[] resources = ref pass.Bindings.Resources[i];
+            for (int r = 0; r < resources.Length; r++)
+            {
+                ref ShaderBind<ShaderResourceVariable> bind = ref resources[r];
+                bind.Object.Resource?.Apply(cmd.Queue);
+            }
+        }
+
         // Iterate over pass resources
         for (int i = 0; i < pass.Bindings.Resources.Length; i++)
         {
