@@ -1,0 +1,6 @@
+# Version 0.7.4 Changelog 
+<br>
+
+| Commit | Changes |
+| ------ | ------- |
+| [[a19d7656](https://github.com/Syncaidius/MoltenEngine/commits/a19d7656b4a8a3ad128caaee7558e90f5db89426)] | Update changelog.md | | [[314bb677](https://github.com/Syncaidius/MoltenEngine/commits/314bb6775d7c4ef697fb359e3d00da37e8873988)] | Bump project version to 0.7.4 | | [[ea779dd3](https://github.com/Syncaidius/MoltenEngine/commits/ea779dd3d129c51d62a66a47d340c7a96c00eff6)] | [Math] Fix invalid Rectangle constructors | | [[f234d487](https://github.com/Syncaidius/MoltenEngine/commits/f234d48789e3b4d23b13ca8f4b0950f19f1b1753)] | [Math] Implement consistent indexers across all Matrix types | | [[59fb83d6](https://github.com/Syncaidius/MoltenEngine/commits/59fb83d6714bd5a7a3a24afca444f5df03a7dd85)] | [Math] First pass on generic IMatrix interface<br>[Math] Removed SizeInBytes field from matrix types in favour of sizeof() <br>[Math] Removed SizeInBytes field from vector types in favour of sizeof() <br>[Math] Renamed NumElements to ComponentCount in vector types <br>[Math] Added static ComponentCount field to matrix types <br>[Math] Added static RowCount field to matrix types <br>[Math] Added static ColumnCount field to matrix types <br>[Math] Added unsigned indexer to IVector |

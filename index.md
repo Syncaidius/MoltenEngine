@@ -1,0 +1,106 @@
+# Welcome
+Molten started as spare-time engine project, which I eventually intend to use to develop my own games without relying on other engines. Hopefully you'll find a use for it too!
+
+While parts of this project will inevitably be a classic case of re-inventing the wheel, I'm treating it as a chance to gain more experience in the area of game engine development. 
+
+# Build Status
+| Platform  | Latest | Release  |
+| :--------- | :----  | :----   |
+| Windows    | [![Build Windows](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build-windows.yml/badge.svg)](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build-windows.yml) <br> [![Build Status](https://dev.azure.com/jyarwood/MoltenEngine/_apis/build/status/MoltenEngine-.NET%20Desktop-CI)](https://dev.azure.com/jyarwood/MoltenEngine/_build/latest?definitionId=2)   | |
+| Android    | [![Build Android](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build-android.yml/badge.svg)](https://github.com/Syncaidius/MoltenEngine/actions/workflows/build-android.yml) |  |
+| Linux      |        |         |
+| MacOS      |        |         |
+| iOS        |        |         |
+
+[ ![GitHub](https://img.shields.io/github/license/Syncaidius/MoltenEngine)](LICENSE)  [![GitHub last commit](https://img.shields.io/github/last-commit/Syncaidius/MoltenEngine)](https://github.com/Syncaidius/MoltenEngine/commits/) [![Nuget](https://img.shields.io/nuget/v/Molten.Engine?color=%2322AAFF&label=NuGet)](https://www.nuget.org/packages?q=molten+Syncaidius) ![GitHub Sponsors](https://img.shields.io/github/sponsors/Syncaidius?logo=github&label=sponsors&color=red) 
+
+# Core Feature Status
+See the following table for the per-platform support and status of each feature.
+
+✔️ Functional/Complete\
+🚧 Work in progres\
+Blank - Not Started\
+🚫 Not-applicable
+
+| Feature                    | Windows    | Android  | Linux  | Mac  | iOS |
+| :---                       | :-------:  | :-----:  | :---:  | :-:  | :-: |
+| Renderer - OpenGL          |            | 🚫       |        |      |    |
+| Renderer - OpenES          |            |          | 🚫     | 🚫   |    |     
+| Renderer - Vulkan          | 🚧         |          |        |      |     |
+| Renderer - DirectX 11      | 🚧         | 🚫       | 🚫    | 🚫   |     |
+| Renderer - DirectX 12      | 🚧         | 🚫       | 🚫    | 🚫   |     |
+| Audio - OpenAL             | 🚧         |          |        |      |     |
+| Audio - XAudio 2           |            | 🚫       | 🚫    | 🚫   |     |
+| Keyboard support           | ✔️          |          |        |      |    |
+| Mouse support              | ✔️          |          |        |      |    |
+| Touch support              | 🚧         | 🚧       |        |      |    |
+| Game pad support           | ✔️         |          |        |      |     |
+| Entity component system    | ✔️         | ✔️       | ✔️     | ✔️    |     |
+| Content Management System  | ✔️         |          |        |      |     |
+| Example projects           | 🚧         |          |        |      |     |
+| Networking - MNet          |            |          |        |      |     |
+| 2D Physics engine          |            |          |        |      |     |
+| 3D Physics engine          |            |          |        |      |     |
+| Tool - Content editor      |            |          |        |      |     |
+| Tool - Scene editor        |            |          |        |      |     |
+| Project templates          |            |          |        |      |     |
+
+
+# Renderer Feature Status
+See the following table for the per-renderer support and status of each feature.
+
+✔️ Functional/Complete\
+🚧 Work in progres\
+Blank - Not Started\
+🚫 Not-supported
+
+| Feature                | DX11       | DX12    | OpenGL  | OpenGL ES  | Vulkan |
+| :---                   | :-------:  | :-----: | :---:   | :-:        | :-:    |
+| Deferrend rendering    | 🚧         |         |        |             |       |
+| Physically-Based (PBR) |            |         |        |             |       |
+| Geometry Shaders       | ✔️         |         |        |             |       |
+| Tessellation           | 🚧         |         |        |             |       |
+| Hull & Domain Shaders  | ✔️         |         |        |             |       |
+| Compute Shaders        | ✔️         |         |        |             |       |
+| 2D Spite batching      | ✔️         |         |        |             |       |
+| 2D Primitive batching  | ✔️         |         |        |             |       |
+| Compressed textures    | ✔️         |         |        |             |       |
+| [Hardware instancing](https://en.wikipedia.org/wiki/Geometry_instancing)    | ✔️         |         |        |             |       |
+| [Occlusion culling](https://en.wikipedia.org/wiki/Hidden-surface_determination#Occlusion_culling)      |            |         |        |             |       |
+| [Frustrum culling](https://en.wikipedia.org/wiki/Hidden-surface_determination#Viewing-frustum_culling)       |            |         |        |             |       |
+| [Portal culling](https://docs.panda3d.org/1.10/python/programming/render-attributes/occlusion-culling/portal-culling)         |            |         |        |             |       |
+| [Level of Detail (LoD)](https://en.wikipedia.org/wiki/Level_of_detail_(computer_graphics))  |            |         |        |             |       |
+| HDR support            |            |         |        |             |       |
+| 2D Texture arrays      | ✔️         |         |        |             |       |
+| 3D Texture arrays      | ✔️         |         |        |             |       |
+| 3D/volume textures     | ✔️         |         |        |             |       |
+| static skyboxes        | ✔️         |         |        |             |       |
+| real-time skyboxes     |            |         |        |             |       |
+| multi-window support   | ✔️         |         |        | 🚫          |       |
+| Render into WinForms   | ✔️         |         |        | 🚫          | 🚫    |
+| Render into WPF        |            |         |        | 🚫          | 🚫    |
+| Render into UWP        |            |         | 🚫    | 🚫          | 🚫    |
+|[Render into MAUI](https://docs.microsoft.com/en-us/dotnet/maui/what-is-maui) |            |         |       |             |       |
+| Render into Android UI | 🚫         | 🚫      |       |             |       |
+| Raytracing             | 🚫         |         | 🚫    | 🚫          |       |
+| HLSL Shader Compiler   | 🚧		  | 🚫      | 🚫    | 🚫          | 🚫   |
+| GLSL Shader Compiler   |  		  |         |        |             |      |
+| SPIR-V Shader Compiler |  		  |         |        |             |      |
+
+# Android
+Molten has recently been upgraded to .NET 7. To build for Android you will need to install the Android workloads by running  
+```dotnet workload install android``` in command prompt or powershell. 
+
+If you're upgrading from a previous .NET version, you may also need to run this command again to update the android workload.
+
+# Sponsors
+A massive thank you to some of our sponsors:
+ * [IceReaper](https://github.com/IceReaper)
+
+
+# Third-Party Libraries
+A special thanks to each of these great libraries, without which Molten wouldn't exist in it's current form:
+  * [Silk.NET](https://github.com/dotnet/Silk.NET) - C# Bindings for DirectX 11/12, OpenGL, Vulkan, Assimp, OpenCL, OpenAL and OpenXR
+  * [SharpDX](https://github.com/sharpdx/SharpDX) - Source for some Molten.Math types
+  * [Magick.NET](https://github.com/dlemstra/Magick.NET) - Extensive image library for .NET
+  * [JSON.NET](https://www.newtonsoft.com/json) - JSON serialization
