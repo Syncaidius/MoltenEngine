@@ -7,7 +7,7 @@ using VKViewport = Silk.NET.Vulkan.Viewport;
 
 namespace Molten.Graphics.Vulkan;
 
-public unsafe class GraphicsQueueVK : GraphicsQueue<DeviceVK>
+public unsafe class GraphicsQueueVK : GpuCommandQueue<DeviceVK>
 {
     DeviceVK _device;
     Vk _vk;

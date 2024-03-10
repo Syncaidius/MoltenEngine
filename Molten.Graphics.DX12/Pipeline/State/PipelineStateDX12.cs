@@ -3,7 +3,7 @@ using Silk.NET.Direct3D12;
 
 namespace Molten.Graphics.DX12;
 
-internal unsafe class PipelineStateDX12 : GraphicsObject<DeviceDX12>
+internal unsafe class PipelineStateDX12 : GpuObject<DeviceDX12>
 {
     ID3D12PipelineState* _handle;
 

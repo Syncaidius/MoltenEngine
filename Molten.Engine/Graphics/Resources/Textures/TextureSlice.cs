@@ -146,11 +146,10 @@ public unsafe class TextureSlice : IDisposable
 
     /// <summary>Gets a new instance of <see cref="TextureSlice"/> that is populated with data from a texture <see cref="GpuResource"/>.</summary>
     /// <param name="cmd">The command queue that is to perform the retrieval.</param>
-    /// <param name="staging">The staging texture to copy the data to.</param>
     /// <param name="level">The mip-map level.</param>
     /// <param name="arraySlice">The array slice.</param>
     /// <returns></returns>
-    internal static unsafe TextureSlice FromTextureSlice(GpuCommandQueue cmd, GraphicsTexture tex, uint level, uint arraySlice, GpuMapType mapType)
+    internal static unsafe TextureSlice FromTextureSlice(GpuCommandList cmd, GraphicsTexture tex, uint level, uint arraySlice, GpuMapType mapType)
     {
         uint subID = (arraySlice * tex.MipMapCount) + level;
         uint subWidth = tex.Width >> (int)level;

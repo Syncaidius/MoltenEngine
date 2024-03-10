@@ -1,7 +1,7 @@
 ﻿using Silk.NET.Direct3D12;
 
 namespace Molten.Graphics.DX12;
-public unsafe class ProtectedSessionDX12 : GraphicsObject<DeviceDX12>
+public unsafe class ProtectedSessionDX12 : GpuObject<DeviceDX12>
 {
     ID3D12ProtectedResourceSession* _ptr;
     ID3D12Fence* _statusFence;

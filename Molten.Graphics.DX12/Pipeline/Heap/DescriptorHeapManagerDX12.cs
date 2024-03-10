@@ -1,7 +1,7 @@
 ﻿using Silk.NET.Direct3D12;
 
 namespace Molten.Graphics.DX12;
-internal class DescriptorHeapManagerDX12 : GraphicsObject<DeviceDX12>
+internal class DescriptorHeapManagerDX12 : GpuObject<DeviceDX12>
 {
     const int RESOURCE_HEAP_SIZE = 512;
     const int SAMPLER_HEAP_SIZE = 256;

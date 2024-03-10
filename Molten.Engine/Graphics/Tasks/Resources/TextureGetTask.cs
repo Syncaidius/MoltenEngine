@@ -19,7 +19,7 @@ internal class TextureGetTask : GraphicsResourceTask<GraphicsTexture>
         return true;
     }
 
-    protected override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
+    protected override bool OnProcess(RenderService renderer, GpuCommandList cmd)
     {
         TextureData data = new TextureData(Resource.Width, Resource.Height, Resource.Depth, Resource.MipMapCount, Resource.ArraySize)
         {
@@ -40,7 +40,7 @@ internal class TextureGetTask : GraphicsResourceTask<GraphicsTexture>
             for (uint i = 0; i < Resource.MipMapCount; i++)
             {
                 uint subID = (a * Resource.MipMapCount) + i;
-                data.Levels[subID] = TextureSlice.FromTextureSlice(queue, Resource, i, a, MapType);
+                data.Levels[subID] = TextureSlice.FromTextureSlice(cmd, Resource, i, a, MapType);
             }
         }
 

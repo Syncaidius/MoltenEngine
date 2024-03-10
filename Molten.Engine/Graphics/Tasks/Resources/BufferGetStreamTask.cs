@@ -28,9 +28,9 @@ internal class BufferGetStreamTask : GraphicsResourceTask<GraphicsBuffer>
         return true;
     }
 
-    protected override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
+    protected override bool OnProcess(RenderService renderer, GpuCommandList cmd)
     {
-        using (GpuStream stream = queue.MapResource(Resource, 0, ByteOffset, MapType))
+        using (GpuStream stream = cmd.MapResource(Resource, 0, ByteOffset, MapType))
             OnStreamOpened?.Invoke(Resource, stream);
 
         return true;

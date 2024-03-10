@@ -55,10 +55,10 @@ public abstract class GpuObject : EngineObject
 /// A generic version of <see cref="GpuObject"/> which is bound to a specific type of <see cref="GpuDevice"/>.
 /// </summary>
 /// <typeparam name="T">The type of <see cref="GpuDevice"/> to bind to.</typeparam>
-public abstract class GraphicsObject<T> : GpuObject
+public abstract class GpuObject<T> : GpuObject
     where T : GpuDevice
 {
-    protected GraphicsObject(T device) : base(device)
+    protected GpuObject(T device) : base(device)
     {
         Device = device;
     }

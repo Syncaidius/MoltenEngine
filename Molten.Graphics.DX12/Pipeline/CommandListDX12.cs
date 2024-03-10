@@ -8,6 +8,16 @@ public unsafe class CommandListDX12 : GpuCommandList
 {
     bool _isClosed;
     ID3D12GraphicsCommandList* _handle;
+    PipelineInputLayoutDX12 _inputLayout;
+    PipelineStateDX12 _pipelineState;
+
+    CpuDescriptorHandle* _rtvs;
+    CpuDescriptorHandle* _dsv;
+    uint _numRTVs;
+
+    D3DPrimitiveTopology _boundTopology;
+    GpuDepthWritePermission _boundDepthMode;
+
 
     internal CommandListDX12(CommandAllocatorDX12 allocator, ID3D12GraphicsCommandList* handle) :
         base(allocator.Device)
@@ -15,6 +25,12 @@ public unsafe class CommandListDX12 : GpuCommandList
         Device = allocator.Device;
         Allocator = allocator;
         Fence = new FenceDX12(allocator.Device, FenceFlags.None);
+
+        uint maxRTs = Device.Capabilities.PixelShader.MaxOutputTargets;
+        _rtvs = EngineUtil.AllocArray<CpuDescriptorHandle>(maxRTs);
+        _dsv = EngineUtil.AllocArray<CpuDescriptorHandle>(1);
+        _dsv[0] = default;
+
         Close();
     }
 
@@ -119,6 +135,229 @@ public unsafe class CommandListDX12 : GpuCommandList
         // See Also: https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/reference/tools/pix3/functions/pixscopedevent-overloads
     }
 
+    protected override void GenerateMipMaps(GpuResource texture)
+    {
+        // TODO: Implement compute-based mip-map generation - This can then be commonized for DX11/Vulkan too.
+        //       See: https://www.3dgep.com/learning-directx-12-4/#Generate_Mipmaps_Compute_Shader
+
+        throw new NotImplementedException();
+    }
+
+    public override void Sync(GpuCommandListFlags flags)
+    {
+        if (flags.Has(GpuCommandListFlags.Deferred))
+            throw new InvalidOperationException($"An immediate/primary command list branch cannot use deferred flag during Sync() calls.");
+
+        Execute(_cmd);
+
+        // A fence will signal a synchronization event.
+        // This blocks the CPU until the GPU has finished processing all commands prior to the fences signal command.
+        if (!_cmd.Fence.Wait())
+            throw new InvalidOperationException("Command list Sync() fence failed Wait() call. See logs for details");
+
+        CommandAllocatorDX12 allocator = _cmdAllocators.Prepare();
+        _cmd.Reset(allocator, _pipelineState);
+    }
+
+    public override void Begin(GpuCommandListFlags flags = GpuCommandListFlags.None)
+    {
+        base.Begin(flags);
+
+        CommandAllocatorDX12 allocator = _cmdAllocators.Prepare();
+        if (_cmd == null || _cmd.Flags.HasFlag(GpuCommandListFlags.Deferred))
+        {
+            _cmd = allocator.Allocate(null);
+            Device.Frame.BranchCount++;
+            //Device.Frame.Track(_cmd);
+        }
+
+        Reset(allocator, _pipelineState);
+    }
+
+    public override GpuCommandList End()
+    {
+        base.End();
+
+        if (_cmd.Flags.HasFlag(GpuCommandListFlags.Deferred))
+            return _cmd;
+
+        Execute(_cmd);
+        _cmd.Fence.Wait();
+
+        return null;
+    }
+
+    internal void Transition(BufferDX12 buffer, ResourceStates newState)
+    {
+        ResourceBarrier barrier = new()
+        {
+            Flags = ResourceBarrierFlags.None,
+            Type = ResourceBarrierType.Transition,
+            Transition = new ResourceTransitionBarrier()
+            {
+                PResource = buffer.Handle,
+                StateAfter = newState,
+                StateBefore = buffer.BarrierState,
+                Subresource = 0,
+            },
+        };
+
+        buffer.BarrierState = newState;
+        _handle->ResourceBarrier(1, &barrier);
+    }
+
+    internal void Transition(TextureDX12 texture, ResourceStates newState, uint subResource = 0)
+    {
+        if (texture.BarrierState == newState)
+            return;
+
+        ResourceBarrier barrier = new()
+        {
+            Flags = ResourceBarrierFlags.None,
+            Type = ResourceBarrierType.Transition,
+            Transition = new ResourceTransitionBarrier()
+            {
+                PResource = texture.Handle,
+                StateAfter = newState,
+                StateBefore = texture.BarrierState,
+                Subresource = subResource,
+            },
+        };
+
+        texture.BarrierState = newState;
+        _handle->ResourceBarrier(1, &barrier);
+    }
+
+    protected override void OnResetState()
+    {
+        // Unbind all output surfaces
+        _handle->OMSetRenderTargets(0, null, false, null);
+    }
+
+    protected override GpuBindResult DoComputePass(ShaderPass pass)
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override GpuBindResult CheckInstancing()
+    {
+        if (_inputLayout != null && _inputLayout.IsInstanced)
+            return GpuBindResult.Successful;
+        else
+            return GpuBindResult.NonInstancedVertexLayout;
+    }
+
+    private void BindVertexBuffers()
+    {
+        int count = State.VertexBuffers.Length;
+        VertexBufferView* pBuffers = stackalloc VertexBufferView[count];
+        GraphicsBuffer buffer = null;
+
+        for (int i = 0; i < count; i++)
+        {
+            buffer = State.VertexBuffers.BoundValues[i];
+
+            if (buffer != null)
+                pBuffers[i] = ((VBHandleDX12)buffer.Handle).View;
+            else
+                pBuffers[i] = default;
+        }
+
+        _handle->IASetVertexBuffers(0, (uint)count, pBuffers);
+    }
+
+    internal void ClearDSV(TextureDX12 surface, Color color)
+    {
+        if (surface.Handle is RTHandleDX12 rtHandle)
+        {
+            Transition(surface, ResourceStates.RenderTarget);
+            ref CpuDescriptorHandle cpuHandle = ref rtHandle.RTV.CpuHandle;
+            Color4 c4 = color.ToColor4();
+
+            _handle->ClearRenderTargetView(cpuHandle, c4.Values, 0, null);
+        }
+        else
+        {
+            throw new GpuResourceException(surface, "Cannot clear a non-render surface texture.");
+        }
+    }
+
+    internal void Clear(DepthSurfaceDX12 surface, float depthValue, byte stencilValue, DepthClearFlags clearFlags)
+    {
+        Transition(surface, ResourceStates.DepthWrite);
+
+        DSHandleDX12 dsHandle = (DSHandleDX12)surface.Handle;
+        ref CpuDescriptorHandle cpuHandle = ref dsHandle.DSV.CpuHandle;
+        ClearFlags flags = 0;
+
+        if (clearFlags.Has(DepthClearFlags.Depth))
+            flags = ClearFlags.Depth;
+
+        if (surface.DepthFormat.HasStencil() && clearFlags.HasFlag(DepthClearFlags.Stencil))
+            flags |= ClearFlags.Stencil;
+
+        // TODO Add support for clearing areas using Box2D structs.
+        if (flags > 0)
+            _handle->ClearDepthStencilView(cpuHandle, flags, depthValue, stencilValue, 0, null);
+    }
+
+    protected override unsafe void UpdateResource(GpuResource resource, uint subresource, ResourceRegion? region, void* ptrData, uint rowPitch, uint slicePitch)
+    {
+        Box* destBox = null;
+
+        if (region != null)
+        {
+            ResourceRegion value = region.Value;
+            destBox = (Box*)&value;
+        }
+
+        // TODO Calculate byte offset and number of bytes from resource region.
+
+        using (GpuStream stream = MapResource(resource, subresource, 0, GpuMapType.Write))
+        {
+            stream.Write(ptrData, slicePitch);
+            Profiler.SubResourceUpdateCalls++;
+        }
+    }
+
+    public override unsafe void CopyResourceRegion(GpuResource source, uint srcSubresource, ResourceRegion? sourceRegion, GpuResource dest, uint destSubresource, Vector3UI destStart)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override GpuBindResult Draw(Shader shader, uint vertexCount, uint vertexStartIndex = 0)
+    {
+        return ApplyState(shader, QueueValidationMode.Unindexed, () =>
+            _handle->DrawInstanced(vertexCount, 1, vertexStartIndex, 0));
+    }
+
+    public override GpuBindResult DrawInstanced(Shader shader, uint vertexCountPerInstance,
+        uint instanceCount,
+        uint vertexStartIndex = 0,
+        uint instanceStartIndex = 0)
+    {
+        return ApplyState(shader, QueueValidationMode.Instanced, () =>
+            _handle->DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex));
+    }
+
+    public override GpuBindResult DrawIndexed(Shader shader, uint indexCount, int vertexIndexOffset = 0, uint startIndex = 0)
+    {
+        return ApplyState(shader, QueueValidationMode.Indexed, () =>
+            _handle->DrawIndexedInstanced(indexCount, 1, startIndex, vertexIndexOffset, 0));
+    }
+
+    public override GpuBindResult DrawIndexedInstanced(Shader shader, uint indexCountPerInstance, uint instanceCount, uint startIndex = 0, int vertexIndexOffset = 0, uint instanceStartIndex = 0)
+    {
+        return ApplyState(shader, QueueValidationMode.InstancedIndexed, () =>
+            _handle->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndex, vertexIndexOffset, instanceStartIndex));
+    }
+
+    public override GpuBindResult Dispatch(Shader shader, Vector3UI groups)
+    {
+        DrawInfo.Custom.ComputeGroups = groups;
+        return ApplyState(shader, QueueValidationMode.Compute, null);
+    }
+
     protected override GpuBindResult DoRenderPass(ShaderPass hlslPass, QueueValidationMode mode, Action callback)
     {
         ShaderPassDX12 pass = hlslPass as ShaderPassDX12;
@@ -209,12 +448,12 @@ public unsafe class CommandListDX12 : GpuCommandList
         }
 
         PipelineInputLayoutDX12 _inputLayout = GetInputLayout(pass);
-        PipelineStateDX12 state = _stateBuilder.Build(pass, _inputLayout);
+        PipelineStateDX12 state = Device.StateBuilder.Build(pass, _inputLayout);
 
         _handle->SetPipelineState(state.Handle);
         _handle->SetGraphicsRootSignature(state.RootSignature.Handle);
 
-        Device.Heap.PrepareGpuHeap(pass, _cmd);
+        Device.Heap.PrepareGpuHeap(pass, this);
 
         CpuDescriptorHandle* dsvHandle = _dsv->Ptr != 0 ? _dsv : null;
         _handle->OMSetRenderTargets(_numRTVs, _rtvs, false, dsvHandle);
@@ -238,6 +477,33 @@ public unsafe class CommandListDX12 : GpuCommandList
         return vResult;
     }
 
+    /// <summary>Retrieves or creates a usable input layout for the provided vertex buffers and sub-effect.</summary>
+    /// <returns>An instance of InputLayout.</returns>
+    private PipelineInputLayoutDX12 GetInputLayout(ShaderPassDX12 pass)
+    {
+        // Retrieve layout list or create new one if needed.
+        PipelineInputLayoutDX12 match = null;
+
+        Device.PipelineLayoutCache.For(0, (index, layout) =>
+        {
+            if (layout.IsMatch(State.VertexBuffers))
+            {
+                match = layout;
+                return true;
+            }
+
+            return false;
+        });
+
+        if (match != null)
+            return match;
+
+        PipelineInputLayoutDX12 input = new PipelineInputLayoutDX12(Device, State.VertexBuffers, pass);
+        Device.PipelineLayoutCache.Add(input);
+
+        return input;
+    }
+
     public override void Wait(ulong nsTimeout = ulong.MaxValue)
     {
         Fence.Wait(nsTimeout);
@@ -250,6 +516,8 @@ public unsafe class CommandListDX12 : GpuCommandList
 
     protected override void OnGraphicsRelease()
     {
+        EngineUtil.Free(ref _rtvs);
+        EngineUtil.Free(ref _dsv);
         NativeUtil.ReleasePtr(ref _handle);
         Fence?.Dispose();
 

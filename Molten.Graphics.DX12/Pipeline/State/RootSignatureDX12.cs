@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.DX12;
 
-internal unsafe class RootSignatureDX12 : GraphicsObject<DeviceDX12>
+internal unsafe class RootSignatureDX12 : GpuObject<DeviceDX12>
 {
     ID3D12RootSignature* _handle;
 

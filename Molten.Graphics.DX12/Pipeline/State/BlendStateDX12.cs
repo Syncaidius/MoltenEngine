@@ -3,7 +3,7 @@
 namespace Molten.Graphics.DX12;
 
 /// <summary>Stores a blend state description.</summary>
-public unsafe class BlendStateDX12 : GraphicsObject<DeviceDX12>, IEquatable<BlendStateDX12>, IEquatable<BlendStateDX12.CombinedDesc>
+public unsafe class BlendStateDX12 : GpuObject<DeviceDX12>, IEquatable<BlendStateDX12>, IEquatable<BlendStateDX12.CombinedDesc>
 {
     public struct CombinedDesc
     {

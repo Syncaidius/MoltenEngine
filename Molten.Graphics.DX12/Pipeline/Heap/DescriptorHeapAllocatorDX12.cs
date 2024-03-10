@@ -1,7 +1,7 @@
 ﻿using Silk.NET.Direct3D12;
 
 namespace Molten.Graphics.DX12;
-internal class DescriptorHeapAllocatorDX12 : GraphicsObject<DeviceDX12>
+internal class DescriptorHeapAllocatorDX12 : GpuObject<DeviceDX12>
 {
     List<DescriptorHeapDX12> _heaps;
     DescriptorHeapType _type;

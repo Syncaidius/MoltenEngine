@@ -2,11 +2,6 @@
 
 public abstract class GpuCommandQueue : EngineObject
 {
-    protected GpuCommandQueue(GpuDevice device)
-    {
-        
-    }
-
     /// <summary>Returns a new (or recycled) <see cref="GpuCommandList"/> which can be used to record GPU commands.</summary>
     /// <param name="flags">The flags to apply to the underlying command segment.</param>   
     public abstract GpuCommandList GetCommandList(GpuCommandListFlags flags = GpuCommandListFlags.None);
@@ -23,10 +18,10 @@ public abstract class GpuCommandQueue : EngineObject
     public abstract GpuDevice Device { get; }
 }
 
-public abstract class GraphicsQueue<T> : GpuCommandQueue
+public abstract class GpuCommandQueue<T> : GpuCommandQueue
     where T : GpuDevice
 {
-    protected GraphicsQueue(T device) : base(device)
+    protected GpuCommandQueue(T device) 
     {
         Device = device;
     }

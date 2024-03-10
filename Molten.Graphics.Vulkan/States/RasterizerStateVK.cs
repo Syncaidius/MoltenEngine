@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.Vulkan;
 
-public unsafe class RasterizerStateVK : GraphicsObject<DeviceVK>, IEquatable<RasterizerStateVK>, IEquatable<PipelineRasterizationStateCreateInfo>
+public unsafe class RasterizerStateVK : GpuObject<DeviceVK>, IEquatable<RasterizerStateVK>, IEquatable<PipelineRasterizationStateCreateInfo>
 {
     PipelineRasterizationStateCreateInfo* _desc;
 

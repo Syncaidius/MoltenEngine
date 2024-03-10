@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.Vulkan;
 
-public unsafe class BlendStateVK : GraphicsObject<DeviceVK>, IEquatable<BlendStateVK>, IEquatable<PipelineColorBlendStateCreateInfo>
+public unsafe class BlendStateVK : GpuObject<DeviceVK>, IEquatable<BlendStateVK>, IEquatable<PipelineColorBlendStateCreateInfo>
 {
     PipelineColorBlendStateCreateInfo* _desc;
 

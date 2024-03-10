@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.Vulkan;
 
-public unsafe class DynamicStateVK : GraphicsObject<DeviceVK>, IEquatable<DynamicStateVK>, IEquatable<PipelineDynamicStateCreateInfo>
+public unsafe class DynamicStateVK : GpuObject<DeviceVK>, IEquatable<DynamicStateVK>, IEquatable<PipelineDynamicStateCreateInfo>
 {
     PipelineDynamicStateCreateInfo* _desc;
 

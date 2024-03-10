@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.Vulkan;
 
-internal unsafe class FrameBufferVK : GraphicsObject<DeviceVK>
+internal unsafe class FrameBufferVK : GpuObject<DeviceVK>
 {
     Framebuffer _frameBuffer;
     FramebufferCreateInfo _info;

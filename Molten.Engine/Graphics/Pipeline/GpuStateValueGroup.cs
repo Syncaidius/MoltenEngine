@@ -26,7 +26,7 @@ public class GpuStateValueGroup<T>
         }
     }
 
-    public bool Bind(GpuCommandQueue queue)
+    public bool Bind(GpuCommandList cmd)
     {
         bool r = false;
 
@@ -38,7 +38,7 @@ public class GpuStateValueGroup<T>
                 if (_boundValues[i] != null)
                 {
                     _validation?.Invoke(_boundValues[i], i);
-                    _boundValues[i].Apply(queue);
+                    _boundValues[i].Apply(cmd);
                     _boundVersions[i] = _boundValues[i].Version;
                 }
 
@@ -48,7 +48,7 @@ public class GpuStateValueGroup<T>
             {
                 if (_boundValues[i] != null)
                 {
-                    _boundValues[i].Apply(queue);
+                    _boundValues[i].Apply(cmd);
                     if (_boundVersions[i] != _boundValues[i].Version)
                     {
                         _boundVersions[i] = _boundValues[i].Version;

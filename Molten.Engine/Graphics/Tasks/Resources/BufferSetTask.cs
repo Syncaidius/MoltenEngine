@@ -33,20 +33,20 @@ internal class BufferSetTask<T> : GraphicsResourceTask<GraphicsBuffer>
         return true;
     }
 
-    protected override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
+    protected override bool OnProcess(RenderService renderer, GpuCommandList cmd)
     {
         if (Resource.Flags.Has(GpuResourceFlags.CpuWrite))
         {
-            using (GpuStream stream = queue.MapResource(Resource, 0, ByteOffset, MapType))
+            using (GpuStream stream = cmd.MapResource(Resource, 0, ByteOffset, MapType))
                 stream.WriteRange(Data, DataStartIndex, ElementCount);
         }
         else
         {
-            GraphicsBuffer staging = queue.Device.Frame.StagingBuffer;
-            using (GpuStream stream = queue.MapResource(staging, 0, ByteOffset, GpuMapType.Write))
+            GraphicsBuffer staging = cmd.Device.Frame.StagingBuffer;
+            using (GpuStream stream = cmd.MapResource(staging, 0, ByteOffset, GpuMapType.Write))
                 stream.WriteRange(Data, DataStartIndex, ElementCount);
 
-            queue.CopyResource(staging, Resource);
+            cmd.CopyResource(staging, Resource);
         }
 
         return true;

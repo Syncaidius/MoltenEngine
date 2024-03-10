@@ -3,7 +3,7 @@ using Silk.NET.Direct3D12;
 
 namespace Molten.Graphics.DX12;
 
-internal unsafe class DescriptorHeapDX12 : GraphicsObject<DeviceDX12>
+internal unsafe class DescriptorHeapDX12 : GpuObject<DeviceDX12>
 {
     ID3D12DescriptorHeap* _handle;
     uint _incrementSize;

@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.Vulkan;
 
-internal class DescriptorPoolVK : GraphicsObject<DeviceVK>
+internal class DescriptorPoolVK : GpuObject<DeviceVK>
 {
     List<DescriptorPoolSize> _sizes;
     DescriptorPool _handle;

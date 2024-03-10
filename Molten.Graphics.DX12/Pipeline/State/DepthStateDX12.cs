@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace Molten.Graphics.DX12;
 
 /// <summary>Stores a depth-stencil state description.</summary>
-internal unsafe class DepthStateDX12 : GraphicsObject<DeviceDX12>, IEquatable<DepthStateDX12>, IEquatable<DepthStateDX12.CombinedDesc>
+internal unsafe class DepthStateDX12 : GpuObject<DeviceDX12>, IEquatable<DepthStateDX12>, IEquatable<DepthStateDX12.CombinedDesc>
 {
     [StructLayout(LayoutKind.Explicit)]
     public struct CombinedDesc

@@ -3,7 +3,7 @@
 namespace Molten.Graphics.DX12;
 
 /// <summary>A helper class that safely wraps InputLayout.</summary>
-internal unsafe class PipelineInputLayoutDX12 : GraphicsObject<DeviceDX12>
+internal unsafe class PipelineInputLayoutDX12 : GpuObject<DeviceDX12>
 {
     struct FormatBinding
     {

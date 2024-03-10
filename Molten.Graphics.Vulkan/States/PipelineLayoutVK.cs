@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.Vulkan;
 
-internal class PipelineLayoutVK : GraphicsObject<DeviceVK>, IEquatable<PipelineLayoutVK>, IEquatable<PipelineLayoutCreateInfo>
+internal class PipelineLayoutVK : GpuObject<DeviceVK>, IEquatable<PipelineLayoutVK>, IEquatable<PipelineLayoutCreateInfo>
 {
     PipelineLayout _handle;
     PipelineLayoutCreateInfo _info;

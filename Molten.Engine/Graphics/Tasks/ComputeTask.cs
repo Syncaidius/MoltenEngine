@@ -17,10 +17,10 @@ internal class ComputeTask : GraphicsTask
         return true;
     }
 
-    protected override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
+    protected override bool OnProcess(RenderService renderer, GpuCommandList cmd)
     {
         //queue.Begin();
-        queue.Dispatch(Shader, Groups);
+        cmd.Dispatch(Shader, Groups);
         //queue.End();
         return true;
     }

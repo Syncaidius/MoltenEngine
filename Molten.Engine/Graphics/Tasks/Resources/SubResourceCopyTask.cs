@@ -29,16 +29,16 @@ public class SubResourceCopyTask : GraphicsResourceTask<GpuResource>
         return true;
     }
 
-    protected override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
+    protected override bool OnProcess(RenderService renderer, GpuCommandList cmd)
     {
         if (DestResource.Flags.Has(GpuResourceFlags.GpuWrite))
             throw new ResourceCopyException(Resource, DestResource, "The destination resource must have GPU write access for writing the copied data.");
 
         if (Resource is GraphicsBuffer buffer && buffer.BufferType == GraphicsBufferType.Staging)
-            Resource.Apply(queue);
+            Resource.Apply(cmd);
 
-        queue.CopyResourceRegion(Resource, SrcSubResource, SrcRegion, DestResource, DestSubResource, DestStart);
-        queue.Profiler.SubResourceCopyCalls++;
+        cmd.CopyResourceRegion(Resource, SrcSubResource, SrcRegion, DestResource, DestSubResource, DestStart);
+        cmd.Profiler.SubResourceCopyCalls++;
 
         return true;
     }

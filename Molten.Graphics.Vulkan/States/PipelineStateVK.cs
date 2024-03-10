@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Molten.Graphics.Vulkan;
 
-internal unsafe class PipelineStateVK : GraphicsObject<DeviceVK>
+internal unsafe class PipelineStateVK : GpuObject<DeviceVK>
 {
     /// <summary>
     /// A list of all shader stages in the order they are expected by Vulkan and Molten.

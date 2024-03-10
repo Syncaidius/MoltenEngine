@@ -4,7 +4,7 @@ using Silk.NET.Direct3D12;
 
 namespace Molten.Graphics.DX12;
 
-public unsafe class CommandAllocatorDX12 : GraphicsObject<DeviceDX12>
+public unsafe class CommandAllocatorDX12 : GpuObject<DeviceDX12>
 {
     ID3D12CommandAllocator* _handle;
     ThreadedList<CommandListDX12> _allocated;

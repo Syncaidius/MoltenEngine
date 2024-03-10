@@ -3,7 +3,7 @@
 namespace Molten.Graphics.DX12;
 
 /// <summary>Stores a rasterizer state description.</summary>
-internal unsafe class RasterizerStateDX12 : GraphicsObject<DeviceDX12>, IEquatable<RasterizerStateDX12>, IEquatable<RasterizerDesc>
+internal unsafe class RasterizerStateDX12 : GpuObject<DeviceDX12>, IEquatable<RasterizerStateDX12>, IEquatable<RasterizerDesc>
 {
     RasterizerDesc _desc;
 

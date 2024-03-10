@@ -20,7 +20,7 @@ public class GpuStateValue<T>
         target._boundVersion = _boundVersion;
     }
 
-    public bool Bind(GpuCommandQueue queue)
+    public bool Bind(GpuCommandList cmd)
     {
         if (_boundValue != _value)
         {
@@ -28,7 +28,7 @@ public class GpuStateValue<T>
             if (_boundValue != null)
             {
                 _validation?.Invoke(_boundValue);
-                _boundValue.Apply(queue);
+                _boundValue.Apply(cmd);
                 _boundVersion = _boundValue.Version;
             }
 
@@ -38,7 +38,7 @@ public class GpuStateValue<T>
         {
             if (_boundValue != null)
             {
-                _boundValue.Apply(queue);
+                _boundValue.Apply(cmd);
                 if (_boundVersion != _boundValue.Version)
                 {
                     _boundVersion = _boundValue.Version;

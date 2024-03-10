@@ -23,10 +23,10 @@ internal class TextureGetSliceTask : GraphicsResourceTask<GraphicsTexture>
         return true;
     }
 
-    protected override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
+    protected override bool OnProcess(RenderService renderer, GpuCommandList cmd)
     {
         bool isStaging = Resource.Flags.Has(GpuResourceFlags.AllReadWrite);
-        TextureSlice slice = TextureSlice.FromTextureSlice(queue, Resource, MipMapLevel, ArrayIndex, MapType);
+        TextureSlice slice = TextureSlice.FromTextureSlice(cmd, Resource, MipMapLevel, ArrayIndex, MapType);
 
         // Return resulting data
         OnGetData?.Invoke(slice);

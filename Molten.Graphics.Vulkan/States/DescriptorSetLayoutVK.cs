@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.Vulkan;
 
-internal unsafe class DescriptorSetLayoutVK : GraphicsObject<DeviceVK>, IEquatable<DescriptorSetLayoutVK>, IEquatable<DescriptorSetLayoutCreateInfo>
+internal unsafe class DescriptorSetLayoutVK : GpuObject<DeviceVK>, IEquatable<DescriptorSetLayoutVK>, IEquatable<DescriptorSetLayoutCreateInfo>
 {
     DescriptorSetLayoutBinding* _ptrBindings;
     DescriptorSetLayout _handle;

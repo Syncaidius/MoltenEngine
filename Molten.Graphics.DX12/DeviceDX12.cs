@@ -14,9 +14,11 @@ public unsafe class DeviceDX12 : DeviceDXGI
     GraphicsQueueDX12 _cmdDirect;
     ID3D12InfoQueue1* _debugInfo;
     uint _debugCookieID;
-    ShaderLayoutCache<ShaderIOLayoutDX12> _layoutCache;
+    ShaderLayoutCache<ShaderIOLayoutDX12> _shaderLayoutCache;
     DescriptorHeapManagerDX12 _heapManager;
     ResourceManagerDX12 _resources;
+    PipelineStateBuilderDX12 _stateBuilder;
+    ThreadedList<PipelineInputLayoutDX12> _pipelineLayoutCache;
     uint _nodeCount;
 
     FenceDX12 _presentFence;
@@ -26,7 +28,8 @@ public unsafe class DeviceDX12 : DeviceDXGI
     {
         Renderer = renderer;
         _builder = deviceBuilder;
-        _layoutCache = new ShaderLayoutCache<ShaderIOLayoutDX12>();
+        _shaderLayoutCache = new ShaderLayoutCache<ShaderIOLayoutDX12>();
+        _pipelineLayoutCache = new ThreadedList<PipelineInputLayoutDX12>();
         CapabilitiesDX12 = new CapabilitiesDX12();
     }
 
@@ -67,6 +70,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
         };
 
         _heapManager = new DescriptorHeapManagerDX12(this);
+        _stateBuilder = new PipelineStateBuilderDX12(this);
         _cmdDirect = new GraphicsQueueDX12(Log, this, _builder, ref cmdDesc);
         _presentFence = new FenceDX12(this, FenceFlags.None);
         _resources = new ResourceManagerDX12(this);
@@ -168,7 +172,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
     public new RendererDX12 Renderer { get; }
 
     /// <inheritdoc/>
-    public override ShaderLayoutCache LayoutCache => _layoutCache;
+    public override ShaderLayoutCache LayoutCache => _shaderLayoutCache;
 
     /// <summary>
     /// Gets the number of GPU nodes in the current <see cref="DeviceDX12"/>.
@@ -184,4 +188,8 @@ public unsafe class DeviceDX12 : DeviceDXGI
 
     /// <inheritdoc/>
     public override GpuResourceManager Resources => _resources;
+
+    internal PipelineStateBuilderDX12 StateBuilder => _stateBuilder;
+
+    internal ThreadedList<PipelineInputLayoutDX12> PipelineLayoutCache => _pipelineLayoutCache;
 }

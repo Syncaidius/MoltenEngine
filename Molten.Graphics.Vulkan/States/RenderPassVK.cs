@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.Vulkan;
 
-internal unsafe class RenderPassVK : GraphicsObject<DeviceVK>, IEquatable<RenderPassVK>
+internal unsafe class RenderPassVK : GpuObject<DeviceVK>, IEquatable<RenderPassVK>
 {
     // TODO abstract the render pass system into Molten.Engine.RenderStep.
     //  - Each RenderStep will provide a RenderPass.
