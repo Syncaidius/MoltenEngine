@@ -68,7 +68,7 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
         ShaderResourceViewDesc srvDesc = new ShaderResourceViewDesc
         {
             Format = DxgiFormat,
-            Shader4ComponentMapping = EncodeShader4ComponentMapping(ShaderComponentMapping.FromMemoryComponent0,
+            Shader4ComponentMapping = ResourceInterop.EncodeShader4ComponentMapping(ShaderComponentMapping.FromMemoryComponent0,
                     ShaderComponentMapping.FromMemoryComponent1,
                     ShaderComponentMapping.FromMemoryComponent2,
                     ShaderComponentMapping.FromMemoryComponent3),
@@ -172,19 +172,6 @@ public abstract class TextureDX12 : GraphicsTexture, ITexture
         Dimensions = dimensions;
 
         OnCreateResource();
-    }
-
-    protected uint EncodeShader4ComponentMapping(ShaderComponentMapping Src0, ShaderComponentMapping Src1, ShaderComponentMapping Src2, ShaderComponentMapping Src3)
-    {
-        const int D3D12_SHADER_COMPONENT_MAPPING_MASK = 0x7;
-        const int D3D12_SHADER_COMPONENT_MAPPING_SHIFT = 3;
-        const int D3D12_SHADER_COMPONENT_MAPPING_ALWAYS_SET_BIT_AVOIDING_ZEROMEM_MISTAKES = 1 << (D3D12_SHADER_COMPONENT_MAPPING_SHIFT * 4);
-
-        return ((uint)Src0 & D3D12_SHADER_COMPONENT_MAPPING_MASK) |
-            (((uint)Src1 & D3D12_SHADER_COMPONENT_MAPPING_MASK) << D3D12_SHADER_COMPONENT_MAPPING_SHIFT) |
-            (((uint)Src2 & D3D12_SHADER_COMPONENT_MAPPING_MASK) << (D3D12_SHADER_COMPONENT_MAPPING_SHIFT * 2)) |
-            (((uint)Src3 & D3D12_SHADER_COMPONENT_MAPPING_MASK) << (D3D12_SHADER_COMPONENT_MAPPING_SHIFT * 3)) |
-        D3D12_SHADER_COMPONENT_MAPPING_ALWAYS_SET_BIT_AVOIDING_ZEROMEM_MISTAKES;
     }
 
     /// <summary>Gets the DXGI format of the texture.</summary>
