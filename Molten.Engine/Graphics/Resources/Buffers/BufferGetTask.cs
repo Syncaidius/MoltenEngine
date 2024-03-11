@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics;
 
-internal class BufferGetTask<T> : GraphicsResourceTask<GraphicsBuffer> 
+internal class BufferGetTask<T> : GraphicsResourceTask<GpuBuffer> 
     where T : unmanaged
 {
     /// <summary>The number of bytes to offset the change, from the start of the provided <see cref="SrcSegment"/>.</summary>

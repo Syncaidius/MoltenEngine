@@ -88,9 +88,9 @@ public abstract class GpuResource : GpuObject, IGpuResource
             throw new ResourceCopyException(this, destination, "Destination resource must have the GraphicsResourceFlags.GpuWrite flag set.");
 
         // If copying between two images, do a format and bounds check
-        if (this is GraphicsTexture srcTex)
+        if (this is GpuTexture srcTex)
         {
-            if (destination is GraphicsTexture destTex)
+            if (destination is GpuTexture destTex)
             {
                 if (ResourceFormat != destination.ResourceFormat)
                     throw new ResourceCopyException(this, destination, "The source and destination texture formats do not match.");
@@ -106,7 +106,7 @@ public abstract class GpuResource : GpuObject, IGpuResource
                 throw new NotImplementedException("Copying a texture to a non-texture is currently unsupported.");
             }
         }
-        else if (this is GraphicsBuffer && destination is GraphicsBuffer)
+        else if (this is GpuBuffer && destination is GpuBuffer)
         {
             if (destination.SizeInBytes < SizeInBytes)
                 throw new GpuResourceException(this, "The destination buffer is not large enough.");
@@ -142,9 +142,9 @@ public abstract class GpuResource : GpuObject, IGpuResource
 
         // Validate dimensions.
         // TODO this should only test the source and destination level dimensions, not the textures themselves.
-        if (this is GraphicsTexture srcTex)
+        if (this is GpuTexture srcTex)
         {
-            if (destination is GraphicsTexture destTex)
+            if (destination is GpuTexture destTex)
             {
                 if (ResourceFormat != destination.ResourceFormat)
                     throw new ResourceCopyException(this, destination, "The source and destination texture formats do not match.");
@@ -231,7 +231,7 @@ public abstract class GpuResource : GpuObject, IGpuResource
     public ulong LastUsedFrameID { get; private set; }
 
     /// <summary>
-    /// Gets the ID of the frame that the current <see cref="GraphicsTexture"/> was resized. 
+    /// Gets the ID of the frame that the current <see cref="GpuTexture"/> was resized. 
     /// If the texture was never resized then the frame ID will be the ID of the frame that the texture was created.
     /// </summary>
     public ulong LastFrameResizedID { get; internal set; }

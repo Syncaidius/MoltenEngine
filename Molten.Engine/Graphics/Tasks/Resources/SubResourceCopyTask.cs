@@ -34,7 +34,7 @@ public class SubResourceCopyTask : GraphicsResourceTask<GpuResource>
         if (DestResource.Flags.Has(GpuResourceFlags.GpuWrite))
             throw new ResourceCopyException(Resource, DestResource, "The destination resource must have GPU write access for writing the copied data.");
 
-        if (Resource is GraphicsBuffer buffer && buffer.BufferType == GraphicsBufferType.Staging)
+        if (Resource is GpuBuffer buffer && buffer.BufferType == GpuBufferType.Staging)
             Resource.Apply(cmd);
 
         cmd.CopyResourceRegion(Resource, SrcSubResource, SrcRegion, DestResource, DestSubResource, DestStart);

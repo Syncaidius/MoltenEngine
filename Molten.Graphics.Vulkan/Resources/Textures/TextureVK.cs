@@ -3,7 +3,7 @@ using Silk.NET.Vulkan;
 
 namespace Molten.Graphics.Vulkan;
 
-public unsafe abstract class TextureVK : GraphicsTexture
+public unsafe abstract class TextureVK : GpuTexture
 {
     ImageCreateInfo _info;
     ImageViewCreateInfo _viewInfo;

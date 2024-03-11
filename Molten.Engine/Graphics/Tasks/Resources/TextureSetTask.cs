@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics;
 
-public unsafe class TextureSetTask : GraphicsResourceTask<GraphicsTexture>
+public unsafe class TextureSetTask : GraphicsResourceTask<GpuTexture>
 {
     public uint MipLevel;
 

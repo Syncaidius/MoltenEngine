@@ -24,7 +24,7 @@ public class ResourceManagerVK :GraphicsResourceManager<DeviceVK>
         throw new NotImplementedException();
     }
 
-    protected unsafe override GraphicsBuffer CreateBuffer<T>(GraphicsBufferType type, GpuResourceFlags flags, GpuResourceFormat format, uint numElements, T[] initialData)
+    protected unsafe override GpuBuffer CreateBuffer<T>(GpuBufferType type, GpuResourceFlags flags, GpuResourceFormat format, uint numElements, T[] initialData)
     {
         BufferVK buffer = new BufferVK(Device, type, flags, (uint)sizeof(T), numElements, 1);
 
@@ -72,12 +72,12 @@ public class ResourceManagerVK :GraphicsResourceManager<DeviceVK>
         return new WindowSurfaceVK(Device, formTitle, width, height, mipCount, GpuResourceFlags.None, format);
     }
 
-    public override void ResolveTexture(GraphicsTexture source, GraphicsTexture destination)
+    public override void ResolveTexture(GpuTexture source, GpuTexture destination)
     {
         throw new NotImplementedException();
     }
 
-    public override void ResolveTexture(GraphicsTexture source, GraphicsTexture destination, uint sourceMipLevel, uint sourceArraySlice, uint destMiplevel, uint destArraySlice)
+    public override void ResolveTexture(GpuTexture source, GpuTexture destination, uint sourceMipLevel, uint sourceArraySlice, uint destMiplevel, uint destArraySlice)
     {
         throw new NotImplementedException();
     }

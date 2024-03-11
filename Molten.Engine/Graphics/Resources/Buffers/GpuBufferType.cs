@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics;
 
-public enum GraphicsBufferType
+public enum GpuBufferType
 {
     /// <summary>
     /// The buffer stores unknown data. This may be used for buffers that will be sub-allocated into smaller buffer regions.

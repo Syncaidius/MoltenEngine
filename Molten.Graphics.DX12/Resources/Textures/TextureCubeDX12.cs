@@ -58,7 +58,7 @@ public unsafe class TextureCubeDX12 : Texture2DDX12, ITextureCube
             ArraySize = ArraySize,
             Depth = Depth,
         };
-        Device.Tasks.Push<GraphicsTexture, TextureResizeTask>(priority, this, task);
+        Device.Tasks.Push<GpuTexture, TextureResizeTask>(priority, this, task);
     }
 
     /// <summary>Gets the number of cube maps stored in the texture. This is greater than 1 if the texture is a cube-map array.</summary>

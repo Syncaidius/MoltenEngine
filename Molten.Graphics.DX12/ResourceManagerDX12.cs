@@ -29,11 +29,11 @@ internal class ResourceManagerDX12 : GraphicsResourceManager<DeviceDX12>
         return new ShaderPassDX12(shader, name);
     }
 
-    protected unsafe override GraphicsBuffer CreateBuffer<T>(GraphicsBufferType type, GpuResourceFlags flags, GpuResourceFormat format, uint numElements, T[] initialData)
+    protected unsafe override GpuBuffer CreateBuffer<T>(GpuBufferType type, GpuResourceFlags flags, GpuResourceFormat format, uint numElements, T[] initialData)
     {
         uint stride = (uint)sizeof(T);
         uint alignment = stride;
-        if (type == GraphicsBufferType.Constant)
+        if (type == GpuBufferType.Constant)
         {
             alignment = D3D12.ConstantBufferDataPlacementAlignment; // Constant buffers must be 256-bit aligned.
 
@@ -67,12 +67,12 @@ internal class ResourceManagerDX12 : GraphicsResourceManager<DeviceDX12>
         throw new NotImplementedException();
     }
 
-    public override void ResolveTexture(GraphicsTexture source, GraphicsTexture destination)
+    public override void ResolveTexture(GpuTexture source, GpuTexture destination)
     {
         throw new NotImplementedException();
     }
 
-    public override void ResolveTexture(GraphicsTexture source, GraphicsTexture destination, uint sourceMipLevel,
+    public override void ResolveTexture(GpuTexture source, GpuTexture destination, uint sourceMipLevel,
         uint sourceArraySlice, uint destMiplevel, uint destArraySlice)
     {
         throw new NotImplementedException();

@@ -60,11 +60,11 @@ public unsafe class CommandListDX12 : GpuCommandList
             ulong rowPitch = 0;
             ulong depthPitch = 0;
 
-            if (resource is GraphicsTexture tex)
+            if (resource is GpuTexture tex)
             {
                 // TODO Calculate row pitch based on texture size, subresource level, format and dimensions. Also consider block-compression size.
             }
-            else if (resource is GraphicsBuffer buffer)
+            else if (resource is GpuBuffer buffer)
             {
                 rowPitch = buffer.SizeInBytes;
                 depthPitch = buffer.SizeInBytes;
@@ -207,7 +207,7 @@ public unsafe class CommandListDX12 : GpuCommandList
     {
         int count = State.VertexBuffers.Length;
         VertexBufferView* pBuffers = stackalloc VertexBufferView[count];
-        GraphicsBuffer buffer = null;
+        GpuBuffer buffer = null;
 
         for (int i = 0; i < count; i++)
         {
@@ -337,7 +337,7 @@ public unsafe class CommandListDX12 : GpuCommandList
 
         if (State.IndexBuffer.Bind(this))
         {
-            GraphicsBuffer iBuffer = State.IndexBuffer.BoundValue;
+            GpuBuffer iBuffer = State.IndexBuffer.BoundValue;
             if (iBuffer != null)
             {
                 IBHandleDX12 ibHandle = (IBHandleDX12)iBuffer.Handle;

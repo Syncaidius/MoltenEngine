@@ -6,9 +6,9 @@
 public class GpuFrame
 {
     /// <summary>
-    /// Gets the <see cref="GraphicsBuffer"/> used for staging during the current frame.
+    /// Gets the <see cref="GpuBuffer"/> used for staging during the current frame.
     /// </summary>
-    public GraphicsBuffer StagingBuffer { get; internal set; }
+    public GpuBuffer StagingBuffer { get; internal set; }
 
     /// <summary>
     /// Gets the internal frame ID.

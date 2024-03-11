@@ -5,7 +5,7 @@ namespace Molten.Graphics;
 /// <summary>A base interface for mesh implementations.</summary>
 public abstract class Mesh : Renderable
 {
-    GraphicsBuffer _iBuffer;
+    GpuBuffer _iBuffer;
     Shader _shader;
     ShaderBind<GpuResource>[][] _resources;
     bool _applied;
@@ -25,11 +25,11 @@ public abstract class Mesh : Renderable
         for(int i = 0; i < _resources.Length; i++)
             _resources[i] = [];
 
-        IndexFormat = maxIndices > 0 ? GraphicsIndexFormat.UInt16 : GraphicsIndexFormat.None;
+        IndexFormat = maxIndices > 0 ? GpuIndexFormat.UInt16 : GpuIndexFormat.None;
         MaxVertices = maxVertices;
         IsDiscard = mode.IsDiscard();
 
-        if (IndexFormat != GraphicsIndexFormat.None)
+        if (IndexFormat != GpuIndexFormat.None)
         {
             _iBuffer = Renderer.Device.Resources.CreateIndexBuffer(mode, maxIndices, initialIndices);
 
@@ -53,11 +53,11 @@ public abstract class Mesh : Renderable
         for (int i = 0; i < _resources.Length; i++)
             _resources[i] = [];
 
-        IndexFormat = maxIndices > 0 ? GraphicsIndexFormat.UInt32 : GraphicsIndexFormat.None;
+        IndexFormat = maxIndices > 0 ? GpuIndexFormat.UInt32 : GpuIndexFormat.None;
         MaxVertices = maxVertices;
         MaxIndices = maxIndices;
 
-        if (IndexFormat != GraphicsIndexFormat.None)
+        if (IndexFormat != GpuIndexFormat.None)
         {
             _iBuffer = Renderer.Device.Resources.CreateIndexBuffer(mode, maxIndices, initialIndices);
 
@@ -152,7 +152,7 @@ public abstract class Mesh : Renderable
 
     public uint IndexCount { get; set; }
 
-    public GraphicsIndexFormat IndexFormat { get; }
+    public GpuIndexFormat IndexFormat { get; }
 
     /// <summary>
     /// Gets or sets the material that should be used when rendering the current <see cref="Mesh"/>.
@@ -230,7 +230,7 @@ public abstract class Mesh : Renderable
 public class Mesh<T> : Mesh
     where T : unmanaged, IVertexType
 {
-    GraphicsBuffer _vb;
+    GpuBuffer _vb;
 
     internal Mesh(RenderService renderer, 
         GpuResourceFlags mode, ushort maxVertices, uint maxIndices,

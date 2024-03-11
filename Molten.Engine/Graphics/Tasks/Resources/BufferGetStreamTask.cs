@@ -1,15 +1,15 @@
 ﻿namespace Molten.Graphics;
 
-internal class BufferGetStreamTask : GraphicsResourceTask<GraphicsBuffer>
+internal class BufferGetStreamTask : GraphicsResourceTask<GpuBuffer>
 {
     internal uint ByteOffset;
 
     internal GpuMapType MapType;
 
-    internal GraphicsBuffer Staging;
+    internal GpuBuffer Staging;
 
     /// <summary>A callback to interact with the retrieved stream.</summary>
-    internal event Action<GraphicsBuffer, GpuStream> OnStreamOpened;
+    internal event Action<GpuBuffer, GpuStream> OnStreamOpened;
 
     public override void ClearForPool()
     {

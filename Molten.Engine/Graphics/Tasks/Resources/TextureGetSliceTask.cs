@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics;
 
-internal class TextureGetSliceTask : GraphicsResourceTask<GraphicsTexture>
+internal class TextureGetSliceTask : GraphicsResourceTask<GpuTexture>
 {
     public Action<TextureSlice> OnGetData;
 

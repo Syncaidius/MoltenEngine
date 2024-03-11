@@ -4,7 +4,7 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics.DX12;
 
-public abstract class TextureDX12 : GraphicsTexture, ITexture
+public abstract class TextureDX12 : GpuTexture, ITexture
 {
     ResourceHandleDX12 _handle;
     ResourceBarrier _barrier;

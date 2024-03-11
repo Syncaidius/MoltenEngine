@@ -65,14 +65,14 @@ public class ComputeAdd : MoltenExample
             }
 
             // Setup two input buffers for our numbers. By default these are immutable - cannot be changed after creation.
-            GraphicsBuffer numBuffer0 = Engine.Renderer.Device.Resources.CreateStructuredBuffer(_values0);
-            GraphicsBuffer numBuffer1 = Engine.Renderer.Device.Resources.CreateStructuredBuffer(_values1);
+            GpuBuffer numBuffer0 = Engine.Renderer.Device.Resources.CreateStructuredBuffer(_values0);
+            GpuBuffer numBuffer1 = Engine.Renderer.Device.Resources.CreateStructuredBuffer(_values1);
 
             // Setup one output buffer for results
-            GraphicsBuffer outBuffer = Engine.Renderer.Device.Resources.CreateStructuredBuffer<ComputeData>(GpuResourceFlags.GpuWrite | GpuResourceFlags.UnorderedAccess, NUM_SUMS);
+            GpuBuffer outBuffer = Engine.Renderer.Device.Resources.CreateStructuredBuffer<ComputeData>(GpuResourceFlags.GpuWrite | GpuResourceFlags.UnorderedAccess, NUM_SUMS);
 
             // Staging buffer for transferring our compute result off the GPU
-            GraphicsBuffer stagingBuffer = Engine.Renderer.Device.Resources.CreateStagingBuffer(true, false, numBytes);
+            GpuBuffer stagingBuffer = Engine.Renderer.Device.Resources.CreateStagingBuffer(true, false, numBytes);
 
             // Send our compute shader off to the renderer to be worked on.
             Engine.Renderer.Device.Tasks.Push(GraphicsTaskPriority.StartOfFrame, compute, NUM_SUMS, 1, 1, (task, successful) =>

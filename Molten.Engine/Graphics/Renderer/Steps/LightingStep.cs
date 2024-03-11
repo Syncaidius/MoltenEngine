@@ -6,7 +6,7 @@ internal class LightingStep : RenderStep
 {
     Shader _matPoint;
     Shader _matDebugPoint;
-    GraphicsBuffer _lightBuffer;
+    GpuBuffer _lightBuffer;
 
     protected override void OnInitialize(RenderService renderer)
     {

@@ -6,9 +6,9 @@ namespace Molten.Graphics;
 /// A delegate for texture event handlers.
 /// </summary>
 /// <param name="texture">The texture instance that triggered the event.</param>
-public delegate void TextureHandler(GraphicsTexture texture);
+public delegate void TextureHandler(GpuTexture texture);
 
-public abstract class GraphicsTexture : GpuResource, ITexture
+public abstract class GpuTexture : GpuResource, ITexture
 {
     /// <summary>
     /// Invoked after resizing of the texture has completed.
@@ -19,15 +19,15 @@ public abstract class GraphicsTexture : GpuResource, ITexture
     GpuResourceFormat _format;
 
     /// <summary>
-    /// Creates a new instance of <see cref="GraphicsTexture"/>.
+    /// Creates a new instance of <see cref="GpuTexture"/>.
     /// </summary>
-    /// <param name="device">The <see cref="GraphicsTexture"/> that the buffer is bound to.</param>
+    /// <param name="device">The <see cref="GpuTexture"/> that the buffer is bound to.</param>
     /// <param name="dimensions">The dimensions of the texture.</param>
     /// <param name="format">The <see cref="GpuResourceFormat"/> of the texture.</param>
     /// <param name="flags">Resource flags which define how the texture can be used.</param>
     /// <param name="name">The name of the texture. This is mainly used for debug purposes.</param>
     /// <exception cref="ArgumentException"></exception>
-    protected GraphicsTexture(GpuDevice device, ref TextureDimensions dimensions, GpuResourceFormat format, GpuResourceFlags flags, string name)
+    protected GpuTexture(GpuDevice device, ref TextureDimensions dimensions, GpuResourceFormat format, GpuResourceFlags flags, string name)
         : base(device, flags)
     {
         if(dimensions.IsCubeMap && dimensions.ArraySize % 6 != 0)
@@ -69,7 +69,7 @@ public abstract class GraphicsTexture : GpuResource, ITexture
     }
 
     /// <summary>
-    /// Resizes the current <see cref="GraphicsTexture"/>.
+    /// Resizes the current <see cref="GpuTexture"/>.
     /// </summary>
     /// <param name="priority">The priority of the resize operation.</param>
     /// <param name="newWidth">The new width.</param>      
@@ -81,7 +81,7 @@ public abstract class GraphicsTexture : GpuResource, ITexture
     }
 
     /// <summary>
-    /// Resizes the current <see cref="GraphicsTexture"/>.
+    /// Resizes the current <see cref="GpuTexture"/>.
     /// </summary>
     /// <param name="priority">The priority of the resize operation.</param>
     /// <param name="newWidth">The new width.</param>
@@ -92,7 +92,7 @@ public abstract class GraphicsTexture : GpuResource, ITexture
     }
 
     /// <summary>
-    /// Resizes the current <see cref="GraphicsTexture"/>.
+    /// Resizes the current <see cref="GpuTexture"/>.
     /// </summary>
     /// <param name="priority">The priority of the resize operation.</param>
     /// <param name="width">The new width.</param>
@@ -263,7 +263,7 @@ public abstract class GraphicsTexture : GpuResource, ITexture
 
     protected abstract void OnResizeTexture(ref readonly TextureDimensions dimensions, GpuResourceFormat format);
 
-    /// <summary>Generates mip maps for the texture via the current <see cref="GraphicsTexture"/>, if allowed.</summary>
+    /// <summary>Generates mip maps for the texture via the current <see cref="GpuTexture"/>, if allowed.</summary>
     /// <param name="priority">The priority of the copy operation.</param>
     /// <param name="callback">A callback to run once the operation has completed.</param>
     public void GenerateMipMaps(GpuPriority priority, GraphicsTask.EventHandler callback = null)

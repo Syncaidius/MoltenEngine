@@ -35,7 +35,7 @@ public class SaveTexture : MoltenExample
         mat[ShaderBindType.Resource, 0] = tex;
         TestMesh.Shader = mat;
 
-        GraphicsTexture texStaging = Engine.Renderer.Device.Resources.CreateStagingTexture(tex);
+        GpuTexture texStaging = Engine.Renderer.Device.Resources.CreateStagingTexture(tex);
         TextureData loadedData = _hTexData.Get<TextureData>();
         loadedData.Decompress(Log);
 

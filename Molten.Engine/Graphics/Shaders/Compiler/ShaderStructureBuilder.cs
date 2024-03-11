@@ -53,11 +53,11 @@ internal class ShaderStructureBuilder
                     break;
 
                 case ShaderInputType.Structured:
-                    BuildResourceVariable<ShaderResourceVariable<GraphicsBuffer>>(context, stage, bindInfo, ShaderBindType.Resource);
+                    BuildResourceVariable<ShaderResourceVariable<GpuBuffer>>(context, stage, bindInfo, ShaderBindType.Resource);
                     break;
 
                 case ShaderInputType.UavRWStructured:
-                    BuildResourceVariable<RWVariable<GraphicsBuffer>>(context, stage, bindInfo, ShaderBindType.UnorderedAccess);
+                    BuildResourceVariable<RWVariable<GpuBuffer>>(context, stage, bindInfo, ShaderBindType.UnorderedAccess);
                     break;
 
                 case ShaderInputType.UavRWTyped:

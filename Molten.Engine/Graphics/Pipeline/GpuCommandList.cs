@@ -181,7 +181,7 @@ public abstract class GpuCommandList : GpuObject
         DrawInfo.Reset();
     }
 
-    /// <summary>Generates mip maps for the texture via the provided <see cref="GraphicsTexture"/>, if allowed.</summary>
+    /// <summary>Generates mip maps for the texture via the provided <see cref="GpuTexture"/>, if allowed.</summary>
     /// <param name="texture">The target texture for mip-map generation.</param>
     protected internal abstract void GenerateMipMaps(GpuResource texture);
 

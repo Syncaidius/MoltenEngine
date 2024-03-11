@@ -69,7 +69,7 @@ public partial class SpriteBatcher : IDisposable
     uint _dataCount;
     uint _flushIndex;
 
-    GpuFrameBuffer<GraphicsBuffer> _buffer;
+    GpuFrameBuffer<GpuBuffer> _buffer;
 
     CheckerCallback[] _checkers;
     Shader _matDefault;
@@ -100,7 +100,7 @@ public partial class SpriteBatcher : IDisposable
         Reset();
 
         //throw new NotImplementedException("Implement per-frame buffer");
-        _buffer = new GpuFrameBuffer<GraphicsBuffer>(device, (device) =>
+        _buffer = new GpuFrameBuffer<GpuBuffer>(device, (device) =>
             device.Resources.CreateStructuredBuffer<GpuData>(GpuResourceFlags.CpuWrite | GpuResourceFlags.GpuRead, FlushCapacity));
 
         ShaderCompileResult result = device.Resources.LoadEmbeddedShader("Molten.Assets", "sprite.json");
@@ -532,7 +532,7 @@ public partial class SpriteBatcher : IDisposable
         GpuMapType map = GpuMapType.Discard;
         uint flushByteOffset = 0;
 
-        GraphicsBuffer dataBuffer = _buffer.Prepare();
+        GpuBuffer dataBuffer = _buffer.Prepare();
 
         // TODO Improve this. Wasting a discard at the start of each frame!
         if (dataBuffer.LastUsedFrameID != cmd.Device.Renderer.FrameID)

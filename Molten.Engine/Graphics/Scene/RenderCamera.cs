@@ -114,7 +114,7 @@ public class RenderCamera : EngineObject
         _invViewProjection = Matrix4F.Invert(_viewProjection);
     }
 
-    private void _surface_OnResize(GraphicsTexture texture)
+    private void _surface_OnResize(GpuTexture texture)
     {
         CalculateProjection();
         OnSurfaceResized?.Invoke(this, texture as IRenderSurface2D);

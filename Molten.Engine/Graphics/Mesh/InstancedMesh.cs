@@ -4,7 +4,7 @@ public class InstancedMesh<V, I> : Mesh<V>
     where V : unmanaged, IVertexType
     where I : unmanaged, IVertexInstanceType
 {
-    GraphicsBuffer _instanceBuffer;
+    GpuBuffer _instanceBuffer;
     uint _instanceCount;
 
     /// <summary>

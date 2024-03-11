@@ -27,11 +27,11 @@ internal class DescriptorSetVK : GpuObject
         DescriptorType type;
         switch(buffer.BufferType)
         {
-            case GraphicsBufferType.Constant:
+            case GpuBufferType.Constant:
                 type = DescriptorType.UniformBuffer;
                 break;
 
-            case GraphicsBufferType.Structured:
+            case GpuBufferType.Structured:
                 type = DescriptorType.StorageBuffer;
                 break;
 

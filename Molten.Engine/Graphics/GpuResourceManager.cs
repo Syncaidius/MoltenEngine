@@ -68,61 +68,61 @@ public abstract class GpuResourceManager : GpuObject
     #endregion
 
     #region Buffers
-    public GraphicsBuffer CreateVertexBuffer<T>(GpuResourceFlags flags, uint vertexCapacity, T[] initialData = null)
+    public GpuBuffer CreateVertexBuffer<T>(GpuResourceFlags flags, uint vertexCapacity, T[] initialData = null)
     where T : unmanaged, IVertexType
     {
         flags |= GpuResourceFlags.DenyShaderAccess;
-        GraphicsBuffer buffer = CreateBuffer(GraphicsBufferType.Vertex, flags, GpuResourceFormat.Unknown, vertexCapacity, initialData);
+        GpuBuffer buffer = CreateBuffer(GpuBufferType.Vertex, flags, GpuResourceFormat.Unknown, vertexCapacity, initialData);
         buffer.VertexLayout = Device.LayoutCache.GetVertexLayout<T>();
 
         return buffer;
     }
 
-    public GraphicsBuffer CreateIndexBuffer(ushort[] data, GpuResourceFlags flags = GpuResourceFlags.None)
+    public GpuBuffer CreateIndexBuffer(ushort[] data, GpuResourceFlags flags = GpuResourceFlags.None)
     {
         return CreateIndexBuffer(flags, (uint)data.Length, data);
     }
 
-    public GraphicsBuffer CreateIndexBuffer(uint[] data, GpuResourceFlags flags = GpuResourceFlags.None)
+    public GpuBuffer CreateIndexBuffer(uint[] data, GpuResourceFlags flags = GpuResourceFlags.None)
     {
         return CreateIndexBuffer(flags, (uint)data.Length, data);
     }
 
-    public GraphicsBuffer CreateIndexBuffer(byte[] data, GpuResourceFlags flags = GpuResourceFlags.None)
+    public GpuBuffer CreateIndexBuffer(byte[] data, GpuResourceFlags flags = GpuResourceFlags.None)
     {
         return CreateIndexBuffer(flags, (uint)data.Length, data);
     }
 
-    public GraphicsBuffer CreateIndexBuffer(GpuResourceFlags flags, uint indexCapacity, ushort[] initialData)
+    public GpuBuffer CreateIndexBuffer(GpuResourceFlags flags, uint indexCapacity, ushort[] initialData)
     {
-        return CreateBuffer(GraphicsBufferType.Index, flags, GpuResourceFormat.R16_UInt, indexCapacity, initialData);
+        return CreateBuffer(GpuBufferType.Index, flags, GpuResourceFormat.R16_UInt, indexCapacity, initialData);
     }
 
-    public GraphicsBuffer CreateIndexBuffer(GpuResourceFlags flags, uint indexCapacity, uint[] initialData = null)
+    public GpuBuffer CreateIndexBuffer(GpuResourceFlags flags, uint indexCapacity, uint[] initialData = null)
     {
         flags |= GpuResourceFlags.DenyShaderAccess;
-        return CreateBuffer(GraphicsBufferType.Index, flags, GpuResourceFormat.R32_UInt, indexCapacity, initialData);
+        return CreateBuffer(GpuBufferType.Index, flags, GpuResourceFormat.R32_UInt, indexCapacity, initialData);
     }
 
-    public GraphicsBuffer CreateIndexBuffer(GpuResourceFlags flags, uint indexCapacity, byte[] initialData = null)
+    public GpuBuffer CreateIndexBuffer(GpuResourceFlags flags, uint indexCapacity, byte[] initialData = null)
     {
         flags |= GpuResourceFlags.DenyShaderAccess;
-        return CreateBuffer(GraphicsBufferType.Index, flags, GpuResourceFormat.R8_UInt, indexCapacity, initialData);
+        return CreateBuffer(GpuBufferType.Index, flags, GpuResourceFormat.R8_UInt, indexCapacity, initialData);
     }
 
-    public GraphicsBuffer CreateStructuredBuffer<T>(T[] data, GpuResourceFlags flags = GpuResourceFlags.None)
+    public GpuBuffer CreateStructuredBuffer<T>(T[] data, GpuResourceFlags flags = GpuResourceFlags.None)
         where T : unmanaged
     {
         return CreateStructuredBuffer(flags, (uint)data.Length, data);
     }
 
-    public GraphicsBuffer CreateStructuredBuffer<T>(GpuResourceFlags flags, uint elementCapacity, T[] initialData = null)
+    public GpuBuffer CreateStructuredBuffer<T>(GpuResourceFlags flags, uint elementCapacity, T[] initialData = null)
         where T : unmanaged
     {
-        return CreateBuffer(GraphicsBufferType.Structured, flags, GpuResourceFormat.Unknown, elementCapacity, initialData);
+        return CreateBuffer(GpuBufferType.Structured, flags, GpuResourceFormat.Unknown, elementCapacity, initialData);
     }
 
-    public GraphicsBuffer CreateStagingBuffer(bool allowCpuRead, bool allowCpuWrite, uint byteCapacity)
+    public GpuBuffer CreateStagingBuffer(bool allowCpuRead, bool allowCpuWrite, uint byteCapacity)
     {
         GpuResourceFlags flags = GpuResourceFlags.GpuWrite | GpuResourceFlags.DenyShaderAccess;
 
@@ -132,12 +132,12 @@ public abstract class GpuResourceManager : GpuObject
         if (allowCpuWrite)
             flags |= GpuResourceFlags.CpuWrite;
 
-        return CreateBuffer<byte>(GraphicsBufferType.Staging, flags, GpuResourceFormat.Unknown, byteCapacity, null);
+        return CreateBuffer<byte>(GpuBufferType.Staging, flags, GpuResourceFormat.Unknown, byteCapacity, null);
     }
 
     public abstract IConstantBuffer CreateConstantBuffer(ConstantBufferInfo info);
 
-    protected abstract GraphicsBuffer CreateBuffer<T>(GraphicsBufferType type, GpuResourceFlags flags, GpuResourceFormat format,
+    protected abstract GpuBuffer CreateBuffer<T>(GpuBufferType type, GpuResourceFlags flags, GpuResourceFormat format,
         uint numElements, T[] initialData) where T : unmanaged;
     #endregion
 
@@ -304,7 +304,7 @@ where T : unmanaged, IVertexType
     #endregion
 
     #region Textures
-    public GraphicsTexture CreateStagingTexture(ITexture src)
+    public GpuTexture CreateStagingTexture(ITexture src)
     {
         GpuResourceFlags flags = GpuResourceFlags.AllReadWrite | GpuResourceFlags.DenyShaderAccess;
         string name = src.Name + "_staging";
@@ -318,10 +318,10 @@ where T : unmanaged, IVertexType
 
             ITexture3D => CreateTexture3D(src.Width, src.Height, src.Depth, src.MipMapCount, src.ResourceFormat, flags, name),
 
-            _ => throw new GpuResourceException(src as GraphicsTexture, "Unsupported staging texture type"),
+            _ => throw new GpuResourceException(src as GpuTexture, "Unsupported staging texture type"),
         };
 
-        return result as GraphicsTexture;
+        return result as GpuTexture;
     }
 
     /// <summary>
@@ -440,7 +440,7 @@ where T : unmanaged, IVertexType
     /// </summary>
     /// <param name="source">The source texture.</param>
     /// <param name="destination">The destination texture.</param>
-    public abstract void ResolveTexture(GraphicsTexture source, GraphicsTexture destination);
+    public abstract void ResolveTexture(GpuTexture source, GpuTexture destination);
 
     /// <summary>Resources the specified sub-resource of a source texture into the sub-resource of a destination texture.</summary>
     /// <param name="source">The source texture.</param>
@@ -449,7 +449,7 @@ where T : unmanaged, IVertexType
     /// <param name="sourceArraySlice">The source array slice.</param>
     /// <param name="destMiplevel">The destination mip-map level.</param>
     /// <param name="destArraySlice">The destination array slice.</param>
-    public abstract void ResolveTexture(GraphicsTexture source, GraphicsTexture destination, uint sourceMipLevel, uint sourceArraySlice, uint destMiplevel, uint destArraySlice);
+    public abstract void ResolveTexture(GpuTexture source, GpuTexture destination, uint sourceMipLevel, uint sourceArraySlice, uint destMiplevel, uint destArraySlice);
     #endregion
 
     #region Surfaces

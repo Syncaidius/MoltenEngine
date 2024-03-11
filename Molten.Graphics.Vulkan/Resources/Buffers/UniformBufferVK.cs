@@ -8,7 +8,7 @@ public unsafe class UniformBufferVK : BufferVK, IConstantBuffer, IEquatable<Unif
     byte* _constData;
 
     internal UniformBufferVK(GpuDevice device, ConstantBufferInfo info) : 
-        base(device, GraphicsBufferType.Constant, GpuResourceFlags.DenyShaderAccess | GpuResourceFlags.CpuWrite, 1, info.Size, 1)
+        base(device, GpuBufferType.Constant, GpuResourceFlags.DenyShaderAccess | GpuResourceFlags.CpuWrite, 1, info.Size, 1)
     {
         _varLookup = new Dictionary<string, GraphicsConstantVariable>();
         _constData = (byte*)EngineUtil.Alloc(info.Size);

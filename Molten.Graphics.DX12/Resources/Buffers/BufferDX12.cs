@@ -4,19 +4,19 @@ using Silk.NET.DXGI;
 
 namespace Molten.Graphics.DX12;
 
-public class BufferDX12 : GraphicsBuffer
+public class BufferDX12 : GpuBuffer
 {
     ResourceHandleDX12 _handle;
     ResourceBarrier _barrier;
     ResourceStates _barrierState;
 
-    internal BufferDX12(DeviceDX12 device, uint stride, ulong numElements, GpuResourceFlags flags, GraphicsBufferType type, uint alignment) :
+    internal BufferDX12(DeviceDX12 device, uint stride, ulong numElements, GpuResourceFlags flags, GpuBufferType type, uint alignment) :
         base(device, stride, numElements, flags, type, alignment)
     {
         Device = device;
     }
 
-    private BufferDX12(BufferDX12 parentBuffer, ulong offset, uint stride, ulong numElements, GpuResourceFlags flags, GraphicsBufferType type, uint alignment)
+    private BufferDX12(BufferDX12 parentBuffer, ulong offset, uint stride, ulong numElements, GpuResourceFlags flags, GpuBufferType type, uint alignment)
         : base(parentBuffer.Device, stride, numElements, flags, type, alignment)
     {
         if (ParentBuffer != null)
@@ -95,15 +95,15 @@ public class BufferDX12 : GraphicsBuffer
     {
         switch (BufferType)
         {
-            case GraphicsBufferType.Vertex:
+            case GpuBufferType.Vertex:
                 _handle = new VBHandleDX12(this, ptr);
                 break;
 
-            case GraphicsBufferType.Index:
+            case GpuBufferType.Index:
                 _handle = new IBHandleDX12(this, ptr);
                 break;
 
-            case GraphicsBufferType.Constant:
+            case GpuBufferType.Constant:
                 CBHandleDX12 cbHandle = new(this, ptr);
                 ConstantBufferViewDesc cbDesc = new()
                 {
@@ -167,12 +167,12 @@ public class BufferDX12 : GraphicsBuffer
         return _handle;
     }
 
-    protected override GraphicsBuffer OnAllocateSubBuffer(
+    protected override GpuBuffer OnAllocateSubBuffer(
         ulong offset, 
         uint stride, 
         ulong numElements, 
         GpuResourceFlags flags,
-        GraphicsBufferType type,
+        GpuBufferType type,
         uint alignment)
     {
         // TODO check through existing allocations to see if we can re-use one.

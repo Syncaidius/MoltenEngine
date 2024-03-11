@@ -14,15 +14,15 @@ public class GpuState
         DepthSurface = new GpuStateValue<IDepthStencilSurface>();
         Shader = new GpuStateBasicValue<Shader>();
 
-        VertexBuffers = new GpuStateValueGroup<GraphicsBuffer>(Device.Capabilities.VertexBuffers.MaxSlots, (vb, slotID) =>
+        VertexBuffers = new GpuStateValueGroup<GpuBuffer>(Device.Capabilities.VertexBuffers.MaxSlots, (vb, slotID) =>
         {
-            if (vb.BufferType != GraphicsBufferType.Vertex)
+            if (vb.BufferType != GpuBufferType.Vertex)
                 throw new GpuResourceException(vb, $"None-vertex buffer ({vb.BufferType}) bound to vertex buffer slot ${slotID}.");
         });
 
-        IndexBuffer = new GpuStateValue<GraphicsBuffer>((ib) =>
+        IndexBuffer = new GpuStateValue<GpuBuffer>((ib) =>
         {
-            if (ib.BufferType != GraphicsBufferType.Index)
+            if (ib.BufferType != GpuBufferType.Index)
                 throw new GpuResourceException(ib, $"None-index buffer ({ib.BufferType}) bound to index buffer slot.");
         });
     }
@@ -67,7 +67,7 @@ public class GpuState
 
     public GpuStateBasicValue<Shader> Shader { get; }
 
-    public GpuStateValueGroup<GraphicsBuffer> VertexBuffers { get; }
+    public GpuStateValueGroup<GpuBuffer> VertexBuffers { get; }
 
-    public GpuStateValue<GraphicsBuffer> IndexBuffer { get; }
+    public GpuStateValue<GpuBuffer> IndexBuffer { get; }
 }

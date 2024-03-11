@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics;
 
-internal class BufferSetTask<T> : GraphicsResourceTask<GraphicsBuffer>
+internal class BufferSetTask<T> : GraphicsResourceTask<GpuBuffer>
     where T : unmanaged
 {
     /// <summary>The number of bytes to offset the change, from the start of the provided <see cref="Segment"/>.</summary>
@@ -16,7 +16,7 @@ internal class BufferSetTask<T> : GraphicsResourceTask<GraphicsBuffer>
     /// <summary>The data to be set.</summary>
     internal T[] Data;
 
-    internal GraphicsBuffer DestBuffer;
+    internal GpuBuffer DestBuffer;
 
     public override void ClearForPool()
     {
@@ -42,7 +42,7 @@ internal class BufferSetTask<T> : GraphicsResourceTask<GraphicsBuffer>
         }
         else
         {
-            GraphicsBuffer staging = cmd.Device.Frame.StagingBuffer;
+            GpuBuffer staging = cmd.Device.Frame.StagingBuffer;
             using (GpuStream stream = cmd.MapResource(staging, 0, ByteOffset, GpuMapType.Write))
                 stream.WriteRange(Data, DataStartIndex, ElementCount);
 

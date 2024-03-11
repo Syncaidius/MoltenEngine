@@ -110,8 +110,8 @@ internal unsafe class DescriptorSetLayoutVK : GpuObject<DeviceVK>, IEquatable<De
             case ShaderResourceVariable<ITextureCube>:
                 return DescriptorType.SampledImage;
 
-            case ShaderResourceVariable<GraphicsBuffer>:
-            case RWVariable<GraphicsBuffer>:
+            case ShaderResourceVariable<GpuBuffer>:
+            case RWVariable<GpuBuffer>:
                 return DescriptorType.StorageBuffer;
 
             case RWVariable<ITexture1D>:

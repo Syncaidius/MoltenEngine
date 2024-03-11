@@ -16,7 +16,7 @@ public class ResourceCopyTask : GraphicsResourceTask<GpuResource>
 
     protected override bool OnProcess(RenderService renderer, GpuCommandList cmd)
     {
-        if (Resource is GraphicsBuffer buffer && buffer.BufferType == GraphicsBufferType.Staging)
+        if (Resource is GpuBuffer buffer && buffer.BufferType == GpuBufferType.Staging)
             Resource.Apply(cmd);
 
         cmd.CopyResource(Resource, Destination);

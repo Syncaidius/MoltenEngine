@@ -3,14 +3,14 @@ using Buffer = Silk.NET.Vulkan.Buffer;
 
 namespace Molten.Graphics.Vulkan;
 
-public unsafe class BufferVK : GraphicsBuffer
+public unsafe class BufferVK : GpuBuffer
 {
     BufferCreateInfo _desc;
     ResourceHandleVK<Buffer, BufferHandleVK> _handle;
     MemoryAllocationVK _memory;
 
     internal BufferVK(GpuDevice device,
-        GraphicsBufferType type,
+        GpuBufferType type,
         GpuResourceFlags flags,
         uint stride,
         uint numElements,
@@ -20,7 +20,7 @@ public unsafe class BufferVK : GraphicsBuffer
         ResourceFormat = GpuResourceFormat.Unknown;
     }
 
-    protected override GraphicsBuffer OnAllocateSubBuffer(ulong offset, uint stride, ulong numElements, GpuResourceFlags flags, GraphicsBufferType type, uint alignment)
+    protected override GpuBuffer OnAllocateSubBuffer(ulong offset, uint stride, ulong numElements, GpuResourceFlags flags, GpuBufferType type, uint alignment)
     {
         throw new NotImplementedException();
     }
@@ -42,19 +42,19 @@ public unsafe class BufferVK : GraphicsBuffer
         // Check if any extra flags need to be enforced based on buffer type.
         switch (BufferType)
         {
-            case GraphicsBufferType.Vertex:
+            case GpuBufferType.Vertex:
                 usageFlags |= BufferUsageFlags.VertexBufferBit;
                 break;
 
-            case GraphicsBufferType.Index:
+            case GpuBufferType.Index:
                 usageFlags |= BufferUsageFlags.IndexBufferBit;
                 break;
 
-            case GraphicsBufferType.Staging: // Staging buffers always require CPU write access.
+            case GpuBufferType.Staging: // Staging buffers always require CPU write access.
                 Flags |= GpuResourceFlags.CpuWrite;
                 break;
 
-            case GraphicsBufferType.Constant:
+            case GpuBufferType.Constant:
                 usageFlags |= BufferUsageFlags.UniformBufferBit;
                 break;
         }

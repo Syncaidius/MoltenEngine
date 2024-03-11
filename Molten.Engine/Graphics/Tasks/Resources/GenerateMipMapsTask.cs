@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics;
 
-internal class GenerateMipMapsTask : GraphicsResourceTask<GraphicsTexture>
+internal class GenerateMipMapsTask : GraphicsResourceTask<GpuTexture>
 {
     public override void ClearForPool() { }
 
