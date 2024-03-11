@@ -1,15 +1,18 @@
-﻿using Silk.NET.Core.Native;
+﻿using Molten.Collections;
+using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
 
 namespace Molten.Graphics.DX12;
 
-public unsafe class GraphicsQueueDX12 : GpuCommandQueue<DeviceDX12>
+public unsafe class CommandQueueDX12 : GpuCommandQueue<DeviceDX12>
 {
     CommandQueueDesc _desc;
     ID3D12CommandQueue* _handle;
     GpuFrameBuffer<CommandAllocatorDX12> _cmdAllocators;
+    CommandAllocatorDX12 _currentCmdAllocator;
+    ThreadedList<CommandListDX12> _submittedLists;
 
-    internal GraphicsQueueDX12(Logger log, DeviceDX12 device, DeviceBuilderDX12 builder, ref CommandQueueDesc desc) : 
+    internal CommandQueueDX12(Logger log, DeviceDX12 device, DeviceBuilderDX12 builder, ref CommandQueueDesc desc) : 
         base(device)
     {
         _desc = desc;
@@ -35,6 +38,7 @@ public unsafe class GraphicsQueueDX12 : GpuCommandQueue<DeviceDX12>
         Log.WriteLine($"Initialized '{_desc.Type}' command queue");
 
         _handle = (ID3D12CommandQueue*)cmdQueue;
+        _submittedLists = new ThreadedList<CommandListDX12>();
         _cmdAllocators = new GpuFrameBuffer<CommandAllocatorDX12>(Device, (device) =>
         {
             return new CommandAllocatorDX12(this, CommandListType.Direct);
@@ -46,6 +50,22 @@ public unsafe class GraphicsQueueDX12 : GpuCommandQueue<DeviceDX12>
         throw new NotImplementedException();
     }
 
+    public override void Reset(GpuCommandList list)
+    {
+        CommandListDX12 cmd = (CommandListDX12)list;
+        cmd.Handle->Reset(_currentCmdAllocator.Handle, null);
+    }
+
+    public override void BeginFrame()
+    {
+        _currentCmdAllocator = _cmdAllocators.Prepare();
+    }
+
+    public override void EndFrame()
+    {
+        throw new NotImplementedException();
+    }
+
     public override void Execute(GpuCommandList list)
     {
         CommandListDX12 cmd = (CommandListDX12)list;
@@ -53,6 +73,13 @@ public unsafe class GraphicsQueueDX12 : GpuCommandQueue<DeviceDX12>
         cmd.Close();
         ID3D12CommandList** lists = stackalloc ID3D12CommandList*[] { cmd.BaseHandle };
         _handle->ExecuteCommandLists(1, lists);
+    }
+
+    /// <inheritdoc />
+    public override bool Wait(GpuFence fence, ulong nsTimeout = ulong.MaxValue)
+    {
+        FenceDX12 fenceDX12 = (FenceDX12)fence;
+        return fenceDX12.Wait(this, nsTimeout);
     }
 
     protected override void OnDispose(bool immediate)

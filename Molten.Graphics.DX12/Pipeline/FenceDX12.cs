@@ -46,11 +46,16 @@ internal unsafe class FenceDX12 : GpuFence
         _handle->Signal(_value);
     }
 
-    /// <inheritdoc />
-    public override bool Wait(ulong nsTimeout = ulong.MaxValue)
+    /// <summary>
+    /// Halts execution on the current thread until the fence is signaled by the GPU.
+    /// </summary>
+    /// <param name="queue">The queue that a signal event will be pushed to.</param>
+    /// <param name="nsTimeout">A timeout, in nanoseconds. If set to 0, the call will immediately return the fence status as a bool without waiting.</param>
+    /// <returns>True if the wait was succesful, or false if the timeout was reached.</returns>
+    internal bool Wait(CommandQueueDX12 queue, ulong nsTimeout = ulong.MaxValue)
     {
         ulong fenceVal = Interlocked.Increment(ref _value);
-        _device.Queue.Handle->Signal(_handle, fenceVal);
+        queue.Handle->Signal(_handle, fenceVal);
 
         if (_handle->GetCompletedValue() < fenceVal)
         {

@@ -11,7 +11,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
 {
     ID3D12Device10* _handle;
     DeviceBuilderDX12 _builder;
-    GraphicsQueueDX12 _cmdDirect;
+    CommandQueueDX12 _cmdDirect;
     ID3D12InfoQueue1* _debugInfo;
     uint _debugCookieID;
     ShaderLayoutCache<ShaderIOLayoutDX12> _shaderLayoutCache;
@@ -71,7 +71,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
 
         _heapManager = new DescriptorHeapManagerDX12(this);
         _stateBuilder = new PipelineStateBuilderDX12(this);
-        _cmdDirect = new GraphicsQueueDX12(Log, this, _builder, ref cmdDesc);
+        _cmdDirect = new CommandQueueDX12(Log, this, _builder, ref cmdDesc);
         _presentFence = new FenceDX12(this, FenceFlags.None);
         _resources = new ResourceManagerDX12(this);
 
@@ -161,7 +161,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
     /// </summary>
     protected ref ID3D12Device10* PtrRef => ref _handle;
 
-    public override GraphicsQueueDX12 Queue => _cmdDirect;
+    public override CommandQueueDX12 Queue => _cmdDirect;
 
     /// <summary>
     /// Gets DirectX 12-specific capabilities.

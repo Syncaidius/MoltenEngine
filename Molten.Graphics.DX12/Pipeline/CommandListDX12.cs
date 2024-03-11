@@ -143,50 +143,6 @@ public unsafe class CommandListDX12 : GpuCommandList
         throw new NotImplementedException();
     }
 
-    public override void Sync(GpuCommandListFlags flags)
-    {
-        if (flags.Has(GpuCommandListFlags.Deferred))
-            throw new InvalidOperationException($"An immediate/primary command list branch cannot use deferred flag during Sync() calls.");
-
-        Execute(_cmd);
-
-        // A fence will signal a synchronization event.
-        // This blocks the CPU until the GPU has finished processing all commands prior to the fences signal command.
-        if (!_cmd.Fence.Wait())
-            throw new InvalidOperationException("Command list Sync() fence failed Wait() call. See logs for details");
-
-        CommandAllocatorDX12 allocator = _cmdAllocators.Prepare();
-        _cmd.Reset(allocator, _pipelineState);
-    }
-
-    public override void Begin(GpuCommandListFlags flags = GpuCommandListFlags.None)
-    {
-        base.Begin(flags);
-
-        CommandAllocatorDX12 allocator = _cmdAllocators.Prepare();
-        if (_cmd == null || _cmd.Flags.HasFlag(GpuCommandListFlags.Deferred))
-        {
-            _cmd = allocator.Allocate(null);
-            Device.Frame.BranchCount++;
-            //Device.Frame.Track(_cmd);
-        }
-
-        Reset(allocator, _pipelineState);
-    }
-
-    public override GpuCommandList End()
-    {
-        base.End();
-
-        if (_cmd.Flags.HasFlag(GpuCommandListFlags.Deferred))
-            return _cmd;
-
-        Execute(_cmd);
-        _cmd.Fence.Wait();
-
-        return null;
-    }
-
     internal void Transition(BufferDX12 buffer, ResourceStates newState)
     {
         ResourceBarrier barrier = new()
@@ -502,11 +458,6 @@ public unsafe class CommandListDX12 : GpuCommandList
         Device.PipelineLayoutCache.Add(input);
 
         return input;
-    }
-
-    public override void Wait(ulong nsTimeout = ulong.MaxValue)
-    {
-        Fence.Wait(nsTimeout);
     }
 
     public override void Free()

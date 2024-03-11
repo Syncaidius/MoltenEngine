@@ -9,7 +9,7 @@ public unsafe class CommandAllocatorDX12 : GpuObject<DeviceDX12>
     ID3D12CommandAllocator* _handle;
     ThreadedList<CommandListDX12> _allocated;
 
-    internal CommandAllocatorDX12(GraphicsQueueDX12 queue, CommandListType type) : base(queue.Device)
+    internal CommandAllocatorDX12(CommandQueueDX12 queue, CommandListType type) : base(queue.Device)
     {
         Guid guid = ID3D12CommandAllocator.Guid;
         Type = type;
@@ -56,7 +56,7 @@ public unsafe class CommandAllocatorDX12 : GpuObject<DeviceDX12>
 
     public CommandListType Type { get; }
 
-    internal GraphicsQueueDX12 Queue { get; }
+    internal CommandQueueDX12 Queue { get; }
 
     internal ID3D12CommandAllocator* Handle => _handle;
 }

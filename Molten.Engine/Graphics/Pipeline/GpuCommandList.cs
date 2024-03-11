@@ -181,14 +181,6 @@ public abstract class GpuCommandList : GpuObject
         DrawInfo.Reset();
     }
 
-    /// <summary>
-    /// Syncs or submits any unsubmitted commands in the current <see cref="GpuCommandQueue"/> to the GPU. 
-    /// A new command segment is started with the specified <paramref name="flags"/>.
-    /// </summary>
-    /// <param name="flags">The flags to apply to the next command segment.</param>
-    /// <exception cref="InvalidOperationException"></exception>
-    public abstract void Sync(GpuCommandListFlags flags = GpuCommandListFlags.None);
-
     /// <summary>Generates mip maps for the texture via the provided <see cref="GraphicsTexture"/>, if allowed.</summary>
     /// <param name="texture">The target texture for mip-map generation.</param>
     protected internal abstract void GenerateMipMaps(GpuResource texture);
@@ -385,12 +377,6 @@ public abstract class GpuCommandList : GpuObject
         GpuResource dest, uint destSubresource, Vector3UI destStart);
 
     protected abstract void OnResetState();
-
-    /// <summary>
-    /// Forces the current <see cref="Thread"/> to wait until the all the preceding commands in the current <see cref="GpuCommandList"/> have been executed.
-    /// </summary>
-    /// <param name="nsTimeout">Wait timeout, in nanoseconds.</param>
-    public abstract void Wait(ulong nsTimeout = ulong.MaxValue);
 
     /// <summary>
     /// Releases the current <see cref="GpuCommandList"/> ror recycling and reuse.
