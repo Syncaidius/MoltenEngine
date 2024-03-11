@@ -16,8 +16,6 @@ internal class BufferSetTask<T> : GraphicsResourceTask<GpuBuffer>
     /// <summary>The data to be set.</summary>
     internal T[] Data;
 
-    internal GpuBuffer DestBuffer;
-
     public override void ClearForPool()
     {
         ByteOffset = 0;
@@ -25,7 +23,6 @@ internal class BufferSetTask<T> : GraphicsResourceTask<GpuBuffer>
         MapType = GpuMapType.Read;
         DataStartIndex = 0;
         Data = null;
-        DestBuffer = null;
     }
 
     public override bool Validate()

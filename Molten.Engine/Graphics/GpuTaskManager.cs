@@ -55,10 +55,11 @@ public class GpuTaskManager : IDisposable
     /// <summary>
     /// Queues a <see cref="GraphicsResourceTask{R}"/> on the current <see cref="GpuResource"/>.
     /// </summary>
+    /// <param name="cmd">The command list that is pushing the task.</param>
     /// <param name="priority">The priority of the task.</param>
     /// <param name="resource">The <see cref="GpuResource"/>.</param>
     /// <param name="task">The <see cref="GraphicsResourceTask{R}"/> to be pushed.</param>
-    public void Push<R, T>(GpuPriority priority, R resource, T task)
+    public void Push<R, T>(GpuCommandList cmd, GpuPriority priority, R resource, T task)
         where R : GpuResource
         where T : GraphicsResourceTask<R>, new()
     {
@@ -68,7 +69,7 @@ public class GpuTaskManager : IDisposable
             default:
             case GpuPriority.Immediate:
                 if(task.Validate())
-                    task.Process(_device.Queue);
+                    task.Process(cmd);
                 break;
 
             case GpuPriority.Apply:

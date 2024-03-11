@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics;
 
-public abstract class GpuCommandList : GpuObject
+public abstract partial class GpuCommandList : GpuObject
 {
     /// <summary>
     /// A container for storing application data to share between completion callbacks of <see cref="Shader"/> passes.
