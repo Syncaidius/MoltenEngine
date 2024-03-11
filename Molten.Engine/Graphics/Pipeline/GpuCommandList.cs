@@ -183,7 +183,21 @@ public abstract partial class GpuCommandList : GpuObject
 
     /// <summary>Generates mip maps for the texture via the provided <see cref="GpuTexture"/>, if allowed.</summary>
     /// <param name="texture">The target texture for mip-map generation.</param>
-    protected internal abstract void GenerateMipMaps(GpuResource texture);
+    protected internal abstract void OnGenerateMipmaps(GpuTexture texture);
+
+    /// <summary>Generates mip maps for the texture via the current <see cref="GpuTexture"/>, if allowed.</summary>
+    /// <param name="texture">The texture for which to generate mip-maps.</param>
+    /// <param name="priority">The priority of the copy operation.</param>
+    /// <param name="callback">A callback to run once the operation has completed.</param>
+    public void GenerateMipMaps(GpuTexture texture, GpuPriority priority, GraphicsTask.EventHandler callback = null)
+    {
+        if (!texture.Flags.Has(GpuResourceFlags.MipMapGeneration))
+            throw new Exception("Cannot generate mip-maps for texture. Must have flag: TextureFlags.AllowMipMapGeneration.");
+
+        GenerateMipMapsTask task = Device.Tasks.Get<GenerateMipMapsTask>();
+        task.OnCompleted += callback;
+        Device.Tasks.Push(this, priority, texture, task);
+    }
 
     /// <summary>Draw non-indexed, non-instanced primitives. 
     /// All queued compute shader dispatch requests are also processed</summary>

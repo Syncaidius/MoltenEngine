@@ -11,7 +11,7 @@ internal class GenerateMipMapsTask : GraphicsResourceTask<GpuTexture>
 
     protected override bool OnProcess(RenderService renderer, GpuCommandList cmd)
     {
-        cmd.GenerateMipMaps(Resource);
+        cmd.OnGenerateMipmaps(Resource);
         Resource.Version++;
         return true;
     }
