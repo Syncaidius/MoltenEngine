@@ -112,7 +112,7 @@ public unsafe class CommandListDX12 : GpuCommandList
     {
         if (!_isClosed)
         {
-            Handle->Close();
+            _handle->Close();
             _isClosed = true;
         }
     }

@@ -14,7 +14,7 @@ internal class AddCamera : GraphicsTask
 
     public override bool Validate() => true;
 
-    protected override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
+    protected override bool OnProcess(RenderService renderer, GpuCommandList cmd)
     {
         Data.Cameras.Add(Camera);
         return true;

@@ -7,7 +7,7 @@ namespace Molten.Graphics.DX12;
 
 internal unsafe class FenceDX12 : GpuFence
 {
-    ID3D12Fence* _ptr;
+    ID3D12Fence* _handle;
     DeviceDX12 _device;
     void* _fenceEvent;
     ulong _value;
@@ -22,7 +22,7 @@ internal unsafe class FenceDX12 : GpuFence
             return;
 
         _value++;
-        _ptr = (ID3D12Fence*)ptr;
+        _handle = (ID3D12Fence*)ptr;
         _fenceEvent = Win32Events.CreateEvent(null, false, false, null);
         if (_fenceEvent == null)
         {
@@ -43,18 +43,19 @@ internal unsafe class FenceDX12 : GpuFence
     internal void Set(ulong value)
     {
         _value = value;
-        _ptr->Signal(_value);
+        _handle->Signal(_value);
     }
 
+    /// <inheritdoc />
     public override bool Wait(ulong nsTimeout = ulong.MaxValue)
     {
         ulong fenceVal = Interlocked.Increment(ref _value);
-        _device.Queue.Handle->Signal(_ptr, fenceVal);
+        _device.Queue.Handle->Signal(_handle, fenceVal);
 
-        if (_ptr->GetCompletedValue() < fenceVal)
+        if (_handle->GetCompletedValue() < fenceVal)
         {
             uint msTimeout = nsTimeout > uint.MaxValue ? uint.MaxValue : (uint)nsTimeout / 1000000U; // uint.MaxValue = Infinite timeout.
-            _ptr->SetEventOnCompletion(Value, _fenceEvent);
+            _handle->SetEventOnCompletion(Value, _fenceEvent);
             WaitForSingleObjectResult result = (WaitForSingleObjectResult)Win32Events.WaitForSingleObjectEx(_fenceEvent, msTimeout, false);
 
             // Handle wait result.
@@ -73,7 +74,7 @@ internal unsafe class FenceDX12 : GpuFence
 
     protected override void OnGraphicsRelease()
     {
-        NativeUtil.ReleasePtr(ref _ptr);
+        NativeUtil.ReleasePtr(ref _handle);
         if(_fenceEvent != null)
         {
             Win32Events.CloseHandle(_fenceEvent);

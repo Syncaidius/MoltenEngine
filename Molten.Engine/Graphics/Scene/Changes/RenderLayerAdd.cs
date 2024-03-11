@@ -15,7 +15,7 @@ internal class RenderLayerAdd : GraphicsTask
 
     public override bool Validate() => true;
 
-    protected override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
+    protected override bool OnProcess(RenderService renderer, GpuCommandList cmd)
     {
         SceneData.Layers.Add(LayerData);
         return true;

@@ -35,12 +35,12 @@ internal class BufferGetTask<T> : GraphicsResourceTask<GraphicsBuffer>
         return true;
     }
 
-    protected override bool OnProcess(RenderService renderer, GpuCommandQueue queue)
+    protected override bool OnProcess(RenderService renderer, GpuCommandList cmd)
     {
         DestArray ??= new T[Count];
 
         // Now set the structured variable's data
-        using (GpuStream stream = queue.MapResource(Resource, 0, ByteOffset, MapType))
+        using (GpuStream stream = cmd.MapResource(Resource, 0, ByteOffset, MapType))
             stream.ReadRange(DestArray, DestIndex, Count);
 
         OnGetData?.Invoke(DestArray);

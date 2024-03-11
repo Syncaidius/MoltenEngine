@@ -9,7 +9,7 @@ public partial class SpriteBatcher : IDisposable
 {
     protected delegate void FlushRangeCallback(uint firstRangeID, uint rangeCount, uint dataStartIndex, uint numDataInBuffer);
 
-    protected delegate Shader CheckerCallback(GpuCommandQueue queue, ref SpriteRange range, ObjectRenderData data);
+    protected delegate Shader CheckerCallback(ref SpriteRange range, ObjectRenderData data);
 
     protected struct SpriteRange
     {
@@ -483,7 +483,7 @@ public partial class SpriteBatcher : IDisposable
         }
     }
 
-    public void Flush(GpuCommandQueue queue, RenderCamera camera, ObjectRenderData data)
+    public void Flush(GpuCommandList queue, RenderCamera camera, ObjectRenderData data)
     {
         if (_dataCount > 0)
         {
@@ -527,7 +527,7 @@ public partial class SpriteBatcher : IDisposable
         Reset();
     }
 
-    private unsafe void FlushBuffer(GpuCommandQueue cmd, RenderCamera camera, ObjectRenderData data, uint rangeID, uint rangeCount, uint vertexStartIndex, uint vertexCount)
+    private unsafe void FlushBuffer(GpuCommandList cmd, RenderCamera camera, ObjectRenderData data, uint rangeID, uint rangeCount, uint vertexStartIndex, uint vertexCount)
     {
         GpuMapType map = GpuMapType.Discard;
         uint flushByteOffset = 0;
@@ -567,7 +567,7 @@ public partial class SpriteBatcher : IDisposable
             if (range.Type == RangeType.None || range.VertexCount == 0)
                 continue;
 
-            Shader shader = range.Shader ?? _checkers[(int)range.Type](cmd, ref range, data);
+            Shader shader = range.Shader ?? _checkers[(int)range.Type](ref range, data);
 
             shader["spriteData"].Value = dataBuffer;
             shader["vertexOffset"].Value = bufferOffset;
@@ -597,7 +597,7 @@ public partial class SpriteBatcher : IDisposable
         }
     }
 
-    private Shader CheckSpriteRange(GpuCommandQueue cmd, ref SpriteRange range, ObjectRenderData data)
+    private Shader CheckSpriteRange(ref SpriteRange range, ObjectRenderData data)
     {
         if (range.Texture != null)
             return range.Texture.IsMultisampled ? _matDefaultMS : _matDefault;
@@ -605,7 +605,7 @@ public partial class SpriteBatcher : IDisposable
             return _matDefaultNoTexture;
     }
 
-    private Shader CheckMsdfRange(GpuCommandQueue cmd, ref SpriteRange range, ObjectRenderData data)
+    private Shader CheckMsdfRange(ref SpriteRange range, ObjectRenderData data)
     {
         if (range.Texture != null)
         {
@@ -620,22 +620,22 @@ public partial class SpriteBatcher : IDisposable
         }
     }
 
-    private Shader CheckLineRange(GpuCommandQueue cmd, ref SpriteRange range, ObjectRenderData data)
+    private Shader CheckLineRange(ref SpriteRange range, ObjectRenderData data)
     {
         return _matLine;
     }
 
-    private Shader CheckEllipseRange(GpuCommandQueue cmd, ref SpriteRange range, ObjectRenderData data)
+    private Shader CheckEllipseRange(ref SpriteRange range, ObjectRenderData data)
     {
         return range.Texture != null ? _matCircle : _matCircleNoTexture;
     }
 
-    private Shader CheckGridRange(GpuCommandQueue cmd, ref SpriteRange range, ObjectRenderData data)
+    private Shader CheckGridRange(ref SpriteRange range, ObjectRenderData data)
     {
         return _matGrid; // range.Texture != null ? _matCircle : _matCircleNoTexture;
     }
 
-    private Shader NoCheckRange(GpuCommandQueue cmd, ref SpriteRange range, ObjectRenderData data)
+    private Shader NoCheckRange(ref SpriteRange range, ObjectRenderData data)
     {
         return null;
     }
