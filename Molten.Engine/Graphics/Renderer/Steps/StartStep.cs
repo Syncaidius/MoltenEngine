@@ -6,14 +6,14 @@ internal class StartStep : RenderStep
 
     protected override void OnInitialize(RenderService service) { }
 
-    internal override void Render(GpuCommandQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
+    internal override void Draw(GpuCommandList cmd, RenderCamera camera, RenderChainContext context, Timing time)
     {
         IRenderSurface2D sScene = Renderer.Surfaces[MainSurfaceType.Scene];
         IRenderSurface2D sNormals = Renderer.Surfaces[MainSurfaceType.Normals];
         IRenderSurface2D sEmissive = Renderer.Surfaces[MainSurfaceType.Emissive];
         IDepthStencilSurface sDepth = Renderer.Surfaces.GetDepth();
 
-        Renderer.Device.Queue.State.Surfaces.Reset();
+        cmd.State.Surfaces.Reset();
         sScene.Clear(GpuPriority.Immediate, camera.BackgroundColor);
         sNormals.Clear(GpuPriority.Immediate, Color.White * 0.5f);
         sEmissive.Clear(GpuPriority.Immediate, Color.Black);

@@ -10,20 +10,20 @@ internal class ForwardStep : RenderStep
 
     protected override void OnInitialize(RenderService service) { }
 
-    internal override void Render(GpuCommandQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
+    internal override void Draw(GpuCommandList cmd, RenderCamera camera, RenderChainContext context, Timing time)
     {
         if (context.Layer.Renderables.Count == 0)
             return;
 
         IRenderSurface2D sScene = Renderer.Surfaces[MainSurfaceType.Scene];
 
-        queue.State.Surfaces.Reset();
-        queue.State.Surfaces[0] = sScene;
-        queue.State.DepthSurface.Value = Renderer.Surfaces.GetDepth();
+        cmd.State.Surfaces.Reset();
+        cmd.State.Surfaces[0] = sScene;
+        cmd.State.DepthSurface.Value = Renderer.Surfaces.GetDepth();
 
-        queue.State.Viewports.Reset(camera.Surface.Viewport);
-        queue.State.ScissorRects.Reset((Rectangle)camera.Surface.Viewport.Bounds);
+        cmd.State.Viewports.Reset(camera.Surface.Viewport);
+        cmd.State.ScissorRects.Reset((Rectangle)camera.Surface.Viewport.Bounds);
 
-        Renderer.RenderSceneLayer(queue, context.Layer, camera);
+        Renderer.RenderSceneLayer(cmd, context.Layer, camera);
     }
 }

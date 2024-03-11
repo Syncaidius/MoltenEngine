@@ -57,27 +57,27 @@ public class InstancedMesh<V, I> : Mesh<V>
         _instanceBuffer.SetData(GpuPriority.Apply, data, startIndex, count, true, 0);
     }
 
-    protected override void OnApply(GpuCommandQueue queue)
+    protected override void OnApply(GpuCommandList cmd)
     {
-        base.OnApply(queue);
-        queue.State.VertexBuffers[1] = _instanceBuffer;
+        base.OnApply(cmd);
+        cmd.State.VertexBuffers[1] = _instanceBuffer;
     }
 
-    protected override void OnPostDraw(GpuCommandQueue queue)
+    protected override void OnPostDraw(GpuCommandList cmd)
     {
-        base.OnPostDraw(queue);
-        queue.State.VertexBuffers[1] = null;
+        base.OnPostDraw(cmd);
+        cmd.State.VertexBuffers[1] = null;
     }
 
-    protected override void OnDraw(GpuCommandQueue queue)
+    protected override void OnDraw(GpuCommandList cmd)
     {
         if (MaxIndices > 0)
-            queue.DrawIndexedInstanced(Shader, IndexCount, _instanceCount);
+            cmd.DrawIndexedInstanced(Shader, IndexCount, _instanceCount);
         else
-            queue.DrawInstanced(Shader, VertexCount, _instanceCount, 0, 0);
+            cmd.DrawInstanced(Shader, VertexCount, _instanceCount, 0, 0);
     }
 
-    protected override bool OnBatchRender(GpuCommandQueue cmd, RenderService renderer, RenderCamera camera, RenderDataBatch batch)
+    protected override bool OnBatchRender(GpuCommandList cmd, RenderService renderer, RenderCamera camera, RenderDataBatch batch)
     {
         _instanceCount = (uint)batch.Data.Count;
 

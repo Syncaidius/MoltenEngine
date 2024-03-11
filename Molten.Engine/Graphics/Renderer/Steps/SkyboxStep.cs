@@ -27,7 +27,7 @@ internal class SkyboxStep : RenderStep
         _sphereMesh.Dispose();
     }
 
-    internal override void Render(GpuCommandQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
+    internal override void Draw(GpuCommandList cmd, RenderCamera camera, RenderChainContext context, Timing time)
     {
         // No skybox texture or we're not on the first layer.
         if (context.Scene.SkyboxTexture == null || context.Scene.Layers.First() != context.Layer)
@@ -39,14 +39,14 @@ internal class SkyboxStep : RenderStep
         // We want to add to the previous composition, rather than completely overwrite it.
         IRenderSurface2D destSurface = context.HasComposed ? context.PreviousComposition : Renderer.Surfaces[MainSurfaceType.Scene];
 
-        queue.State.Surfaces.Reset();
-        queue.State.Surfaces[0] = destSurface;
-        queue.State.DepthSurface.Value = Renderer.Surfaces.GetDepth();
-        queue.State.Viewports.Reset(camera.Surface.Viewport);
-        queue.State.ScissorRects.Reset(bounds);
+        cmd.State.Surfaces.Reset();
+        cmd.State.Surfaces[0] = destSurface;
+        cmd.State.DepthSurface.Value = Renderer.Surfaces.GetDepth();
+        cmd.State.Viewports.Reset(camera.Surface.Viewport);
+        cmd.State.ScissorRects.Reset(bounds);
 
         _skyboxData.RenderTransform = Matrix4F.Scaling(camera.MaxDrawDistance) * Matrix4F.CreateTranslation(camera.Position);
-        _sphereMesh.Render(queue, Renderer, camera, _skyboxData);
+        _sphereMesh.Render(cmd, Renderer, camera, _skyboxData);
     }
 
     private void MakeSphere(uint latLines, uint longLines, out Vertex[] vertices, out uint[] indices)

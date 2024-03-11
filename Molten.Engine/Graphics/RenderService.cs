@@ -229,7 +229,7 @@ public abstract class RenderService : EngineService
         }
     }
 
-    internal void RenderSceneLayer(GpuCommandQueue cmd, LayerRenderData layerData, RenderCamera camera)
+    internal void RenderSceneLayer(GpuCommandList cmd, LayerRenderData layerData, RenderCamera camera)
     {
         // TODO To start with we're just going to draw ALL objects in the render tree.
         // Sorting and culling will come later

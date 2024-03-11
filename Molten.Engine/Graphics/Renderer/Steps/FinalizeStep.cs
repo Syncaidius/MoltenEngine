@@ -16,7 +16,7 @@ internal class FinalizeStep : RenderStep
 
     }
 
-    internal override void Render(GpuCommandQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
+    internal override void Draw(GpuCommandList cmd, RenderCamera camera, RenderChainContext context, Timing time)
     {
         _orthoCamera.Surface = camera.Surface;
 
@@ -25,11 +25,11 @@ internal class FinalizeStep : RenderStep
         if (!camera.HasFlags(RenderCameraFlags.DoNotClear))
             Renderer.Surfaces.ClearIfFirstUse(camera.Surface, camera.BackgroundColor);
 
-        queue.State.Surfaces.Reset();
-        queue.State.Surfaces[0] = camera.Surface;
-        queue.State.DepthSurface.Value = null;
-        queue.State.Viewports.Reset(camera.Surface.Viewport);
-        queue.State.ScissorRects.Reset((Rectangle)camera.Surface.Viewport.Bounds);
+        cmd.State.Surfaces.Reset();
+        cmd.State.Surfaces[0] = camera.Surface;
+        cmd.State.DepthSurface.Value = null;
+        cmd.State.Viewports.Reset(camera.Surface.Viewport);
+        cmd.State.ScissorRects.Reset((Rectangle)camera.Surface.Viewport.Bounds);
 
         // We only need scissor testing here
         IRenderSurface2D sourceSurface = context.HasComposed ? context.PreviousComposition : Renderer.Surfaces[MainSurfaceType.Scene];
@@ -40,8 +40,8 @@ internal class FinalizeStep : RenderStep
         if (camera.HasFlags(RenderCameraFlags.ShowOverlay))
             Renderer.Overlay.Render(time, Renderer.SpriteBatch, Renderer.Profiler, camera);
 
-        Renderer.SpriteBatch.Flush(queue, _orthoCamera, _dummyData);
+        Renderer.SpriteBatch.Flush(cmd, _orthoCamera, _dummyData);
 
-        queue.ResetState();
+        cmd.ResetState();
     }
 }

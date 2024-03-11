@@ -27,20 +27,20 @@ internal class LightingStep : RenderStep
         _matDebugPoint.Dispose();
     }
 
-    internal override void Render(GpuCommandQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
+    internal override void Draw(GpuCommandList cmd, RenderCamera camera, RenderChainContext context, Timing time)
     {
         IRenderSurface2D _surfaceLighting = Renderer.Surfaces[MainSurfaceType.Lighting];
         IDepthStencilSurface sDepth = Renderer.Surfaces.GetDepth();
 
         _surfaceLighting.Clear(GpuPriority.Immediate, context.Scene.AmbientLightColor);
-        queue.State.Surfaces.Reset();
-        queue.State.Surfaces[0] = _surfaceLighting;
-        queue.State.DepthSurface.Value = sDepth;
+        cmd.State.Surfaces.Reset();
+        cmd.State.Surfaces[0] = _surfaceLighting;
+        cmd.State.DepthSurface.Value = sDepth;
 
-        RenderPointLights(Renderer, queue, camera, context.Scene, sDepth);
+        RenderPointLights(Renderer, cmd, camera, context.Scene, sDepth);
     }
 
-    private void RenderPointLights(RenderService renderer, GpuCommandQueue queue, RenderCamera camera, SceneRenderData scene, IDepthStencilSurface dsSurface)
+    private void RenderPointLights(RenderService renderer, GpuCommandList cmd, RenderCamera camera, SceneRenderData scene, IDepthStencilSurface dsSurface)
     {
         IRenderSurface2D sScene = renderer.Surfaces[MainSurfaceType.Scene];
         IRenderSurface2D sNormals = renderer.Surfaces[MainSurfaceType.Normals];
@@ -79,13 +79,13 @@ internal class LightingStep : RenderStep
         };
 
         //set correct buffers and shaders
-        queue.State.VertexBuffers[0] = null;
-        queue.State.IndexBuffer.Value = null;
+        cmd.State.VertexBuffers[0] = null;
+        cmd.State.IndexBuffer.Value = null;
         uint pointCount = scene.PointLights.ElementCount * 2;
 
-        queue.Draw(_matPoint, pointCount, 0);
-        queue.Sync();
+        cmd.Draw(_matPoint, pointCount, 0);
+        cmd.Sync();
 
-        queue.Draw(_matDebugPoint, pointCount, 0);
+        cmd.Draw(_matDebugPoint, pointCount, 0);
     }
 }

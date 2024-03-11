@@ -32,19 +32,19 @@ internal class CompositionStep : RenderStep
         _fxCompose.Dispose();
     }
 
-    internal override void Render(GpuCommandQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
+    internal override void Draw(GpuCommandList cmd, RenderCamera camera, RenderChainContext context, Timing time)
     {
         _orthoCamera.Surface = camera.Surface;
 
         RectangleF vpBounds = camera.Surface.Viewport.Bounds;
 
         context.CompositionSurface.Clear(GpuPriority.Immediate, camera.BackgroundColor);
-        queue.State.Surfaces.Reset();
-        queue.State.Surfaces[0] = context.CompositionSurface;
-        queue.State.DepthSurface.Value = null;
+        cmd.State.Surfaces.Reset();
+        cmd.State.Surfaces[0] = context.CompositionSurface;
+        cmd.State.DepthSurface.Value = null;
 
-        queue.State.Viewports.Reset(camera.Surface.Viewport);
-        queue.State.ScissorRects.Reset((Rectangle)vpBounds);
+        cmd.State.Viewports.Reset(camera.Surface.Viewport);
+        cmd.State.ScissorRects.Reset((Rectangle)vpBounds);
 
         _valLighting.Value = _surfaceLighting;
         _valEmissive.Value = _surfaceEmissive;
@@ -53,7 +53,7 @@ internal class CompositionStep : RenderStep
         RectStyle style = RectStyle.Default;
 
         Renderer.SpriteBatch.Draw(sourceSurface, vpBounds, Vector2F.Zero, vpBounds.Size, 0, Vector2F.Zero, ref style, _fxCompose, 0, 0);
-        Renderer.SpriteBatch.Flush(queue, _orthoCamera, _dummyData);
+        Renderer.SpriteBatch.Flush(cmd, _orthoCamera, _dummyData);
 
         context.SwapComposition();
     }

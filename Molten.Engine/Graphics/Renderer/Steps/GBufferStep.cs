@@ -6,17 +6,17 @@ internal class GBufferStep : RenderStep
 
     protected override void OnInitialize(RenderService service) { }
 
-    internal override void Render(GpuCommandQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
+    internal override void Draw(GpuCommandList cmd, RenderCamera camera, RenderChainContext context, Timing time)
     {
         IRenderSurface2D sScene = Renderer.Surfaces[MainSurfaceType.Scene];
         IRenderSurface2D sNormals = Renderer.Surfaces[MainSurfaceType.Normals];
         IRenderSurface2D sEmissive = Renderer.Surfaces[MainSurfaceType.Emissive];
 
-        queue.State.Surfaces.Reset();
-        queue.State.Surfaces[0] = sScene;
-        queue.State.Surfaces[1] = sNormals;
-        queue.State.Surfaces[2] = sEmissive;
-        queue.State.DepthSurface.Value = Renderer.Surfaces.GetDepth();
+        cmd.State.Surfaces.Reset();
+        cmd.State.Surfaces[0] = sScene;
+        cmd.State.Surfaces[1] = sNormals;
+        cmd.State.Surfaces[2] = sEmissive;
+        cmd.State.DepthSurface.Value = Renderer.Surfaces.GetDepth();
 
         if (context.Layer.Renderables.Count == 0)
             return;
@@ -24,8 +24,8 @@ internal class GBufferStep : RenderStep
         SetShaderCommon(Renderer.FxStandardMesh, camera, sScene);
         SetShaderCommon(Renderer.FxStandardMesh_NoNormalMap, camera, sScene);
 
-        queue.State.Viewports.Reset(camera.Surface.Viewport);
-        Renderer.RenderSceneLayer(queue, context.Layer, camera);
+        cmd.State.Viewports.Reset(camera.Surface.Viewport);
+        Renderer.RenderSceneLayer(cmd, context.Layer, camera);
     }
 
     private void SetShaderCommon(Shader shader, RenderCamera camera, IRenderSurface2D gBufferScene)

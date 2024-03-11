@@ -13,7 +13,7 @@ internal abstract class RenderStep : IDisposable
 
     protected abstract void OnInitialize(RenderService service);
 
-    internal abstract void Render(GpuCommandQueue queue, RenderCamera camera, RenderChainContext context, Timing time);
+    internal abstract void Draw(GpuCommandList cmd, RenderCamera camera, RenderChainContext context, Timing time);
 
     public abstract void Dispose();
 

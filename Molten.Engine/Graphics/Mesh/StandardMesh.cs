@@ -12,9 +12,9 @@ public class StandardMesh : Mesh<GBufferVertex>
         base(renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices)
     { }
 
-    protected override void OnApply(GpuCommandQueue queue)
+    protected override void OnApply(GpuCommandList cmd)
     {
-        base.OnApply(queue);
+        base.OnApply(cmd);
 
         if (Shader == null)
         {

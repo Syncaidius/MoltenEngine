@@ -98,35 +98,35 @@ public abstract class Mesh : Renderable
         _iBuffer.SetData(GpuPriority.Apply, data, startIndex, count, IsDiscard, 0);
     }
 
-    protected virtual void OnApply(GpuCommandQueue queue)
+    protected virtual void OnApply(GpuCommandList cmd)
     {
-        queue.State.IndexBuffer.Value = _iBuffer;
+        cmd.State.IndexBuffer.Value = _iBuffer;
     }
 
-    protected virtual void OnPostDraw(GpuCommandQueue queue)
+    protected virtual void OnPostDraw(GpuCommandList cmd)
     {
-        queue.State.IndexBuffer.Value = null;
+        cmd.State.IndexBuffer.Value = null;
     }
 
-    protected virtual void OnDraw(GpuCommandQueue queue)
+    protected virtual void OnDraw(GpuCommandList cmd)
     {
         if(_iBuffer != null)
-            queue.DrawIndexed(Shader, IndexCount);
+            cmd.DrawIndexed(Shader, IndexCount);
         else
-            queue.Draw(Shader, VertexCount);
+            cmd.Draw(Shader, VertexCount);
     }
 
-    protected override sealed void OnRender(GpuCommandQueue queue, RenderService renderer, RenderCamera camera, ObjectRenderData data)
+    protected override sealed void OnRender(GpuCommandList cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
     {
         if (Shader == null)
             return;
 
-        OnApply(queue);
+        OnApply(cmd);
         ApplyResources();
         Shader.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
         Shader.Object.World.Value = data.RenderTransform;
-        OnDraw(queue);
-        OnPostDraw(queue);
+        OnDraw(cmd);
+        OnPostDraw(cmd);
     }
 
     public virtual void Dispose()
@@ -270,13 +270,13 @@ public class Mesh<T> : Mesh
         _vb.SetData(GpuPriority.Apply, data, startIndex, count, IsDiscard, 0);
     }
 
-    protected override void OnApply(GpuCommandQueue queue)
+    protected override void OnApply(GpuCommandList cmd)
     {
-        base.OnApply(queue);
-        queue.State.VertexBuffers[0] = _vb;
+        base.OnApply(cmd);
+        cmd.State.VertexBuffers[0] = _vb;
     }
 
-    protected override void OnPostDraw(GpuCommandQueue cmd)
+    protected override void OnPostDraw(GpuCommandList cmd)
     {
         base.OnPostDraw(cmd);
         cmd.State.VertexBuffers[0] = null;

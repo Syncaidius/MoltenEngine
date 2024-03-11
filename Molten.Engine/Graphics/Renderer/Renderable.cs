@@ -8,22 +8,22 @@ public abstract class Renderable
         IsVisible = false;
     }
 
-    internal bool BatchRender(GpuCommandQueue cmd, RenderService renderer, RenderCamera camera, RenderDataBatch batch)
+    internal bool BatchRender(GpuCommandList cmd, RenderService renderer, RenderCamera camera, RenderDataBatch batch)
     {
         return OnBatchRender(cmd, renderer, camera, batch);
     }
 
-    internal void Render(GpuCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
+    internal void Render(GpuCommandList cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data)
     {
         OnRender(cmd, renderer, camera, data);
     }
 
-    protected virtual bool OnBatchRender(GpuCommandQueue cmd, RenderService renderer, RenderCamera camera, RenderDataBatch batch)
+    protected virtual bool OnBatchRender(GpuCommandList cmd, RenderService renderer, RenderCamera camera, RenderDataBatch batch)
     {
         return false;
     }
 
-    protected abstract void OnRender(GpuCommandQueue cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data);
+    protected abstract void OnRender(GpuCommandList cmd, RenderService renderer, RenderCamera camera, ObjectRenderData data);
 
     /// <summary>Gets or sets whether or not the renderable should be drawn.</summary>
     public bool IsVisible { get; set; }
