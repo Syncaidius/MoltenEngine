@@ -78,7 +78,7 @@ public unsafe class BufferVK : GpuBuffer
         _desc.Flags = BufferCreateFlags.None;
         _desc.Size = Stride * ElementCount;
         _desc.PQueueFamilyIndices = EngineUtil.AllocArray<uint>(1);
-        _desc.PQueueFamilyIndices[0] = (Device.Queue as GraphicsQueueVK).Index;
+        _desc.PQueueFamilyIndices[0] = (Device.Queue as CommandQueueVK).Index;
         _desc.QueueFamilyIndexCount = 1;
 
         CreateBuffer(device, _handle.SubHandle, memFlags);

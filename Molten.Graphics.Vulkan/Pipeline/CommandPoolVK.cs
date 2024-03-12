@@ -8,7 +8,7 @@ internal unsafe class CommandPoolVK : EngineObject
     List<CommandPoolAllocation> _allocations;
     uint _allocSize;
 
-    internal CommandPoolVK(GraphicsQueueVK queue, CommandPoolCreateFlags flags, uint allocationSize)
+    internal CommandPoolVK(CommandQueueVK queue, CommandPoolCreateFlags flags, uint allocationSize)
     {
         Queue = queue;
         _allocSize = allocationSize;
@@ -78,7 +78,7 @@ internal unsafe class CommandPoolVK : EngineObject
         Queue.VK.DestroyCommandPool(Queue.Device, _pool, null);
     }
 
-    internal GraphicsQueueVK Queue { get; }
+    internal CommandQueueVK Queue { get; }
 
     internal CommandPool Native => _pool;
 

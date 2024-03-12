@@ -76,7 +76,7 @@ public abstract partial class GpuCommandList : GpuObject
     public void PopState()
     {
         if (_stateStack.Count == 0)
-            throw new InvalidOperationException("There are no states to pop from the current GraphicsQueue.");
+            throw new InvalidOperationException($"There are no states to pop from the current {nameof(GpuCommandList)}.");
 
         _freeStateStack.Push(_state);
         _state = _stateStack.Pop();

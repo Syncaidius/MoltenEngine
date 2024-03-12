@@ -24,7 +24,7 @@ internal class SurfaceClearTaskVK : GraphicsResourceTask<TextureVK>
 
         if (Resource.ApplyQueue.Count > 0)
         {
-            GraphicsQueueVK vkCmd = queue as GraphicsQueueVK;
+            CommandQueueVK vkCmd = queue as CommandQueueVK;
             Resource.Apply(queue);
 
             vkCmd.Sync(GpuCommandListFlags.SingleSubmit);

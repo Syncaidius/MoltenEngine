@@ -135,7 +135,7 @@ public unsafe class CommandListDX12 : GpuCommandList
         // See Also: https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/reference/tools/pix3/functions/pixscopedevent-overloads
     }
 
-    protected override void OnGenerateMipmaps(GpuResource texture)
+    protected override void OnGenerateMipmaps(GpuTexture texture)
     {
         // TODO: Implement compute-based mip-map generation - This can then be commonized for DX11/Vulkan too.
         //       See: https://www.3dgep.com/learning-directx-12-4/#Generate_Mipmaps_Compute_Shader

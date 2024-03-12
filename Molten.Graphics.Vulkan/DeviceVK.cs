@@ -25,11 +25,11 @@ public unsafe class DeviceVK : GpuDevice
 
     Instance* _vkInstance;
     RendererVK _renderer;
-    List<GraphicsQueueVK> _queues;
-    GraphicsQueueVK _gfxQueue;
+    List<CommandQueueVK> _queues;
+    CommandQueueVK _gfxQueue;
     DeviceLoaderVK _loader;
     MemoryManagerVK _memory;
-    Device* _native;
+    Device* _handle;
 
     int _swapChainCount;
     SwapchainKHR* _pSwapChains;
@@ -133,8 +133,8 @@ public unsafe class DeviceVK : GpuDevice
 
     internal void PreInitialize(CommandSetCapabilityFlags requiredCmdFlags)
     {
-        _native = EngineUtil.Alloc<Device>();
-        _queues = new List<GraphicsQueueVK>();
+        _handle = EngineUtil.Alloc<Device>();
+        _queues = new List<CommandQueueVK>();
         _loader = new DeviceLoaderVK(_renderer, this, requiredCmdFlags);
     }
 
@@ -239,7 +239,7 @@ public unsafe class DeviceVK : GpuDevice
                     Queue q = new Queue();
                     _renderer.VK.GetDeviceQueue(*Ptr, qi.QueueFamilyIndex, index, &q);
                     SupportedCommandSet set = Capabilities.CommandSets[(int)qi.QueueFamilyIndex];
-                    GraphicsQueueVK queue = new GraphicsQueueVK(_renderer, this, qi.QueueFamilyIndex, q, index, set);
+                    CommandQueueVK queue = new CommandQueueVK(_renderer, this, qi.QueueFamilyIndex, q, index, set);
                     _queues.Add(queue);
 
                     // TODO maybe find the best queue, rather than first match?
@@ -260,16 +260,16 @@ public unsafe class DeviceVK : GpuDevice
     }
 
     /// <summary>
-    /// Finds a <see cref="GraphicsQueueVK"/> that can present the provided <see cref="WindowSurfaceVK"/>.
+    /// Finds a <see cref="CommandQueueVK"/> that can present the provided <see cref="WindowSurfaceVK"/>.
     /// </summary>
     /// <param name="surface"></param>
     /// <returns></returns>
-    internal GraphicsQueueVK FindPresentQueue(SwapChainSurfaceVK surface)
+    internal CommandQueueVK FindPresentQueue(SwapChainSurfaceVK surface)
     {
         KhrSurface extSurface = _renderer.GetInstanceExtension<KhrSurface>();
         Bool32 presentSupported = false;
 
-        foreach (GraphicsQueueVK queue in _queues)
+        foreach (CommandQueueVK queue in _queues)
         {
             Result r = extSurface.GetPhysicalDeviceSurfaceSupport(Adapter, queue.FamilyIndex, surface.SurfaceHandle, &presentSupported);
             if (r.Check(_renderer) && presentSupported)
@@ -280,13 +280,13 @@ public unsafe class DeviceVK : GpuDevice
     }
 
     /// <summary>
-    /// Retrieves the <see cref="SharingMode"/> for a resource, based on <see cref="GraphicsQueueVK"/> queues that may potentionally access it.
+    /// Retrieves the <see cref="SharingMode"/> for a resource, based on <see cref="CommandQueueVK"/> queues that may potentionally access it.
     /// </summary>
-    /// <param name="expectedQueues">The <see cref="GraphicsQueueVK"/> queues that are expected to share.</param>
+    /// <param name="expectedQueues">The <see cref="CommandQueueVK"/> queues that are expected to share.</param>
     /// <returns></returns>
-    internal (SharingMode, GraphicsQueueVK[]) GetSharingMode(params GraphicsQueueVK[] expectedQueues)
+    internal (SharingMode, CommandQueueVK[]) GetSharingMode(params CommandQueueVK[] expectedQueues)
     {
-        HashSet<GraphicsQueueVK> set = new HashSet<GraphicsQueueVK>();
+        HashSet<CommandQueueVK> set = new HashSet<CommandQueueVK>();
         for (int i = 0; i < expectedQueues.Length; i++)
             set.Add(expectedQueues[i]);
 
@@ -310,7 +310,7 @@ public unsafe class DeviceVK : GpuDevice
         if(Ptr != null)
             _renderer.VK.DestroyDevice(*Ptr, null);
 
-        EngineUtil.Free(ref _native);
+        EngineUtil.Free(ref _handle);
 
         base.OnDispose(immediate);
     }
@@ -444,7 +444,7 @@ public unsafe class DeviceVK : GpuDevice
 
     public static implicit operator Device(DeviceVK device)
     {
-        return *device._native;
+        return *device._handle;
     }
 
     /// <inheritdoc/>
@@ -474,17 +474,17 @@ public unsafe class DeviceVK : GpuDevice
     /// <summary>
     /// The underlying, native device pointer.
     /// </summary>
-    internal Device* Ptr => _native;
+    internal Device* Ptr => _handle;
 
     /// <summary>
     /// Gets a protected reference to the underlying device pointer.
     /// </summary>
-    protected ref Device* PtrRef => ref _native;
+    protected ref Device* PtrRef => ref _handle;
 
     /// <summary>
-    /// Gets the underlying <see cref="GraphicsQueueVK"/> that should execute graphics commands.
+    /// Gets the underlying <see cref="CommandQueueVK"/> that should execute graphics commands.
     /// </summary>
-    public override GraphicsQueueVK Queue => _gfxQueue;
+    public override CommandQueueVK Queue => _gfxQueue;
 
     internal Vk VK => _renderer.VK;
 

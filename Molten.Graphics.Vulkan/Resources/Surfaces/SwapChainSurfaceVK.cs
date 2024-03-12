@@ -20,7 +20,7 @@ public abstract class SwapChainSurfaceVK : RenderSurface2DVK, INativeSurface
     SurfaceCapabilitiesKHR _cap;
     PresentModeKHR _mode;
 
-    GraphicsQueueVK _presentQueue;
+    CommandQueueVK _presentQueue;
     KhrSwapchain _extSwapChain;
     KhrSurface _extSurface;
     SurfaceFormatKHR _surfaceFormat;
@@ -197,7 +197,7 @@ public abstract class SwapChainSurfaceVK : RenderSurface2DVK, INativeSurface
         };
 
         // Detect swap-chain sharing mode.
-        (createInfo.ImageSharingMode, GraphicsQueueVK[] sharingWith) = Device.GetSharingMode(Device.Queue, _presentQueue);
+        (createInfo.ImageSharingMode, CommandQueueVK[] sharingWith) = Device.GetSharingMode(Device.Queue, _presentQueue);
         uint* familyIndices = stackalloc uint[sharingWith.Length];
 
         for (int i = 0; i < sharingWith.Length; i++)
@@ -214,7 +214,7 @@ public abstract class SwapChainSurfaceVK : RenderSurface2DVK, INativeSurface
         return _extSwapChain.CreateSwapchain(Device, &createInfo, null, out _swapChain);
     }
 
-    internal void Prepare(GraphicsQueueVK queue, uint imageIndex)
+    internal void Prepare(CommandQueueVK queue, uint imageIndex)
     {
         SetHandle(_handles[imageIndex]);
         Transition(queue, ImageLayout.Undefined, ImageLayout.PresentSrcKhr);

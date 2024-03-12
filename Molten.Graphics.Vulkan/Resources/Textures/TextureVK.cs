@@ -60,7 +60,7 @@ public unsafe abstract class TextureVK : GpuTexture
         if (_info.SharingMode == SharingMode.Concurrent)
         {
             _info.PQueueFamilyIndices = EngineUtil.AllocArray<uint>(1);
-            _info.PQueueFamilyIndices[0] = (Device.Queue as GraphicsQueueVK).Index;
+            _info.PQueueFamilyIndices[0] = (Device.Queue as CommandQueueVK).Index;
             _info.QueueFamilyIndexCount = 1;
         }
 
@@ -147,12 +147,12 @@ public unsafe abstract class TextureVK : GpuTexture
         throw new NotImplementedException();
     }
 
-    internal void Transition(GraphicsQueueVK cmd, ImageLayout oldLayout, ImageLayout newLayout)
+    internal void Transition(CommandQueueVK cmd, ImageLayout oldLayout, ImageLayout newLayout)
     {
         Transition(cmd, oldLayout, newLayout, ResourceFormat, MipMapCount, ArraySize);
     }
 
-    internal void Transition(GraphicsQueueVK cmd, ImageLayout oldLayout, ImageLayout newLayout, GpuResourceFormat newFormat, uint newMipMapCount, uint newArraySize)
+    internal void Transition(CommandQueueVK cmd, ImageLayout oldLayout, ImageLayout newLayout, GpuResourceFormat newFormat, uint newMipMapCount, uint newArraySize)
     {
         ImageMemoryBarrier barrier = new ImageMemoryBarrier()
         {
