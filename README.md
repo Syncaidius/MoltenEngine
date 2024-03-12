@@ -15,15 +15,17 @@ While parts of this project will inevitably be a classic case of re-inventing th
 # Core Feature Status
 See the following table for the per-platform support and status of each feature.
 
-✔️ Functional/Complete\
-🚧 Work in progres\
-Blank - Not Started\
-🚫 Not-applicable
+| Key | Description | 
+| :--- | :--- | 
+| ✔️ | Functional/Complete |
+| 🚧 | Work in progres |
+|    | Not Started |
+| 🚫 | Not-supported |
+
 
 | Feature                    | Windows    | Android  | Linux  | Mac  | iOS |
 | :---                       | :-------:  | :-----:  | :---:  | :-:  | :-: |  
 | Renderer - Vulkan          | 🚧         |          |        |      |     |
-| Renderer - DirectX 11      | 🚧         | 🚫       | 🚫    | 🚫   |     |
 | Renderer - DirectX 12      | 🚧         | 🚫       | 🚫    | 🚫   |     |
 | Networking - MNet          |            |          |        |      |     |
 | Audio Engine               | 🚧         |          |        |      |     |
@@ -44,43 +46,39 @@ Blank - Not Started\
 # Renderer Feature Status
 See the following table for the per-renderer support and status of each feature.
 
-✔️ Functional/Complete\
-🚧 Work in progres\
-Blank - Not Started\
-🚫 Not-supported
 
-| Feature                | DX11       | DX12     | Vulkan |
-| :---                   | :-------:  | :-----: | :-:    |
-| Multi-GPU Support      | 🚧         | 🚧     | 🚧    |
-| Deferrend rendering    | 🚧         |         |       |
-| Physically-Based (PBR) |            |         |       |
-| Geometry Shaders       | ✔️         |         |      |
-| Tessellation           | 🚧         |         |      |
-| Hull & Domain Shaders  | ✔️         |         |      |
-| Compute Shaders        | ✔️         |         |      |
-| Mesh Shaders           | 🚫         |         |      |
-| 2D Spite batching      | ✔️         |         |      |
-| 2D Primitive batching  | ✔️         |         |      |
-| Compressed textures    | ✔️         |         |      |
-| [Hardware instancing](https://en.wikipedia.org/wiki/Geometry_instancing)    | ✔️         |         |        | 
-| [Occlusion culling](https://en.wikipedia.org/wiki/Hidden-surface_determination#Occlusion_culling)      |            |         |        |
-| [Frustrum culling](https://en.wikipedia.org/wiki/Hidden-surface_determination#Viewing-frustum_culling)       |            |         |        |
-| [Portal culling](https://docs.panda3d.org/1.10/python/programming/render-attributes/occlusion-culling/portal-culling)         |            |         |        |
-| [Level of Detail (LoD)](https://en.wikipedia.org/wiki/Level_of_detail_(computer_graphics))  |            |         |        |
-| HDR support            |            |         |        |
-| 2D Texture arrays      | ✔️         |         |        |
-| 3D Texture arrays      | ✔️         |         |        |
-| 3D/volume textures     | ✔️         |         |        |
-| static skyboxes        | ✔️         |         |        |
-| real-time skyboxes     |            |         |        |
-| multi-window support   | ✔️         |         |        |
-| Render into WinForms   | ✔️         |         |        |
-| Render into WPF        |            |         |        |
-| Render into UWP        |            |         | 🚫    |
-|[Render into MAUI](https://docs.microsoft.com/en-us/dotnet/maui/what-is-maui) |            |         |       |
-| Render into Android UI | 🚫         | 🚫      |       | 
-| Raytracing             | 🚫         |         | 🚫    | 
-| Shader Compiler (HLSL/SPIR-V)   | 🚧		  | 🚧      | 🚧    | 
+| Feature                | DX12     | Vulkan |
+| :---                   | :-----: | :-:    |
+| Multi-GPU Support      | 🚧     | 🚧    |
+| Deferrend rendering    |         |       |
+| Physically-Based (PBR) |         |       |
+| Geometry Shaders       |         |      |
+| Tessellation           |         |      |
+| Hull & Domain Shaders  |         |      |
+| Compute Shaders        |         |      |
+| Mesh Shaders           |         |      |
+| 2D Spite batching      |         |      |
+| 2D Primitive batching  |         |      |
+| Compressed textures    |         |      |
+| [Hardware instancing](https://en.wikipedia.org/wiki/Geometry_instancing)    |         |        | 
+| [Occlusion culling](https://en.wikipedia.org/wiki/Hidden-surface_determination#Occlusion_culling)      |         |        |
+| [Frustrum culling](https://en.wikipedia.org/wiki/Hidden-surface_determination#Viewing-frustum_culling)       |         |        |
+| [Portal culling](https://docs.panda3d.org/1.10/python/programming/render-attributes/occlusion-culling/portal-culling)         |         |        |
+| [Level of Detail (LoD)](https://en.wikipedia.org/wiki/Level_of_detail_(computer_graphics))  |         |        |
+| HDR support            |         |        |
+| 2D Texture arrays      |         |        |
+| 3D Texture arrays      |         |        |
+| 3D/volume textures     |         |        |
+| static skyboxes        |         |        |
+| real-time skyboxes     |         |        |
+| multi-window support   |         |        |
+| Render into WinForms   |         |        |
+| Render into WPF        |         |        |
+| Render into UWP        |         | 🚫    |
+|[Render into MAUI](https://docs.microsoft.com/en-us/dotnet/maui/what-is-maui) |         |       |
+| Render into Android UI | 🚫      |       | 
+| Raytracing             |        |     | 
+| Shader Compiler (HLSL/SPIR-V)   | ✔️      | 🚧    | 
 
 # Android
 To build for Android you will need to install the Android workloads by running  

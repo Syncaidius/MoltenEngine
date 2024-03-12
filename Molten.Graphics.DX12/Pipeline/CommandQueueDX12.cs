@@ -8,9 +8,9 @@ public unsafe class CommandQueueDX12 : GpuCommandQueue<DeviceDX12>
 {
     CommandQueueDesc _desc;
     ID3D12CommandQueue* _handle;
-    GpuFrameBuffer<CommandAllocatorDX12> _cmdAllocators;
     CommandAllocatorDX12 _currentCmdAllocator;
-    ThreadedList<CommandListDX12> _submittedLists;
+    CommandListDX12 _prevCmdList;
+    Interlocker _lockerExecute;
 
     internal CommandQueueDX12(Logger log, DeviceDX12 device, DeviceBuilderDX12 builder, ref CommandQueueDesc desc) : 
         base(device)
@@ -39,10 +39,6 @@ public unsafe class CommandQueueDX12 : GpuCommandQueue<DeviceDX12>
 
         _handle = (ID3D12CommandQueue*)cmdQueue;
         _submittedLists = new ThreadedList<CommandListDX12>();
-        _cmdAllocators = new GpuFrameBuffer<CommandAllocatorDX12>(Device, (device) =>
-        {
-            return new CommandAllocatorDX12(this, CommandListType.Direct);
-        });
     }
 
     public override GpuCommandList GetCommandList(GpuCommandListFlags flags = GpuCommandListFlags.None)
@@ -58,7 +54,7 @@ public unsafe class CommandQueueDX12 : GpuCommandQueue<DeviceDX12>
 
     public override void BeginFrame()
     {
-        _currentCmdAllocator = _cmdAllocators.Prepare();
+        throw new NotImplementedException();
     }
 
     public override void EndFrame()
@@ -66,13 +62,26 @@ public unsafe class CommandQueueDX12 : GpuCommandQueue<DeviceDX12>
         throw new NotImplementedException();
     }
 
-    public override void Execute(GpuCommandList list)
+    public override void Execute(GpuCommandList cmd)
     {
-        CommandListDX12 cmd = (CommandListDX12)list;
+        if(cmd.HasBegan)
+            throw new GpuCommandListException(cmd, "Cannot execute a command list that has not been closed.");
 
-        cmd.Close();
-        ID3D12CommandList** lists = stackalloc ID3D12CommandList*[] { cmd.BaseHandle };
+        CommandListDX12 cmdDx12 = (CommandListDX12)cmd;
+        ID3D12CommandList** lists = stackalloc ID3D12CommandList*[] { cmdDx12.BaseHandle };
+
+        _lockerExecute.Lock();
+
+        // Tell the GPU to wait for the previous command list to execute before executing the new one.
+        if (_prevCmdList != null)
+        {
+            ulong fenceValue = _prevCmdList.Fence.Signal(this);
+            _handle->Wait(_prevCmdList.Fence.Handle, fenceValue);
+        }
+
         _handle->ExecuteCommandLists(1, lists);
+        _prevCmdList = cmdDx12;
+        _lockerExecute.Unlock();
     }
 
     /// <inheritdoc />
@@ -84,7 +93,6 @@ public unsafe class CommandQueueDX12 : GpuCommandQueue<DeviceDX12>
 
     protected override void OnDispose(bool immediate)
     {
-        _cmdAllocators?.Dispose(true);
         NativeUtil.ReleasePtr(ref _handle);
     }
 

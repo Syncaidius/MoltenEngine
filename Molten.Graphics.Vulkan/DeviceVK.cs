@@ -406,7 +406,7 @@ public unsafe class DeviceVK : GpuDevice
         for (uint i = 0; i < semaphoreCount; i++)
         {
             CommandListVK vkCmd = Frame[i] as CommandListVK;
-            semaphores[i] = vkCmd.Semaphore.Ptr;
+            semaphores[i] = vkCmd.Semaphore.Handle;
         }
 
         // Prepare presentable surfaces

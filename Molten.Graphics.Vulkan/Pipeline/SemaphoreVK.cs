@@ -13,7 +13,7 @@ internal class SemaphoreVK : IDisposable
         _device = device;
     }
 
-    internal unsafe void Start(SemaphoreCreateFlags flags)
+    internal unsafe void Reset(SemaphoreCreateFlags flags = SemaphoreCreateFlags.None)
     {
         if(_semaphore.Handle != 0)
             _device.VK.DestroySemaphore(_device, _semaphore, null);
@@ -40,5 +40,5 @@ internal class SemaphoreVK : IDisposable
         return semaphore._semaphore;
     }
 
-    internal ref Semaphore Ptr => ref _semaphore;
+    internal ref Semaphore Handle => ref _semaphore;
 }

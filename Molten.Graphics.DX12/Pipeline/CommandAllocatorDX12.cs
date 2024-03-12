@@ -9,15 +9,14 @@ public unsafe class CommandAllocatorDX12 : GpuObject<DeviceDX12>
     ID3D12CommandAllocator* _handle;
     ThreadedList<CommandListDX12> _allocated;
 
-    internal CommandAllocatorDX12(CommandQueueDX12 queue, CommandListType type) : base(queue.Device)
+    internal CommandAllocatorDX12(DeviceDX12 device, CommandListType type) : base(device)
     {
         Guid guid = ID3D12CommandAllocator.Guid;
         Type = type;
-        Queue = queue;
 
         void* ptr = null;
         HResult hr = Device.Handle->CreateCommandAllocator(type, &guid, &ptr);
-        if (!queue.Device.Log.CheckResult(hr, () => "Failed to create command allocator"))
+        if (!device.Log.CheckResult(hr, () => "Failed to create command allocator"))
             hr.Throw();
 
         _handle = (ID3D12CommandAllocator*)ptr;
@@ -55,8 +54,6 @@ public unsafe class CommandAllocatorDX12 : GpuObject<DeviceDX12>
     }
 
     public CommandListType Type { get; }
-
-    internal CommandQueueDX12 Queue { get; }
 
     internal ID3D12CommandAllocator* Handle => _handle;
 }

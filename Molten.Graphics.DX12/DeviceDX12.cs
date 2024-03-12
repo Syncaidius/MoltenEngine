@@ -21,6 +21,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
     ThreadedList<PipelineInputLayoutDX12> _pipelineLayoutCache;
     uint _nodeCount;
 
+    GpuFrameBuffer<CommandAllocatorDX12> _cmdAllocators;
     FenceDX12 _presentFence;
 
     internal DeviceDX12(RendererDX12 renderer, GraphicsManagerDXGI manager, IDXGIAdapter4* adapter, DeviceBuilderDX12 deviceBuilder) :
@@ -74,6 +75,8 @@ public unsafe class DeviceDX12 : DeviceDXGI
         _cmdDirect = new CommandQueueDX12(Log, this, _builder, ref cmdDesc);
         _presentFence = new FenceDX12(this, FenceFlags.None);
         _resources = new ResourceManagerDX12(this);
+        _cmdAllocators = new GpuFrameBuffer<CommandAllocatorDX12>(this, (device) => new CommandAllocatorDX12(this, CommandListType.Direct));
+        CommandAllocator = _cmdAllocators.Prepare();
 
         return true;
     }
@@ -123,6 +126,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
 
     protected override void OnDispose(bool immediate)
     {
+        _cmdAllocators?.Dispose(true);
         _presentFence?.Dispose(true);
         _cmdDirect?.Dispose(true);
         _heapManager?.Dispose(true);
@@ -137,7 +141,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
 
     protected override void OnBeginFrame(IReadOnlyThreadedList<ISwapChainSurface> surfaces)
     {
-        
+        CommandAllocator = _cmdAllocators.Prepare();
     }
 
     protected override void OnEndFrame(IReadOnlyThreadedList<ISwapChainSurface> surfaces)
@@ -148,7 +152,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
                 (surface as SwapChainSurfaceDX12).Present();
         });
 
-        _presentFence.Wait();
+        Queue.Wait(_presentFence);
     }
 
     /// <summary>
@@ -192,4 +196,6 @@ public unsafe class DeviceDX12 : DeviceDXGI
     internal PipelineStateBuilderDX12 StateBuilder => _stateBuilder;
 
     internal ThreadedList<PipelineInputLayoutDX12> PipelineLayoutCache => _pipelineLayoutCache;
+
+    internal CommandAllocatorDX12 CommandAllocator { get; private set; }
 }

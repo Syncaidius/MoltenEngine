@@ -1,5 +1,4 @@
-﻿using Silk.NET.Direct3D.Compilers;
-using Silk.NET.Vulkan;
+﻿using Silk.NET.Vulkan;
 using System.Runtime.InteropServices;
 using System.Text;
 using Buffer = Silk.NET.Vulkan.Buffer;
@@ -34,7 +33,7 @@ internal unsafe class CommandListVK : GpuCommandList
         Fence = new FenceVK(_device, FenceCreateFlags.None);
 
         uint maxSurfaces = (uint)State.Surfaces.Length;
-        uint maxVBuffers = (uint)_device.Capabilities.VertexBuffers.MaxSlots;
+        uint maxVBuffers = _device.Capabilities.VertexBuffers.MaxSlots;
         uint maxDescSets = 16U; // TODO: (uint)device.Capabilities.MaxBoundDescriptors;
         _applySurfaces = new IRenderSurfaceVK[maxSurfaces];
         _applyScissors = new FrameBufferedArray<Rect2D>(_device, maxSurfaces);
@@ -44,6 +43,15 @@ internal unsafe class CommandListVK : GpuCommandList
         _applyDescSets = new FrameBufferedArray<DescriptorSet>(_device, maxDescSets);
 
         _eventLabelStack = new Stack<DebugUtilsLabelEXT>();
+    }
+
+    public override void Execute(GpuCommandList cmd)
+    {
+        CommandListVK vkCmd = cmd as CommandListVK;
+        if(vkCmd.Level == CommandBufferLevel.Primary)
+            throw new GpuCommandListException(cmd, "Command lists can only execute secondary command lists. Primary command lists should be executed on a command queue.");
+
+
     }
 
     protected override void OnResetState()

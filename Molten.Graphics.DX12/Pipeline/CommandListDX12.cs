@@ -89,16 +89,6 @@ public unsafe class CommandListDX12 : GpuCommandList
             handle.Ptr1->Unmap(subresource, null);
     }
 
-    internal void Reset(CommandAllocatorDX12 allocator, PipelineStateDX12 initialState)
-    {
-        if(!_isClosed)
-            throw new InvalidOperationException("Command list must be closed before it can be reset.");
-
-        ID3D12PipelineState* pState = initialState != null ? initialState.Handle : null;
-        Handle->Reset(allocator.Handle, pState);
-        _isClosed = false;
-    }
-
     protected override void CopyResource(GpuResource src, GpuResource dest)
     {
         src.Apply(this);
@@ -108,7 +98,16 @@ public unsafe class CommandListDX12 : GpuCommandList
         Profiler.ResourceCopyCalls++;
     }
 
-    public void Close()
+    public override void Begin()
+    {
+        base.Begin();
+
+        ID3D12PipelineState* pState = null; // initialState != null ? initialState.Handle : null; // TODO Add initial state support
+        Handle->Reset(Device.CommandAllocator.Handle, pState);
+        _isClosed = false;
+    }
+
+    private void Close()
     {
         if (!_isClosed)
         {

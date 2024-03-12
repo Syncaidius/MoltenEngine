@@ -1,4 +1,5 @@
 ﻿using Molten.Windows32;
+using Newtonsoft.Json.Linq;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
 using System.Runtime.InteropServices;
@@ -33,17 +34,15 @@ internal unsafe class FenceDX12 : GpuFence
 
     public override void Reset()
     {
-        Set(0);
+        _value = 0;
+        _handle->Signal(_value);
     }   
 
-    /// <summary>
-    /// Sets the fence value from the CPU side.
-    /// </summary>
-    /// <param name="value">The value to set the current <see cref="FenceDX12"/> to.</param>
-    internal void Set(ulong value)
+    internal ulong Signal(CommandQueueDX12 queue)
     {
-        _value = value;
-        _handle->Signal(_value);
+        ulong fenceValue = Interlocked.Increment(ref _value);
+        queue.Handle->Signal(_handle, fenceValue);
+        return fenceValue;
     }
 
     /// <summary>
@@ -54,10 +53,7 @@ internal unsafe class FenceDX12 : GpuFence
     /// <returns>True if the wait was succesful, or false if the timeout was reached.</returns>
     internal bool Wait(CommandQueueDX12 queue, ulong nsTimeout = ulong.MaxValue)
     {
-        ulong fenceVal = Interlocked.Increment(ref _value);
-        queue.Handle->Signal(_handle, fenceVal);
-
-        if (_handle->GetCompletedValue() < fenceVal)
+        if (_handle->GetCompletedValue() < Signal(queue))
         {
             uint msTimeout = nsTimeout > uint.MaxValue ? uint.MaxValue : (uint)nsTimeout / 1000000U; // uint.MaxValue = Infinite timeout.
             _handle->SetEventOnCompletion(Value, _fenceEvent);
@@ -91,4 +87,6 @@ internal unsafe class FenceDX12 : GpuFence
     /// Gets or sets the value of the current <see cref="FenceDX12"/>.
     /// </summary>
     internal ulong Value => _value;
+
+    internal ID3D12Fence* Handle => _handle;
 }

@@ -199,6 +199,12 @@ public abstract partial class GpuCommandList : GpuObject
         Device.Tasks.Push(this, priority, texture, task);
     }
 
+    /// <summary>
+    /// Appends the commands within the provided <see cref="GpuCommandList"/> into the current <see cref="GpuCommandList"/>.
+    /// </summary>
+    /// <param name="cmd"></param>
+    public abstract void Execute(GpuCommandList cmd);
+
     /// <summary>Draw non-indexed, non-instanced primitives. 
     /// All queued compute shader dispatch requests are also processed</summary>
     /// <param name="shader">The <see cref="Shader"/> to apply when drawing.</param>
@@ -422,6 +428,11 @@ public abstract partial class GpuCommandList : GpuObject
     public GraphicsQueueProfiler Profiler { get; }
 
     protected BatchDrawInfo DrawInfo { get; }
+
+    /// <summary>
+    /// Gets whether or not <see cref="Begin()"/> has been called.
+    /// </summary>
+    public bool HasBegan => DrawInfo.Began;
 
     /// <summary>
     /// Gets the pipeline state of the current <see cref="GpuCommandQueue"/>.

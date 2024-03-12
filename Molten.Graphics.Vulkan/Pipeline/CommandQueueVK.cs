@@ -1,6 +1,5 @@
 ﻿using Silk.NET.Vulkan;
-using System.Runtime.InteropServices;
-using System.Text;
+using Semaphore = Silk.NET.Vulkan.Semaphore;
 
 namespace Molten.Graphics.Vulkan;
 
@@ -10,7 +9,9 @@ public unsafe class CommandQueueVK : GpuCommandQueue<DeviceVK>
     Vk _vk;
     CommandPoolVK _poolFrame;
     CommandPoolVK _poolTransient;
-    CommandListVK _cmd;
+
+    CommandListVK _prevCmdList;
+    Interlocker _lockerExecute;
 
     internal CommandQueueVK(RendererVK renderer, DeviceVK device, uint familyIndex, Queue queue, uint queueIndex, SupportedCommandSet set) :
         base(device)
@@ -24,6 +25,7 @@ public unsafe class CommandQueueVK : GpuCommandQueue<DeviceVK>
         Native = queue;
         Set = set;
 
+        _lockerExecute = new Interlocker();
         _poolFrame = new CommandPoolVK(this, CommandPoolCreateFlags.ResetCommandBufferBit, 1);
         _poolTransient = new CommandPoolVK(this, CommandPoolCreateFlags.ResetCommandBufferBit | CommandPoolCreateFlags.TransientBit, 5);
     }
@@ -50,7 +52,8 @@ public unsafe class CommandQueueVK : GpuCommandQueue<DeviceVK>
 
     public override bool Wait(GpuFence fence, ulong nsTimeout = ulong.MaxValue)
     {
-        
+        FenceVK fenceVK = fence as FenceVK;
+        return fenceVK.Wait(nsTimeout);
     }
 
     public override unsafe void Begin(GpuCommandListFlags flags)
@@ -86,7 +89,7 @@ public unsafe class CommandQueueVK : GpuCommandQueue<DeviceVK>
         // Use empty fence handle if the CPU doesn't need to wait for the command list to finish.
         Fence fence = new Fence();
         if (_cmd.Fence != null)
-            fence = (_cmd.Fence as FenceVK).Ptr;
+            fence = _cmd.Fence.Handle;
 
         // Submit command list and don't return the command list, as it's not deferred.
         SubmitCommandList(_cmd, fence);
@@ -96,12 +99,45 @@ public unsafe class CommandQueueVK : GpuCommandQueue<DeviceVK>
     /// <inheritdoc/>
     public override unsafe void Execute(GpuCommandList list)
     {
-        CommandListVK vkList = list as CommandListVK;
-        if (vkList.Level != CommandBufferLevel.Secondary)
-            throw new InvalidOperationException("Cannot submit a queue-level command list to a queue");
+        CommandListVK cmd = list as CommandListVK;
+        if (cmd.Level != CommandBufferLevel.Secondary)
+            throw new InvalidOperationException("Cannot submit a secondary command list to a queue");
+
+        /*CommandListVK vkList = list as CommandListVK;
 
         CommandBuffer* cmdBuffers = stackalloc CommandBuffer[1] { vkList.Ptr };
-        _vk.CmdExecuteCommands(_cmd, 1, cmdBuffers);
+        _vk.CmdExecuteCommands(_cmd, 1, cmdBuffers);*/
+
+        CommandBuffer* ptrBuffers = stackalloc CommandBuffer[] { cmd.Ptr };
+        SubmitInfo submit = new SubmitInfo(StructureType.SubmitInfo);
+        submit.PCommandBuffers = ptrBuffers;
+
+        _lockerExecute.Lock();
+
+        // We want to wait on the previous command list's semaphore before executing this one, if any.
+        if (_prevCmdList != null)
+        {
+            Semaphore* waitSemaphores = stackalloc Semaphore[] { _prevCmdList.Semaphore.Handle };
+            submit.WaitSemaphoreCount = 1;
+            submit.PWaitSemaphores = waitSemaphores;
+        }
+        else
+        {
+            submit.WaitSemaphoreCount = 0;
+            submit.PWaitSemaphores = null;
+        }
+
+        // We want to signal the command list's own semaphore so that the next command list can wait on it, if needed.
+        cmd.Semaphore.Reset();
+        Semaphore* semaphore = stackalloc Semaphore[] { cmd.Semaphore.Handle };
+        submit.CommandBufferCount = 1;
+        submit.SignalSemaphoreCount = 1;
+        submit.PSignalSemaphores = semaphore;
+
+        _prevCmdList = cmd;
+        Result r = VK.QueueSubmit(Native, 1, &submit, cmd.Fence.Handle);
+        _lockerExecute.Unlock();
+        r.Throw(_device, () => "Failed to submit command list");
     }
 
     /// <inheritdoc/>
@@ -120,7 +156,7 @@ public unsafe class CommandQueueVK : GpuCommandQueue<DeviceVK>
         // Use empty fence handle if the CPU doesn't need to wait for the command list to finish.
         Fence fence = new Fence();
         if (_cmd.Fence != null)
-            fence = _cmd.Fence.Ptr;
+            fence = _cmd.Fence.Handle;
 
         // We're only submitting the current command buffer.
         _vk.EndCommandBuffer(_cmd);
@@ -133,36 +169,6 @@ public unsafe class CommandQueueVK : GpuCommandQueue<DeviceVK>
 
         _vk.BeginCommandBuffer(_cmd, &beginInfo);
         Device.Frame.Track(_cmd);
-    }
-
-    private unsafe void SubmitCommandList(CommandListVK cmd, Fence fence)
-    {
-        CommandBuffer* ptrBuffers = stackalloc CommandBuffer[] { _cmd.Ptr };
-        SubmitInfo submit = new SubmitInfo(StructureType.SubmitInfo);
-        submit.PCommandBuffers = ptrBuffers;
-
-        // We want to wait on the previous command list's semaphore before executing this one, if any.
-        if (_cmd.Previous != null)
-        {
-            Semaphore* waitSemaphores = stackalloc Semaphore[] { (_cmd.Previous as CommandListVK).Semaphore.Ptr };
-            submit.WaitSemaphoreCount = 1;
-            submit.PWaitSemaphores = waitSemaphores;
-        }
-        else
-        {
-            submit.WaitSemaphoreCount = 0;
-            submit.PWaitSemaphores = null;
-        }
-
-        // We want to signal the command list's own semaphore so that the next command list can wait on it, if needed.
-        _cmd.Semaphore.Start(SemaphoreCreateFlags.None);
-        Semaphore* semaphore = stackalloc Semaphore[] { _cmd.Semaphore.Ptr };
-        submit.CommandBufferCount = 1;
-        submit.SignalSemaphoreCount = 1;
-        submit.PSignalSemaphores = semaphore;
-
-        Result r = VK.QueueSubmit(Native, 1, &submit, fence);
-        r.Throw(_device, () => "Failed to submit command list");
     }
 
 
@@ -202,9 +208,4 @@ public unsafe class CommandQueueVK : GpuCommandQueue<DeviceVK>
     internal CommandSetCapabilityFlags Flags { get; }
 
     internal Queue Native { get; private set; }
-
-    /// <summary>
-    /// Gets the current command list, if any.
-    /// </summary>
-    protected override GpuCommandList Cmd => _cmd;
 }

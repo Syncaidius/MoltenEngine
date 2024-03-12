@@ -64,7 +64,7 @@ internal class FenceVK : GpuFence
             _device.VK.ResetFences(_device, 1, ptrFence);
     }
 
-    public override bool Wait(ulong nsTimeout = ulong.MaxValue)
+    internal bool Wait(ulong nsTimeout = ulong.MaxValue)
     {
         Span<Fence> f = [_native];
         Result r = _device.VK.WaitForFences(_device, 1, f, true, nsTimeout);
@@ -81,5 +81,5 @@ internal class FenceVK : GpuFence
         return fence._native;
     }
 
-    internal ref Fence Ptr => ref _native;
+    internal ref readonly Fence Handle => ref _native;
 }

@@ -13,15 +13,21 @@ public abstract class GpuCommandQueue : EngineObject
     /// <summary>
     /// Executes the provided <see cref="GpuCommandList"/> on the current <see cref="GpuCommandQueue"/>.
     /// </summary>
-    /// <param name="list"></param>
-    public abstract void Execute(GpuCommandList list);
+    /// <param name="cmd"></param>
+    public abstract void Execute(GpuCommandList cmd);
 
     /// <summary>
     /// Resets the provided <see cref="GpuCommandList"/> so that it can be re-used.
     /// </summary>
-    /// <param name="list"></param>
-    public abstract void Reset(GpuCommandList list);
+    /// <param name="cmd"></param>
+    public abstract void Reset(GpuCommandList cmd);
 
+    /// <summary>
+    /// Forces a CPU-side wait on the current thread until the provided <see cref="GpuFence"/> is signaled by the GPU.
+    /// </summary>
+    /// <param name="fence">The fence to wait on.</param>
+    /// <param name="nsTimeout">An optional timeout, in nanoseconds.</param>
+    /// <returns></returns>
     public abstract bool Wait(GpuFence fence, ulong nsTimeout = ulong.MaxValue);
 
     /// <summary>
