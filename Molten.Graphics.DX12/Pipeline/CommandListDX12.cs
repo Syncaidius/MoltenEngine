@@ -116,6 +116,15 @@ public unsafe class CommandListDX12 : GpuCommandList
         }
     }
 
+    public override void Execute(GpuCommandList cmd)
+    {
+        CommandListDX12 dxCmd = (CommandListDX12)cmd;
+        if (dxCmd.Type != CommandListType.Bundle)
+            throw new GpuCommandListException(this, "Cannot execute a non-bundle command list on another command list");
+
+        _handle->ExecuteBundle(dxCmd.Handle);
+    }
+
     public override void BeginEvent(string label)
     {
         // TODO Requires mappings for PIX on Windows: https://devblogs.microsoft.com/pix/winpixeventruntime/
