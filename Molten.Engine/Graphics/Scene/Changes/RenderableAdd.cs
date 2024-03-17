@@ -1,7 +1,7 @@
 ﻿namespace Molten.Graphics;
 
-/// <summary>A <see cref="GraphicsTask"/> for adding a <see cref="Renderable"/> to the root of a scene.</summary>
-internal class RenderableAdd : GraphicsTask
+/// <summary>A <see cref="GpuTask"/> for adding a <see cref="Renderable"/> to the root of a scene.</summary>
+internal class RenderableAdd : GpuTask
 {
     public Renderable Renderable;
 

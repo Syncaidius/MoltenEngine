@@ -1,7 +1,7 @@
 ﻿namespace Molten.Graphics;
 
 /// <summary>A <see cref="RenderSceneChange"/> for adding a <see cref="SceneObject"/> to the root of a scene.</summary>
-internal class RenderAddScene : GraphicsTask
+internal class RenderAddScene : GpuTask
 {
     public SceneRenderData Data;
 

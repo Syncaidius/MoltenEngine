@@ -5,32 +5,38 @@ namespace Molten.Graphics;
 
 public class GpuTaskManager : IDisposable
 {
-    Dictionary<GpuPriority, ThreadedQueue<GraphicsTask>> _tasks;
-    ConcurrentDictionary<Type, ObjectPool<GraphicsTask>> _taskPool;
+    private class TaskQueue
+    {
+        internal ThreadedQueue<GpuTask> Tasks = new();
+        internal GpuFrameBuffer<GpuCommandList> Cmd;
+    }
+
+    Dictionary<GpuPriority, TaskQueue> _queues;
+    ConcurrentDictionary<Type, ObjectPool<GpuTask>> _taskPool;
     GpuDevice _device;
 
-    Dictionary<GpuPriority, GpuFrameBuffer<GpuCommandList>> _taskCmds;
-
-    internal GpuTaskManager(GpuDevice parentDevice)
+    internal GpuTaskManager(GpuDevice device)
     {
-        _device = parentDevice;
-        _tasks = new Dictionary<GpuPriority, ThreadedQueue<GraphicsTask>>();
+        _device = device;
+        _queues = new Dictionary<GpuPriority, TaskQueue>();
         GpuPriority[] priorities = Enum.GetValues<GpuPriority>();
         foreach (GpuPriority p in priorities)
         {
-            _tasks[p] = new ThreadedQueue<GraphicsTask>();
-            _taskCmds[p] = new GpuFrameBuffer<GpuCommandList>(parentDevice, (device) => device.Queue.GetCommandList());
+            if (p == GpuPriority.Immediate)
+                continue;
+
+            _queues[p].Cmd = new GpuFrameBuffer<GpuCommandList>(_device, (gpu) => gpu.Queue.GetCommandList());
         }
 
-        _taskPool = new ConcurrentDictionary<Type, ObjectPool<GraphicsTask>>();
+        _taskPool = new ConcurrentDictionary<Type, ObjectPool<GpuTask>>();
     }
 
     public T Get<T>() 
-        where T : GraphicsTask, new()
+        where T : GpuTask, new()
     {
-        if(!_taskPool.TryGetValue(typeof(T), out ObjectPool<GraphicsTask> pool))
+        if(!_taskPool.TryGetValue(typeof(T), out ObjectPool<GpuTask> pool))
         {
-            pool = new ObjectPool<GraphicsTask>(() => new T());
+            pool = new ObjectPool<GpuTask>(() => new T());
             if(!_taskPool.TryAdd(typeof(T), pool))
             {
                 _device.Log.Error($"Failed to create render task pool for '{typeof(T).Name}'");
@@ -44,16 +50,16 @@ public class GpuTaskManager : IDisposable
     }
 
     /// <summary>
-    /// Pushes a <see cref="GraphicsTask"/> to the specified priority queue in the current <see cref="GpuTaskManager"/>.
+    /// Pushes a <see cref="GpuTask"/> to the specified priority queue in the current <see cref="GpuTaskManager"/>.
     /// </summary>
     /// <param name="priority">The priority of the task.</param>
     /// <param name="task"></param>
-    public void Push(GpuPriority priority, GraphicsTask task)
+    public void Push(GpuPriority priority, GpuTask task)
     {
         if (task.Validate())
         {
-            ThreadedQueue<GraphicsTask> queue = _tasks[priority];
-            queue.Enqueue(task);
+            TaskQueue queue = _queues[priority];
+            queue.Tasks.Enqueue(task);
         }
     }
 
@@ -71,18 +77,13 @@ public class GpuTaskManager : IDisposable
         task.Resource = resource;
         switch (priority)
         {
-            default:
             case GpuPriority.Immediate:
                 if(task.Validate())
                     task.Process(cmd);
                 break;
 
-            case GpuPriority.StartOfFrame:
-                Push(GpuPriority.StartOfFrame, task);
-                break;
-
-            case GpuPriority.EndOfFrame:
-                Push(GpuPriority.EndOfFrame, task);
+            default:
+                Push(priority, task);
                 break;
         }
     }
@@ -96,12 +97,12 @@ public class GpuTaskManager : IDisposable
     /// <param name="groupsY">The number of Y compute thread groups.</param>
     /// <param name="groupsZ">The number of Z compute thread groups.</param>
     /// <param name="callback">A callback to run once the task is completed.</param>
-    public void Push(GpuPriority priority, Shader shader, uint groupsX, uint groupsY, uint groupsZ, GraphicsTask.EventHandler callback = null)
+    public void Push(GpuPriority priority, Shader shader, uint groupsX, uint groupsY, uint groupsZ, GpuTask.EventHandler callback = null)
     {
         Push(priority, shader, new Vector3UI(groupsX, groupsY, groupsZ), callback);
     }
 
-    public void Push(GpuPriority priority, Shader shader, Vector3UI groups, GraphicsTask.EventHandler callback = null)
+    public void Push(GpuPriority priority, Shader shader, Vector3UI groups, GpuTask.EventHandler callback = null)
     {
         ComputeTask task = Get<ComputeTask>();
         task.Shader = shader;
@@ -112,11 +113,11 @@ public class GpuTaskManager : IDisposable
 
     public void Dispose()
     {
-        foreach (ObjectPool<GraphicsTask> pool in _taskPool.Values)
+        foreach (ObjectPool<GpuTask> pool in _taskPool.Values)
             pool.Dispose();
 
-        foreach (GpuFrameBuffer<GpuCommandList> buffer in _taskCmds.Values)
-            buffer.Dispose();
+        foreach (TaskQueue queue in _queues.Values)
+            queue.Cmd.Dispose();
 
         _taskPool.Clear();
     }
@@ -125,6 +126,7 @@ public class GpuTaskManager : IDisposable
     /// Processes all tasks held in the manager for the specified priority queue, for the current <see cref="GpuTaskManager"/>.
     /// </summary>
     /// <param name="priority">The priority of the task.</param>
+    /// <param name="cmdQueue">The GPU queue that will execute the command list.</param>
     internal void Process(GpuPriority priority)
     {
         // TODO Implement "AllowBatching" property on RenderTask to allow multiple tasks to be processed in a single Begin()-End() command block
@@ -133,12 +135,12 @@ public class GpuTaskManager : IDisposable
         //       - Be executed on the next available compute device queue
         //       - May not finish in the order they were requested due to task size, queue size and device performance.
 
-        ThreadedQueue<GraphicsTask> queue = _tasks[priority];
-        GpuCommandList cmd = _taskCmds[priority].Prepare();
+        TaskQueue queue = _queues[priority];
+        GpuCommandList cmd = queue.Cmd.Prepare();
 
         cmd.Begin();
         cmd.BeginEvent($"Process '{priority}' tasks");
-        while (queue.TryDequeue(out GraphicsTask task))
+        while (queue.Tasks.TryDequeue(out GpuTask task))
             task.Process(cmd);
 
         cmd.EndEvent();

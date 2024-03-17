@@ -498,5 +498,5 @@ internal unsafe class CommandListVK : GpuCommandList
 
     internal SemaphoreVK Semaphore { get; }
 
-    internal FenceVK Fence { get; set; }
+    public override FenceVK Fence { get; }
 }

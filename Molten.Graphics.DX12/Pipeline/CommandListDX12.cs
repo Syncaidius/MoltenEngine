@@ -490,7 +490,7 @@ public unsafe class CommandListDX12 : GpuCommandList
 
     public CommandListType Type => Allocator.Type;
 
-    internal FenceDX12 Fence { get; }
+    public override FenceDX12 Fence { get; }
 
     public static implicit operator ID3D12CommandList*(CommandListDX12 cmd) => (ID3D12CommandList*)cmd._handle;
 

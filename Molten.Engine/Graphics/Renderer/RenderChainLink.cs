@@ -74,9 +74,9 @@ internal class RenderChainLink : IPoolable
         link._chain.LinkPool.Recycle(link);
     }
 
-    internal void Run(GpuCommandQueue queue, RenderCamera camera, RenderChainContext context, Timing time)
+    internal void Run(GpuCommandList cmd, RenderCamera camera, RenderChainContext context, Timing time)
     {
-        bool canStart = true;
+        bool canStart;
 
         // Are the previous steps completed?
         do
@@ -90,16 +90,13 @@ internal class RenderChainLink : IPoolable
 
         // TODO update this once the renderer supports running render steps in deferred context threads.
         // TODO also consider spawning extra chain contexts so they can individually 
-        queue.BeginEvent($"Step {_step.GetType().Name}");
-        _step.Render(queue, camera, context, time);
+        cmd.BeginEvent($"Step {_step.GetType().Name}");
+        _step.Draw(cmd, camera, context, time);
         _completed = true;
-        queue.EndEvent();
-
-        // Push the current step's commands to the GPU.
-        queue.Sync();
+        cmd.EndEvent();
 
         // Start the next steps
         for (int i = 0; i < _next.Count; i++)
-            _next[i].Run(queue, camera, context, time);
+            _next[i].Run(cmd, camera, context, time);
     }
 }

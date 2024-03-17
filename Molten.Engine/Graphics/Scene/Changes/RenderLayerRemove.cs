@@ -1,7 +1,7 @@
 ﻿namespace Molten.Graphics;
 
 /// <summary>A <see cref="RenderLayerAdd"/> for adding <see cref="LayerRenderData"/> to the a<see cref="SceneRenderData"/> instance.</summary>
-internal class RenderLayerRemove : GraphicsTask
+internal class RenderLayerRemove : GpuTask
 {
     public SceneRenderData SceneData;
 

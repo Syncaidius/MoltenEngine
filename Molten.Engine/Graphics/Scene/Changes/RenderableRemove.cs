@@ -1,7 +1,7 @@
 ﻿namespace Molten.Graphics;
 
-/// <summary>A <see cref="GraphicsTask"/> for removing a <see cref="Renderable"/> from the root of a scene.</summary>
-internal class RenderableRemove : GraphicsTask
+/// <summary>A <see cref="GpuTask"/> for removing a <see cref="Renderable"/> from the root of a scene.</summary>
+internal class RenderableRemove : GpuTask
 {
     public Renderable Renderable;
 

@@ -47,7 +47,6 @@ public abstract partial class GpuDevice : EngineObject
 
         Cache = new ObjectCache();
         _disposals = new ThreadedList<GpuObject>();
-
         _maxStagingSize = (uint)ByteMath.FromMegabytes(renderer.Settings.Graphics.FrameStagingSize);
 
         SettingValue<FrameBufferMode> bufferingMode = renderer.Settings.Graphics.FrameBufferMode;

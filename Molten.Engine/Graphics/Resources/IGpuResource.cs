@@ -10,7 +10,7 @@ public interface IGpuResource : IDisposable
     /// <param name="priority">The priority of the copy operation.</param>
     /// <param name="destination">The destination texture.</param>
     /// <param name="completeCallback">A callback to run once the operation has completed.</param>
-    void CopyTo(GpuPriority priority, GpuResource destination, GraphicsTask.EventHandler completeCallback = null);
+    void CopyTo(GpuPriority priority, GpuResource destination, GpuTask.EventHandler completeCallback = null);
 
     /// <summary>
     /// Copies the current texture to the destination texture. Both texture levels must be of the same format and dimensions.
@@ -25,7 +25,7 @@ public interface IGpuResource : IDisposable
     void CopyTo(GpuPriority priority,
         uint sourceLevel, uint sourceSlice,
         GpuResource destination, uint destLevel, uint destSlice,
-        GraphicsTask.EventHandler completeCallback = null);
+        GpuTask.EventHandler completeCallback = null);
 
     /// <summary>
     /// Invoked when the current <see cref="GpuResource"/> should apply any changes before being bound to a GPU context.

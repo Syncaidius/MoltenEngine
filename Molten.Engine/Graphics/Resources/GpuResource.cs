@@ -51,7 +51,7 @@ public abstract class GpuResource : GpuObject, IGpuResource
     {
         if (ApplyQueue.Count > 0)
         {
-            while (ApplyQueue.TryDequeue(out GraphicsTask task))
+            while (ApplyQueue.TryDequeue(out GpuTask task))
                 task.Process(cmd);
         }
     }
@@ -63,11 +63,11 @@ public abstract class GpuResource : GpuObject, IGpuResource
     /// <param name="result">The task that was dequeued, if any.</param>
     /// <returns></returns>
     protected bool DequeueTaskIfType<T>(out T result)
-        where T : GraphicsTask
+        where T : GpuTask
     {
         if (ApplyQueue.Count > 0 && ApplyQueue.IsNext<T>())
         {
-            if (ApplyQueue.TryDequeue(out GraphicsTask task))
+            if (ApplyQueue.TryDequeue(out GpuTask task))
             {
                 result = (T)task;
                 return true;
@@ -78,7 +78,7 @@ public abstract class GpuResource : GpuObject, IGpuResource
         return false;
     }
 
-    public void CopyTo(GpuPriority priority, GpuResource destination, GraphicsTask.EventHandler completeCallback = null)
+    public void CopyTo(GpuPriority priority, GpuResource destination, GpuTask.EventHandler completeCallback = null)
     {
         if (!Flags.Has(GpuResourceFlags.GpuRead))
             throw new ResourceCopyException(this, destination, "Source resource must have the GraphicsResourceFlags.GpuRead flag set.");
@@ -131,7 +131,7 @@ public abstract class GpuResource : GpuObject, IGpuResource
     public void CopyTo(GpuPriority priority,
     uint sourceLevel, uint sourceSlice,
     GpuResource destination, uint destLevel, uint destSlice,
-    GraphicsTask.EventHandler completeCallback = null)
+    GpuTask.EventHandler completeCallback = null)
     {
         if (!Flags.Has(GpuResourceFlags.GpuRead))
             throw new ResourceCopyException(this, destination, "The current texture cannot be copied from because the GraphicsResourceFlags.GpuRead flag was not set.");
@@ -188,7 +188,7 @@ public abstract class GpuResource : GpuObject, IGpuResource
     /// <param name="destByteOffset"></param>
     /// <param name="completionCallback">A callback to invoke once the operation is completed.</param>
     public void CopyTo(GpuPriority priority, GpuResource destination, ResourceRegion sourceRegion, uint destByteOffset = 0,
-        GraphicsTask.EventHandler completionCallback = null)
+        GpuTask.EventHandler completionCallback = null)
     {
         SubResourceCopyTask task = Device.Tasks.Get<SubResourceCopyTask>();
         task.DestResource = destination;

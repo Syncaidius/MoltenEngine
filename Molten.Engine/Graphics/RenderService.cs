@@ -13,7 +13,9 @@ public abstract class RenderService : EngineService
     bool _surfaceResizeRequired;
 
     RenderChain _chain;
+
     List<GpuDevice> _devices;
+    GpuFrameBuffer<GpuCommandList> _cmdMain;
 
     AntiAliasLevel _requestedMultiSampleLevel = AntiAliasLevel.None;
 
@@ -100,6 +102,9 @@ public abstract class RenderService : EngineService
         Surfaces.Initialize(BiggestWidth, BiggestHeight);
         Fonts = new SpriteFontManager(Log, this);
         Fonts.Initialize();
+
+        // The primary GPU will be used for main rendering, so we'll create a command list buffer for it.
+        _cmdMain = new GpuFrameBuffer<GpuCommandList>(Device, (gpu) => gpu.Queue.GetCommandList());
     }
 
     /// <summary>
@@ -179,6 +184,9 @@ public abstract class RenderService : EngineService
             _surfaceResizeRequired = false;
         }
 
+        // Draw scene with primary device command list.
+        GpuCommandList cmd = _cmdMain.Prepare();
+        cmd.Begin();
         for (int i = 0; i < Scenes.Count; i++)
         {
             data = Scenes[i];
@@ -186,7 +194,7 @@ public abstract class RenderService : EngineService
             if (!data.IsVisible)
                 continue;
 
-            Device.Queue.BeginEvent("Draw Scene");
+            cmd.BeginEvent("Draw Scene");
             data.PreRenderInvoke(this);
 
             // Sort cameras into ascending order-depth.
@@ -207,15 +215,18 @@ public abstract class RenderService : EngineService
                 if (camera.Skip)
                     continue;
 
-                _chain.Render(Device.Queue, data, camera, time);
+                _chain.Render(cmd, data, camera, time);
             }
 
             data.PostRenderInvoke(this);
-            Device.Queue.EndEvent();
+            cmd.EndEvent();
         }
+        cmd.End();
+        Device.Queue.Execute(cmd);
 
         for (int i = 0; i < _devices.Count; i++)
             _devices[i].Tasks.Process(GpuPriority.EndOfFrame);
+
         Device.EndFrame(time);
         Surfaces.ResetFirstCleared();
 
@@ -223,7 +234,7 @@ public abstract class RenderService : EngineService
         for(int i = 0; i < _devices.Count; i++)
         {
             device = _devices[i];
-            device.Profiler.Accumulate(device.Queue.Profiler);
+            //device.Profiler.Accumulate(device.Queue.Profiler);
             Profiler.Accumulate(device.Profiler);
         }
     }
@@ -311,8 +322,9 @@ public abstract class RenderService : EngineService
     {
         base.OnDispose(true);
 
-        _chain.Dispose();
-        SpriteBatch.Dispose();
+        _chain?.Dispose();
+        SpriteBatch?.Dispose();
+        _cmdMain?.Dispose();
 
         foreach (GpuDevice device in _devices)
             device.Dispose();
@@ -320,7 +332,6 @@ public abstract class RenderService : EngineService
         _devices.Clear();
 
         OnDisposeBeforeRender();
-
         Log.Dispose();
     }
 

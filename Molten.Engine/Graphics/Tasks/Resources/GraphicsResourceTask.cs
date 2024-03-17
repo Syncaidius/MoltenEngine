@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics;
 
-public abstract class GraphicsResourceTask<R> : GraphicsTask
+public abstract class GraphicsResourceTask<R> : GpuTask
     where R : GpuResource
 {
     /// <summary>

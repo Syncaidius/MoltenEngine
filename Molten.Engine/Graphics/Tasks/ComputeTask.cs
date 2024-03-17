@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics;
 
-internal class ComputeTask : GraphicsTask
+internal class ComputeTask : GpuTask
 {
     internal Shader Shader;
 

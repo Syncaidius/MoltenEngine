@@ -160,37 +160,37 @@ public class AndroidViewSurface : INativeSurface
         throw new NotImplementedException();
     }
 
-    public void GenerateMipMaps(GpuPriority priority, GraphicsTask.EventHandler completeCallback = null)
+    public void GenerateMipMaps(GpuPriority priority, GpuTask.EventHandler completeCallback = null)
     {
         throw new NotImplementedException();
     }
 
-    public void SetData(GpuPriority priority, TextureData data, uint srcMipIndex, uint srcArraySlice, uint mipCount, uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0, GraphicsTask.EventHandler completeCallback = null)
+    public void SetData(GpuPriority priority, TextureData data, uint srcMipIndex, uint srcArraySlice, uint mipCount, uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0, GpuTask.EventHandler completeCallback = null)
     {
         throw new NotImplementedException();
     }
 
-    public void SetData<T>(GpuPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arraySlice = 0, GraphicsTask.EventHandler completeCallback = null) where T : unmanaged
+    public void SetData<T>(GpuPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arraySlice = 0, GpuTask.EventHandler completeCallback = null) where T : unmanaged
     {
         throw new NotImplementedException();
     }
 
-    public void SetData(GpuPriority priority, TextureSlice data, uint mipLevel, uint arraySlice, GraphicsTask.EventHandler completeCallback = null)
+    public void SetData(GpuPriority priority, TextureSlice data, uint mipLevel, uint arraySlice, GpuTask.EventHandler completeCallback = null)
     {
         throw new NotImplementedException();
     }
 
-    public void SetData<T>(GpuPriority priority, ResourceRegion area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0, GraphicsTask.EventHandler completeCallback = null) where T : unmanaged
+    public void SetData<T>(GpuPriority priority, ResourceRegion area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0, GpuTask.EventHandler completeCallback = null) where T : unmanaged
     {
         throw new NotImplementedException();
     }
 
-    public void CopyTo(GpuPriority priority, GpuResource destination, GraphicsTask.EventHandler completeCallback = null)
+    public void CopyTo(GpuPriority priority, GpuResource destination, GpuTask.EventHandler completeCallback = null)
     {
         throw new NotImplementedException();
     }
 
-    public void CopyTo(GpuPriority priority, uint sourceLevel, uint sourceSlice, GpuResource destination, uint destLevel, uint destSlice, GraphicsTask.EventHandler completeCallback = null)
+    public void CopyTo(GpuPriority priority, uint sourceLevel, uint sourceSlice, GpuResource destination, uint destLevel, uint destSlice, GpuTask.EventHandler completeCallback = null)
     {
         throw new NotImplementedException();
     }

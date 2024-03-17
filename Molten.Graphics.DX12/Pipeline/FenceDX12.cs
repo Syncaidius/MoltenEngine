@@ -1,12 +1,11 @@
 ﻿using Molten.Windows32;
-using Newtonsoft.Json.Linq;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D12;
 using System.Runtime.InteropServices;
 
 namespace Molten.Graphics.DX12;
 
-internal unsafe class FenceDX12 : GpuFence
+public unsafe class FenceDX12 : GpuFence
 {
     ID3D12Fence* _handle;
     DeviceDX12 _device;

@@ -189,7 +189,7 @@ public abstract partial class GpuCommandList : GpuObject
     /// <param name="texture">The texture for which to generate mip-maps.</param>
     /// <param name="priority">The priority of the copy operation.</param>
     /// <param name="callback">A callback to run once the operation has completed.</param>
-    public void GenerateMipMaps(GpuTexture texture, GpuPriority priority, GraphicsTask.EventHandler callback = null)
+    public void GenerateMipMaps(GpuTexture texture, GpuPriority priority, GpuTask.EventHandler callback = null)
     {
         if (!texture.Flags.Has(GpuResourceFlags.MipMapGeneration))
             throw new Exception("Cannot generate mip-maps for texture. Must have flag: TextureFlags.AllowMipMapGeneration.");
@@ -428,6 +428,11 @@ public abstract partial class GpuCommandList : GpuObject
     public GraphicsQueueProfiler Profiler { get; }
 
     protected BatchDrawInfo DrawInfo { get; }
+
+    /// <summary>
+    /// Gets GPU fence that can be used to synchronize the completed execution of the current <see cref="GpuCommandList"/> with application/CPU-based operations.
+    /// </summary>
+    public abstract GpuFence Fence { get; }
 
     /// <summary>
     /// Gets whether or not <see cref="Begin()"/> has been called.

@@ -1,7 +1,7 @@
 ﻿namespace Molten.Graphics;
 
 /// <summary>A <see cref="RenderLayerReorder"/> for changing the draw order of a <see cref="LayerRenderData"/> instance.</summary>
-internal class RenderLayerReorder : GraphicsTask
+internal class RenderLayerReorder : GpuTask
 {
     public LayerRenderData LayerData;
     public SceneRenderData SceneData;

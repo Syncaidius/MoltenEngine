@@ -10,7 +10,7 @@ public partial class GpuCommandList
     /// <param name="data"></param>
     /// <param name="discard">Discard the data currently in the buffer and allocate fresh memory for the provided data.</param>
     /// <param name="completeCallback"></param>
-    public void SetData<T>(GpuBuffer buffer, GpuPriority priority, T[] data, bool discard, GraphicsTask.EventHandler completeCallback = null)
+    public void SetData<T>(GpuBuffer buffer, GpuPriority priority, T[] data, bool discard, GpuTask.EventHandler completeCallback = null)
         where T : unmanaged
     {
         SetData(buffer, priority, data, 0, (uint)data.Length, discard, 0, completeCallback);
@@ -29,7 +29,7 @@ public partial class GpuCommandList
     /// <param name="completeCallback"></param>
     /// <param name="discard">If true, the previous data will be discarded. Ignored if not applicable to the current buffer.</param>
     public void SetData<T>(GpuBuffer buffer, GpuPriority priority, T[] data, uint startIndex, uint elementCount, bool discard, uint byteOffset = 0,
-        GraphicsTask.EventHandler completeCallback = null)
+        GpuTask.EventHandler completeCallback = null)
         where T : unmanaged
     {
         BufferSetTask<T> op = Device.Tasks.Get<BufferSetTask<T>>();
@@ -147,7 +147,7 @@ public partial class GpuCommandList
     }
 
     public unsafe void SetData<T>(GpuTexture texture, GpuPriority priority, ResourceRegion area, T* data, uint numElements, uint bytesPerPixel, uint level, uint arrayIndex = 0,
-    GraphicsTask.EventHandler completeCallback = null)
+    GpuTask.EventHandler completeCallback = null)
     where T : unmanaged
     {
         uint texturePitch = area.Width * bytesPerPixel;
@@ -183,7 +183,7 @@ public partial class GpuCommandList
     /// <param name="destMipIndex">The mip-map index within the current texture to start copying to.</param>
     /// <param name="destArraySlice">The array slice index within the current texture to start copying to.<</param>
     public unsafe void SetData(GpuTexture texture, GpuPriority priority, TextureData data, uint srcMipIndex, uint srcArraySlice, uint mipCount,
-        uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0, GraphicsTask.EventHandler completeCallback = null)
+        uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0, GpuTask.EventHandler completeCallback = null)
     {
         TextureSlice level = null;
         for (uint a = 0; a < arrayCount; a++)
@@ -205,7 +205,7 @@ public partial class GpuCommandList
         }
     }
 
-    public unsafe void SetData(GpuTexture texture, GpuPriority priority, TextureSlice data, uint mipIndex, uint arraySlice, GraphicsTask.EventHandler completeCallback = null)
+    public unsafe void SetData(GpuTexture texture, GpuPriority priority, TextureSlice data, uint mipIndex, uint arraySlice, GpuTask.EventHandler completeCallback = null)
     {
         TextureSetTask task = Device.Tasks.Get<TextureSetTask>();
         task.Initialize(data.Data, 1, 0, data.TotalBytes);
@@ -217,7 +217,7 @@ public partial class GpuCommandList
     }
 
     public unsafe void SetData<T>(GpuTexture texture, GpuPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arrayIndex,
-        GraphicsTask.EventHandler completeCallback = null)
+        GpuTask.EventHandler completeCallback = null)
         where T : unmanaged
     {
         fixed (T* ptrData = data)
@@ -233,7 +233,7 @@ public partial class GpuCommandList
     }
 
     public unsafe void SetData<T>(GpuTexture texture, GpuPriority priority, ResourceRegion area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0,
-        GraphicsTask.EventHandler completeCallback = null)
+        GpuTask.EventHandler completeCallback = null)
         where T : unmanaged
     {
         fixed (T* ptrData = data)
@@ -241,7 +241,7 @@ public partial class GpuCommandList
     }
 
     public unsafe void SetData<T>(GpuTexture texture, GpuPriority priority, uint level, T* data, uint startIndex, uint count, uint pitch, uint arrayIndex,
-        GraphicsTask.EventHandler completeCallback = null)
+        GpuTask.EventHandler completeCallback = null)
         where T : unmanaged
     {
         TextureSetTask task = Device.Tasks.Get<TextureSetTask>();

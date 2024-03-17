@@ -1,7 +1,7 @@
 ﻿namespace Molten.Graphics;
 
-/// <summary>A <see cref="GraphicsTask"/> for adding a <see cref="RenderCamera"/> to a scene.</summary>
-internal class AddCamera : GraphicsTask
+/// <summary>A <see cref="GpuTask"/> for adding a <see cref="RenderCamera"/> to a scene.</summary>
+internal class AddCamera : GpuTask
 {
     public RenderCamera Camera;
     public SceneRenderData Data;

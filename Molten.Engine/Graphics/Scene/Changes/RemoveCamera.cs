@@ -1,7 +1,7 @@
 ﻿namespace Molten.Graphics;
 
-/// <summary>A <see cref="GraphicsTask"/> for removing a <see cref="RenderCamera"/> from a scene.</summary>
-internal class RemoveCamera : GraphicsTask
+/// <summary>A <see cref="GpuTask"/> for removing a <see cref="RenderCamera"/> from a scene.</summary>
+internal class RemoveCamera : GpuTask
 {
     public RenderCamera Camera;
     public SceneRenderData Data;

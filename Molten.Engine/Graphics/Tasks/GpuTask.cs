@@ -2,14 +2,14 @@
 
 namespace Molten.Graphics;
 
-public abstract class GraphicsTask : IPoolable
+public abstract class GpuTask : IPoolable
 {
-    public delegate void EventHandler(GraphicsTask task, bool success);
+    public delegate void EventHandler(GpuTask task, bool success);
 
     /// <summary>
-    /// Gets or sets the pool that owns the current <see cref="GraphicsTask"/>.
+    /// Gets or sets the pool that owns the current <see cref="GpuTask"/>.
     /// </summary>
-    internal ObjectPool<GraphicsTask> Pool { get; set; }
+    internal ObjectPool<GpuTask> Pool { get; set; }
 
     /// <summary>
     /// Invoked when the task has been completed.
@@ -21,7 +21,7 @@ public abstract class GraphicsTask : IPoolable
     public abstract bool Validate();
 
     /// <summary>
-    /// Invoked when the current <see cref="GraphicsTask"/> needs to be processed.
+    /// Invoked when the current <see cref="GpuTask"/> needs to be processed.
     /// </summary>
     /// <param name="cmd">The <see cref="GpuCommandList"/> that should process the task.</param>
     public void Process(GpuCommandList cmd)
@@ -41,7 +41,7 @@ public abstract class GraphicsTask : IPoolable
     /// Invoked when the task should be processed by the specified <see cref="GpuCommandQueue"/>.
     /// </summary>
     /// <param name="renderer">The renderer that the task is bound to.</param>
-    /// <param name="cmd">The <see cref="GpuCommandQueue"/> that should process the current <see cref="GraphicsTask"/>.</param>
+    /// <param name="cmd">The <see cref="GpuCommandQueue"/> that should process the current <see cref="GpuTask"/>.</param>
     /// <returns></returns>
     protected abstract bool OnProcess(RenderService renderer, GpuCommandList cmd);
 }
