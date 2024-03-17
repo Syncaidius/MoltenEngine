@@ -11,17 +11,12 @@ public enum GpuPriority
     Immediate = 0,
 
     /// <summary>
-    /// The task or command must be executed next time the object is applied to the pipeline.
+    /// The task or command will be executed at the start of the next device frame.
     /// </summary>
-    Apply = 1,
+    StartOfFrame = 1,
 
     /// <summary>
-    /// The task or command will be executed at the start of the next frame, before render.
+    /// The task or command will be executed at the end of the current device frame.
     /// </summary>
-    StartOfFrame = 2,
-
-    /// <summary>
-    /// The task or command will be executed at the end of the current frame, after render.
-    /// </summary>
-    EndOfFrame = 3,
+    EndOfFrame = 2,
 }

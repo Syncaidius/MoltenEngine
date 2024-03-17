@@ -1,5 +1,4 @@
-﻿using Molten.Collections;
-using Molten.Graphics.Overlays;
+﻿using Molten.Graphics.Overlays;
 
 namespace Molten.Graphics;
 
@@ -136,7 +135,7 @@ public abstract class RenderService : EngineService
 
         // Process the start-of-frame task queue for each device.
         for (int i = 0; i < _devices.Count; i++)
-            _devices[i].Tasks.Process(GraphicsTaskPriority.StartOfFrame);
+            _devices[i].Tasks.Process(GpuPriority.StartOfFrame);
 
         // Perform preliminary checks on active scene data.
         // Also ensure the backbuffer is always big enough for the largest scene render surface.
@@ -216,7 +215,7 @@ public abstract class RenderService : EngineService
         }
 
         for (int i = 0; i < _devices.Count; i++)
-            _devices[i].Tasks.Process(GraphicsTaskPriority.EndOfFrame);
+            _devices[i].Tasks.Process(GpuPriority.EndOfFrame);
         Device.EndFrame(time);
         Surfaces.ResetFirstCleared();
 
@@ -268,7 +267,7 @@ public abstract class RenderService : EngineService
         RenderAddScene task = Device.Tasks.Get<RenderAddScene>();
         task.Data = rd;
 
-        Device.Tasks.Push(GraphicsTaskPriority.StartOfFrame, task);
+        Device.Tasks.Push(GpuPriority.StartOfFrame, task);
         return rd;
     }
 
@@ -277,7 +276,7 @@ public abstract class RenderService : EngineService
         RenderRemoveScene task = Device.Tasks.Get<RenderRemoveScene>();
         task.Data = data;
 
-        Device.Tasks.Push(GraphicsTaskPriority.StartOfFrame, task);
+        Device.Tasks.Push(GpuPriority.StartOfFrame, task);
     }
 
     /// <summary>

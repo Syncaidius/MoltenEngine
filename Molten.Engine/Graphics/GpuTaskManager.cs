@@ -5,17 +5,22 @@ namespace Molten.Graphics;
 
 public class GpuTaskManager : IDisposable
 {
-    Dictionary<GraphicsTaskPriority, ThreadedQueue<GraphicsTask>> _tasks;
+    Dictionary<GpuPriority, ThreadedQueue<GraphicsTask>> _tasks;
     ConcurrentDictionary<Type, ObjectPool<GraphicsTask>> _taskPool;
     GpuDevice _device;
+
+    Dictionary<GpuPriority, GpuFrameBuffer<GpuCommandList>> _taskCmds;
 
     internal GpuTaskManager(GpuDevice parentDevice)
     {
         _device = parentDevice;
-        _tasks = new Dictionary<GraphicsTaskPriority, ThreadedQueue<GraphicsTask>>();
-        GraphicsTaskPriority[] priorities = Enum.GetValues<GraphicsTaskPriority>();
-        foreach (GraphicsTaskPriority p in priorities)
+        _tasks = new Dictionary<GpuPriority, ThreadedQueue<GraphicsTask>>();
+        GpuPriority[] priorities = Enum.GetValues<GpuPriority>();
+        foreach (GpuPriority p in priorities)
+        {
             _tasks[p] = new ThreadedQueue<GraphicsTask>();
+            _taskCmds[p] = new GpuFrameBuffer<GpuCommandList>(parentDevice, (device) => device.Queue.GetCommandList());
+        }
 
         _taskPool = new ConcurrentDictionary<Type, ObjectPool<GraphicsTask>>();
     }
@@ -43,7 +48,7 @@ public class GpuTaskManager : IDisposable
     /// </summary>
     /// <param name="priority">The priority of the task.</param>
     /// <param name="task"></param>
-    public void Push(GraphicsTaskPriority priority, GraphicsTask task)
+    public void Push(GpuPriority priority, GraphicsTask task)
     {
         if (task.Validate())
         {
@@ -72,17 +77,12 @@ public class GpuTaskManager : IDisposable
                     task.Process(cmd);
                 break;
 
-            case GpuPriority.Apply:
-                if(task.Validate())
-                    resource.ApplyQueue.Enqueue(task);
-                break;
-
             case GpuPriority.StartOfFrame:
-                Push(GraphicsTaskPriority.StartOfFrame, task);
+                Push(GpuPriority.StartOfFrame, task);
                 break;
 
             case GpuPriority.EndOfFrame:
-                Push(GraphicsTaskPriority.EndOfFrame, task);
+                Push(GpuPriority.EndOfFrame, task);
                 break;
         }
     }
@@ -96,12 +96,12 @@ public class GpuTaskManager : IDisposable
     /// <param name="groupsY">The number of Y compute thread groups.</param>
     /// <param name="groupsZ">The number of Z compute thread groups.</param>
     /// <param name="callback">A callback to run once the task is completed.</param>
-    public void Push(GraphicsTaskPriority priority, Shader shader, uint groupsX, uint groupsY, uint groupsZ, GraphicsTask.EventHandler callback = null)
+    public void Push(GpuPriority priority, Shader shader, uint groupsX, uint groupsY, uint groupsZ, GraphicsTask.EventHandler callback = null)
     {
         Push(priority, shader, new Vector3UI(groupsX, groupsY, groupsZ), callback);
     }
 
-    public void Push(GraphicsTaskPriority priority, Shader shader, Vector3UI groups, GraphicsTask.EventHandler callback = null)
+    public void Push(GpuPriority priority, Shader shader, Vector3UI groups, GraphicsTask.EventHandler callback = null)
     {
         ComputeTask task = Get<ComputeTask>();
         task.Shader = shader;
@@ -115,6 +115,9 @@ public class GpuTaskManager : IDisposable
         foreach (ObjectPool<GraphicsTask> pool in _taskPool.Values)
             pool.Dispose();
 
+        foreach (GpuFrameBuffer<GpuCommandList> buffer in _taskCmds.Values)
+            buffer.Dispose();
+
         _taskPool.Clear();
     }
 
@@ -122,7 +125,7 @@ public class GpuTaskManager : IDisposable
     /// Processes all tasks held in the manager for the specified priority queue, for the current <see cref="GpuTaskManager"/>.
     /// </summary>
     /// <param name="priority">The priority of the task.</param>
-    internal void Process(GraphicsTaskPriority priority)
+    internal void Process(GpuPriority priority)
     {
         // TODO Implement "AllowBatching" property on RenderTask to allow multiple tasks to be processed in a single Begin()-End() command block
         //      Tasks that don't allow batching will:
@@ -131,12 +134,15 @@ public class GpuTaskManager : IDisposable
         //       - May not finish in the order they were requested due to task size, queue size and device performance.
 
         ThreadedQueue<GraphicsTask> queue = _tasks[priority];
-        _device.Queue.Begin();
-        _device.Queue.BeginEvent($"Process '{priority}' tasks");
-        while (queue.TryDequeue(out GraphicsTask task))
-            task.Process(_device.Queue);
+        GpuCommandList cmd = _taskCmds[priority].Prepare();
 
-        _device.Queue.EndEvent();
-        _device.Queue.End();
+        cmd.Begin();
+        cmd.BeginEvent($"Process '{priority}' tasks");
+        while (queue.TryDequeue(out GraphicsTask task))
+            task.Process(cmd);
+
+        cmd.EndEvent();
+        cmd.End();
+        _device.Queue.Execute(cmd);
     }
 }

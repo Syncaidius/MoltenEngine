@@ -41,7 +41,7 @@ public class SceneRenderData
         RenderLayerAdd task = _taskManager.Get<RenderLayerAdd>();
         task.LayerData = data;
         task.SceneData = this;
-        _taskManager.Push(GraphicsTaskPriority.StartOfFrame, task);
+        _taskManager.Push(GpuPriority.StartOfFrame, task);
     }
 
     public void RemoveLayer(LayerRenderData data)
@@ -49,7 +49,7 @@ public class SceneRenderData
         RenderLayerRemove task = _taskManager.Get<RenderLayerRemove>();
         task.LayerData = data;
         task.SceneData = this;
-        _taskManager.Push(GraphicsTaskPriority.StartOfFrame, task);
+        _taskManager.Push(GpuPriority.StartOfFrame, task);
     }
 
     public void ReorderLayer(LayerRenderData data, ReorderMode mode)
@@ -58,7 +58,7 @@ public class SceneRenderData
         task.LayerData = data;
         task.SceneData = this;
         task.Mode = mode;
-        _taskManager.Push(GraphicsTaskPriority.StartOfFrame, task);
+        _taskManager.Push(GpuPriority.StartOfFrame, task);
     }
 
     public void AddObject(RenderCamera obj)
@@ -66,7 +66,7 @@ public class SceneRenderData
         AddCamera task = _taskManager.Get<AddCamera>();
         task.Camera = obj;
         task.Data = this;
-        _taskManager.Push(GraphicsTaskPriority.StartOfFrame, task);
+        _taskManager.Push(GpuPriority.StartOfFrame, task);
     }
 
     public void RemoveObject(RenderCamera obj)
@@ -74,7 +74,7 @@ public class SceneRenderData
         RemoveCamera task = _taskManager.Get<RemoveCamera>();
         task.Camera = obj;
         task.Data = this;
-        _taskManager.Push(GraphicsTaskPriority.StartOfFrame, task);
+        _taskManager.Push(GpuPriority.StartOfFrame, task);
     }
 
     public void AddObject(Renderable obj, ObjectRenderData renderData, LayerRenderData layer)
@@ -83,7 +83,7 @@ public class SceneRenderData
         task.Renderable = obj;
         task.Data = renderData;
         task.LayerData = layer;
-        _taskManager.Push(GraphicsTaskPriority.StartOfFrame, task);
+        _taskManager.Push(GpuPriority.StartOfFrame, task);
     }
 
     public void RemoveObject(Renderable obj, ObjectRenderData renderData, LayerRenderData layer)
@@ -92,7 +92,7 @@ public class SceneRenderData
         task.Renderable = obj;
         task.Data = renderData;
         task.LayerData = layer;
-        _taskManager.Push(GraphicsTaskPriority.StartOfFrame, task);
+        _taskManager.Push(GpuPriority.StartOfFrame, task);
     }
 
     /// <summary>

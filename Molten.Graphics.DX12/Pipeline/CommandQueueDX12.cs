@@ -38,7 +38,6 @@ public unsafe class CommandQueueDX12 : GpuCommandQueue<DeviceDX12>
         Log.WriteLine($"Initialized '{_desc.Type}' command queue");
 
         _handle = (ID3D12CommandQueue*)cmdQueue;
-        _submittedLists = new ThreadedList<CommandListDX12>();
     }
 
     public override GpuCommandList GetCommandList(GpuCommandListFlags flags = GpuCommandListFlags.None)

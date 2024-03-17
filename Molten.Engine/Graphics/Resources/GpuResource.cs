@@ -8,7 +8,6 @@ public abstract class GpuResource : GpuObject, IGpuResource
         base(device)
     {
         Flags = flags;
-        ApplyQueue = new ThreadedQueue<GraphicsTask>();
         LastUsedFrameID = Device.Renderer.FrameID;
     }
 
@@ -199,11 +198,6 @@ public abstract class GpuResource : GpuObject, IGpuResource
         Device.Tasks.Push(priority, this, task);
     }
 
-    internal void Clear()
-    {
-        ApplyQueue.Clear();
-    }
-
     /// <summary>
     /// Gets the size of the resource, in bytes. 
     /// <para>This is the total size of all sub-resources within the resource, such as mip-map levels and array slices.</para>
@@ -235,9 +229,4 @@ public abstract class GpuResource : GpuObject, IGpuResource
     /// If the texture was never resized then the frame ID will be the ID of the frame that the texture was created.
     /// </summary>
     public ulong LastFrameResizedID { get; internal set; }
-
-    /// <summary>
-    /// Gets the queue of tasks that need to be applied to the current <see cref="GpuResource"/> during the next <see cref="Apply(GpuCommandQueue)"/> call.
-    /// </summary>
-    public ThreadedQueue<GraphicsTask> ApplyQueue { get; }
 }

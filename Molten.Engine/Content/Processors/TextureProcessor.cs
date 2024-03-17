@@ -110,7 +110,7 @@ public class TextureProcessor : ContentProcessor<TextureParameters>
             asset = tex;
 
             if (tex != null)
-                ReloadTexture(tex, finalData);
+                ReloadTexture(handle.Manager, tex, finalData);
             else
                 asset = CreateTexture(handle, finalData);
         }
@@ -137,8 +137,10 @@ public class TextureProcessor : ContentProcessor<TextureParameters>
         return tex;
     }
 
-    private void ReloadTexture(ITexture tex, TextureData data)
+    private void ReloadTexture(ContentManager manager, ITexture tex, TextureData data)
     {
+        RenderService renderer = manager.Engine.Renderer;
+
         switch (tex)
         {
             case ITextureCube texCube:
