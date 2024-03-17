@@ -1,11 +1,9 @@
 ﻿using Molten.Collections;
-using Molten.Graphics.Dxc;
 using Silk.NET.Core;
 using Silk.NET.Core.Native;
 using Silk.NET.GLFW;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
-using System.Reflection;
 using Queue = Silk.NET.Vulkan.Queue;
 using Semaphore = Silk.NET.Vulkan.Semaphore;
 
@@ -339,10 +337,32 @@ public unsafe class DeviceVK : GpuDevice
         _freeFences.Push(fence);
     }
 
+    public override void Reset(GpuCommandList list)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override GpuCommandList GetCommandList(GpuCommandListFlags flags = GpuCommandListFlags.None)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override bool Wait(GpuFence fence, ulong nsTimeout = ulong.MaxValue)
+    {
+        FenceVK fenceVK = fence as FenceVK;
+        return fenceVK.Wait(nsTimeout);
+    }
+
+    public override void Execute(GpuCommandList cmd)
+    {
+        _gfxQueue.Execute(cmd);
+    }
+
     protected override void OnBeginFrame(IReadOnlyThreadedList<ISwapChainSurface> surfaces)
     {
         // Collect all enabled swapchain surfaces.
         _presentSurfaces.Clear();
+
         surfaces.For(0, (index, surface) =>
         {
             if (!surface.IsEnabled)
@@ -350,7 +370,7 @@ public unsafe class DeviceVK : GpuDevice
 
             SwapChainSurfaceVK vkSurface = surface as SwapChainSurfaceVK;
             if (vkSurface.SurfaceHandle.Handle == 0)
-                vkSurface.Prepare(Queue, 0);
+                vkSurface.Prepare(_gfxQueue, 0);
 
             _presentSurfaces.Add(vkSurface);
         });
@@ -413,7 +433,7 @@ public unsafe class DeviceVK : GpuDevice
         for (int i = 0; i < _swapChainCount; i++)
         {
             SwapChainSurfaceVK vkSurface = _presentSurfaces[i];
-            vkSurface.Prepare(Queue, _pPresentIndices[i]);
+            vkSurface.Prepare(_gfxQueue, _pPresentIndices[i]);
             _pSwapChains[i] = vkSurface.SwapchainHandle;
         }
 
@@ -428,7 +448,7 @@ public unsafe class DeviceVK : GpuDevice
             PResults = _pPresentResults,
         };
 
-        Queue cmdQueue = Queue.Native;
+        Queue cmdQueue = _gfxQueue.Handle;
         Result r = _extSwapChain.QueuePresent(cmdQueue, &presentInfoKHR);
         if (!r.Check(this, () => $"Failed to present {_swapChainCount} swapchains:"))
         {
@@ -480,11 +500,6 @@ public unsafe class DeviceVK : GpuDevice
     /// Gets a protected reference to the underlying device pointer.
     /// </summary>
     protected ref Device* PtrRef => ref _handle;
-
-    /// <summary>
-    /// Gets the underlying <see cref="CommandQueueVK"/> that should execute graphics commands.
-    /// </summary>
-    public override CommandQueueVK Queue => _gfxQueue;
 
     internal Vk VK => _renderer.VK;
 

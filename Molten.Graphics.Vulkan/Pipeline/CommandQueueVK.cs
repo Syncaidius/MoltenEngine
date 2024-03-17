@@ -3,7 +3,7 @@ using Semaphore = Silk.NET.Vulkan.Semaphore;
 
 namespace Molten.Graphics.Vulkan;
 
-public unsafe class CommandQueueVK : GpuCommandQueue<DeviceVK>
+public unsafe class CommandQueueVK : GpuObject<DeviceVK>
 {
     DeviceVK _device;
     Vk _vk;
@@ -22,38 +22,12 @@ public unsafe class CommandQueueVK : GpuCommandQueue<DeviceVK>
         _device = device;
         FamilyIndex = familyIndex;
         Index = queueIndex;
-        Native = queue;
+        Handle = queue;
         Set = set;
 
         _lockerExecute = new Interlocker();
         _poolFrame = new CommandPoolVK(this, CommandPoolCreateFlags.ResetCommandBufferBit, 1);
         _poolTransient = new CommandPoolVK(this, CommandPoolCreateFlags.ResetCommandBufferBit | CommandPoolCreateFlags.TransientBit, 5);
-    }
-
-    public override void BeginFrame()
-    {
-        throw new NotImplementedException();
-    }
-
-    public override void EndFrame()
-    {
-        throw new NotImplementedException();
-    }
-
-    public override void Reset(GpuCommandList list)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override GpuCommandList GetCommandList(GpuCommandListFlags flags = GpuCommandListFlags.None)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override bool Wait(GpuFence fence, ulong nsTimeout = ulong.MaxValue)
-    {
-        FenceVK fenceVK = fence as FenceVK;
-        return fenceVK.Wait(nsTimeout);
     }
 
     public override unsafe void Begin(GpuCommandListFlags flags)
@@ -97,7 +71,7 @@ public unsafe class CommandQueueVK : GpuCommandQueue<DeviceVK>
     }
 
     /// <inheritdoc/>
-    public override unsafe void Execute(GpuCommandList list)
+    internal unsafe void Execute(GpuCommandList list)
     {
         CommandListVK cmd = list as CommandListVK;
         if (cmd.Level != CommandBufferLevel.Secondary)
@@ -135,13 +109,13 @@ public unsafe class CommandQueueVK : GpuCommandQueue<DeviceVK>
         submit.PSignalSemaphores = semaphore;
 
         _prevCmdList = cmd;
-        Result r = VK.QueueSubmit(Native, 1, &submit, cmd.Fence.Handle);
+        Result r = VK.QueueSubmit(Handle, 1, &submit, cmd.Fence.Handle);
         _lockerExecute.Unlock();
         r.Throw(_device, () => "Failed to submit command list");
     }
 
     /// <inheritdoc/>
-    public override unsafe void Sync(GpuCommandListFlags flags = GpuCommandListFlags.None)
+    internal unsafe void Sync(GpuCommandListFlags flags = GpuCommandListFlags.None)
     {
         if (_cmd.Level != CommandBufferLevel.Primary)
         {
@@ -177,10 +151,10 @@ public unsafe class CommandQueueVK : GpuCommandQueue<DeviceVK>
         return (Flags & flags) == flags;
     }
 
-    protected override void OnDispose(bool immediate)
+    protected override void OnGraphicsRelease()
     {
-        _poolFrame.Dispose();
-        _poolTransient.Dispose();
+        _poolFrame.Dispose(true);
+        _poolTransient.Dispose(true);
     }
 
     internal Vk VK => _vk;
@@ -207,5 +181,5 @@ public unsafe class CommandQueueVK : GpuCommandQueue<DeviceVK>
     /// </summary>
     internal CommandSetCapabilityFlags Flags { get; }
 
-    internal Queue Native { get; private set; }
+    internal Queue Handle { get; private set; }
 }

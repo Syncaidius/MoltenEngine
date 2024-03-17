@@ -4,7 +4,7 @@ using Silk.NET.Direct3D12;
 
 namespace Molten.Graphics.DX12;
 
-public unsafe class CommandQueueDX12 : GpuCommandQueue<DeviceDX12>
+public unsafe class CommandQueueDX12 : GpuObject<DeviceDX12>
 {
     CommandQueueDesc _desc;
     ID3D12CommandQueue* _handle;
@@ -40,30 +40,9 @@ public unsafe class CommandQueueDX12 : GpuCommandQueue<DeviceDX12>
         _handle = (ID3D12CommandQueue*)cmdQueue;
     }
 
-    public override GpuCommandList GetCommandList(GpuCommandListFlags flags = GpuCommandListFlags.None)
+    internal void Execute(GpuCommandList cmd)
     {
-        throw new NotImplementedException();
-    }
-
-    public override void Reset(GpuCommandList list)
-    {
-        CommandListDX12 cmd = (CommandListDX12)list;
-        cmd.Handle->Reset(_currentCmdAllocator.Handle, null);
-    }
-
-    public override void BeginFrame()
-    {
-        throw new NotImplementedException();
-    }
-
-    public override void EndFrame()
-    {
-        throw new NotImplementedException();
-    }
-
-    public override void Execute(GpuCommandList cmd)
-    {
-        if(cmd.HasBegan)
+        if (cmd.HasBegan)
             throw new GpuCommandListException(cmd, "Cannot execute a command list that has not been closed.");
 
         CommandListDX12 cmdDx12 = (CommandListDX12)cmd;
@@ -83,14 +62,7 @@ public unsafe class CommandQueueDX12 : GpuCommandQueue<DeviceDX12>
         _lockerExecute.Unlock();
     }
 
-    /// <inheritdoc />
-    public override bool Wait(GpuFence fence, ulong nsTimeout = ulong.MaxValue)
-    {
-        FenceDX12 fenceDX12 = (FenceDX12)fence;
-        return fenceDX12.Wait(this, nsTimeout);
-    }
-
-    protected override void OnDispose(bool immediate)
+    protected override void OnGraphicsRelease()
     {
         NativeUtil.ReleasePtr(ref _handle);
     }

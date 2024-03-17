@@ -153,7 +153,6 @@ public abstract partial class GpuDevice : EngineObject
         });
 
         DisposeMarkedObjects(0,0);
-        Queue?.Dispose();
     }
 
     /// <summary>Track a VRAM allocation.</summary>
@@ -224,6 +223,30 @@ public abstract partial class GpuDevice : EngineObject
         }
     }
 
+    /// <summary>Returns a new (or recycled) <see cref="GpuCommandList"/> which can be used to record GPU commands.</summary>
+    /// <param name="flags">The flags to apply to the underlying command segment.</param>   
+    public abstract GpuCommandList GetCommandList(GpuCommandListFlags flags = GpuCommandListFlags.None);
+
+    /// <summary>
+    /// Executes the provided <see cref="GpuCommandList"/> on the current <see cref="GpuCommandQueue"/>.
+    /// </summary>
+    /// <param name="cmd"></param>
+    public abstract void Execute(GpuCommandList cmd);
+
+    /// <summary>
+    /// Resets the provided <see cref="GpuCommandList"/> so that it can be re-used.
+    /// </summary>
+    /// <param name="cmd"></param>
+    public abstract void Reset(GpuCommandList cmd);
+
+    /// <summary>
+    /// Forces a CPU-side wait on the current thread until the provided <see cref="GpuFence"/> is signaled by the GPU.
+    /// </summary>
+    /// <param name="fence">The fence to wait on.</param>
+    /// <param name="nsTimeout">An optional timeout, in nanoseconds.</param>
+    /// <returns></returns>
+    public abstract bool Wait(GpuFence fence, ulong nsTimeout = ulong.MaxValue);
+
     internal void BeginFrame()
     {
         OnBeginFrame(Resources.OutputSurfaces);
@@ -285,11 +308,6 @@ public abstract partial class GpuDevice : EngineObject
     /// Gets the <see cref="GpuManager"/> that owns the current <see cref="GpuDevice"/>.
     /// </summary>
     public GpuManager Manager { get; }
-
-    /// <summary>
-    /// The main <see cref="GpuCommandQueue"/> of the current <see cref="GpuDevice"/>. This is used for issuing immediate commands to the GPU.
-    /// </summary>
-    public abstract GpuCommandQueue Queue { get; }
 
     /// <summary>
     /// Gets the <see cref="RenderService"/> that created and owns the current <see cref="GpuDevice"/> instance.

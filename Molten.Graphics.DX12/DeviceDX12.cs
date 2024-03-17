@@ -11,7 +11,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
 {
     ID3D12Device10* _handle;
     DeviceBuilderDX12 _builder;
-    CommandQueueDX12 _cmdDirect;
+    CommandQueueDX12 _queueDirect;
     ID3D12InfoQueue1* _debugInfo;
     uint _debugCookieID;
     ShaderLayoutCache<ShaderIOLayoutDX12> _shaderLayoutCache;
@@ -72,7 +72,7 @@ public unsafe class DeviceDX12 : DeviceDXGI
 
         _heapManager = new DescriptorHeapManagerDX12(this);
         _stateBuilder = new PipelineStateBuilderDX12(this);
-        _cmdDirect = new CommandQueueDX12(Log, this, _builder, ref cmdDesc);
+        _queueDirect = new CommandQueueDX12(Log, this, _builder, ref cmdDesc);
         _presentFence = new FenceDX12(this, FenceFlags.None);
         _resources = new ResourceManagerDX12(this);
         _cmdAllocators = new GpuFrameBuffer<CommandAllocatorDX12>(this, (device) => new CommandAllocatorDX12(this, CommandListType.Direct));
@@ -124,11 +124,34 @@ public unsafe class DeviceDX12 : DeviceDXGI
         }
     }
 
+    public override GpuCommandList GetCommandList(GpuCommandListFlags flags = GpuCommandListFlags.None)
+    {
+        return CommandAllocator.Allocate(null);  
+    }
+
+    public override void Reset(GpuCommandList list)
+    {
+        CommandListDX12 cmd = (CommandListDX12)list;
+        cmd.Handle->Reset(CommandAllocator.Handle, null);
+    }
+
+    public override void Execute(GpuCommandList cmd)
+    {
+        _queueDirect.Execute(cmd);
+    }
+
+    /// <inheritdoc />
+    public override bool Wait(GpuFence fence, ulong nsTimeout = ulong.MaxValue)
+    {
+        FenceDX12 fenceDX12 = (FenceDX12)fence;
+        return fenceDX12.Wait(_queueDirect, nsTimeout);
+    }
+
     protected override void OnDispose(bool immediate)
     {
         _cmdAllocators?.Dispose(true);
         _presentFence?.Dispose(true);
-        _cmdDirect?.Dispose(true);
+        _queueDirect?.Dispose(true);
         _heapManager?.Dispose(true);
 
         if (_debugInfo != null)
@@ -152,7 +175,8 @@ public unsafe class DeviceDX12 : DeviceDXGI
                 (surface as SwapChainSurfaceDX12).Present();
         });
 
-        Queue.Wait(_presentFence);
+        // TODO Only wait if there are no available frames to process.
+        Wait(_presentFence);
     }
 
     /// <summary>
@@ -164,8 +188,6 @@ public unsafe class DeviceDX12 : DeviceDXGI
     /// Gets a protected reference to the underlying device pointer.
     /// </summary>
     protected ref ID3D12Device10* PtrRef => ref _handle;
-
-    public override CommandQueueDX12 Queue => _cmdDirect;
 
     /// <summary>
     /// Gets DirectX 12-specific capabilities.
