@@ -11,24 +11,19 @@ public enum GpuResourceFlags
     None = 0,
 
     /// <summary>
-    /// Allow the CPU to read/copy from the resource.
+    /// Default memory access. This provides GPU read and write access, but no CPU access.
     /// </summary>
-    CpuRead = 1,
+    DefaultMemory = 1,
 
     /// <summary>
-    /// Allow the CPU to write to the resource.
+    /// Upload memory access. This provides CPU write access and GPU read access. 
     /// </summary>
-    CpuWrite = 1 << 1,
+    UploadMemory = 1 << 1,
 
     /// <summary>
-    /// Allow the GPU to read/copy from the resource.
+    /// Download (read-back) memory access. This provides CPU read access and GPU write access.
     /// </summary>
-    GpuRead = 1 << 2,
-
-    /// <summary>
-    /// Allow the GPU to write to the resource.
-    /// </summary>
-    GpuWrite = 1 << 3,
+    DownloadMemory = 1 << 2,
 
     /// <summary>
     /// Allow unordered/storage access from supported shader stages.
@@ -62,11 +57,6 @@ public enum GpuResourceFlags
     /// Allow mi-pmap generation for the resource.
     /// </summary>
     MipMapGeneration = 1 << 8,
-
-    /// <summary>
-    /// All of the GPU and CPU read/write flags. Generally used by staging resources.
-    /// </summary>
-    AllReadWrite = (CpuRead | CpuWrite | GpuRead | GpuWrite),
 }
 
 public static class ResourceFlagsExtensions

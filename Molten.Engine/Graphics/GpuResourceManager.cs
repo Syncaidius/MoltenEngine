@@ -1,4 +1,6 @@
 ﻿using Molten.Collections;
+using Molten.Font;
+using Molten.Graphics.Textures;
 using Molten.IO;
 using System.Reflection;
 
@@ -122,23 +124,22 @@ public abstract class GpuResourceManager : GpuObject
         return CreateBuffer(GpuBufferType.Structured, flags, GpuResourceFormat.Unknown, elementCapacity, initialData);
     }
 
-    public GpuBuffer CreateStagingBuffer(bool allowCpuRead, bool allowCpuWrite, uint byteCapacity)
+    public GpuBuffer CreateUploadBuffer(ulong byteCapacity, uint alignment = 1)
     {
-        GpuResourceFlags flags = GpuResourceFlags.GpuWrite | GpuResourceFlags.DenyShaderAccess;
+        GpuResourceFlags flags = GpuResourceFlags.UploadMemory | GpuResourceFlags.DenyShaderAccess;
+        return CreateBuffer<byte>(GpuBufferType.Upload, flags, GpuResourceFormat.Unknown, byteCapacity, null);
+    }
 
-        if (allowCpuRead)
-            flags |= GpuResourceFlags.CpuRead;
-
-        if (allowCpuWrite)
-            flags |= GpuResourceFlags.CpuWrite;
-
-        return CreateBuffer<byte>(GpuBufferType.Staging, flags, GpuResourceFormat.Unknown, byteCapacity, null);
+    public GpuBuffer CreateDownloadBuffer(uint byteCapacity, uint alignment = 1)
+    {
+        GpuResourceFlags flags = GpuResourceFlags.DownloadMemory | GpuResourceFlags.DenyShaderAccess;
+        return CreateBuffer<byte>(GpuBufferType.Download, flags, GpuResourceFormat.Unknown, byteCapacity, null);
     }
 
     public abstract IConstantBuffer CreateConstantBuffer(ConstantBufferInfo info);
 
     protected abstract GpuBuffer CreateBuffer<T>(GpuBufferType type, GpuResourceFlags flags, GpuResourceFormat format,
-        uint numElements, T[] initialData) where T : unmanaged;
+        ulong numElements, T[] initialData = null) where T : unmanaged;
     #endregion
 
     #region Samplers
@@ -304,18 +305,27 @@ where T : unmanaged, IVertexType
     #endregion
 
     #region Textures
-    public GpuTexture CreateStagingTexture(ITexture src)
+    public GpuTexture CreateUploadTexture(ITexture src)
     {
-        GpuResourceFlags flags = GpuResourceFlags.AllReadWrite | GpuResourceFlags.DenyShaderAccess;
-        string name = src.Name + "_staging";
+        GpuResourceFlags flags = GpuResourceFlags.UploadMemory | GpuResourceFlags.DenyShaderAccess;
+        string name = src.Name + "_upload";
+        return CreateTransferTexture(src, flags, name);
+    }
+
+    public GpuTexture CreateDownloadTexture(ITexture src)
+    {
+        GpuResourceFlags flags = GpuResourceFlags.DownloadMemory | GpuResourceFlags.DenyShaderAccess;
+        string name = src.Name + "_download";
+        return CreateTransferTexture(src, flags, name);
+    }
+
+    private GpuTexture CreateTransferTexture(ITexture src, GpuResourceFlags flags, string name)
+    {
         ITexture result = src switch
         {
             ITexture1D => CreateTexture1D(src.Width, src.MipMapCount, src.ArraySize, src.ResourceFormat, flags, name),
-
             ITextureCube cube => CreateTextureCube(src.Width, src.Height, src.MipMapCount, src.ResourceFormat, cube.CubeCount, src.ArraySize, flags, name),
-
             ITexture2D => CreateTexture2D(src.Width, src.Height, src.MipMapCount, src.ArraySize, src.ResourceFormat, flags, src.MultiSampleLevel, src.SampleQuality, name),
-
             ITexture3D => CreateTexture3D(src.Width, src.Height, src.Depth, src.MipMapCount, src.ResourceFormat, flags, name),
 
             _ => throw new GpuResourceException(src as GpuTexture, "Unsupported staging texture type"),

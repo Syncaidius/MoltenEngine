@@ -25,12 +25,17 @@ public enum GpuBufferType
     Structured = 4,
 
     /// <summary>
-    /// The buffer is used to store staging data.
+    /// The buffer is used for transferring data from the CPU to the GPU.
     /// </summary>
-    Staging = 5,
+    Upload = 5,
+
+    /// <summary>
+    /// The buffer is used for transferring data from the GPU to the CPU.
+    /// </summary>
+    Download = 6,
 
     /// <summary>
     /// The buffer is used to store constant or uniform data.
     /// </summary>
-    Constant = 6,
+    Constant = 7,
 }

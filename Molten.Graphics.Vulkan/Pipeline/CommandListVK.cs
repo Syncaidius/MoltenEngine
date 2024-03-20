@@ -50,8 +50,6 @@ internal unsafe class CommandListVK : GpuCommandList
         CommandListVK vkCmd = cmd as CommandListVK;
         if(vkCmd.Level == CommandBufferLevel.Primary)
             throw new GpuCommandListException(cmd, "Command lists can only execute secondary command lists. Primary command lists should be executed on a command queue.");
-
-
     }
 
     protected override void OnResetState()
@@ -107,6 +105,27 @@ internal unsafe class CommandListVK : GpuCommandList
         renderer.DebugLayer.Module.CmdEndDebugUtilsLabel(_handle);
 
         EngineUtil.Free(ref ptrString);
+    }
+
+    public override unsafe void Begin()
+    {
+        base.Begin();
+
+        Device.Frame.BranchCount++;
+
+        Device.Frame.Track(_cmd);
+        _vk.BeginCommandBuffer(_cmd, &beginInfo);
+    }
+
+    public override void End()
+    {
+        base.End();
+
+        _vk.EndCommandBuffer(_handle);
+
+        // Submit command list and don't return the command list, as it's not deferred.
+        SubmitCommandList(_cmd, fence);
+        return null;
     }
 
     protected override unsafe GpuResourceMap GetResourcePtr(GpuResource resource, uint subresource, GpuMapType mapType)

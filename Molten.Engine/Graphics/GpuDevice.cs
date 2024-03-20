@@ -24,7 +24,6 @@ public abstract partial class GpuDevice : EngineObject
     const int INITIAL_BRANCH_COUNT = 3;
 
     long _allocatedVRAM;
-    GpuFrame[] _frames;
     uint _frameIndex;
     uint _newFrameBufferSize;
     uint _maxStagingSize;
@@ -139,12 +138,6 @@ public abstract partial class GpuDevice : EngineObject
     {
         Tasks?.Dispose();
 
-        if (_frames != null)
-        {
-            for (int i = 0; i < _frames.Length; i++)
-                _frames[i].Dispose();
-        }
-
         // Dispose of any registered output services.
         Resources.OutputSurfaces.For(0, (index, surface) =>
         {
@@ -174,12 +167,12 @@ public abstract partial class GpuDevice : EngineObject
         if (IsInitialized)
             throw new InvalidOperationException("Cannot initialize a GraphicsDevice that has already been initialized.");
 
-        CheckFrameBufferSize(false);
+        CheckFrameBufferSize();
 
         if (OnInitialize())
         {
             IsInitialized = true;
-            CheckFrameBufferSize(true);
+            CheckFrameBufferSize();
         }
         else
         {
@@ -191,7 +184,7 @@ public abstract partial class GpuDevice : EngineObject
 
     protected abstract bool OnInitialize();
 
-    private void CheckFrameBufferSize(bool checkStagingBuffers)
+    private void CheckFrameBufferSize()
     {
         // Do we need to resize the number of buffered frames?
         if (_newFrameBufferSize != FrameBufferSize)
@@ -201,25 +194,6 @@ public abstract partial class GpuDevice : EngineObject
                 OnFrameBufferSizeChanged?.Invoke(FrameBufferSize, _newFrameBufferSize);
 
             FrameBufferSize = _newFrameBufferSize;
-
-            // Ensure we have enough staging buffers
-            if (_frames == null || _frames.Length < FrameBufferSize)
-            {
-                Array.Resize(ref _frames, (int)FrameBufferSize);
-                if (checkStagingBuffers)
-                {
-                    for (int i = 0; i < FrameBufferSize; i++)
-                    {
-                        _frames[i] ??= new GpuFrame(INITIAL_BRANCH_COUNT);
-                        _frames[i].StagingBuffer = Resources.CreateStagingBuffer(true, true, _maxStagingSize);
-                    }
-                }
-                else
-                {
-                    for (int i = 0; i < FrameBufferSize; i++)
-                        _frames[i] ??= new GpuFrame(INITIAL_BRANCH_COUNT);
-                }
-            }
         }
     }
 
@@ -252,30 +226,13 @@ public abstract partial class GpuDevice : EngineObject
         OnBeginFrame(Resources.OutputSurfaces);
 
         // TODO check if _maxStagingSize has changed due to settings. May need to resize all existing staging buffers.
-        CheckFrameBufferSize(true);
-
-        // If the oldest frame hasn't finished yet, wait for it before replacing it with a new one.
-        // This stops the CPU from getting too far ahead of the GPU.
-        _frames[_frameIndex].Reset();
-
-        // Ensure we don't have too many tracked frames.
-        // TODO Check how many full runs we've done and wait until we've done at least 2 before disposing of any tracked frames.
-        //      Reset run count if buffer size is changed.
-        if (_frames.Length > FrameBufferSize)
-        {
-            for (int i = _frames.Length; i < FrameBufferSize; i++)
-            {
-                _frames[i].Dispose();
-                _frames[i] = null;
-            }
-        }
+        CheckFrameBufferSize();
     }
 
     internal void EndFrame(Timing time)
     {
         OnEndFrame(Resources.OutputSurfaces);
 
-        _frames[_frameIndex].FrameID = Renderer.FrameID;
         _frameIndex = (_frameIndex + 1U) % FrameBufferSize;
     }
 
@@ -288,11 +245,6 @@ public abstract partial class GpuDevice : EngineObject
     /// <para>For a software or integration device, this may be system memory (RAM).</para>
     /// </summary>
     internal long AllocatedVRAM => _allocatedVRAM;
-
-    /// <summary>
-    /// Gets the current frame on the current <see cref="GpuDevice"/>.
-    /// </summary>
-    public GpuFrame Frame => _frames[_frameIndex];
 
     /// <summary>
     /// Gets the <see cref="Logger"/> that is bound to the current <see cref="GpuDevice"/> for outputting information.
@@ -381,4 +333,9 @@ public abstract partial class GpuDevice : EngineObject
     /// Gets the <see cref="GpuResourceManager"/> implementation for the current <see cref="GpuDevice"/>. 
     /// </summary>
     public abstract GpuResourceManager Resources { get; }
+
+    /// <summary>
+    /// Gets the <see cref="GpuUploadManager"/> for the current <see cref="GpuDevice"/>, which manages uploading of data to the GPU.
+    /// </summary>
+    internal GpuUploadManager Upload { get; }
 }

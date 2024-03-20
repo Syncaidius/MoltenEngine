@@ -63,7 +63,7 @@ internal unsafe class CommandPoolVK : EngineObject
         {
             if (result.Fence != null)
             {
-                Queue.Device.FreeFence(result.Fence as FenceVK);
+                Queue.Device.FreeFence(result.Fence);
                 result.Fence = null;
             }
         }

@@ -27,11 +27,6 @@ public enum GpuCommandListFlags
     /// The current command list list can only be submitted once.
     /// </summary>
     SingleSubmit = 1 << 3,
-    
-    /// <summary>
-    /// The current command list is not submitted once <see cref="GpuCommandQueue.End"/> is called.
-    /// </summary>
-    Deferred = 1 << 4,
 }
 
 public static class GraphicsCommandListFlagsExtensions

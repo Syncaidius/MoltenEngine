@@ -30,44 +30,16 @@ public unsafe class CommandQueueVK : GpuObject<DeviceVK>
         _poolTransient = new CommandPoolVK(this, CommandPoolCreateFlags.ResetCommandBufferBit | CommandPoolCreateFlags.TransientBit, 5);
     }
 
-    public override unsafe void Begin(GpuCommandListFlags flags)
+    internal CommandListVK Allocate(GpuCommandListFlags flags)
     {
-        base.Begin();
-
-        CommandBufferLevel level = flags.Has(GpuCommandListFlags.Deferred) ?
-            CommandBufferLevel.Secondary :
-            CommandBufferLevel.Primary;
-
         CommandBufferBeginInfo beginInfo = new CommandBufferBeginInfo(StructureType.CommandBufferBeginInfo);
         beginInfo.Flags = CommandBufferUsageFlags.None;
 
-        if(flags.Has(GpuCommandListFlags.SingleSubmit))
+        if (flags.Has(GpuCommandListFlags.SingleSubmit))
             beginInfo.Flags |= CommandBufferUsageFlags.OneTimeSubmitBit;
 
-        _cmd = _poolFrame.Allocate(level, Device.Frame.BranchCount, flags);
-        Device.Frame.BranchCount++;
-
-        Device.Frame.Track(_cmd);
-        _vk.BeginCommandBuffer(_cmd, &beginInfo);
-    }
-
-    public override GpuCommandList End()
-    {
-        base.End();
-
-        _vk.EndCommandBuffer(_cmd);
-
-        if (_cmd.Flags.Has(GpuCommandListFlags.Deferred))
-            return _cmd;
-
-        // Use empty fence handle if the CPU doesn't need to wait for the command list to finish.
-        Fence fence = new Fence();
-        if (_cmd.Fence != null)
-            fence = _cmd.Fence.Handle;
-
-        // Submit command list and don't return the command list, as it's not deferred.
-        SubmitCommandList(_cmd, fence);
-        return null;
+        CommandListVK cmd = _poolFrame.Allocate(CommandBufferLevel.Primary, Device.Frame.BranchCount, flags);
+        return cmd;
     }
 
     /// <inheritdoc/>
@@ -113,38 +85,6 @@ public unsafe class CommandQueueVK : GpuObject<DeviceVK>
         _lockerExecute.Unlock();
         r.Throw(_device, () => "Failed to submit command list");
     }
-
-    /// <inheritdoc/>
-    internal unsafe void Sync(GpuCommandListFlags flags = GpuCommandListFlags.None)
-    {
-        if (_cmd.Level != CommandBufferLevel.Primary)
-        {
-            throw new InvalidOperationException($"Cannot submit a secondary command list directly to a command queue.");
-        }
-        else
-        {
-            if (flags.Has(GpuCommandListFlags.Deferred))
-                throw new InvalidOperationException($"An immediate/primary command list branch cannot use deferred flag during Sync() calls.");
-        }
-
-        // Use empty fence handle if the CPU doesn't need to wait for the command list to finish.
-        Fence fence = new Fence();
-        if (_cmd.Fence != null)
-            fence = _cmd.Fence.Handle;
-
-        // We're only submitting the current command buffer.
-        _vk.EndCommandBuffer(_cmd);
-        SubmitCommandList(_cmd, fence);
-
-        // Allocate next command buffer
-        _cmd = _poolFrame.Allocate(_cmd.Level, _cmd.BranchIndex, flags);
-        CommandBufferBeginInfo beginInfo = new CommandBufferBeginInfo(StructureType.CommandBufferBeginInfo);
-        beginInfo.Flags = CommandBufferUsageFlags.OneTimeSubmitBit;
-
-        _vk.BeginCommandBuffer(_cmd, &beginInfo);
-        Device.Frame.Track(_cmd);
-    }
-
 
     internal bool HasFlags(CommandSetCapabilityFlags flags)
     {

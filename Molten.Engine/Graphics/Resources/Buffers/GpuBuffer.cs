@@ -107,6 +107,8 @@ public abstract class GpuBuffer : GpuResource
     /// </summary>
     public void Free(GpuBuffer buffer)
     {
+        // TODO Implement pooling of sub buffer instances
+
         if (ParentBuffer == this)
             _freeAllocations.Add(buffer);
         else
