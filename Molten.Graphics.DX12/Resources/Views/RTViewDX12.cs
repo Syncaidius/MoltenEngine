@@ -7,7 +7,6 @@ internal class RTViewDX12 : ViewDX12<RenderTargetViewDesc>
         base(handle)
     { }
 
-
     protected override unsafe void OnCreate(ref RenderTargetViewDesc desc, ID3D12Resource1* resource, ref CpuDescriptorHandle heapHandle, uint resourceIndex)
     {
         Handle.Device.Handle->CreateRenderTargetView((ID3D12Resource*)resource, desc, heapHandle);

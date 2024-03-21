@@ -16,5 +16,5 @@ internal class VBHandleDX12 : ResourceHandleDX12
         };
     }
 
-    internal ref readonly VertexBufferView View => ref _view;
+    internal ref VertexBufferView View => ref _view;
 }

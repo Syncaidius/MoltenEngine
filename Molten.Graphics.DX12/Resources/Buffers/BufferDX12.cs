@@ -24,7 +24,8 @@ public class BufferDX12 : GpuBuffer
             ParentBuffer = parentBuffer;
             RootBuffer = parentBuffer.RootBuffer ?? parentBuffer;
         }
-        Offset = offset;
+
+        Offset = parentBuffer.Offset + offset;
     }
 
     protected unsafe override void OnCreateResource()
@@ -96,11 +97,25 @@ public class BufferDX12 : GpuBuffer
         switch (BufferType)
         {
             case GpuBufferType.Vertex:
-                _handle = new VBHandleDX12(this, ptr);
+                VBHandleDX12 vbHandle = new(this, ptr);
+                vbHandle.View = new VertexBufferView()
+                {
+                    BufferLocation = ptr->GetGPUVirtualAddress() + Offset,
+                    SizeInBytes = (uint)SizeInBytes,
+                    StrideInBytes = Stride,
+                };
+                _handle = vbHandle;
                 break;
 
             case GpuBufferType.Index:
-                _handle = new IBHandleDX12(this, ptr);
+                IBHandleDX12 ibHandle = new(this, ptr);
+                ibHandle.View = new IndexBufferView()
+                {
+                    BufferLocation = ptr->GetGPUVirtualAddress() + Offset,
+                    Format = ResourceFormat.ToApi(),
+                    SizeInBytes = (uint)SizeInBytes,
+                };
+                _handle = ibHandle;
                 break;
 
             case GpuBufferType.Constant:

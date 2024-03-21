@@ -6,41 +6,27 @@ internal static class DescriptionInterop
 {
     internal static HeapType ToHeapType(this GpuResourceFlags flags)
     {
-        if (flags.Has(GpuResourceFlags.CpuRead)
-            || flags.Has(GpuResourceFlags.CpuWrite)
-            || flags.Has(GpuResourceFlags.GpuRead)
-            || flags.Has(GpuResourceFlags.GpuWrite))
+        if (flags.Has(GpuResourceFlags.DefaultMemory))
         {
-            // GPU read.
-            if (flags.Has(GpuResourceFlags.GpuRead))
-            {
-                // GPU read/write.
-                if (flags.Has(GpuResourceFlags.GpuWrite))
-                {
-                    // D3D12_HEAP_TYPE_DEFAULT - GPU read/write, CPU must be inaccessible.
-                    if (!flags.Has(GpuResourceFlags.CpuRead) && !flags.Has(GpuResourceFlags.CpuWrite))
-                        return HeapType.Default;
-                }
-                else
-                {
-                    // D3D12_HEAP_TYPE_UPLOAD - GPU read, CPU write.
-                    if (flags.Has(GpuResourceFlags.CpuWrite))
-                        return HeapType.Upload;
-                }
-            }
-            else if (flags.Has(GpuResourceFlags.GpuWrite)) // GPU write
-            {
-                // D3D12_HEAP_TYPE_READBACK - GPU write, CPU read.
-                if (flags.Has(GpuResourceFlags.CpuRead))
-                    return HeapType.Readback;
-            }
+            if (flags.Has(GpuResourceFlags.DownloadMemory) || flags.Has(GpuResourceFlags.UploadMemory))
+                throw new Exception("Cannot have both default memory and upload/download memory flags.");
 
-            // None of the expected read/write permissions matched the built-in heap types, so we'll use a custom heap type.
-            return HeapType.Custom;
+            return HeapType.Default;
+        }
+        else if (flags.Has(GpuResourceFlags.UploadMemory))
+        {
+            if(flags.Has(GpuResourceFlags.DownloadMemory))
+                throw new Exception("Cannot have both upload and download memory flags.");
+
+            return HeapType.Upload;
+        }
+        else if (flags.Has(GpuResourceFlags.DownloadMemory))
+        {
+            return HeapType.Readback;
         }
         else
         {
-            return 0;
+            throw new Exception("Heap type cannot be determined due to lack of memory flags.");
         }
     }
 

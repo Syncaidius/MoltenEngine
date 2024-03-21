@@ -16,5 +16,5 @@ internal class IBHandleDX12 : ResourceHandleDX12
         };
     }
 
-    internal ref readonly IndexBufferView View => ref _view;
+    internal ref IndexBufferView View => ref _view;
 }
