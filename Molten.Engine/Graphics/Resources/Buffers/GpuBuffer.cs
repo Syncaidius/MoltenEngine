@@ -64,7 +64,7 @@ public abstract class GpuBuffer : GpuResource
             return subBuffer;
         }
 
-            // Not enough available space for a new allocation?
+        // Not enough available space for a new allocation?
         if (remaining < required)
             return null;
 

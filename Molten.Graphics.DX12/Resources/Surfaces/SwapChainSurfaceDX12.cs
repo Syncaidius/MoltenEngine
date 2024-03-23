@@ -23,7 +23,7 @@ public unsafe abstract class SwapChainSurfaceDX12 : RenderSurface2DDX12, ISwapCh
 
     internal SwapChainSurfaceDX12(DeviceDX12 device, uint width, uint height, uint mipCount, GpuResourceFormat format = GpuResourceFormat.R8G8B8A8_UNorm, string name = null)
         : base(device, width, height, 
-              GpuResourceFlags.DenyShaderAccess | GpuResourceFlags.None | GpuResourceFlags.GpuWrite,
+              GpuResourceFlags.DenyShaderAccess | GpuResourceFlags.DefaultMemory,
               format, mipCount, 1, AntiAliasLevel.None, MSAAQuality.Default, name)
     {
         _dispatchQueue = new ThreadedQueue<Action>();

@@ -29,7 +29,7 @@ internal class ResourceManagerDX12 : GraphicsResourceManager<DeviceDX12>
         return new ShaderPassDX12(shader, name);
     }
 
-    protected unsafe override GpuBuffer CreateBuffer<T>(GpuBufferType type, GpuResourceFlags flags, GpuResourceFormat format, uint numElements, T[] initialData)
+    protected unsafe override GpuBuffer CreateBuffer<T>(GpuBufferType type, GpuResourceFlags flags, GpuResourceFormat format, ulong numElements, T[] initialData = null)
     {
         uint stride = (uint)sizeof(T);
         uint alignment = stride;
@@ -79,14 +79,14 @@ internal class ResourceManagerDX12 : GraphicsResourceManager<DeviceDX12>
     }
 
     public override IRenderSurface2D CreateSurface(uint width, uint height, GpuResourceFormat format = GpuResourceFormat.R8G8B8A8_SNorm,
-        GpuResourceFlags flags = GpuResourceFlags.None | GpuResourceFlags.GpuWrite, uint mipCount = 1,
+        GpuResourceFlags flags = GpuResourceFlags.DefaultMemory, uint mipCount = 1,
         uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, string name = null)
     {
         return new RenderSurface2DDX12(Device, width, height, flags, format, mipCount, arraySize, aaLevel, MSAAQuality.Default, name);
     }
 
     public override IDepthStencilSurface CreateDepthSurface(uint width, uint height, DepthFormat format = DepthFormat.R24G8,
-        GpuResourceFlags flags = GpuResourceFlags.None | GpuResourceFlags.GpuWrite, uint mipCount = 1, uint arraySize = 1,
+        GpuResourceFlags flags = GpuResourceFlags.DefaultMemory, uint mipCount = 1, uint arraySize = 1,
         AntiAliasLevel aaLevel = AntiAliasLevel.None, string name = null)
     {
         return new DepthSurfaceDX12(Device, width, height, flags, format, mipCount, arraySize, aaLevel, MSAAQuality.Default, name);

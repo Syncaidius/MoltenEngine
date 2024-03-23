@@ -104,7 +104,7 @@ public abstract class RenderService : EngineService
         Fonts.Initialize();
 
         // The primary GPU will be used for main rendering, so we'll create a command list buffer for it.
-        _cmdMain = new GpuFrameBuffer<GpuCommandList>(Device, (gpu) => gpu.Queue.GetCommandList());
+        _cmdMain = new GpuFrameBuffer<GpuCommandList>(Device, (gpu) => gpu.GetCommandList());
     }
 
     /// <summary>
@@ -222,7 +222,7 @@ public abstract class RenderService : EngineService
             cmd.EndEvent();
         }
         cmd.End();
-        Device.Queue.Execute(cmd);
+        Device.Execute(cmd);
 
         for (int i = 0; i < _devices.Count; i++)
             _devices[i].Tasks.Process(GpuPriority.EndOfFrame);

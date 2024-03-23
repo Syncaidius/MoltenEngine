@@ -187,7 +187,7 @@ public abstract class GpuResourceManager : GpuObject
         return new StandardMesh(Renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices);
     }
 
-    public Mesh<T> CreateMesh<T>(T[] vertices, ushort[] indices, GpuResourceFlags flags = GpuResourceFlags.GpuWrite)
+    public Mesh<T> CreateMesh<T>(T[] vertices, ushort[] indices, GpuResourceFlags flags = GpuResourceFlags.DefaultMemory)
         where T : unmanaged, IVertexType
     {
         if (vertices == null)
@@ -200,7 +200,7 @@ public abstract class GpuResourceManager : GpuObject
         return CreateMesh(flags, (ushort)vertices.Length, indexCount, vertices, indices);
     }
 
-    public Mesh<T> CreateMesh<T>(T[] vertices, uint[] indices = null, GpuResourceFlags flags = GpuResourceFlags.GpuWrite)
+    public Mesh<T> CreateMesh<T>(T[] vertices, uint[] indices = null, GpuResourceFlags flags = GpuResourceFlags.DefaultMemory)
 where T : unmanaged, IVertexType
     {
         if (vertices == null)
@@ -464,11 +464,11 @@ where T : unmanaged, IVertexType
 
     #region Surfaces
     public abstract IRenderSurface2D CreateSurface(uint width, uint height, GpuResourceFormat format = GpuResourceFormat.R8G8B8A8_UNorm,
-        GpuResourceFlags flags = GpuResourceFlags.GpuWrite,
+        GpuResourceFlags flags = GpuResourceFlags.DefaultMemory,
         uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, string name = null);
 
     public abstract IDepthStencilSurface CreateDepthSurface(uint width, uint height, DepthFormat format = DepthFormat.R24G8,
-        GpuResourceFlags flags = GpuResourceFlags.GpuWrite,
+        GpuResourceFlags flags = GpuResourceFlags.DefaultMemory,
         uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, string name = null);
 
     /// <summary>Creates a form with a surface which can be rendered on to.</summary>

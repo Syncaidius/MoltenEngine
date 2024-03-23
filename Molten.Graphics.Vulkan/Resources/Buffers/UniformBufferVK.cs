@@ -8,7 +8,7 @@ public unsafe class UniformBufferVK : BufferVK, IConstantBuffer, IEquatable<Unif
     byte* _constData;
 
     internal UniformBufferVK(GpuDevice device, ConstantBufferInfo info) : 
-        base(device, GpuBufferType.Constant, GpuResourceFlags.DenyShaderAccess | GpuResourceFlags.CpuWrite, 1, info.Size, 1)
+        base(device, GpuBufferType.Constant, GpuResourceFlags.DenyShaderAccess | GpuResourceFlags.UploadMemory, 1, info.Size, 1)
     {
         _varLookup = new Dictionary<string, GraphicsConstantVariable>();
         _constData = (byte*)EngineUtil.Alloc(info.Size);
@@ -26,7 +26,7 @@ public unsafe class UniformBufferVK : BufferVK, IConstantBuffer, IEquatable<Unif
         return GraphicsConstantVariable.AreEqual(Variables, other.Variables);
     }
 
-    protected override void OnApply(GpuCommandQueue cmd)
+    protected override void OnApply(GpuCommandList cmd)
     {
         // Setting data via shader variabls takes precedent. All standard buffer changes (set/append) will be ignored and wiped.
         if (IsDirty)

@@ -17,6 +17,7 @@ public enum GpuResourceFlags
 
     /// <summary>
     /// Upload memory access. This provides CPU write access and GPU read access. 
+    /// This is generally useful for staging or dynamic resources, where frequent transfers from CPU to GPU are required.
     /// </summary>
     UploadMemory = 1 << 1,
 

@@ -13,7 +13,7 @@ public unsafe class BufferVK : GpuBuffer
         GpuBufferType type,
         GpuResourceFlags flags,
         uint stride,
-        uint numElements,
+        ulong numElements,
         uint alignment) :
         base(device, stride, numElements, flags, type, alignment)
     {
@@ -36,7 +36,7 @@ public unsafe class BufferVK : GpuBuffer
         if (Flags.Has(GpuResourceFlags.None))
             usageFlags |= BufferUsageFlags.TransferSrcBit;
 
-        if (Flags.Has(GpuResourceFlags.GpuWrite))
+        if (Flags.Has(GpuResourceFlags.DefaultMemory) || Flags.Has(GpuResourceFlags.DownloadMemory))
             usageFlags |= BufferUsageFlags.TransferDstBit;
 
         // Check if any extra flags need to be enforced based on buffer type.
@@ -50,21 +50,16 @@ public unsafe class BufferVK : GpuBuffer
                 usageFlags |= BufferUsageFlags.IndexBufferBit;
                 break;
 
-            case GpuBufferType.Staging: // Staging buffers always require CPU write access.
-                Flags |= GpuResourceFlags.CpuWrite;
-                break;
-
             case GpuBufferType.Constant:
                 usageFlags |= BufferUsageFlags.UniformBufferBit;
                 break;
         }
 
         // Does the memory need to be host-visible?
-        if (Flags.Has(GpuResourceFlags.CpuRead) || Flags.Has(GpuResourceFlags.CpuWrite))
+        if (Flags.Has(GpuResourceFlags.UploadMemory) || Flags.Has(GpuResourceFlags.DownloadMemory))
         {
             // In Vulkan, the CPU either has read AND write access, or none at all.
             // If either of the CPU access flags were provided, we need to add both.
-            Flags |= GpuResourceFlags.CpuRead | GpuResourceFlags.CpuWrite;
             memFlags |= MemoryPropertyFlags.HostCoherentBit | MemoryPropertyFlags.HostVisibleBit;
         }
         else

@@ -9,7 +9,7 @@ internal unsafe class ConstantBufferDX12 : BufferDX12, IConstantBuffer, IEquatab
     byte* _constData;
 
     internal ConstantBufferDX12(DeviceDX12 device, ConstantBufferInfo info)
-        : base(device, 1, info.Size + (256 - (info.Size % 256)), GpuResourceFlags.DenyShaderAccess | GpuResourceFlags.CpuWrite | GpuResourceFlags.GpuRead, GpuBufferType.Constant, 1)
+        : base(device, 1, info.Size + (256 - (info.Size % 256)), GpuResourceFlags.DenyShaderAccess | GpuResourceFlags.UploadMemory, GpuBufferType.Constant, 1)
     {
         _varLookup = new Dictionary<string, GraphicsConstantVariable>();
         _constData = (byte*)EngineUtil.Alloc(info.Size);
@@ -34,7 +34,7 @@ internal unsafe class ConstantBufferDX12 : BufferDX12, IConstantBuffer, IEquatab
         base.OnGraphicsRelease();
     }
 
-    protected override void OnApply(GpuCommandQueue cmd)
+    protected override void OnApply(GpuCommandList cmd)
     {
         // Setting data via shader variabls takes precedent. All standard buffer changes (set/append) will be ignored and wiped.
         if (IsDirty)

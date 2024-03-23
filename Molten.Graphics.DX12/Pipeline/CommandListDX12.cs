@@ -41,12 +41,12 @@ public unsafe class CommandListDX12 : GpuCommandList
         // Validate map type.
         if (mapType == GpuMapType.Read)
         {
-            if (!flags.Has(GpuResourceFlags.CpuRead))
+            if (!flags.Has(GpuResourceFlags.DownloadMemory))
                 throw new InvalidOperationException($"Resource '{resource.Name}' does not allow read access.");
         }
         else if (mapType == GpuMapType.Write)
         {
-            if (!flags.Has(GpuResourceFlags.CpuWrite))
+            if (!flags.Has(GpuResourceFlags.UploadMemory))
                 throw new InvalidOperationException($"Resource '{resource.Name}' does not allow write access.");
         }
         else if (mapType == GpuMapType.Discard)

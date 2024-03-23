@@ -23,7 +23,7 @@ public class GpuStateBasicValueGroup<T>
         }
     }
 
-    public bool Bind(GpuCommandQueue queue)
+    public bool Bind()
     {
         bool r = false;
 

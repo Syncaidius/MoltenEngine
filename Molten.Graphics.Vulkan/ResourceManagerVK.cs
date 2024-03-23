@@ -24,7 +24,7 @@ public class ResourceManagerVK :GraphicsResourceManager<DeviceVK>
         throw new NotImplementedException();
     }
 
-    protected unsafe override GpuBuffer CreateBuffer<T>(GpuBufferType type, GpuResourceFlags flags, GpuResourceFormat format, uint numElements, T[] initialData)
+    protected unsafe override GpuBuffer CreateBuffer<T>(GpuBufferType type, GpuResourceFlags flags, GpuResourceFormat format, ulong numElements, T[] initialData = null)
     {
         BufferVK buffer = new BufferVK(Device, type, flags, (uint)sizeof(T), numElements, 1);
 
@@ -46,7 +46,7 @@ public class ResourceManagerVK :GraphicsResourceManager<DeviceVK>
 
     public override IDepthStencilSurface CreateDepthSurface(uint width, uint height,
         DepthFormat format = DepthFormat.R24G8,
-        GpuResourceFlags flags = GpuResourceFlags.None | GpuResourceFlags.GpuWrite,
+        GpuResourceFlags flags = GpuResourceFlags.DefaultMemory,
         uint mipCount = 1, uint arraySize = 1, AntiAliasLevel aaLevel = AntiAliasLevel.None, string name = null)
     {
         return new DepthSurfaceVK(Device, width, height, mipCount, arraySize, aaLevel, MSAAQuality.Default, format, flags, name);
@@ -54,7 +54,7 @@ public class ResourceManagerVK :GraphicsResourceManager<DeviceVK>
 
     public override IRenderSurface2D CreateSurface(uint width, uint height,
         GpuResourceFormat format = GpuResourceFormat.R8G8B8A8_SNorm,
-        GpuResourceFlags flags = GpuResourceFlags.None | GpuResourceFlags.GpuWrite,
+        GpuResourceFlags flags = GpuResourceFlags.DefaultMemory,
         uint mipCount = 1, uint arraySize = 1,
         AntiAliasLevel aaLevel = AntiAliasLevel.None, string name = null)
     {
