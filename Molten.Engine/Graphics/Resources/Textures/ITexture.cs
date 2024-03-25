@@ -5,6 +5,13 @@
 public interface ITexture : IGpuResource
 {
     /// <summary>
+    /// Retrieves the data which makes up the entire texture across all mip-map levels and array slices. The data is returned in a single <see cref="TextureData"/> object.
+    /// </summary>
+    /// <param name="priority">The priority of the operation.</param>
+    /// <param name="callback">The completion callback to trigger once the data has been retrieved from the GPU.</param>
+    void GetData(GpuPriority priority, Action<TextureData> callback);
+
+    /// <summary>
     /// Occurs after the <see cref="ITexture"/> is done resizing. Executed by the renderer thread it is bound to.
     /// </summary>
     event TextureHandler OnResize;

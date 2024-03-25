@@ -153,9 +153,9 @@ public class FormSurfaceDX12 : SwapChainSurfaceDX12, INativeSurface
         }
     }
 
-    protected override void OnResizeTexture(ref readonly TextureDimensions dimensions, GpuResourceFormat format)
+    protected override void OnResizeTextureImmediate(ref readonly TextureDimensions dimensions, GpuResourceFormat format)
     {
-        base.OnResizeTexture(dimensions, format);
+        base.OnResizeTextureImmediate(dimensions, format);
         RequestFormResize(dimensions.Width, dimensions.Height);
     }
 
@@ -387,7 +387,7 @@ public class FormSurfaceDX12 : SwapChainSurfaceDX12, INativeSurface
         {
             uint fbMax = Device.FrameBufferSize;
             uint fbIndex = Math.Min(Device.FrameBufferIndex, fbMax - 1);
-            base.OnResizeTexture(ref _requestedTexDim, ResourceFormat);
+            base.OnResizeTextureImmediate(ref _requestedTexDim, ResourceFormat);
             InvokeOnResize();
         }
 

@@ -153,7 +153,7 @@ public abstract class TextureDX12 : GpuTexture, ITexture
 
     protected abstract void SetSRVDescription(ref ShaderResourceViewDesc desc);
 
-    protected override void OnResizeTexture(ref readonly TextureDimensions dimensions, GpuResourceFormat format)
+    protected override void OnResizeTextureImmediate(ref readonly TextureDimensions dimensions, GpuResourceFormat format)
     {
         _desc.Width = dimensions.Width;
         _desc.MipLevels = (ushort)dimensions.MipMapCount;

@@ -63,7 +63,7 @@ public abstract class GpuTexture : GpuResource, ITexture
         base.ValidateFlags();
     }
 
-    internal void ResizeTexture(in TextureDimensions newDimensions, GpuResourceFormat newFormat)
+    internal void ResizeTextureImmediate(GpuCommandList cmd, in TextureDimensions newDimensions, GpuResourceFormat newFormat)
     {
         // Avoid resizing/recreation if nothing has actually changed.
         if (_dimensions == newDimensions && ResourceFormat == newFormat)
@@ -72,12 +72,325 @@ public abstract class GpuTexture : GpuResource, ITexture
         _dimensions = newDimensions;
         ResourceFormat = newFormat;
 
-        OnResizeTexture(in newDimensions, newFormat);
+        OnResizeTextureImmediate(cmd, in newDimensions, newFormat);
         LastFrameResizedID = Device.Renderer.FrameID;
+        Version++;
+
         OnResize?.Invoke(this);
     }
 
-    protected abstract void OnResizeTexture(ref readonly TextureDimensions dimensions, GpuResourceFormat format);
+    /// <summary>
+    /// Resizes the current <see cref="GpuTexture"/>.
+    /// </summary>
+    /// <param name="priority">The priority of the resize operation.</param>
+    /// <param name="newWidth">The new width.</param>      
+    /// <param name="newMipMapCount">The number of mip-map levels per array slice/layer. If set to 0, the current <see cref="MipMapCount"/> will be used.</param>
+    /// <param name="newFormat">The new format. If set to <see cref="GpuResourceFormat.Unknown"/>, the existing format will be used.</param>
+    /// <param name="completeCallback">A callback to invoke once the resize operation has been completed.</param>
+    public void Resize(GpuPriority priority, uint newWidth, GpuResourceFormat newFormat = GpuResourceFormat.Unknown, uint newMipMapCount = 0,
+        GpuTask.EventHandler completeCallback = null)
+    {
+        Resize(priority, newWidth, Height, newFormat, ArraySize, newMipMapCount, Depth, completeCallback);
+    }
+
+    /// <summary>
+    /// Resizes the current <see cref="GpuTexture"/>.
+    /// </summary>
+    /// <param name="priority">The priority of the resize operation.</param>
+    /// <param name="width">The new width.</param>
+    /// <param name="height">The new height. If the texture is 1D, height will be defaulted to 1.</param>
+    /// <param name="arraySize">For 3D textures, this is the new depth dimension. 
+    /// For every other texture type, this is the number of array slices/layers, or the array size.
+    /// <para>If set to 0, the existing <see cref="GpuTexture.Depth"/> or <see cref="GpuTexture.ArraySize"/> will be used.</para></param>
+    /// <param name="depth">The new depth. Only applicable for 3D textures.</param>
+    /// <param name="mipMapCount">The number of mip-map levels per array slice/layer. If set to 0, the current <see cref="GpuTexture.MipMapCount"/> will be used.</param>
+    /// <param name="newFormat">The new format. If set to <see cref="GpuResourceFormat.Unknown"/>, the existing format will be used.</param>
+    /// <param name="completeCallback">A callback to invoke once the resize operation has been completed.</param>
+    public void Resize(GpuPriority priority, uint width, uint height, GpuResourceFormat newFormat = GpuResourceFormat.Unknown,
+        uint arraySize = 0, uint mipMapCount = 0, uint depth = 0, 
+        GpuTask.EventHandler completeCallback = null)
+    {
+        if (this is ITexture1D)
+            height = 1;
+
+        if (this is not ITexture3D)
+            depth = 1;
+
+        TextureResizeTask task = Device.Tasks.Get<TextureResizeTask>();
+        task.NewFormat = newFormat == GpuResourceFormat.Unknown ? ResourceFormat : newFormat;
+        task.Resource = this;
+        task.OnCompleted += completeCallback;
+        task.NewDimensions = new TextureDimensions()
+        {
+            Width = width,
+            Height = height,
+            ArraySize = arraySize > 0 ? arraySize : ArraySize,
+            Depth = depth > 0 ? depth : Depth,
+            MipMapCount = mipMapCount > 0 ? mipMapCount : MipMapCount
+        };
+
+        Device.Tasks.Push(priority, task);
+    }
+
+    /// <summary>Copies data fom the provided <see cref="TextureData"/> instance into the current texture.</summary>
+    /// <param name="data"></param>
+    /// <param name="srcMipIndex">The starting mip-map index within the provided <see cref="TextureData"/>.</param>
+    /// <param name="srcArraySlice">The starting array slice index within the provided <see cref="TextureData"/>.</param>
+    /// <param name="mipCount">The number of mip-map levels to copy per array slice, from the provided <see cref="TextureData"/>.</param>
+    /// <param name="arrayCount">The number of array slices to copy from the provided <see cref="TextureData"/>.</param>
+    /// <param name="destMipIndex">The mip-map index within the current texture to start copying to.</param>
+    /// <param name="destArraySlice">The array slice index within the current texture to start copying to.<</param>
+    public unsafe void SetData(GpuPriority priority, TextureData data, uint srcMipIndex = 0, uint srcArraySlice = 0, uint mipCount = 0,
+        uint arrayCount = 0, uint destMipIndex = 0, uint destArraySlice = 0, GpuTask.EventHandler completeCallback = null)
+    {
+        throw new NotImplementedException("");
+
+        // TODO - Implement SetDataImmediate() and a TextureSetTask which calls SetSubResourceDataImmediate() on each relevant sub-resource.
+        //        The implementation below is poorly designed, as the completion callback will be invoked for each sub-resource that is set, instead of once for the overall dataset.
+        
+        // TODO - Include validation to ensur ethe provided start indices and counts are within the bounds of the provided texture data and destination texture.
+
+        TextureSlice level;
+        for (uint a = 0; a < arrayCount; a++)
+        {
+            for (uint m = 0; m < mipCount; m++)
+            {
+                uint slice = srcArraySlice + a;
+                uint mip = srcMipIndex + m;
+                uint dataID = data.GetLevelID(mip, slice);
+                level = data.Levels[dataID];
+
+                if (level.TotalBytes == 0)
+                    continue;
+
+                uint destSlice = destArraySlice + a;
+                uint destMip = destMipIndex + m;
+                SetSubResourceData(priority, destMip, level.Data, 0, level.TotalBytes, level.Pitch, destSlice, completeCallback);
+            }
+        }
+    }
+
+    public unsafe void SetSubResourceData(GpuPriority priority, TextureSlice data, uint mipIndex, uint arraySlice, GpuTask.EventHandler completeCallback = null)
+    {
+        TextureSetSubResourceTask task = Device.Tasks.Get<TextureSetSubResourceTask>();
+        task.Initialize(data.Data, 1, 0, data.TotalBytes);
+        task.Pitch = data.Pitch;
+        task.Resource = this;
+        task.ArrayIndex = arraySlice;
+        task.MipLevel = mipIndex;
+        task.OnCompleted += completeCallback;
+        Device.Tasks.Push( priority, task);
+    }
+
+    public unsafe void SetSubResourceData<T>(GpuPriority priority, uint level, T[] data, uint startIndex, uint count, uint pitch, uint arrayIndex,
+        GpuTask.EventHandler completeCallback = null)
+        where T : unmanaged
+    {
+        fixed (T* ptrData = data)
+        {
+            TextureSetSubResourceTask task = Device.Tasks.Get<TextureSetSubResourceTask>();
+            task.Initialize(ptrData, (uint)sizeof(T), startIndex, count);
+            task.Pitch = pitch;
+            task.ArrayIndex = arrayIndex;
+            task.MipLevel = level;
+            task.Resource = this;
+            task.OnCompleted += completeCallback;
+            Device.Tasks.Push(priority, task);
+        }
+    }
+
+    public unsafe void SetSubResourceData<T>(GpuPriority priority, ResourceRegion area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0,
+        GpuTask.EventHandler completeCallback = null)
+        where T : unmanaged
+    {
+        fixed (T* ptrData = data)
+            SetSubResourceData(priority, area, ptrData, (uint)data.Length, bytesPerPixel, level, arrayIndex, completeCallback);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T">The type of data to be sent to the GPU texture.</typeparam>
+    /// <param name="priority">The priority of the operation.</param>
+    /// <param name="region"></param>
+    /// <param name="data"></param>
+    /// <param name="numElements"></param>
+    /// <param name="bytesPerPixel"></param>
+    /// <param name="level"></param>
+    /// <param name="arrayIndex"></param>
+    /// <param name="completeCallback">A callback to invoke once the resize operation has been completed.</param>
+    /// <exception cref="Exception"></exception>
+    public unsafe void SetSubResourceData<T>(GpuPriority priority, ResourceRegion region, T* data,
+        uint numElements, uint bytesPerPixel, uint level, uint arrayIndex = 0,
+        GpuTask.EventHandler completeCallback = null)
+        where T : unmanaged
+    {
+        uint texturePitch = region.Width * bytesPerPixel;
+        uint pixels = region.Width * region.Height;
+        uint expectedBytes = pixels * bytesPerPixel;
+        uint dataBytes = (uint)(numElements * sizeof(T));
+
+        if (pixels != numElements)
+            throw new Exception($"The provided data does not match the provided area of {region.Width}x{region.Height}. Expected {expectedBytes} bytes. {dataBytes} bytes were provided.");
+
+        // Do a bounds check
+        ResourceRegion texBounds = new ResourceRegion(0, 0, 0, Width, Height, Depth);
+        if (!texBounds.Contains(region))
+            throw new Exception("The provided area would go outside of the current texture's bounds.");
+
+        TextureSetSubResourceTask task = Device.Tasks.Get<TextureSetSubResourceTask>();
+        task.Initialize(data, (uint)sizeof(T), 0, numElements);
+        task.Resource = this;
+        task.Pitch = texturePitch;
+        task.StartIndex = 0;
+        task.ArrayIndex = arrayIndex;
+        task.MipLevel = level;
+        task.Region = region;
+        task.OnCompleted += completeCallback;
+        Device.Tasks.Push(priority, task);
+    }
+
+    public unsafe void SetSubResourceData<T>(GpuPriority priority, uint level, T* data, uint startIndex, uint count, uint pitch, uint arrayIndex = 0,
+        GpuTask.EventHandler completeCallback = null)
+        where T : unmanaged
+    {
+        TextureSetSubResourceTask task = Device.Tasks.Get<TextureSetSubResourceTask>();
+        task.Initialize(data, (uint)sizeof(T), startIndex, count);
+        task.Pitch = pitch;
+        task.Resource = this;
+        task.ArrayIndex = arrayIndex;
+        task.MipLevel = level;
+        task.OnCompleted += completeCallback;
+        Device.Tasks.Push(priority, task);
+    }
+
+    internal unsafe void SetSubResourceDataImmediate<T>(GpuCommandList cmd, uint level, T* data, 
+        uint startIndex, uint count, uint pitch, uint arrayIndex = 0, bool discard = false,
+        ResourceRegion? region = null)
+        where T : unmanaged
+    {
+        // Calculate size of a single array slice
+        uint arraySliceBytes = 0;
+        uint blockSize = 8; // default block size
+        uint levelWidth = Width;
+        uint levelHeight = Height;
+        uint levelDepth = Depth;
+        GpuMapType mapType = discard ? GpuMapType.Discard : GpuMapType.Write;
+
+        if (IsBlockCompressed)
+        {
+            if (region != null)
+                throw new NotImplementedException("Region-based SetData on block-compressed texture is currently unsupported. Sorry!");
+
+            blockSize = BCHelper.GetBlockSize(ResourceFormat);
+
+            // Collect total level size.
+            for (uint i = 0; i < MipMapCount; i++)
+            {
+                arraySliceBytes += BCHelper.GetBCLevelSize(levelWidth, levelHeight, blockSize) * levelDepth;
+                levelWidth = Math.Max(1, levelWidth / 2);
+                levelHeight = Math.Max(1, levelHeight / 2);
+                levelDepth = Math.Max(1, levelDepth / 2);
+            }
+        }
+        else
+        {
+            // TODO: This is invalid if the format isn't 32bpp/4-bytes-per-pixel/RGBA.
+            for (uint i = 0; i < MipMapCount; i++)
+            {
+                arraySliceBytes += (levelWidth * levelHeight * 4) * levelDepth; //4 color channels. 1 byte each. Width * height * colorByteSize.
+                levelWidth = Math.Max(1, levelWidth / 2);
+                levelHeight = Math.Max(1, levelHeight / 2);
+                levelDepth = Math.Max(1, levelDepth / 2);
+            }
+        }
+
+        //======DATA TRANSFER===========
+        ulong stride = (ulong)sizeof(T);
+        ulong startBytes = startIndex * stride;
+        ulong numBytes = count * stride;
+        byte* ptrData = (byte*)data;
+        ptrData += startBytes;
+
+        uint subLevel = (MipMapCount * arrayIndex) + level;
+
+        if (Flags.Has(GpuResourceFlags.UploadMemory))
+        {
+            using (GpuStream stream = cmd.MapResource(this, subLevel, 0, mapType))
+            {
+                // Are we constrained to an area of the texture?
+                if (region != null)
+                {
+                    ResourceRegion area = region.Value;
+                    ulong areaPitch = stride * area.Width;
+                    ulong sliceBytes = areaPitch * area.Height;
+                    uint aX = area.Left;
+                    uint aY = area.Top;
+                    uint aZ = area.Front;
+
+                    for (uint y = aY, end = area.Bottom; y < end; y++)
+                    {
+                        stream.Position = (long)((sliceBytes * aZ) + (pitch * aY) + (aX * stride));
+                        stream.WriteRange(ptrData, areaPitch);
+                        ptrData += areaPitch;
+                        aY++;
+                    }
+                }
+                else
+                {
+                    stream.WriteRange(ptrData, numBytes);
+                }
+            }
+
+            cmd.Profiler.ResourceMapCalls++;
+        }
+        else
+        {
+            if (IsBlockCompressed)
+            {
+                // Calculate mip-map level size.
+                levelWidth = Math.Max(1, Width >> (int)level);
+                uint bcPitch = BCHelper.GetBCPitch(levelWidth, blockSize);
+
+                // TODO support copy flags (DX11.1 feature)
+                cmd.UpdateResource(this, subLevel, null, ptrData, bcPitch, arraySliceBytes);
+            }
+            else
+            {
+                if (region != null)
+                {
+                    ulong regionPitch = stride * region.Value.Width;
+                    cmd.UpdateResource(this, subLevel, region.Value, ptrData, regionPitch, numBytes);
+                }
+                else
+                {
+                    cmd.UpdateResource(this, subLevel, null, ptrData, pitch, arraySliceBytes);
+                }
+            }
+        }
+
+        Version++;
+    }
+
+    /// <inheritdoc/>
+    public void GetData(GpuPriority priority, Action<TextureData> callback)
+    {
+        TextureGetTask task = Device.Tasks.Get<TextureGetTask>();
+        task.OnGetData = callback;
+        Device.Tasks.Push( priority, task);
+    }
+
+    public void GetSubResourceData(GpuPriority priority, uint mipLevel, uint arrayIndex, Action<TextureSlice> callback)
+    {
+        TextureGetSliceTask task = Device.Tasks.Get<TextureGetSliceTask>();
+        task.OnGetData = callback;
+        task.Resource = this;
+        task.MipMapLevel = mipLevel;
+        task.ArrayIndex = arrayIndex;
+        Device.Tasks.Push(priority, task);
+    }
+
+    protected abstract void OnResizeTextureImmediate(GpuCommandList cmd, ref readonly TextureDimensions dimensions, GpuResourceFormat format);
 
     /// <summary>Gets whether or not the texture is using a supported block-compressed format.</summary>
     public bool IsBlockCompressed { get; protected set; }

@@ -142,7 +142,7 @@ public unsafe abstract class TextureVK : GpuTexture
             return;
     }
 
-    protected override void OnResizeTexture(ref readonly TextureDimensions dimensions, GpuResourceFormat format)
+    protected override void OnResizeTextureImmediate(GpuCommandList cmd, ref readonly TextureDimensions dimensions, GpuResourceFormat format)
     {
         throw new NotImplementedException();
     }

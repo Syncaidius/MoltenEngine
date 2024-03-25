@@ -16,7 +16,7 @@ internal class BufferGetTask<T> : GpuResourceTask<GpuBuffer>
     internal T[] DestArray;
 
     /// <summary>
-    /// Invoked when data retrieval has been completed by the assigned <see cref="GpuCommandQueue"/>.
+    /// Invoked when data retrieval has been completed.
     /// </summary>
     public event Action<T[]> OnGetData;
 
@@ -37,7 +37,6 @@ internal class BufferGetTask<T> : GpuResourceTask<GpuBuffer>
     {
         DestArray ??= new T[Count];
         Resource.GetDataImmediate(cmd, DestArray, DestIndex, Count, ByteOffset);
-
         OnGetData?.Invoke(DestArray);
 
         return true;

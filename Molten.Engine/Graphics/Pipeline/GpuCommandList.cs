@@ -196,7 +196,7 @@ public abstract partial class GpuCommandList : GpuObject
 
         GenerateMipMapsTask task = Device.Tasks.Get<GenerateMipMapsTask>();
         task.OnCompleted += callback;
-        Device.Tasks.Push(this, priority, texture, task);
+        Device.Tasks.Push(priority, task);
     }
 
     /// <summary>
@@ -391,7 +391,7 @@ public abstract partial class GpuCommandList : GpuObject
 
     protected internal abstract void CopyResource(GpuResource src, GpuResource dest);
 
-    protected internal abstract unsafe void UpdateResource(GpuResource resource, uint subresource, ResourceRegion? region, void* ptrData, uint rowPitch, uint slicePitch);
+    protected internal abstract unsafe void UpdateResource(GpuResource resource, uint subresource, ResourceRegion? region, void* ptrData, ulong rowPitch, ulong slicePitch);
 
     public abstract unsafe void CopyResourceRegion(GpuResource source, uint srcSubresource, ResourceRegion? sourceRegion,
         GpuResource dest, uint destSubresource, Vector3UI destStart);

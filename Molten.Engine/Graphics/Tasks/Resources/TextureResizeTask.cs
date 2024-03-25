@@ -19,8 +19,7 @@ public class TextureResizeTask : GpuResourceTask<GpuTexture>
 
     protected override bool OnProcess(RenderService renderer, GpuCommandList cmd)
     {
-        Resource.ResizeTexture(NewDimensions, NewFormat);
-        Resource.Version++;
+        Resource.ResizeTextureImmediate(cmd, NewDimensions, NewFormat);
         return true;
     }
 }
