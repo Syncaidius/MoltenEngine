@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics;
 
-internal class BufferGetStreamTask : GraphicsResourceTask<GpuBuffer>
+internal class BufferGetStreamTask : GpuResourceTask<GpuBuffer>
 {
     internal uint ByteOffset;
 

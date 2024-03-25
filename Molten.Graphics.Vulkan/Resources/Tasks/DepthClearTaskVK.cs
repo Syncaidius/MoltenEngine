@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.Vulkan;
 
-internal class DepthClearTaskVK : GraphicsResourceTask<DepthSurfaceVK>
+internal class DepthClearTaskVK : GpuResourceTask<DepthSurfaceVK>
 {
     public float DepthValue;
 

@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics.DX12;
 
-internal class DepthClearTaskDX12 : GraphicsResourceTask<DepthSurfaceDX12>
+internal class DepthClearTaskDX12 : GpuResourceTask<DepthSurfaceDX12>
 {
     public float DepthValue;
 

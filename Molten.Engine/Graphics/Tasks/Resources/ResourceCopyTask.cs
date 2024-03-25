@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics;
 
-public class ResourceCopyTask : GraphicsResourceTask<GpuResource>
+public class ResourceCopyTask : GpuResourceTask<GpuResource>
 {
     public GpuResource Destination;
 

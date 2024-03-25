@@ -21,12 +21,7 @@ public class GpuTaskManager : IDisposable
         _queues = new Dictionary<GpuPriority, TaskQueue>();
         GpuPriority[] priorities = Enum.GetValues<GpuPriority>();
         foreach (GpuPriority p in priorities)
-        {
-            if (p == GpuPriority.Immediate)
-                continue;
-
-            _queues[p].Cmd = new GpuFrameBuffer<GpuCommandList>(_device, (gpu) => gpu.Queue.GetCommandList());
-        }
+            _queues[p].Cmd = new GpuFrameBuffer<GpuCommandList>(_device, (gpu) => gpu.GetCommandList());
 
         _taskPool = new ConcurrentDictionary<Type, ObjectPool<GpuTask>>();
     }
@@ -60,31 +55,6 @@ public class GpuTaskManager : IDisposable
         {
             TaskQueue queue = _queues[priority];
             queue.Tasks.Enqueue(task);
-        }
-    }
-
-    /// <summary>
-    /// Queues a <see cref="GraphicsResourceTask{R}"/> on the current <see cref="GpuResource"/>.
-    /// </summary>
-    /// <param name="cmd">The command list that is pushing the task.</param>
-    /// <param name="priority">The priority of the task.</param>
-    /// <param name="resource">The <see cref="GpuResource"/>.</param>
-    /// <param name="task">The <see cref="GraphicsResourceTask{R}"/> to be pushed.</param>
-    public void Push<R, T>(GpuCommandList cmd, GpuPriority priority, R resource, T task)
-        where R : GpuResource
-        where T : GraphicsResourceTask<R>, new()
-    {
-        task.Resource = resource;
-        switch (priority)
-        {
-            case GpuPriority.Immediate:
-                if(task.Validate())
-                    task.Process(cmd);
-                break;
-
-            default:
-                Push(priority, task);
-                break;
         }
     }
 
@@ -145,6 +115,6 @@ public class GpuTaskManager : IDisposable
 
         cmd.EndEvent();
         cmd.End();
-        _device.Queue.Execute(cmd);
+        _device.Execute(cmd);
     }
 }

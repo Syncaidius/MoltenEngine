@@ -1,6 +1,4 @@
 ﻿using Molten.Collections;
-using Molten.Font;
-using Molten.Graphics.Textures;
 using Molten.IO;
 using System.Reflection;
 
@@ -354,7 +352,7 @@ where T : unmanaged, IVertexType
     public ITexture1D CreateTexture1D(TextureData data, string name = null)
     {
         ITexture1D tex = CreateTexture1D(data.Width, data.MipMapLevels, data.ArraySize, data.Format, data.Flags, name);
-        tex.SetData(GpuPriority.Apply, data, 0, 0, data.MipMapLevels, data.ArraySize);
+        tex.SetData(GpuPriority.StartOfFrame, data, 0, 0, data.MipMapLevels, data.ArraySize);
         return tex;
     }
 

@@ -1,8 +1,6 @@
-﻿using Molten.Collections;
+﻿namespace Molten.Graphics;
 
-namespace Molten.Graphics;
-
-public abstract class GraphicsResourceTask<R> : GpuTask
+public abstract class GpuResourceTask<R> : GpuTask
     where R : GpuResource
 {
     /// <summary>

@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics.Vulkan;
 
-internal class SurfaceClearTaskVK : GraphicsResourceTask<TextureVK>
+internal class SurfaceClearTaskVK : GpuResourceTask<TextureVK>
 {
     public Color Color;
 

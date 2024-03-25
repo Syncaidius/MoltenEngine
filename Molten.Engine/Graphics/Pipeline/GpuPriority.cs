@@ -6,11 +6,6 @@
 public enum GpuPriority
 {
     /// <summary>
-    /// The task or command must be executed immediately.
-    /// </summary>
-    Immediate = 0,
-
-    /// <summary>
     /// The task or command will be executed at the start of the next device frame.
     /// </summary>
     StartOfFrame = 1,

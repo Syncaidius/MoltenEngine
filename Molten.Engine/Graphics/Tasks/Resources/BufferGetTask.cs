@@ -1,17 +1,16 @@
 ﻿namespace Molten.Graphics;
 
-internal class BufferGetTask<T> : GraphicsResourceTask<GpuBuffer> 
+internal class BufferGetTask<T> : GpuResourceTask<GpuBuffer> 
     where T : unmanaged
 {
     /// <summary>The number of bytes to offset the change, from the start of the provided <see cref="SrcSegment"/>.</summary>
     internal ulong ByteOffset;
+
     /// <summary>The number of elements to be copied.</summary>
     internal uint Count;
 
     /// <summary>The first index at which to start placing the retrieved data within <see cref="DestArray"/>.</summary>
     internal uint DestIndex;
-
-    internal GpuMapType MapType;
 
     /// <summary>The destination array to store the retrieved data.</summary>
     internal T[] DestArray;
@@ -26,7 +25,6 @@ internal class BufferGetTask<T> : GraphicsResourceTask<GpuBuffer>
         ByteOffset = 0;
         Count = 0;
         DestIndex = 0;
-        MapType = GpuMapType.Read;
     }
 
     public override bool Validate()
@@ -38,10 +36,7 @@ internal class BufferGetTask<T> : GraphicsResourceTask<GpuBuffer>
     protected override bool OnProcess(RenderService renderer, GpuCommandList cmd)
     {
         DestArray ??= new T[Count];
-
-        // Now set the structured variable's data
-        using (GpuStream stream = cmd.MapResource(Resource, 0, ByteOffset, MapType))
-            stream.ReadRange(DestArray, DestIndex, Count);
+        Resource.GetDataImmediate(cmd, DestArray, DestIndex, Count, ByteOffset);
 
         OnGetData?.Invoke(DestArray);
 

@@ -1,6 +1,6 @@
 ﻿namespace Molten.Graphics.DX12;
 
-internal class Surface1DClearTaskDX12 : GraphicsResourceTask<RenderSurface1DDX12>
+internal class Surface1DClearTaskDX12 : GpuResourceTask<RenderSurface1DDX12>
 {
     public Color Color;
 
