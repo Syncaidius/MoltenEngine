@@ -1,4 +1,5 @@
 ﻿using Molten.Graphics.Textures;
+using System.Reflection.Emit;
 
 namespace Molten.Graphics;
 
@@ -134,38 +135,57 @@ public abstract class GpuTexture : GpuResource, ITexture
 
     /// <summary>Copies data fom the provided <see cref="TextureData"/> instance into the current texture.</summary>
     /// <param name="data"></param>
-    /// <param name="srcMipIndex">The starting mip-map index within the provided <see cref="TextureData"/>.</param>
-    /// <param name="srcArraySlice">The starting array slice index within the provided <see cref="TextureData"/>.</param>
-    /// <param name="mipCount">The number of mip-map levels to copy per array slice, from the provided <see cref="TextureData"/>.</param>
+    /// <param name="priority">The priority of the operation.</param>
+    /// <param name="levelStartIndex">The starting mip-map index within the provided <see cref="TextureData"/>.</param>
+    /// <param name="arrayStartIndex">The starting array slice index within the provided <see cref="TextureData"/>.</param>
+    /// <param name="levelCount">The number of mip-map levels to copy per array slice, from the provided <see cref="TextureData"/>.</param>
     /// <param name="arrayCount">The number of array slices to copy from the provided <see cref="TextureData"/>.</param>
-    /// <param name="destMipIndex">The mip-map index within the current texture to start copying to.</param>
-    /// <param name="destArraySlice">The array slice index within the current texture to start copying to.<</param>
-    public unsafe void SetData(GpuPriority priority, TextureData data, uint srcMipIndex = 0, uint srcArraySlice = 0, uint mipCount = 0,
-        uint arrayCount = 0, uint destMipIndex = 0, uint destArraySlice = 0, GpuTask.EventHandler completeCallback = null)
+    /// <param name="destLevelIndex">The mip-map index within the current texture to start copying to.</param>
+    /// <param name="destArrayIndex">The array slice index within the current texture to start copying to.</param>
+    /// <param name="discard">If true, a new area of memory will be allocated for the provided data.</param>
+    /// <param name="completeCallback">A callback to invoke once the data has been transferred to the GPU.</param>
+    public unsafe void SetData(GpuPriority priority, TextureData data, uint levelStartIndex = 0, uint arrayStartIndex = 0,
+        uint levelCount = 0, uint arrayCount = 0,
+        uint destLevelIndex = 0, uint destArrayIndex = 0,
+        bool discard = false, 
+        GpuTask.EventHandler completeCallback = null)
     {
-        throw new NotImplementedException("");
+        TextureSetDataTask task = Device.Tasks.Get<TextureSetDataTask>();
+        task.Data = data;
+        task.Resource = this;
+        task.LevelStartIndex = levelStartIndex;
+        task.ArrayStartIndex = arrayStartIndex;
+        task.LevelCount = levelCount;
+        task.ArrayCount = arrayCount;
+        task.DestLevelIndex = destLevelIndex;
+        task.DestArrayIndex = destArrayIndex;
+        task.Discard = discard;
+        task.OnCompleted += completeCallback;
 
-        // TODO - Implement SetDataImmediate() and a TextureSetTask which calls SetSubResourceDataImmediate() on each relevant sub-resource.
-        //        The implementation below is poorly designed, as the completion callback will be invoked for each sub-resource that is set, instead of once for the overall dataset.
-        
-        // TODO - Include validation to ensur ethe provided start indices and counts are within the bounds of the provided texture data and destination texture.
+        Device.Tasks.Push(priority, task);
+    }
 
+    public unsafe void SetDataImmediate(GpuCommandList cmd, TextureData data, uint levelStartIndex = 0, uint arrayStartIndex = 0, 
+        uint levelCount = 0, uint arrayCount = 0,
+        uint destLevelIndex = 0, uint destArrayIndex = 0,
+        bool discard = false)
+    {
         TextureSlice level;
         for (uint a = 0; a < arrayCount; a++)
         {
-            for (uint m = 0; m < mipCount; m++)
+            for (uint m = 0; m < levelCount; m++)
             {
-                uint slice = srcArraySlice + a;
-                uint mip = srcMipIndex + m;
+                uint slice = arrayStartIndex + a;
+                uint mip = levelStartIndex + m;
                 uint dataID = data.GetLevelID(mip, slice);
                 level = data.Levels[dataID];
 
                 if (level.TotalBytes == 0)
                     continue;
 
-                uint destSlice = destArraySlice + a;
-                uint destMip = destMipIndex + m;
-                SetSubResourceData(priority, destMip, level.Data, 0, level.TotalBytes, level.Pitch, destSlice, completeCallback);
+                uint destArray = destArrayIndex + a;
+                uint destLevel = destLevelIndex + m;
+                SetSubResourceDataImmediate(cmd, destLevel, level.Data, 0, level.TotalBytes, level.Pitch, destArray, discard);
             }
         }
     }
@@ -375,7 +395,7 @@ public abstract class GpuTexture : GpuResource, ITexture
     /// <inheritdoc/>
     public void GetData(GpuPriority priority, Action<TextureData> callback)
     {
-        TextureGetTask task = Device.Tasks.Get<TextureGetTask>();
+        TextureGetDataTask task = Device.Tasks.Get<TextureGetDataTask>();
         task.OnGetData = callback;
         Device.Tasks.Push( priority, task);
     }

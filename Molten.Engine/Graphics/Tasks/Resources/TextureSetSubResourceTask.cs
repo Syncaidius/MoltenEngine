@@ -1,7 +1,4 @@
-﻿using Molten.Graphics.Textures;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-
-namespace Molten.Graphics;
+﻿namespace Molten.Graphics;
 
 public unsafe class TextureSetSubResourceTask : GpuResourceTask<GpuTexture>
 {

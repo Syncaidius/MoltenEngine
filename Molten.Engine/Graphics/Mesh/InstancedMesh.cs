@@ -21,7 +21,7 @@ public class InstancedMesh<V, I> : Mesh<V>
         base(renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices)
     {
         MaxInstances = maxInstances;
-        _instanceBuffer = Renderer.Device.Resources.CreateVertexBuffer<I>(GpuResourceFlags.CpuWrite, maxIndices, null);
+        _instanceBuffer = Renderer.Device.Resources.CreateVertexBuffer<I>(GpuResourceFlags.UploadMemory, maxIndices, null);
     }
 
     /// <summary>
@@ -38,7 +38,7 @@ public class InstancedMesh<V, I> : Mesh<V>
         base(renderer, mode, maxVertices, maxIndices, initialVertices, initialIndices)
     {
         MaxInstances = maxInstances;
-        _instanceBuffer = Renderer.Device.Resources.CreateVertexBuffer<I>(GpuResourceFlags.CpuWrite, maxInstances, null);
+        _instanceBuffer = Renderer.Device.Resources.CreateVertexBuffer<I>(GpuResourceFlags.UploadMemory, maxInstances, null);
     }
 
     public void SetInstanceData(I[] data)
@@ -54,7 +54,7 @@ public class InstancedMesh<V, I> : Mesh<V>
     public void SetInstanceData(I[] data, uint startIndex, uint count)
     {
         _instanceCount = count;
-        _instanceBuffer.SetData(GpuPriority.Apply, data, startIndex, count, true, 0);
+        _instanceBuffer.SetData(GpuPriority.StartOfFrame, data, startIndex, count, true, 0);
     }
 
     protected override void OnApply(GpuCommandList cmd)

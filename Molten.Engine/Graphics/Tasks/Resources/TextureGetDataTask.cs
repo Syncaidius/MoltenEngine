@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics;
 
-internal class TextureGetTask : GpuResourceTask<GpuTexture>
+internal class TextureGetDataTask : GpuResourceTask<GpuTexture>
 {
     public Action<TextureData> OnGetData;
 
@@ -43,6 +43,8 @@ internal class TextureGetTask : GpuResourceTask<GpuTexture>
                 data.Levels[subID] = TextureSlice.FromTextureSlice(cmd, Resource, i, a, MapType);
             }
         }
+
+        // TODO Perform CPU sync here.
 
         OnGetData?.Invoke(data);
         return true;

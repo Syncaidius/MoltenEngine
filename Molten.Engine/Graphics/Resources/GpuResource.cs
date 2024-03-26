@@ -1,6 +1,4 @@
-﻿using Molten.Collections;
-
-namespace Molten.Graphics;
+﻿namespace Molten.Graphics;
 
 public abstract class GpuResource : GpuObject, IGpuResource
 {
@@ -14,7 +12,7 @@ public abstract class GpuResource : GpuObject, IGpuResource
     protected virtual void ValidateFlags()
     {
         // Only staging resources have CPU-write access.
-        if (Flags.Has(GpuResourceFlags.CpuWrite))
+        if (Flags.Has(GpuResourceFlags.UploadMemory))
         {
             if (!Flags.Has(GpuResourceFlags.DenyShaderAccess))
                 throw new GpuResourceException(this, "Staging textures cannot allow shader access. Add GraphicsResourceFlags.NoShaderAccess flag.");
@@ -114,7 +112,8 @@ public abstract class GpuResource : GpuObject, IGpuResource
         ResourceCopyTask task = Device.Tasks.Get<ResourceCopyTask>();
         task.Destination = destination;
         task.OnCompleted += completeCallback;
-        Device.Tasks.Push(priority, this, task);
+        task.Resource = this;
+        Device.Tasks.Push(priority, task);
     }
 
     /// <summary>
@@ -133,11 +132,11 @@ public abstract class GpuResource : GpuObject, IGpuResource
     GpuResource destination, uint destLevel, uint destSlice,
     GpuTask.EventHandler completeCallback = null)
     {
-        if (!Flags.Has(GpuResourceFlags.GpuRead))
-            throw new ResourceCopyException(this, destination, "The current texture cannot be copied from because the GraphicsResourceFlags.GpuRead flag was not set.");
+        if (!Flags.Has(GpuResourceFlags.UploadMemory))
+            throw new ResourceCopyException(this, destination, "The current texture cannot be copied from because the GpuResourceFlags.UploadMemory flag was not set.");
 
-        if (!destination.Flags.Has(GpuResourceFlags.GpuWrite))
-            throw new ResourceCopyException(this, destination, "The destination texture cannot be copied to because the GraphicsResourceFlags.GpuWrite flag was not set.");
+        if (!destination.Flags.Has(GpuResourceFlags.DownloadMemory))
+            throw new ResourceCopyException(this, destination, "The destination texture cannot be copied to because the GpuResourceFlags.DownloadMemory flag was not set.");
 
         // Validate dimensions.
         // TODO this should only test the source and destination level dimensions, not the textures themselves.
@@ -167,12 +166,13 @@ public abstract class GpuResource : GpuObject, IGpuResource
 
                 SubResourceCopyTask task = Device.Tasks.Get<SubResourceCopyTask>();
                 task.SrcRegion = null;
+                task.Resource = this;
                 task.SrcSubResource = (sourceSlice * srcTex.MipMapCount) + sourceLevel;
                 task.DestResource = destination;
                 task.DestStart = Vector3UI.Zero;
                 task.DestSubResource = (destSlice * destTex.MipMapCount) + destLevel;
                 task.OnCompleted += completeCallback;
-                Device.Tasks.Push(priority, this, task);
+                Device.Tasks.Push(priority, task);
             }
             else
             {
@@ -192,10 +192,11 @@ public abstract class GpuResource : GpuObject, IGpuResource
     {
         SubResourceCopyTask task = Device.Tasks.Get<SubResourceCopyTask>();
         task.DestResource = destination;
+        task.Resource = this;
         task.DestStart = new Vector3UI(destByteOffset, 0, 0);
         task.SrcRegion = sourceRegion;
         task.OnCompleted += completionCallback;
-        Device.Tasks.Push(priority, this, task);
+        Device.Tasks.Push(priority, task);
     }
 
     /// <summary>

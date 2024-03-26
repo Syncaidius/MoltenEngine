@@ -8,8 +8,27 @@ public interface ITexture : IGpuResource
     /// Retrieves the data which makes up the entire texture across all mip-map levels and array slices. The data is returned in a single <see cref="TextureData"/> object.
     /// </summary>
     /// <param name="priority">The priority of the operation.</param>
-    /// <param name="callback">The completion callback to trigger once the data has been retrieved from the GPU.</param>
+    /// <param name="completeCallback">A callback to invoke once the GPU has completed the data transfer.</param>
     void GetData(GpuPriority priority, Action<TextureData> callback);
+
+    /// <summary>
+    /// Transfers thte provided <see cref="TextureData"/> to the current <see cref="ITexture"/> and invokes the provided completion callback once the operation is complete.
+    /// </summary>
+    /// <param name="priority">The priority of the operation.</param>
+    /// <param name="data">The <see cref="TextureData"/> to be copied.</param>
+    /// <param name="levelStartIndex">The first mip-map level to start copying from.</param>
+    /// <param name="arrayStartIndex">The first array slice index to start copying from.</param>
+    /// <param name="levelCount">The number of mip-map levels to be copied.</param>
+    /// <param name="arrayCount">The number of array slices to be copied.</param>
+    /// <param name="destLevelIndex">The destination mip-map level to start copying to.</param>
+    /// <param name="destArrayIndex">The destination array slice index to start copying to.</param>
+    /// <param name="discard">If true, the destination memory will be reallocated and the existing data discarded for reuse at a later time.</param>
+    /// <param name="completeCallback">A callback to invoke once the GPU has completed the data transfer.</param>
+    void SetData(GpuPriority priority, TextureData data, uint levelStartIndex = 0, uint arrayStartIndex = 0,
+        uint levelCount = 0, uint arrayCount = 0,
+        uint destLevelIndex = 0, uint destArrayIndex = 0,
+        bool discard = false,
+        GpuTask.EventHandler completeCallback = null);
 
     /// <summary>
     /// Occurs after the <see cref="ITexture"/> is done resizing. Executed by the renderer thread it is bound to.

@@ -7,7 +7,7 @@ internal class BufferSetTask<T> : GpuResourceTask<GpuBuffer>
     internal ulong ByteOffset;
 
     /// <summary>The number of elements to be copied.</summary>
-    internal uint ElementCount;
+    internal ulong ElementCount;
 
     internal bool Discard;
 

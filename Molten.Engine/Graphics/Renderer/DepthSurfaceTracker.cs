@@ -35,12 +35,12 @@ internal class DepthSurfaceTracker : IDisposable
         {
             case SurfaceSizeMode.Full:
                 foreach(IDepthStencilSurface rs in _surfaces.Values)
-                    rs?.Resize(GpuPriority.Apply, minWidth, minHeight);
+                    rs?.Resize(GpuPriority.StartOfFrame, minWidth, minHeight);
                 break;
 
             case SurfaceSizeMode.Half:
                 foreach (IDepthStencilSurface rs in _surfaces.Values)
-                    rs?.Resize(GpuPriority.Apply, (minWidth / 2) + 1, (minHeight / 2) + 1);
+                    rs?.Resize(GpuPriority.StartOfFrame, (minWidth / 2) + 1, (minHeight / 2) + 1);
                 break;
         }
     }
@@ -69,7 +69,7 @@ internal class DepthSurfaceTracker : IDisposable
             }
             else if (rs.Width != _width || rs.Height != _height)
             {
-                rs.Resize(GpuPriority.Apply, _width, _height);
+                rs.Resize(GpuPriority.StartOfFrame, _width, _height);
             }
 
             return rs;

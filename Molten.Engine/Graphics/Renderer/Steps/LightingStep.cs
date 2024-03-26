@@ -12,7 +12,7 @@ internal class LightingStep : RenderStep
     {
         uint stride = (uint)Marshal.SizeOf<LightData>();
         uint maxLights = 2000; // TODO move to graphics settings
-        _lightBuffer = renderer.Device.Resources.CreateStructuredBuffer<LightData>(GpuResourceFlags.CpuWrite, maxLights);
+        _lightBuffer = renderer.Device.Resources.CreateStructuredBuffer<LightData>(GpuResourceFlags.UploadMemory, maxLights);
 
         // Load shaders
         ShaderCompileResult result = renderer.Device.Resources.LoadEmbeddedShader("Molten.Assets", "light_point.json");
@@ -62,7 +62,7 @@ internal class LightingStep : RenderStep
             scene.PointLights.Data[i] = ld;
         }
 
-        _lightBuffer.SetData(GpuPriority.Immediate, scene.PointLights.Data, true);
+        _lightBuffer.SetDataImmediate(cmd, scene.PointLights.Data, true);
 
         // Set data buffer on domain and pixel shaders
         _matPoint.Light.Data.Value = _lightBuffer; // TODO Need to implement a dynamic structured buffer we can reuse here.

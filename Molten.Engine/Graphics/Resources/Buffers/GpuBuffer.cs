@@ -154,7 +154,7 @@ public abstract class GpuBuffer : GpuResource
     /// <param name="byteOffset">The start location within the buffer to start copying from, in bytes.</param>
     /// <param name="completeCallback"></param>
     /// <param name="discard">If true, the previous data will be discarded. Ignored if not applicable to the current buffer.</param>
-    public void SetData<T>(GpuPriority priority, T[] data, uint startIndex, uint elementCount, bool discard, uint byteOffset = 0, GpuTask.EventHandler completeCallback = null)
+    public void SetData<T>(GpuPriority priority, T[] data, ulong startIndex, ulong elementCount, bool discard, uint byteOffset = 0, GpuTask.EventHandler completeCallback = null)
         where T : unmanaged
     {
         BufferSetTask<T> op = Device.Tasks.Get<BufferSetTask<T>>();
@@ -167,12 +167,18 @@ public abstract class GpuBuffer : GpuResource
         // Only copy the part we need from the source data, starting from startIndex.
         op.Data = new T[data.Length];
         op.DataStartIndex = 0;
-        Array.Copy(data, (int)startIndex, op.Data, 0, elementCount);
+        Array.Copy(data, (long)startIndex, op.Data, 0, (long)elementCount);
 
         Device.Tasks.Push(priority, op);
     }
 
-    internal void SetDataImmediate<T>(GpuCommandList cmd, T[] data, uint startIndex, uint elementCount, bool discard, ulong byteOffset = 0)
+    internal void SetDataImmediate<T>(GpuCommandList cmd, T[] data, bool discard, ulong byteOffset = 0)
+        where T : unmanaged
+    {
+        SetDataImmediate(cmd, data, 0, (ulong)data.LongLength, discard, byteOffset);
+    }
+
+    internal void SetDataImmediate<T>(GpuCommandList cmd, T[] data, uint startIndex, ulong elementCount, bool discard, ulong byteOffset = 0)
         where T : unmanaged
     {
         ulong actualOffset = Offset + byteOffset;

@@ -311,7 +311,7 @@ public class ExampleBrowser<R, I, A> : Foundation
                     int w = binding.Window.RenderBounds.Width;
                     int h = binding.Window.RenderBounds.Height;
 
-                    surface.Resize(GpuPriority.Apply, (uint)w, (uint)h);
+                    surface.Resize(GpuPriority.StartOfFrame, (uint)w, (uint)h);
                     windowTex.LocalBounds = new Rectangle(0,0, w, h);
                 };
             }

@@ -95,7 +95,7 @@ public abstract class Mesh : Renderable
             throw new InvalidOperationException($"Mesh is not indexed. Must be created with index format that isn't IndexBufferFormat.None.");
 
         IndexCount = count;
-        _iBuffer.SetData(GpuPriority.Apply, data, startIndex, count, IsDiscard, 0);
+        _iBuffer.SetData(GpuPriority.StartOfFrame, data, startIndex, count, IsDiscard, 0);
     }
 
     protected virtual void OnApply(GpuCommandList cmd)
@@ -267,7 +267,7 @@ public class Mesh<T> : Mesh
     public void SetVertices(T[] data, uint startIndex, uint count)
     {
         VertexCount = count;
-        _vb.SetData(GpuPriority.Apply, data, startIndex, count, IsDiscard, 0);
+        _vb.SetData(GpuPriority.StartOfFrame, data, startIndex, count, IsDiscard, 0);
     }
 
     protected override void OnApply(GpuCommandList cmd)
