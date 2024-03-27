@@ -14,10 +14,10 @@ internal class StartStep : RenderStep
         IDepthStencilSurface sDepth = Renderer.Surfaces.GetDepth();
 
         cmd.State.Surfaces.Reset();
-        sScene.Clear(GpuPriority.Immediate, camera.BackgroundColor);
-        sNormals.Clear(GpuPriority.Immediate, Color.White * 0.5f);
-        sEmissive.Clear(GpuPriority.Immediate, Color.Black);
-        sDepth.Clear(GpuPriority.Immediate, DepthClearFlags.Depth | DepthClearFlags.Stencil, 1, 0);
+        sScene.ClearImmediate(cmd, camera.BackgroundColor);
+        sNormals.ClearImmediate(cmd, Color.White * 0.5f);
+        sEmissive.ClearImmediate(cmd, Color.Black);
+        sDepth.ClearImmediate(cmd, DepthClearFlags.Depth | DepthClearFlags.Stencil, 1, 0);
 
         Renderer.SpriteBatch.Reset((Rectangle)camera.Surface.Viewport.Bounds);
     }

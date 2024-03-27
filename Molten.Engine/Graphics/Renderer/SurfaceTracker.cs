@@ -38,12 +38,12 @@ public class SurfaceTracker : IDisposable
         {
             case SurfaceSizeMode.Full:
                 foreach(IRenderSurface2D rs in _surfaces.Values)
-                    rs?.Resize(GpuPriority.Apply, minWidth, minHeight);
+                    rs?.Resize(GpuPriority.StartOfFrame, minWidth, minHeight);
                 break;
 
             case SurfaceSizeMode.Half:
                 foreach (IRenderSurface2D rs in _surfaces.Values)
-                    rs?.Resize(GpuPriority.Apply, (minWidth / 2) + 1, (minHeight / 2) + 1);
+                    rs?.Resize(GpuPriority.StartOfFrame, (minWidth / 2) + 1, (minHeight / 2) + 1);
                 break;
         }
     }
@@ -72,7 +72,7 @@ public class SurfaceTracker : IDisposable
             }
             else if (rs.Width != _width || rs.Height != _height)
             {
-                rs.Resize(GpuPriority.Apply, _width, _height);
+                rs.Resize(GpuPriority.StartOfFrame, _width, _height);
             }
 
             return rs;

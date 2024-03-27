@@ -15,10 +15,10 @@ public abstract class Mesh : Renderable
     /// </summary>
     /// <param name="renderer"></param>
     /// <param name="maxVertices"></param>
-    /// <param name="mode"></param>
+    /// <param name="flags"></param>
     /// <param name="maxIndices">The maximum number of indices to allow in the current <see cref="Mesh"/>.</param>
     /// <param name="initialIndices"></param>
-    protected Mesh(RenderService renderer, GpuResourceFlags mode, ushort maxVertices, uint maxIndices, ushort[] initialIndices = null) :
+    protected Mesh(RenderService renderer, GpuResourceFlags flags, ushort maxVertices, uint maxIndices, ushort[] initialIndices = null) :
         base(renderer)
     {
         _resources = new ShaderBind<GpuResource>[Shader.BindTypes.Length][];
@@ -27,11 +27,11 @@ public abstract class Mesh : Renderable
 
         IndexFormat = maxIndices > 0 ? GpuIndexFormat.UInt16 : GpuIndexFormat.None;
         MaxVertices = maxVertices;
-        IsDiscard = mode.IsDiscard();
+        IsDiscard = flags.IsDiscard();
 
         if (IndexFormat != GpuIndexFormat.None)
         {
-            _iBuffer = Renderer.Device.Resources.CreateIndexBuffer(mode, maxIndices, initialIndices);
+            _iBuffer = Renderer.Device.Resources.CreateIndexBuffer(flags, maxIndices, initialIndices);
 
             if (initialIndices != null)
                 IndexCount = (uint)initialIndices.Length;

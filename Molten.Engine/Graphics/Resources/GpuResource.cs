@@ -28,8 +28,8 @@ public abstract class GpuResource : GpuObject, IGpuResource
     /// <summary>
     /// Invoked when the current <see cref="GpuObject"/> should apply any changes before being bound to a GPU context.
     /// </summary>
-    /// <param name="cmd">The <see cref="GpuCommandQueue"/> that the current <see cref="GpuObject"/> is to be bound to.</param>
-    public void Apply(GpuCommandList cmd)
+    /// <param name="cmd">The <see cref="GpuCommandList"/> that the current <see cref="GpuObject"/> is to be bound to.</param>
+    public virtual void Apply(GpuCommandList cmd)
     {
         if (IsDisposed)
             return;
@@ -39,49 +39,14 @@ public abstract class GpuResource : GpuObject, IGpuResource
         // Check if the last known frame buffer size has changed.
         if (Handle == null)
             OnCreateResource();
-
-        OnApply(cmd);
-    }
-
-    /// <summary>Applies any pending changes to the resource, from the specified priority queue.</summary>
-    /// <param name="queue">The graphics queue to use when process changes.</param>
-    protected virtual void OnApply(GpuCommandList cmd)
-    {
-        if (ApplyQueue.Count > 0)
-        {
-            while (ApplyQueue.TryDequeue(out GpuTask task))
-                task.Process(cmd);
-        }
-    }
-
-    /// <summary>
-    /// Takes the next task from the task queue if it matches the specified type.
-    /// </summary>
-    /// <typeparam name="T">The type.</typeparam>
-    /// <param name="result">The task that was dequeued, if any.</param>
-    /// <returns></returns>
-    protected bool DequeueTaskIfType<T>(out T result)
-        where T : GpuTask
-    {
-        if (ApplyQueue.Count > 0 && ApplyQueue.IsNext<T>())
-        {
-            if (ApplyQueue.TryDequeue(out GpuTask task))
-            {
-                result = (T)task;
-                return true;
-            }
-        }
-
-        result = default;
-        return false;
     }
 
     public void CopyTo(GpuPriority priority, GpuResource destination, GpuTask.EventHandler completeCallback = null)
     {
-        if (!Flags.Has(GpuResourceFlags.GpuRead))
+        if (Flags.IsGpuReadable())
             throw new ResourceCopyException(this, destination, "Source resource must have the GraphicsResourceFlags.GpuRead flag set.");
 
-        if (!destination.Flags.Has(GpuResourceFlags.GpuWrite))
+        if (!destination.Flags.IsGpuWritable())
             throw new ResourceCopyException(this, destination, "Destination resource must have the GraphicsResourceFlags.GpuWrite flag set.");
 
         // If copying between two images, do a format and bounds check

@@ -68,16 +68,23 @@ public static class ResourceFlagsExtensions
         return (flags & value) == value;
     }
 
-    public static bool IsImmutable(this GpuResourceFlags flags)
+    public static bool IsGpuReadable(this GpuResourceFlags flags)
     {
-        return (!flags.Has(GpuResourceFlags.GpuWrite) && 
-            !flags.Has(GpuResourceFlags.CpuRead) && 
-            !flags.Has(GpuResourceFlags.CpuWrite));
+        return flags.Has(GpuResourceFlags.DefaultMemory) || flags.Has(GpuResourceFlags.UploadMemory);
     }
 
-    public static bool IsDiscard(this GpuResourceFlags flags)
+    public static bool IsGpuWritable(this GpuResourceFlags flags)
     {
-        return flags.Has(GpuResourceFlags.CpuWrite) && 
-            !flags.Has(GpuResourceFlags.CpuRead) && !flags.Has(GpuResourceFlags.GpuWrite);
+        return flags.Has(GpuResourceFlags.DefaultMemory) || flags.Has(GpuResourceFlags.DownloadMemory);
+    }
+
+    public static bool IsCpuReadable(this GpuResourceFlags flags)
+    {
+        return flags.Has(GpuResourceFlags.DownloadMemory);
+    }
+
+    public static bool IsCpuWritable(this GpuResourceFlags flags)
+    {
+        return flags.Has(GpuResourceFlags.UploadMemory);
     }
 }

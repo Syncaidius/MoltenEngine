@@ -32,7 +32,7 @@ internal class LightingStep : RenderStep
         IRenderSurface2D _surfaceLighting = Renderer.Surfaces[MainSurfaceType.Lighting];
         IDepthStencilSurface sDepth = Renderer.Surfaces.GetDepth();
 
-        _surfaceLighting.Clear(GpuPriority.Immediate, context.Scene.AmbientLightColor);
+        _surfaceLighting.ClearImmediate(cmd, context.Scene.AmbientLightColor);
         cmd.State.Surfaces.Reset();
         cmd.State.Surfaces[0] = _surfaceLighting;
         cmd.State.DepthSurface.Value = sDepth;
@@ -84,7 +84,7 @@ internal class LightingStep : RenderStep
         uint pointCount = scene.PointLights.ElementCount * 2;
 
         cmd.Draw(_matPoint, pointCount, 0);
-        cmd.Sync();
+        //cmd.Sync();
 
         cmd.Draw(_matDebugPoint, pointCount, 0);
     }

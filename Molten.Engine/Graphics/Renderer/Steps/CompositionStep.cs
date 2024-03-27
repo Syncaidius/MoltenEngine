@@ -38,7 +38,7 @@ internal class CompositionStep : RenderStep
 
         RectangleF vpBounds = camera.Surface.Viewport.Bounds;
 
-        context.CompositionSurface.Clear(GpuPriority.Immediate, camera.BackgroundColor);
+        context.CompositionSurface.ClearImmediate(cmd, camera.BackgroundColor);
         cmd.State.Surfaces.Reset();
         cmd.State.Surfaces[0] = context.CompositionSurface;
         cmd.State.DepthSurface.Value = null;

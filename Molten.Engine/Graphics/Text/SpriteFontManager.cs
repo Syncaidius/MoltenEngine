@@ -64,10 +64,10 @@ public class SpriteFontManager : EngineObject
     {
         _camera.Surface?.Dispose();
         _camera.Surface = _renderer.Device.Resources.CreateSurface((uint)PageSize, (uint)PageSize, 
-            flags: GpuResourceFlags.GpuWrite | GpuResourceFlags.MipMapGeneration, 
+            flags: GpuResourceFlags.DefaultMemory | GpuResourceFlags.MipMapGeneration, 
             arraySize: arraySize, 
             name: "Sprite Font Sheet");
-        _camera.Surface.Clear(GpuPriority.Apply, Color.Transparent);
+        _camera.Surface.Clear(GpuPriority.StartOfFrame, Color.Transparent);
     }
 
     private void OnDraw(SpriteBatcher sb)
@@ -122,7 +122,7 @@ public class SpriteFontManager : EngineObject
 
     private void _renderData_OnPostRender(RenderService renderer, SceneRenderData data)
     {
-        _camera.Surface.GenerateMipMaps(GpuPriority.Apply);
+        _camera.Surface.GenerateMipMaps(GpuPriority.StartOfFrame);
     }
 
     internal SpriteFont LoadFont(Stream stream, string path, float size = 16)
