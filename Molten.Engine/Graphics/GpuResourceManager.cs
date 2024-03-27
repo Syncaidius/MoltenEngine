@@ -1,5 +1,4 @@
 ﻿using Molten.Collections;
-using Molten.Graphics.Textures;
 using Molten.IO;
 using System.Reflection;
 
@@ -66,8 +65,15 @@ public abstract class GpuResourceManager : GpuObject
 
     public abstract IConstantBuffer CreateConstantBuffer(ConstantBufferInfo info);
 
+    public GpuDiscardBuffer<T> CreateDiscardBuffer<T>(GpuBufferType type, GpuResourceFlags flags, GpuResourceFormat format, ulong initialCapacity)
+        where T : unmanaged
+    {
+        return new GpuDiscardBuffer<T>(Device, type, flags, format, initialCapacity);
+    }
+
     public GpuBuffer CreateBuffer<T>(GpuBufferType type, GpuResourceFlags flags, GpuResourceFormat format, 
-        uint numElements, uint alignment = 1,
+        ulong numElements,
+        uint alignment = 1,
         T[] initialData = null)
         where T : unmanaged
     {
