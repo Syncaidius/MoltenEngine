@@ -1,4 +1,5 @@
 ﻿using Molten.Collections;
+using Molten.Graphics.Textures;
 using Molten.IO;
 using System.Reflection;
 
@@ -57,86 +58,61 @@ public abstract class GpuResourceManager : GpuObject
     /// <returns></returns>
     public ShaderCompileResult CompileShaders(ref string source, string filename = null)
     {
-        if (!string.IsNullOrWhiteSpace(filename))
-        {
-            FileInfo fInfo = new FileInfo(filename);
-            DirectoryInfo dir = fInfo.Directory;
-        }
-
         return Compiler.Compile(source, filename, ShaderCompileFlags.None, null, null);
     }
     #endregion
 
     #region Buffers
-    public GpuBuffer CreateVertexBuffer<T>(GpuResourceFlags flags, uint vertexCapacity, T[] initialData = null)
-    where T : unmanaged, IVertexType
+
+    public abstract IConstantBuffer CreateConstantBuffer(ConstantBufferInfo info);
+
+    public GpuBuffer CreateBuffer<T>(GpuBufferType type, GpuResourceFlags flags, GpuResourceFormat format, 
+        uint numElements, uint alignment = 1,
+        T[] initialData = null)
+        where T : unmanaged
     {
-        flags |= GpuResourceFlags.DenyShaderAccess;
-        GpuBuffer buffer = CreateBuffer(GpuBufferType.Vertex, flags, GpuResourceFormat.Unknown, vertexCapacity, initialData);
-        buffer.VertexLayout = Device.LayoutCache.GetVertexLayout<T>();
+        SetBufferProperties(type, ref flags, ref format);
+        GpuBuffer buffer = OnCreateBuffer<T>(type, flags, format, numElements, initialData);
 
         return buffer;
     }
 
-    public GpuBuffer CreateIndexBuffer(ushort[] data, GpuResourceFlags flags = GpuResourceFlags.None)
+    private void SetBufferProperties(GpuBufferType type, ref GpuResourceFlags flags, ref GpuResourceFormat format)
     {
-        return CreateIndexBuffer(flags, (uint)data.Length, data);
+        switch (type)
+        {
+            case GpuBufferType.Download:
+                flags = GpuResourceFlags.DownloadMemory | GpuResourceFlags.DenyShaderAccess;
+                format = GpuResourceFormat.Unknown;
+                break;
+
+            case GpuBufferType.Upload:
+                flags = GpuResourceFlags.UploadMemory | GpuResourceFlags.DenyShaderAccess;
+                format = GpuResourceFormat.Unknown;
+                break;
+
+            case GpuBufferType.Structured:
+                format = GpuResourceFormat.Unknown;
+                break;
+
+            case GpuBufferType.Vertex:
+                format = GpuResourceFormat.Unknown;
+                flags |= GpuResourceFlags.DenyShaderAccess;
+                break;
+
+            case GpuBufferType.Index:
+                if(format != GpuResourceFormat.R32_UInt && format != GpuResourceFormat.R16_UInt && format != GpuResourceFormat.R8_UInt)
+                    throw new ArgumentException($"Invalid index buffer format '{format}'. Must be: R16_UInt, R32_UInt or R8_UInt");
+
+                flags |= GpuResourceFlags.DenyShaderAccess;
+                break;
+
+            case GpuBufferType.Constant:
+                throw new NotSupportedException($"Constant buffers must be created via the {nameof(CreateConstantBuffer)}() method.");
+        }
     }
 
-    public GpuBuffer CreateIndexBuffer(uint[] data, GpuResourceFlags flags = GpuResourceFlags.None)
-    {
-        return CreateIndexBuffer(flags, (uint)data.Length, data);
-    }
-
-    public GpuBuffer CreateIndexBuffer(byte[] data, GpuResourceFlags flags = GpuResourceFlags.None)
-    {
-        return CreateIndexBuffer(flags, (uint)data.Length, data);
-    }
-
-    public GpuBuffer CreateIndexBuffer(GpuResourceFlags flags, uint indexCapacity, ushort[] initialData)
-    {
-        return CreateBuffer(GpuBufferType.Index, flags, GpuResourceFormat.R16_UInt, indexCapacity, initialData);
-    }
-
-    public GpuBuffer CreateIndexBuffer(GpuResourceFlags flags, uint indexCapacity, uint[] initialData = null)
-    {
-        flags |= GpuResourceFlags.DenyShaderAccess;
-        return CreateBuffer(GpuBufferType.Index, flags, GpuResourceFormat.R32_UInt, indexCapacity, initialData);
-    }
-
-    public GpuBuffer CreateIndexBuffer(GpuResourceFlags flags, uint indexCapacity, byte[] initialData = null)
-    {
-        flags |= GpuResourceFlags.DenyShaderAccess;
-        return CreateBuffer(GpuBufferType.Index, flags, GpuResourceFormat.R8_UInt, indexCapacity, initialData);
-    }
-
-    public GpuBuffer CreateStructuredBuffer<T>(T[] data, GpuResourceFlags flags = GpuResourceFlags.None)
-        where T : unmanaged
-    {
-        return CreateStructuredBuffer(flags, (uint)data.Length, data);
-    }
-
-    public GpuBuffer CreateStructuredBuffer<T>(GpuResourceFlags flags, uint elementCapacity, T[] initialData = null)
-        where T : unmanaged
-    {
-        return CreateBuffer(GpuBufferType.Structured, flags, GpuResourceFormat.Unknown, elementCapacity, initialData);
-    }
-
-    public GpuBuffer CreateUploadBuffer(ulong byteCapacity, uint alignment = 1)
-    {
-        GpuResourceFlags flags = GpuResourceFlags.UploadMemory | GpuResourceFlags.DenyShaderAccess;
-        return CreateBuffer<byte>(GpuBufferType.Upload, flags, GpuResourceFormat.Unknown, byteCapacity, null);
-    }
-
-    public GpuBuffer CreateDownloadBuffer(uint byteCapacity, uint alignment = 1)
-    {
-        GpuResourceFlags flags = GpuResourceFlags.DownloadMemory | GpuResourceFlags.DenyShaderAccess;
-        return CreateBuffer<byte>(GpuBufferType.Download, flags, GpuResourceFormat.Unknown, byteCapacity, null);
-    }
-
-    public abstract IConstantBuffer CreateConstantBuffer(ConstantBufferInfo info);
-
-    protected abstract GpuBuffer CreateBuffer<T>(GpuBufferType type, GpuResourceFlags flags, GpuResourceFormat format,
+    protected abstract GpuBuffer OnCreateBuffer<T>(GpuBufferType type, GpuResourceFlags flags, GpuResourceFormat format,
         ulong numElements, T[] initialData = null) where T : unmanaged;
     #endregion
 

@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Molten.Graphics.Textures;
+using Newtonsoft.Json.Linq;
+using System;
 
 namespace Molten.Graphics;
 
@@ -25,13 +27,13 @@ public abstract class Mesh : Renderable
         for(int i = 0; i < _resources.Length; i++)
             _resources[i] = [];
 
-        IndexFormat = maxIndices > 0 ? GpuIndexFormat.UInt16 : GpuIndexFormat.None;
+        IndexFormat = maxIndices > 0 ? GpuResourceFormat.R16_UInt : GpuResourceFormat.Unknown;
         MaxVertices = maxVertices;
         IsDiscard = flags.IsDiscard();
 
-        if (IndexFormat != GpuIndexFormat.None)
+        if (IndexFormat != GpuResourceFormat.Unknown)
         {
-            _iBuffer = Renderer.Device.Resources.CreateIndexBuffer(flags, maxIndices, initialIndices);
+            _iBuffer = Renderer.Device.Resources.CreateBuffer(GpuBufferType.Index, flags, IndexFormat, maxIndices, 1, initialIndices);
 
             if (initialIndices != null)
                 IndexCount = (uint)initialIndices.Length;
@@ -43,23 +45,23 @@ public abstract class Mesh : Renderable
     /// </summary>
     /// <param name="renderer"></param>
     /// <param name="maxVertices"></param>
-    /// <param name="mode"></param>
+    /// <param name="flags"></param>
     /// <param name="maxIndices">The maximum number of indices to allow in the current <see cref="Mesh"/>.</param>
     /// <param name="initialIndices"></param>
-    protected Mesh(RenderService renderer, GpuResourceFlags mode, uint maxVertices, uint maxIndices, uint[] initialIndices = null) :
+    protected Mesh(RenderService renderer, GpuResourceFlags flags, uint maxVertices, uint maxIndices, uint[] initialIndices = null) :
         base(renderer)
     {
         _resources = new ShaderBind<GpuResource>[Shader.BindTypes.Length][];
         for (int i = 0; i < _resources.Length; i++)
             _resources[i] = [];
 
-        IndexFormat = maxIndices > 0 ? GpuIndexFormat.UInt32 : GpuIndexFormat.None;
+        IndexFormat = maxIndices > 0 ? GpuResourceFormat.R32_UInt : GpuResourceFormat.Unknown;
         MaxVertices = maxVertices;
         MaxIndices = maxIndices;
 
-        if (IndexFormat != GpuIndexFormat.None)
+        if (IndexFormat != GpuResourceFormat.Unknown)
         {
-            _iBuffer = Renderer.Device.Resources.CreateIndexBuffer(mode, maxIndices, initialIndices);
+            _iBuffer = Renderer.Device.Resources.CreateBuffer(GpuBufferType.Index, flags, IndexFormat, maxIndices, 1, initialIndices);
 
             if (initialIndices != null)
                 IndexCount = (uint)initialIndices.Length;
@@ -152,7 +154,7 @@ public abstract class Mesh : Renderable
 
     public uint IndexCount { get; set; }
 
-    public GpuIndexFormat IndexFormat { get; }
+    public GpuResourceFormat IndexFormat { get; }
 
     /// <summary>
     /// Gets or sets the material that should be used when rendering the current <see cref="Mesh"/>.
@@ -233,23 +235,25 @@ public class Mesh<T> : Mesh
     GpuBuffer _vb;
 
     internal Mesh(RenderService renderer, 
-        GpuResourceFlags mode, ushort maxVertices, uint maxIndices,
+        GpuResourceFlags flags, ushort maxVertices, uint maxIndices,
         T[] initialVertices = null, ushort[] initialIndices = null) :
-        base(renderer, mode, maxVertices, maxIndices, initialIndices)
+        base(renderer, flags, maxVertices, maxIndices, initialIndices)
     {
-        _vb = renderer.Device.Resources.CreateVertexBuffer(mode, maxVertices, initialVertices);
+        _vb = renderer.Device.Resources.CreateBuffer(GpuBufferType.Vertex, flags, GpuResourceFormat.Unknown, maxVertices, 1, initialVertices);
+        _vb.VertexLayout = _vb.Device.LayoutCache.GetVertexLayout<T>();
 
         if (initialVertices != null)
             VertexCount = (uint)initialVertices.Length;
     }
 
     internal Mesh(RenderService renderer,
-         GpuResourceFlags mode, uint maxVertices, uint maxIndices,
+         GpuResourceFlags flags, uint maxVertices, uint maxIndices,
          T[] initialVertices = null, uint[] initialIndices = null) :
-         base(renderer, mode, maxVertices, maxIndices, initialIndices)
+         base(renderer, flags, maxVertices, maxIndices, initialIndices)
     {
-        _vb = renderer.Device.Resources.CreateVertexBuffer(mode, maxVertices, initialVertices); 
-        
+        _vb = renderer.Device.Resources.CreateBuffer(GpuBufferType.Vertex, flags, GpuResourceFormat.Unknown, maxVertices, 1, initialVertices);
+        _vb.VertexLayout = _vb.Device.LayoutCache.GetVertexLayout<T>();
+
         if (initialVertices != null)
             VertexCount = (uint)initialVertices.Length;
     }

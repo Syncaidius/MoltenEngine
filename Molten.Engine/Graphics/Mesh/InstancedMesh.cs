@@ -91,8 +91,9 @@ public class InstancedMesh<V, I> : Mesh<V>
             uint start = 0;
             uint byteOffset = 0;
 
-            using (GpuStream stream = cmd.MapResource(_instanceBuffer, 0, byteOffset, GpuMapType.Discard))
+            using (GpuStream stream = cmd.MapResource(_instanceBuffer, 0, byteOffset, GpuMapType.Write))
             {
+                throw new NotImplementedException("InstancedMesh needs to implement a DiscardBuffer");
                 for (int i = (int)start; i < batch.Data.Count; i++)
                     I.WriteBatchData(stream, batch.Data[i]);
             }

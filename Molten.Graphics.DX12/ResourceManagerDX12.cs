@@ -29,7 +29,7 @@ internal class ResourceManagerDX12 : GraphicsResourceManager<DeviceDX12>
         return new ShaderPassDX12(shader, name);
     }
 
-    protected unsafe override GpuBuffer CreateBuffer<T>(GpuBufferType type, GpuResourceFlags flags, GpuResourceFormat format, ulong numElements, T[] initialData = null)
+    protected unsafe override GpuBuffer OnCreateBuffer<T>(GpuBufferType type, GpuResourceFlags flags, GpuResourceFormat format, ulong numElements, T[] initialData = null)
     {
         uint stride = (uint)sizeof(T);
         uint alignment = stride;

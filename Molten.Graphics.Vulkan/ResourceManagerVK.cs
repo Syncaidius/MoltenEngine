@@ -24,7 +24,7 @@ public class ResourceManagerVK :GraphicsResourceManager<DeviceVK>
         throw new NotImplementedException();
     }
 
-    protected unsafe override GpuBuffer CreateBuffer<T>(GpuBufferType type, GpuResourceFlags flags, GpuResourceFormat format, ulong numElements, T[] initialData = null)
+    protected unsafe override GpuBuffer OnCreateBuffer<T>(GpuBufferType type, GpuResourceFlags flags, GpuResourceFormat format, ulong numElements, T[] initialData = null)
     {
         BufferVK buffer = new BufferVK(Device, type, flags, (uint)sizeof(T), numElements, 1);
 
