@@ -45,14 +45,14 @@ public class SurfaceManager : IDisposable
         _depthSurface = new DepthSurfaceTracker(_renderer.Device, _aaLevels, width, height, DepthFormat.R24G8);
     }
 
-    internal void ClearIfFirstUse(IRenderSurface2D surface, Color color)
+    internal void ClearIfFirstUse(GpuCommandList cmd, IRenderSurface2D surface, Color color)
     {
         if (surface == null)
             return;
 
         if(!_firstCleared.Contains(surface))
         {
-            surface.Clear(GpuPriority.Immediate, color);
+            surface.ClearImmediate(cmd, color);
             _firstCleared.Add(surface);
         }
     }

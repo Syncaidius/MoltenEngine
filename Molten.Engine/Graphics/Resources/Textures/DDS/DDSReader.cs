@@ -31,7 +31,7 @@ public class DDSReader : TextureReader
         {
             Levels = _levelData,
             Format = _headerDXT10.ImageFormat,
-            Flags = GpuResourceFlags.GpuWrite,
+            Flags = GpuResourceFlags.DefaultMemory,
             IsCompressed = true,
             MultiSampleLevel = AntiAliasLevel.None,
             HighestMipMap = 0,

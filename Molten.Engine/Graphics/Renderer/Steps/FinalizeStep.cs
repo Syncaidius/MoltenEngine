@@ -23,7 +23,7 @@ internal class FinalizeStep : RenderStep
         RectangleF bounds = new RectangleF(0, 0, camera.Surface.Width, camera.Surface.Height);
         
         if (!camera.HasFlags(RenderCameraFlags.DoNotClear))
-            Renderer.Surfaces.ClearIfFirstUse(camera.Surface, camera.BackgroundColor);
+            Renderer.Surfaces.ClearIfFirstUse(cmd, camera.Surface, camera.BackgroundColor);
 
         cmd.State.Surfaces.Reset();
         cmd.State.Surfaces[0] = camera.Surface;

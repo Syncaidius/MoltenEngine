@@ -10,8 +10,8 @@ public class GpuStream : RawStream
     public unsafe GpuStream(GpuCommandList cmd, GpuResource resource, ref GpuResourceMap map) : 
         base(map.Ptr, 
             map.DepthPitch, 
-            resource.Flags.Has(GpuResourceFlags.CpuRead), 
-            resource.Flags.Has(GpuResourceFlags.CpuWrite))
+            resource.Flags.IsCpuReadable(), 
+            resource.Flags.IsCpuWritable())
     {
         Map = map;
         Cmd = cmd;

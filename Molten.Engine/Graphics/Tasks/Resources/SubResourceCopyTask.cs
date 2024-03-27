@@ -31,7 +31,7 @@ public class SubResourceCopyTask : GpuResourceTask<GpuResource>
 
     protected override bool OnProcess(RenderService renderer, GpuCommandList cmd)
     {
-        if (DestResource.Flags.Has(GpuResourceFlags.GpuWrite))
+        if (!DestResource.Flags.IsGpuWritable())
             throw new ResourceCopyException(Resource, DestResource, "The destination resource must have GPU write access for writing the copied data.");
 
         if (Resource is GpuBuffer buffer && buffer.BufferType == GpuBufferType.Staging)

@@ -101,7 +101,7 @@ public partial class SpriteBatcher : IDisposable
 
         //throw new NotImplementedException("Implement per-frame buffer");
         _buffer = new GpuFrameBuffer<GpuBuffer>(device, (device) =>
-            device.Resources.CreateStructuredBuffer<GpuData>(GpuResourceFlags.CpuWrite | GpuResourceFlags.GpuRead, FlushCapacity));
+            device.Resources.CreateStructuredBuffer<GpuData>(GpuResourceFlags.UploadMemory, FlushCapacity));
 
         ShaderCompileResult result = device.Resources.LoadEmbeddedShader("Molten.Assets", "sprite.json");
         _matDefaultNoTexture = result["sprite-no-texture"];

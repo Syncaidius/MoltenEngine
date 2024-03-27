@@ -75,7 +75,7 @@ public class SdfGenerator
             }
         }
 
-        tex.SetData(GpuPriority.Apply, 0, finalData, 0, (uint)finalData.Length, rowPitch);
+        tex.SetSubResourceData(GpuPriority.StartOfFrame, 0, finalData, 0, (uint)finalData.Length, rowPitch);
         return tex;
     }
 

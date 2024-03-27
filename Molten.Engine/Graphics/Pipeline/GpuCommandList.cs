@@ -362,6 +362,12 @@ public abstract partial class GpuCommandList : GpuObject
     /// <exception cref="GpuResourceException"></exception>
     public unsafe GpuStream MapResource(GpuResource resource, uint subresource, ulong offsetBytes, GpuMapType mapType)
     {
+        if(mapType == GpuMapType.Read && !resource.Flags.IsCpuReadable())
+            throw new GpuResourceException(resource, "Resource must have CPU read access to be mapped for reading.");
+
+        if (mapType == GpuMapType.Write && !resource.Flags.IsCpuWritable())
+            throw new GpuResourceException(resource, "Resource must have CPU write access to be mapped for writing.");
+
         resource.Apply(this);
         GpuResourceMap map = GetResourcePtr(resource, subresource, mapType);
 
