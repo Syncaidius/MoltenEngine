@@ -35,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Silk.NET.DXGI" Version="2.21.0" />
+    <PackageReference Include="Silk.NET.DXGI" Version="2.22.0" />
   </ItemGroup>
 
   <ItemGroup>
