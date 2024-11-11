@@ -4,23 +4,23 @@
     "net8.0": {
       "Silk.NET.OpenAL": {
         "type": "Direct",
-        "requested": "[2.21.0, )",
-        "resolved": "2.21.0",
-        "contentHash": "zF18SdntuL/7rKiNO/2HaiiCS+x2hYVmfxIs2jN12Bm1XZvEGs6u6p+m+P8SwjxlBgX15NSaX5hMCo/59eZH8Q==",
+        "requested": "[2.22.0, )",
+        "resolved": "2.22.0",
+        "contentHash": "YpzIhYRcUZ8dHML8+DUHqEgu0exmZhouWYHGR4AXPtD63YbFuuO4aFqulWkCpIaOvjCdsIWtNKElLJreLxXvFw==",
         "dependencies": {
-          "Silk.NET.Core": "2.21.0",
+          "Silk.NET.Core": "2.22.0",
           "System.Buffers": "4.5.1",
           "System.Numerics.Vectors": "4.5.0"
         }
       },
       "Silk.NET.OpenAL.Extensions.Enumeration": {
         "type": "Direct",
-        "requested": "[2.21.0, )",
-        "resolved": "2.21.0",
-        "contentHash": "ofk6zC9Pp81vLodkF79O28Cdo29RJsih6SPtpjvji9q99qEJ3+sRDtNqUtyKZFme0oJhLqucZiIj7rL6cOQD0A==",
+        "requested": "[2.22.0, )",
+        "resolved": "2.22.0",
+        "contentHash": "zbk0mr4iQ1NcN960uUvUjcKslAQLNtvaa8YgpGlF9uAetSF02Tu1fijwpCSNam401O8fhCBDMeB/FGVaVpPuCQ==",
         "dependencies": {
-          "Silk.NET.Core": "2.21.0",
-          "Silk.NET.OpenAL": "2.21.0",
+          "Silk.NET.Core": "2.22.0",
+          "Silk.NET.OpenAL": "2.22.0",
           "System.Buffers": "4.5.1"
         }
       },
@@ -52,16 +52,16 @@
       },
       "Magick.NET-Q8-AnyCPU": {
         "type": "Transitive",
-        "resolved": "13.9.0",
-        "contentHash": "4fFZXA2NG3uSp2qYcYZXiEX+3fM2MT2b8/eGt6534D6Txsoh+i4PcovG+5ghqfdoTebYFXJ4VoF4mBQIcR29Cg==",
+        "resolved": "14.0.0",
+        "contentHash": "6jT+OhvqsX/BM2+89xvBvkD0I3Vx9QDMwLFXZLtBvnRpB/JogqtZfPju5xnqzXPytAeHT9EhGBBTyiV0scE1xA==",
         "dependencies": {
-          "Magick.NET.Core": "13.9.0"
+          "Magick.NET.Core": "14.0.0"
         }
       },
       "Magick.NET.Core": {
         "type": "Transitive",
-        "resolved": "13.9.0",
-        "contentHash": "7NF8Ntd/68WQucvU46vCrbBdZDOkEWjCtCiqKj3bijrj/oaKeKxILgD7iTsaUVQm8E3EgotyQw9b12xuvA6fWA=="
+        "resolved": "14.0.0",
+        "contentHash": "xChjeg8OT6l/ZBFJl+8ojSQQhKYgMt1f9X3g0HJ6sTvWZxj3j0eZrsKCguFSBAtz/gsdzpaSjJBKGtP5ZSaJhA=="
       },
       "Microsoft.CSharp": {
         "type": "Transitive",
@@ -89,8 +89,8 @@
       },
       "Silk.NET.Core": {
         "type": "Transitive",
-        "resolved": "2.21.0",
-        "contentHash": "U8gATeEGvSIc1ogSdG/LKr6SLgOjkis7Oo/QzCq+aOoGjw4tHYRVpm02V+pHp/qlQhziBbdQ/Vl5d58cmFY+PA==",
+        "resolved": "2.22.0",
+        "contentHash": "XbDilPmvsQIrvxZkeVCNNX3LyRtA3hN6UykAiyZjlu/JkYh68U3WQummpP+j7jsxlX8s/pOrrU3vbN8LnMl0VA==",
         "dependencies": {
           "Microsoft.CSharp": "4.7.0",
           "Microsoft.DotNet.PlatformAbstractions": "3.1.6",
@@ -136,7 +136,7 @@
       "molten.engine": {
         "type": "Project",
         "dependencies": {
-          "Magick.NET-Q8-AnyCPU": "[13.9.0, )",
+          "Magick.NET-Q8-AnyCPU": "[14.0.0, )",
           "Molten.Math": "[0.8.0, )",
           "Molten.Utility": "[0.8.0, )",
           "Newtonsoft.Json": "[13.0.3, )"
